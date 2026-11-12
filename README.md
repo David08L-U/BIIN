@@ -33,9 +33,8 @@ Una **aplicación web progresiva (PWA)** para planear viajes entre municipios de
 | | |
 |---|---|
 | **Etapa** | Cascada — Diseño (actividades 4–6) |
-| **Hitos cerrados** | H1 Planeación · H2 Investigación de usuario · H3 Diagramas UML |
-| **En curso** | H4 Prototipo de alta fidelidad (Melanie) |
-| **Próximos** | H5 Validación con stakeholders · H6 Modelo de BD aprobado (9 dic 2026) · **H7 Arquitectura y repositorio (16 dic 2026) = inicio del Sprint 1** |
+| **Hitos cerrados** | H1 Planeación · H2 Investigación de usuario · H3 Diagramas UML · H4 Prototipo de alta fidelidad |
+| **Próximos** | H5 Validación con stakeholders (20 nov 2026) · H6 Modelo de BD aprobado (9 dic 2026) · **H7 Arquitectura y repositorio (16 dic 2026), al cierre del Sprint 1** |
 | **Última actualización** | 11 nov 2026 |
 
 ## Documentación
@@ -44,7 +43,7 @@ Una **aplicación web progresiva (PWA)** para planear viajes entre municipios de
 |---|---|
 | [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) | Stack, capas, estructura de carpetas y **modelo de base de datos (27 tablas)** con sus reglas |
 | [docs/REQUERIMIENTOS.md](docs/REQUERIMIENTOS.md) | RF01–RF12, RNF01–RNF08, HU01–HU12, CU-01–CU-14, trazabilidad, alcance del MVP, restricciones y supuestos |
-| [docs/PLAN_Y_SPRINTS.md](docs/PLAN_Y_SPRINTS.md) | Metodología Cascada + Scrum, EDT, 15 hitos, 9 sprints y Definición de Terminado |
+| [docs/PLAN_Y_SPRINTS.md](docs/PLAN_Y_SPRINTS.md) | Metodología Cascada + Scrum, EDT, 15 hitos, 9 sprints, **responsables y MoSCoW por actividad** y Definición de Terminado |
 | [docs/CONVENCIONES.md](docs/CONVENCIONES.md) | Git, código, pruebas, checklist de tarea y **reglas para asistentes de IA** |
 
 **¿Por dónde empiezo?**

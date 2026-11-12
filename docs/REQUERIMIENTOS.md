@@ -80,27 +80,34 @@ Todos heredan de **Usuario de BIIN**. Servicios externos: mapas (OSM), geolocali
 
 ## 6. Casos de uso (versión vigente, Unidad 2)
 
-| CU | Nombre | Actor | Funciones que lo componen |
-|---|---|---|---|
-| CU-01 | Gestionar cuenta y sesión | Viajero registrado | Registrarse · iniciar sesión · cerrar sesión |
-| CU-02 | Buscar rutas por origen y destino | Viajero / visitante | Validar origen y destino · usar ubicación actual |
-| CU-03 | Consultar detalle de ruta | Viajero / visitante | Paradas y puntos de abordaje · horarios y tarifa aproximada · opciones de regreso |
-| CU-04 | Reportar cupo disponible | Conductor o checador | Seleccionar ruta y salida · registrar asientos disponibles · vigencia del reporte |
-| CU-05 | Sabores locales | Viajero / visitante | Horarios y precios aproximados |
-| CU-06 | Cartelera de eventos | Viajero / visitante | Estado y cambios del evento |
-| CU-07 | Sitios y atractivos | Viajero / visitante | Ficha del sitio · filtrar por localidad |
-| CU-08 | Asistente de IA | Viajero / visitante | Recomendaciones con datos de BIIN |
-| CU-09 | Gestionar itinerarios | Viajero registrado | Crear itinerario · editar itinerario (*Should*) · advertir conflicto (*Could*) |
-| CU-10 | Gestionar favoritos | Viajero registrado | Guardar favorito · quitar favorito |
-| CU-11 | Consulta sin conexión | Viajero / visitante | Copia local con fecha de actualización |
-| CU-12 | Gestionar contenidos y usuarios | Administrador | Rutas, paradas y tarifas · sitios y recorridos · negocios y eventos · usuarios y roles |
-| CU-13 | Recorridos sugeridos | Viajero / visitante | Mapa con paradas en orden |
-| CU-14 | Turismo por interés | Viajero / visitante | Elegir categoría |
-| *(T08)* | *Proponer contenido* | *Colaborador* | ***Won't** — fuera del MVP* |
+Prioridad **MoSCoW**: **Must** (obligatorio en el MVP) · **Should** (importante) · **Could** (deseable si hay tiempo) · **Won't** (fuera de esta versión). Fuente: nota de cada diagrama por caso de uso en FigJam.
 
-Módulos funcionales: **M1 Transporte** (CU-02, 03, 13) · **M2 Exploración** (CU-05, 06, 07, 14) · **M3 Mi Viaje** (CU-08, 09, 10, 11) · **M4 Operador** (CU-04) · **M5 Administrador** (CU-12) · transversal: CU-01.
+| CU | Nombre | MoSCoW | Traza | Módulo del MVP | Actor | Funciones que lo componen |
+|---|---|---|---|---|---|---|
+| CU-01 | Gestionar cuenta y sesión | **Must** | RF01 / HU01 | T01 Transversal | Viajero registrado (y todo rol con cuenta) | Registrarse · iniciar sesión · cerrar sesión |
+| CU-02 | Buscar rutas por origen y destino | **Must** | RF02 / HU02 | M7 Transporte y Tarifas | Viajero / visitante | Validar origen y destino · usar ubicación actual |
+| CU-03 | Consultar detalle de una ruta | **Must** | RF03 / HU03 | M7 Transporte y Tarifas | Viajero / visitante | Paradas y puntos de abordaje · horarios y tarifa aproximada · opciones de regreso |
+| CU-04 | Reportar cupo disponible | Could | RF04 / HU04 | M7 Operación de transporte | Conductor o checador | Seleccionar ruta y salida · registrar asientos disponibles · vigencia del reporte |
+| CU-05 | Consultar negocios gastronómicos | **Must** | RF05 / HU05 | M5 Sabores Locales | Viajero / visitante | Horarios y precios aproximados |
+| CU-06 | Consultar eventos | **Must** | RF06 / HU06 | M4 Cartelera de Eventos | Viajero / visitante | Estado y cambios del evento |
+| CU-07 | Consultar lugares de interés | **Must** | RF07 / HU07 | M1 Sitios y Atractivos | Viajero / visitante | Ficha del sitio · filtrar por localidad |
+| CU-08 | Solicitar recomendaciones al asistente de IA | Should | RF08 / HU08 | T06 Transversal | Viajero / visitante | Recomendaciones con datos de BIIN |
+| CU-09 | Gestionar itinerarios | **Must** | RF09 / HU09 | M6 Mi Viaje | Viajero registrado | Crear itinerario · editar itinerario (*Should*) · advertir conflicto (*Could*) |
+| CU-10 | Gestionar favoritos | **Must** | RF10 / HU10 | M6 Mi Viaje | Viajero registrado | Guardar favorito · quitar favorito |
+| CU-11 | Descargar datos para consulta sin conexión | Could | RF11 / HU11 | T07 Transversal | Viajero / visitante | Copia local con fecha de actualización |
+| CU-12 | Gestionar contenidos y usuarios | **Must** | RF12 / HU12 | T04 / T08 Transversal | Administrador | Rutas, paradas y tarifas · sitios y recorridos · negocios y eventos · usuarios y roles |
+| CU-13 | Consultar recorridos sugeridos | **Must** | MVP M2-01 / M2-02 | M2 Recorridos Sugeridos | Viajero / visitante | Mapa con paradas en orden |
+| CU-14 | Explorar turismo por interés | **Must** | MVP M3-01 / M3-02 | M3 Turismo por Interés | Viajero / visitante | Elegir categoría |
+| *(T08)* | *Proponer contenido* | ***Won't*** | — | — | *Colaborador* | *Fuera del MVP (versión futura)* |
 
-> La prioridad **MoSCoW** de cada CU y su trazabilidad RF-HU están en la nota de cada diagrama por caso de uso (FigJam → «Diagramas por caso de uso · CU-01 a CU-14»).
+**Resumen:** 11 Must · 1 Should (CU-08) · 2 Could (CU-04, CU-11) · 1 Won't (colaboradores).
+
+> CU-13 y CU-14 no tienen RF propio: vienen de los módulos del MVP (M2 y M3) agregados en la Unidad 2. Si el equipo los formaliza, agregar sus RF/HU aquí.
+
+**Dos formas de agrupar módulos** (ambas aparecen en FigJam):
+
+- **Módulos del MVP** (columna de la tabla): M1 Sitios y Atractivos · M2 Recorridos Sugeridos · M3 Turismo por Interés · M4 Cartelera de Eventos · M5 Sabores Locales · M6 Mi Viaje · M7 Transporte y Tarifas / Operación · T01–T08 funciones transversales.
+- **Diagramas radiales por módulo** (casos de uso ampliados): Transporte (CU-02, 03, 13) · Exploración (CU-05, 06, 07, 14) · Mi Viaje (CU-08, 09, 10, 11) · Operador (CU-04) · Administrador (CU-12) · CU-01 transversal.
 
 ## 7. Alcance del MVP
 

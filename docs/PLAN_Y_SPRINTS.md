@@ -74,8 +74,8 @@ BIIN
 | H1 | Planeación del proyecto entregada (Actividad 1) | 19 oct 2026 | 1 | ✅ Completado |
 | H2 | Investigación de usuario entregada (Actividad 2) | 23 oct 2026 | 3, 6.1 | ✅ Completado |
 | H3 | Diagramas UML entregados (Actividad 3) | 26 oct 2026 | 5.1, 5.3 | ✅ Completado |
-| H4 | Prototipo de alta fidelidad entregado (Actividad 4) | 30 oct 2026 | 6.2 | 🔄 En curso |
-| H5 | Información validada con stakeholders | por confirmar (ver Notion) | 2 | ⏳ Pendiente |
+| H4 | Prototipo de alta fidelidad entregado (Actividad 4) | 30 oct 2026 | 6.2 | ✅ Completado |
+| H5 | Información validada con stakeholders | 20 nov 2026 | 2 | ⏳ Pendiente |
 | H6 | Modelo de base de datos aprobado | 9 dic 2026 | 4 | ⏳ Pendiente |
 | H7 | Arquitectura y repositorio listos | 16 dic 2026 | 7 | ⏳ Pendiente |
 | H8 | Base de datos implementada | 30 dic 2026 | 8 | ⏳ Pendiente |
@@ -89,34 +89,92 @@ BIIN
 
 ## 4. Plan de sprints
 
-| Sprint | Fechas | Actividades | Hito |
+| Sprint  | Actividades | Hito |
 |---|---|---|---|
-| 1 | 10 – 23 dic 2026 | 7 Arquitectura y repositorio · 8 Implementación de BD | H7 |
-| 2 | 24 dic 2026 – 6 ene 2027 | 8 Implementación de BD · 9 Usuarios, autenticación y roles | H8 |
-| 3 | 7 – 20 ene 2027 | 9 Autenticación · inicio de 10 Rutas y 12 Gastronomía, eventos y lugares | H9 |
-| 4 | 21 ene – 3 feb 2027 | 10 Rutas y mapas · 12 Gastronomía, eventos y lugares | — |
-| 5 | 4 – 17 feb 2027 | 10 Rutas (cierre) · 14 Favoritos · inicio de 11, 13 y 17 | H10 |
-| 6 | 18 feb – 3 mar 2027 | 11 Reporte de cupo · 13 Itinerarios · 17 Administración | H11 |
-| 7 | 4 – 17 mar 2027 | 15 Asistente de IA · 16 PWA y consulta sin conexión | — |
-| 8 | 18 – 31 mar 2027 | 15 Asistente de IA (cierre) · 18 Integración y pruebas | H12 |
-| 9 | 1 – 16 abr 2027 | 18 Pruebas · 19 Corrección y optimización · 20 Documentación final y demo | H13, H14, H15 |
+| 1 | | 7 Arquitectura y repositorio · 8 Implementación de BD | H7 |
+| 2 |  |8 Implementación de BD · 9 Usuarios, autenticación y roles | H8 |
+| 3 |  | 9 Autenticación · inicio de 10 Rutas y 12 Gastronomía, eventos y lugares | H9 |
+| 4 | | 10 Rutas y mapas · 12 Gastronomía, eventos y lugares | — |
+| 5 |  | 10 Rutas (cierre) · 14 Favoritos · inicio de 11, 13 y 17 | H10 |
+| 6 |  | 11 Reporte de cupo · 13 Itinerarios · 17 Administración | H11 |
+| 7 |  | 15 Asistente de IA · 16 PWA y consulta sin conexión | — |
+| 8 | | 15 Asistente de IA (cierre) · 18 Integración y pruebas | H12 |
+| 9 |  | 18 Pruebas · 19 Corrección y optimización · 20 Documentación final y demo | H13, H14, H15 |
 
-**Responsables por actividad:** cada actividad tiene una pareja a cargo y dentro de ella las tareas se reparten de forma individual y alternada. La asignación exacta está en la columna *Responsables* del cronograma en Notion.
+## 5. Responsables y prioridad por actividad
 
-## 5. Entregables de la Unidad 2
+Fuente: base de datos «Cronograma y Diagrama de Gantt (8 meses)» en Notion (274 filas), leída el 11 nov 2026.
+
+### Cómo se asigna (regla de la columna *Recurso*)
+
+El cronograma calcula el responsable solo, con esta regla. Si alguien escribe un nombre en *Responsables*, ese nombre **reemplaza** la regla.
+
+| Nivel | Regla automática |
+|---|---|
+| Hitos (H1–H15) | Todo el equipo |
+| Actividad (nivel 2, p. ej. `10`) | 1, 2, 3, 17, 18, 19, 20 → **Todo el equipo** · 4, 8, 9, 12, 13, 15 → **David – Andrey** · 5, 6, 7, 10, 11, 14, 16 → **Melanie – Aaron** |
+| Sección (nivel 3, p. ej. `17.1`) | 1.1, 2.1, 2.3, 3.2, 17.1, 18.1, 18.4, 19.1, 20.1 → **David – Andrey** · 1.2, 2.2, 3.1, 17.2, 18.2, 18.3, 19.2, 20.2 → **Melanie – Aaron** · 3.3 → Todo el equipo · el resto hereda la pareja de su actividad |
+| Paquete (nivel 4, p. ej. `10.1.3`) | Alterna dentro de la pareja según el último número: **impar → David / Melanie**, **par → Andrey / Aaron** |
+
+### Reparto oficial por pareja (Notion, actualizado 11 nov 2026)
+
+- **David – Andrey:** 4 Diseño de BD · 8 Implementación de BD · 9 Autenticación y roles · 12 Gastronomía, eventos y lugares · 13 Itinerarios · 15 Asistente de IA
+- **Melanie – Aaron:** 5 UML · 6 Interfaces y prototipos · 7 Arquitectura y repositorio · 10 Rutas y mapas · 11 Reporte de cupo · 14 Favoritos · 16 PWA
+- **Todo el equipo:** 1 Planeación · 2 Validación con stakeholders · 3 Requerimientos · 17 Administración · 18 Pruebas · 19 Corrección · 20 Cierre
+
+### Responsable y prioridad por actividad
+
+| # | Actividad | MoSCoW | Responsable | Sprint |
+|---|---|---|---|---|
+| 1 | Planeación inicial y revisión del alcance | — | Todo el equipo | Cascada |
+| 2 | Recopilación y validación de información con stakeholders | — | Todo el equipo | Cascada |
+| 3 | Análisis y definición de requerimientos | — | Todo el equipo | Cascada |
+| 4 | Diseño y normalización de la base de datos | — | David – Andrey | Cascada |
+| 5 | Elaboración de UML y diagramas de procesos | — | Melanie – Aaron | Cascada |
+| 6 | Diseño de interfaces y prototipos | — | Melanie – Aaron | Cascada |
+| 7 | Configuración de arquitectura y repositorio | — | Melanie – Aaron | 1 |
+| 8 | Implementación de la base de datos | — | David – Andrey | 1–2 |
+| 9 | Usuarios, autenticación y roles | **Must** | David – Andrey | 2–3 |
+| 10 | Rutas intermunicipales y mapas | **Must** | Melanie – Aaron | 3–5 |
+| 11 | Reporte de cupo disponible | Could | Melanie – Aaron | 5–6 |
+| 12 | Gastronomía, eventos y lugares de interés | **Must** | David – Andrey | 3–4 |
+| 13 | Módulo de itinerarios | **Must** | David – Andrey | 5–6 |
+| 14 | Favoritos | **Must** | Melanie – Aaron | 5 |
+| 15 | Asistente de inteligencia artificial | Should | David – Andrey | 7–8 |
+| 16 | PWA y consulta sin conexión | Should | Melanie – Aaron | 7 |
+| 17 | Gestión administrativa y de contenidos | **Must** | Todo el equipo (17.1 Backend → David – Andrey · 17.2 Frontend → Melanie – Aaron) | 5–6 |
+| 18 | Integración general y pruebas del sistema | — | Todo el equipo (18.1 y 18.4 → David – Andrey · 18.2 y 18.3 → Melanie – Aaron) | 8–9 |
+| 19 | Corrección de errores y optimización | — | Todo el equipo (19.1 → David – Andrey · 19.2 → Melanie – Aaron) | 9 |
+| 20 | Documentación final y demostración | — | Todo el equipo (20.1 → David – Andrey · 20.2 → Melanie – Aaron) | 9 |
+
+Dentro de cada pareja, los paquetes de nivel 4 se alternan según la regla de arriba (impar → David / Melanie, par → Andrey / Aaron), salvo que Notion tenga un nombre escrito en *Responsables*. Algunos paquetes ya terminados tienen dueño individual: 1.2.4 David · 3.1.1, 5.1.1, 5.1.2, 5.2.1, 5.3.1, 5.3.2, 6.1.2, 6.1.3 Aaron · 6.2.1, 6.2.2, 6.2.3 Melanie.
+
+Dentro de cada sección, Backend es la `X.1` y Frontend la `X.2` (p. ej. 10.1 Backend de rutas, 10.2 Frontend de rutas).
+
+### Prioridad de los paquetes que no son Must
+
+| Paquete | MoSCoW |
+|---|---|
+| 11.1.6 Registrar quién y cuándo reportó el cupo | Could |
+| 12.1.7 Flujo de colaboradores y moderación (T08) | Won't |
+| 15.x Asistente de IA (selección de LLM, endpoint, reglas, «no tengo esa información», validación anti-alucinaciones) | Should |
+| 16.1–16.2 Manifest, instalación, Service Worker, caché, Lighthouse | Should |
+| 16.3 IndexedDB, fecha de actualización, sincronización, indicador offline | Could |
+
+## 6. Entregables de la Unidad 2
 
 | Actividad | Contenido | Fecha | Responsable | Estado | Evidencia |
 |---|---|---|---|---|---|
 | 1. Planeación | Gantt con hitos y predecesores, EDT, técnicas y herramientas, metodología | 19 oct 2026 | David | ✅ Entregada | Notion |
 | 2. Investigación de usuario | Encuesta (28 respuestas) y gráficas, protopersonas, journey maps, user flows, 10 diagramas de procesos, wireframes | 23 oct 2026 | Aaron | ✅ Entregada | FigJam · PDF en la asignación |
 | 3. Diagramas UML | 14 CU con plantilla, clases, objetos, actividad y secuencia | 26 oct 2026 | Aaron | ✅ Entregada | PDF en la asignación |
-| 4. Diseño y prototipo | Prototipo de alta fidelidad con pantallas vinculadas | 30 oct 2026 | Melanie | 🔄 En curso | Prototipo en GitHub Pages |
+| 4. Diseño y prototipo | Prototipo de alta fidelidad con pantallas vinculadas | 30 oct 2026 | Melanie | ✅ Completado en el cronograma (la tabla de entregables de Notion aún dice «En curso») | Prototipo en GitHub Pages |
 
-## 6. Paquetes de trabajo a no olvidar
+## 7. Paquetes de trabajo a no olvidar
 
 Tareas de nivel 4 registradas en Notion que son fáciles de pasar por alto:
 
-- 2.3.4 Confirmar **por escrito** la validez de los datos de transporte.
+- 2.3.4 Confirmar **por escrito** la validez de los datos de transporte (19–20 nov 2026, antes de H5).
 - 8.2.4 Respaldo inicial de la base de datos.
 - 10.1.7 Validar orden de paradas y rutas de ida y regreso (RF02, RF03).
 - 11.1.6 Registrar quién y cuándo reportó el cupo (RNF04).

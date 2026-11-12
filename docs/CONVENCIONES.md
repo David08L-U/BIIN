@@ -1,44 +1,3 @@
-# Convenciones de trabajo
-
-> Lo marcado como **(propuesta)** no viene de Notion ni de FigJam: es un punto de partida para acordar en equipo al cerrar H7 «Arquitectura y repositorio». Cuando se acuerde, quitar la marca.
-
-## 1. Git y GitHub
-
-Definido en el plan: **ramas por módulo** y **revisión con pull requests** por la otra pareja.
-
-**Ramas (propuesta)**
-
-| Rama | Uso |
-|---|---|
-| `main` | Versión estable y entregable. Solo se integra desde `develop` al cerrar un sprint |
-| `develop` | Integración del sprint |
-| `feature/<modulo>-<descripcion>` | Trabajo de una tarea, p. ej. `feature/rutas-busqueda-origen-destino` |
-| `fix/<descripcion>` | Corrección de errores |
-
-Módulos: `auth`, `rutas`, `cupo`, `exploracion`, `itinerarios`, `favoritos`, `asistente-ia`, `pwa`, `admin`, `bd`.
-
-**Commits (propuesta):** en español, en presente, con prefijo:
-`feat:` nueva función · `fix:` corrección · `docs:` documentación · `test:` pruebas · `refactor:` reestructura sin cambiar comportamiento · `chore:` configuración.
-Ejemplo: `feat(rutas): buscar rutas por orden de paradas (RF02)`
-
-**Pull requests**
-
-- Siempre hacia `develop`, **revisado por un integrante de la otra pareja**.
-- En la descripción, indicar el **RF, HU y CU** que cubre y el paquete de trabajo de Notion (p. ej. 10.1.3).
-- No se fusiona si las pruebas fallan.
-
-## 2. Código
-
-**Nombres (propuesta)**
-
-| Elemento | Convención | Ejemplo |
-|---|---|---|
-| Tablas y columnas PostgreSQL | `snake_case`, español, tablas en plural | `ruta_parada.permite_abordar` |
-| Clases C# / entidades | `PascalCase`, español, singular | `RutaParada`, `ReporteCupo` |
-| Métodos y propiedades C# | `PascalCase` | `BuscarPorOrigenDestino()` |
-| Variables y funciones TS | `camelCase` | `buscarRutas()` |
-| Componentes React | `PascalCase`, un componente por archivo | `DetalleRuta.tsx` |
-| Endpoints REST | `kebab-case`, plural, bajo `/api` | `GET /api/rutas?origen=..&destino=..` |
 
 **Backend (C# / ASP.NET Core)**
 
@@ -55,7 +14,7 @@ Ejemplo: `feat(rutas): buscar rutas por orden de paradas (RF02)`
 - Accesibilidad: todo usable con teclado, etiquetas en controles, contraste ≥ 4.5:1.
 - Todo dato que pueda venir de la copia offline o de un reporte vencido debe mostrar su **fecha** y su estado (actualizado / guardado / no confirmado).
 
-## 3. Pruebas
+## . Pruebas
 
 | Nivel | Herramienta | Mínimo esperado |
 |---|---|---|
@@ -65,7 +24,7 @@ Ejemplo: `feat(rutas): buscar rutas por orden de paradas (RF02)`
 | PWA | Lighthouse | Antes de H12 y en la auditoría 16.2.4 |
 | Usabilidad | Pruebas con usuarios | 4 de 5 completan las tareas principales |
 
-## 4. Checklist antes de cerrar una tarea
+## . Checklist antes de cerrar una tarea
 
 - [ ] Cumple el RF y el CU indicados (revisar `REQUERIMIENTOS.md`).
 - [ ] Pruebas escritas y pasando.
@@ -76,7 +35,7 @@ Ejemplo: `feat(rutas): buscar rutas por orden de paradas (RF02)`
 - [ ] Tarea actualizada en Notion.
 - [ ] Documentación actualizada si cambió la arquitectura, el modelo de BD o una convención.
 
-## 5. Para asistentes de IA
+## . Para asistentes de IA
 
 Si eres una IA ayudando en este proyecto, sigue estas reglas:
 
