@@ -49,34 +49,91 @@ Cliente-servidor en **tres capas**, comunicadas por **API REST con JSON sobre HT
 4. La IA y la actualización de información requieren internet. Offline solo se consulta lo descargado antes.
 5. La ubicación del usuario se pide con consentimiento; si la rechaza, elige su origen manualmente (RNF05).
 
-## 3. Estructura de carpetas (propuesta — se define en H7)
+## 3. Estructura de carpetas
 
-> Esto es una propuesta inicial. Se confirma al cerrar la actividad 7 «Arquitectura y repositorio». Si cambia, actualizar aquí.
+Cada carpeta tiene un `.gitkeep` con una línea que explica qué va ahí. Se puede borrar el `.gitkeep` en cuanto la carpeta tenga archivos.
 
 ```
 BIIN/
 ├── README.md
-├── docs/
+├── docs/                          Documentación del proyecto
+├── .github/workflows/             Compilar y ejecutar pruebas en cada push
+├── postman/                       Colecciones y entornos de Postman
+├── database/
+│   ├── schema/                    Tablas, llaves e índices
+│   ├── triggers/                  Reglas entre tablas (cupo, operador autorizado)
+│   └── seed/                      Datos validados y ficticios de prueba
 ├── backend/
-│   ├── Biin.Api/              # Controllers, Program.cs, configuración, JWT
-│   ├── Biin.Application/      # Services, DTOs, validaciones, reglas de negocio
-│   ├── Biin.Domain/           # Entidades y enums (TipoRecurso, EstadoPublicacion, EstadoEvento…)
-│   ├── Biin.Infrastructure/   # DbContext (EF Core + Npgsql), Repositories, migraciones, cliente LLM
-│   └── Biin.Tests/            # xUnit
-├── frontend/
-│   ├── public/                # manifest, íconos
-│   └── src/
-│       ├── modules/           # transporte, exploracion, mi-viaje, operador, admin, auth, asistente
-│       ├── components/        # componentes compartidos
-│       ├── services/          # cliente de la API
-│       ├── offline/           # Service Worker e IndexedDB
-│       └── maps/              # Leaflet
-└── database/
-    ├── schema.sql             # o migraciones de EF Core
-    └── seed/                  # datos validados de prueba
+│   ├── src/
+│   │   ├── Biin.Api/              Capa HTTP
+│   │   │   ├── Controllers/
+│   │   │   ├── Middleware/
+│   │   │   ├── Extensions/
+│   │   │   └── Configuration/
+│   │   ├── Biin.Application/      Reglas de negocio
+│   │   │   ├── Services/
+│   │   │   ├── DTOs/
+│   │   │   ├── Interfaces/
+│   │   │   ├── Validators/
+│   │   │   └── Mappings/
+│   │   ├── Biin.Domain/           Modelo sin dependencias externas
+│   │   │   ├── Entities/
+│   │   │   ├── Enums/
+│   │   │   └── Exceptions/
+│   │   └── Biin.Infrastructure/   Datos y servicios externos
+│   │       ├── Persistence/
+│   │       │   ├── Configurations/
+│   │       │   └── Migrations/
+│   │       ├── Repositories/
+│   │       ├── ExternalServices/
+│   │       └── Security/
+│   └── tests/
+│       ├── Biin.UnitTests/
+│       └── Biin.IntegrationTests/
+└── frontend/
+    ├── public/icons/
+    ├── tests/
+    └── src/
+        ├── app/                   Arranque, enrutador y proveedores
+        ├── assets/
+        ├── components/
+        │   ├── ui/
+        │   └── layout/
+        ├── features/              Un módulo por dominio
+        │   ├── auth/
+        │   ├── transporte/
+        │   ├── cupo/
+        │   ├── exploracion/
+        │   ├── mi-viaje/
+        │   ├── asistente/
+        │   └── admin/
+        ├── hooks/
+        ├── services/
+        ├── offline/
+        ├── maps/
+        ├── types/
+        ├── utils/
+        └── styles/
 ```
 
-Los módulos del frontend siguen los 5 módulos funcionales de los casos de uso: **Transporte, Exploración, Mi Viaje, Operador y Administrador**.
+### Dependencias entre capas del backend
+
+`Api → Application → Domain` y `Infrastructure → Application → Domain`. **Domain no depende de nadie.** Application define interfaces (`Interfaces/`) que Infrastructure implementa; así el código de negocio no conoce EF Core ni el proveedor del LLM.
+
+### Dónde va cada módulo
+
+| Módulo | Casos de uso | Frontend | Backend (Controllers / Services) |
+|---|---|---|---|
+| Cuenta y sesión | CU-01 | `features/auth` | Auth, Usuarios |
+| Transporte | CU-02, CU-03, CU-13 | `features/transporte` | Rutas, Tarifas, Horarios |
+| Operador | CU-04 | `features/cupo` | Salidas, ReportesCupo |
+| Exploración | CU-05, CU-06, CU-07, CU-14 | `features/exploracion` | Recursos, Negocios, Eventos, Lugares, Categorias |
+| Mi Viaje | CU-09, CU-10 | `features/mi-viaje` | Itinerarios, Favoritos |
+| Asistente de IA | CU-08 | `features/asistente` | Asistente |
+| Consulta sin conexión | CU-11 | `src/offline` | (usa los endpoints de consulta) |
+| Administración | CU-12 | `features/admin` | Admin* |
+
+Dentro de cada `features/<modulo>/` se usan las subcarpetas que hagan falta: `components/`, `pages/`, `hooks/` y `api/`. Se crean conforme se programe el módulo.
 
 ## 4. Modelo de base de datos (27 tablas, 3FN)
 

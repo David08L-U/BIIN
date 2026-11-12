@@ -1,8 +1,5 @@
 # BIIN — Plataforma Inteligente para Viajes y Rutas Intermunicipales de Yucatán
 
-> Proyecto Integrador · Universidad Tecnológica Metropolitana (UTM) · División TIC
-> Asignatura: Estructura de Datos · 4.º cuatrimestre · Grupo D · Docente: Miriam Canche Caamal
-> Periodo: **17 sep 2026 → 16 abr 2027** (8 meses, 32 semanas)
 
 ## ¿Qué es BIIN?
 
