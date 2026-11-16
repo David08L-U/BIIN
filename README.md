@@ -29,10 +29,47 @@ Una **aplicación web progresiva (PWA)** para planear viajes entre municipios de
 
 | | |
 |---|---|
-| **Etapa** | Cascada — Diseño (actividades 4–6) |
+| **Etapa** | Programación del MVP completo — **entrega funcionando el 3 dic 2026** (las fechas de sprints de Notion son de Estructura de Datos) |
+| **Hecho** | Esquema SQL (30 tablas, triggers, catálogos) · backend por capas con registro/login JWT · frontend con rutas, sesión y mapa |
 | **Hitos cerrados** | H1 Planeación · H2 Investigación de usuario · H3 Diagramas UML · H4 Prototipo de alta fidelidad |
 | **Próximos** | H5 Validación con stakeholders (20 nov 2026) · H6 Modelo de BD aprobado (9 dic 2026) · **H7 Arquitectura y repositorio (16 dic 2026), al cierre del Sprint 1** |
 | **Última actualización** | 11 nov 2026 |
+
+## Cómo ejecutar
+
+**Requisitos:** .NET SDK 10, Node.js 22 o superior, PostgreSQL 16 o superior.
+
+**1. Base de datos.** Crear una base vacía llamada `biin` y ejecutar en orden:
+
+```bash
+psql -U postgres -c "CREATE DATABASE biin"
+```
+
+```bash
+psql -U postgres -d biin -f database/schema/001_esquema.sql -f database/schema/002_ampliaciones_mvp.sql -f database/triggers/001_reglas.sql -f database/seed/001_catalogos.sql
+```
+
+**2. Backend.** Copiar `backend/src/Biin.Api/appsettings.Development.example.json` como `appsettings.Development.json` (no se sube a Git) y poner la contraseña de PostgreSQL y una clave JWT de 32 caracteres o más.
+
+```bash
+dotnet run --project backend/src/Biin.Api --urls http://localhost:5080
+```
+
+Comprobar en http://localhost:5080/api/salud que diga `"baseDeDatos": "ok"`. La especificación OpenAPI está en `/openapi/v1.json`.
+
+**3. Frontend.** En otra terminal:
+
+```bash
+npm install --prefix frontend
+```
+
+```bash
+npm run dev --prefix frontend
+```
+
+Abrir http://localhost:5173. Las llamadas a `/api` se reenvían al backend.
+
+**Pruebas:** `dotnet test backend/Biin.slnx` y `npm test --prefix frontend`.
 
 ## Documentación
 
