@@ -39,18 +39,36 @@ Una **aplicación web progresiva (PWA)** para planear viajes entre municipios de
 
 **Requisitos:** .NET SDK 10, Node.js 22 o superior, PostgreSQL 16 o superior.
 
-**1. Configuración local.** Copiar `backend/src/Biin.Api/appsettings.Development.example.json` como `appsettings.Development.json` y poner ahí la contraseña de PostgreSQL y una clave JWT de 32 caracteres o más. Ese archivo no se sube a Git; **la plantilla `.example` nunca lleva datos reales**.
+**1. Configuración local.** Copiar `backend/src/Biin.Api/appsettings.Development.example.json` como `appsettings.Development.json` y llenar ahí:
 
-**2. Base de datos.** Crea la base `biin` y ejecuta schema, triggers y catálogos en orden. Toma la contraseña del archivo anterior.
+| Clave | Qué poner |
+|---|---|
+| `ConnectionStrings:BiinAdmin` | La contraseña de `postgres`. Solo la usan los scripts de `database/` |
+| `ConnectionStrings:Biin` | Una contraseña inventada para `biin_app`, el usuario con el que se conecta la API. El script lo crea con esa contraseña |
+| `Jwt:Clave` | Una clave aleatoria de 32 caracteres o más |
+
+Ese archivo no se sube a Git. **La plantilla `.example` nunca lleva datos reales.**
+
+**2. Base de datos.** Crea la base `biin`, las tablas, la búsqueda, las vistas, los triggers, los catálogos y el usuario `biin_app`.
 
 ```bash
 pwsh ./database/crear_bd.ps1
 ```
 
-Con `-Recrear` borra la base y la crea de nuevo. Para comprobar las reglas (no deja datos):
+Con `-Recrear` borra la base y la crea de nuevo. Después crea el primer administrador; la contraseña se pide en pantalla:
 
 ```bash
-psql -U postgres -d biin -f database/pruebas/001_reglas.sql
+pwsh ./database/crear_usuario.ps1 -Correo tu@correo.com -Nombre "Tu Nombre" -Rol administrador
+```
+
+El mismo script crea operadores (`-Rol operador -Rutas CODIGO1,CODIGO2`) y colaboradores.
+
+**Respaldos:** `pwsh ./database/respaldar_bd.ps1` guarda un `.dump` en `database/backups/` (no se sube a Git) y `pwsh ./database/restaurar_bd.ps1` carga el más reciente.
+
+**Pruebas de la base** (no dejan datos):
+
+```bash
+psql -U postgres -d biin -f database/pruebas/001_reglas.sql -f database/pruebas/002_busqueda_vistas.sql
 ```
 
 **3. Backend.**

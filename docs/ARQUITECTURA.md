@@ -268,12 +268,56 @@ Reglas adicionales:
 
 ### 4.8 Cómo se crea la base de datos
 
-En orden, sobre una base vacía llamada `biin`:
+`database/crear_bd.ps1` ejecuta, en orden, sobre una base vacía llamada `biin`:
 
 1. `database/schema/001_esquema.sql` — 27 tablas del modelo.
 2. `database/schema/002_ampliaciones_mvp.sql` — 3 tablas del MVP.
-3. `database/triggers/001_reglas.sql` — tipo de detalle, horarios de visita, cupo ≤ capacidad, operador autorizado, `actualizado_en`.
-4. `database/seed/001_catalogos.sql` — roles y categorías.
+3. `database/schema/003_busqueda.sql` — extensiones `unaccent`, `pg_trgm` y `pgcrypto`; función `f_normalizar()` e índices de búsqueda.
+4. `database/schema/004_vistas.sql` — vistas de consulta.
+5. `database/triggers/001_reglas.sql` — tipo de detalle, horarios de visita, cupo ≤ capacidad, operador autorizado, `actualizado_en`.
+6. `database/seed/001_catalogos.sql` — roles y categorías.
+7. `database/seguridad/001_usuario_app.sql` — crea `biin_app` y le da permisos.
+
+### 4.9 Búsqueda sin acentos
+
+`f_normalizar(texto)` quita acentos y pasa a minúsculas. Hay índices trigram sobre `recursos.titulo`, `localidades.nombre`, `municipios.nombre` y `categorias.nombre`, así que estas consultas usan índice:
+
+```sql
+-- "homun" encuentra "Homún"
+SELECT nombre FROM localidades WHERE f_normalizar(nombre) LIKE '%' || f_normalizar('homun') || '%';
+-- tolera errores: "omun" sugiere "Homún"
+SELECT nombre FROM localidades ORDER BY similarity(f_normalizar(nombre), f_normalizar('omun')) DESC LIMIT 5;
+```
+
+### 4.10 Vistas
+
+| Vista | Para qué |
+|---|---|
+| `v_recursos_publicados` | Solo contenido publicado, con su ubicación, localidad y municipio. Es lo único que debe ver el público y el asistente de IA (RF08) |
+| `v_paradas_ruta` | Paradas en orden de cada ruta activa y publicada, con localidad y municipio. Base de la búsqueda origen → destino (CU-02) |
+| `v_cupo_vigente` | Por salida: el último reporte vigente o `no_confirmado` (RF04, RNF07) |
+
+### 4.11 Usuarios de base de datos (RNF04)
+
+| Usuario | Lo usa | Puede |
+|---|---|---|
+| `postgres` (`ConnectionStrings:BiinAdmin`) | Solo los scripts de `database/` | Todo |
+| `biin_app` (`ConnectionStrings:Biin`) | La API | Leer, insertar, actualizar y borrar datos. **No** puede crear, alterar ni borrar tablas, ni crear bases |
+
+Los usuarios de la aplicación se crean desde la API (registro, siempre como viajero) o con `database/crear_usuario.ps1` para administradores, operadores y colaboradores. Las contraseñas se guardan con BCrypt en ambos casos.
+
+### 4.12 Scripts de `database/`
+
+| Script | Qué hace |
+|---|---|
+| `crear_bd.ps1 [-Recrear]` | Crea la base completa |
+| `crear_usuario.ps1 -Correo -Nombre -Rol [-Rutas]` | Crea un usuario con rol; pide la contraseña en pantalla |
+| `respaldar_bd.ps1` | Respaldo `.dump` en `database/backups/` (paquete 8.2.4) |
+| `restaurar_bd.ps1 [-Archivo]` | Restaura un respaldo; pide confirmación |
+| `pruebas/001_reglas.sql` | 15 pruebas de restricciones y triggers |
+| `pruebas/002_busqueda_vistas.sql` | 9 pruebas de búsqueda y vistas |
+
+Todos leen las conexiones de `appsettings.Development.json`; ninguna contraseña va en el repositorio ni en la línea de comandos.
 
 ## 5. Diagramas de clases (Unidad 2)
 
