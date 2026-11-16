@@ -39,17 +39,21 @@ Una **aplicación web progresiva (PWA)** para planear viajes entre municipios de
 
 **Requisitos:** .NET SDK 10, Node.js 22 o superior, PostgreSQL 16 o superior.
 
-**1. Base de datos.** Crear una base vacía llamada `biin` y ejecutar en orden:
+**1. Configuración local.** Copiar `backend/src/Biin.Api/appsettings.Development.example.json` como `appsettings.Development.json` y poner ahí la contraseña de PostgreSQL y una clave JWT de 32 caracteres o más. Ese archivo no se sube a Git; **la plantilla `.example` nunca lleva datos reales**.
+
+**2. Base de datos.** Crea la base `biin` y ejecuta schema, triggers y catálogos en orden. Toma la contraseña del archivo anterior.
 
 ```bash
-psql -U postgres -c "CREATE DATABASE biin"
+pwsh ./database/crear_bd.ps1
 ```
+
+Con `-Recrear` borra la base y la crea de nuevo. Para comprobar las reglas (no deja datos):
 
 ```bash
-psql -U postgres -d biin -f database/schema/001_esquema.sql -f database/schema/002_ampliaciones_mvp.sql -f database/triggers/001_reglas.sql -f database/seed/001_catalogos.sql
+psql -U postgres -d biin -f database/pruebas/001_reglas.sql
 ```
 
-**2. Backend.** Copiar `backend/src/Biin.Api/appsettings.Development.example.json` como `appsettings.Development.json` (no se sube a Git) y poner la contraseña de PostgreSQL y una clave JWT de 32 caracteres o más.
+**3. Backend.**
 
 ```bash
 dotnet run --project backend/src/Biin.Api --urls http://localhost:5080
@@ -57,7 +61,7 @@ dotnet run --project backend/src/Biin.Api --urls http://localhost:5080
 
 Comprobar en http://localhost:5080/api/salud que diga `"baseDeDatos": "ok"`. La especificación OpenAPI está en `/openapi/v1.json`.
 
-**3. Frontend.** En otra terminal:
+**4. Frontend.** En otra terminal:
 
 ```bash
 npm install --prefix frontend
