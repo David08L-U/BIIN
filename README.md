@@ -63,6 +63,18 @@ pwsh ./database/crear_usuario.ps1 -Correo tu@correo.com -Nombre "Tu Nombre" -Rol
 
 El mismo script crea operadores (`-Rol operador -Rutas CODIGO1,CODIGO2`) y colaboradores.
 
+**Datos de demostración (Homún).** Para programar y probar sin esperar los datos validados:
+
+```bash
+pwsh ./database/cargar_demo.ps1
+```
+
+Carga la ruta Mérida → Kanasín → Acanceh → Cuzamá → Homún y su regreso, horarios, tarifas, salidas de 7 días, un cenote, una iglesia, una cocina económica, una vaquería, un concierto cancelado y un recorrido sugerido. **Todo es ficticio y lleva `[DEMO]`**; se quita con `-Borrar`. Para probar el reporte de cupo, crea un operador de la demo:
+
+```bash
+pwsh ./database/crear_usuario.ps1 -Correo operador@biin.test -Nombre "Operador Demo" -Rol operador -Rutas DEMO-MER-HOM,DEMO-HOM-MER
+```
+
 **Respaldos:** `pwsh ./database/respaldar_bd.ps1` guarda un `.dump` en `database/backups/` (no se sube a Git) y `pwsh ./database/restaurar_bd.ps1` carga el más reciente.
 
 **Pruebas de la base** (no dejan datos):

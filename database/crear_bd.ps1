@@ -7,11 +7,13 @@
     el usuario de la API definido en ConnectionStrings:Biin (biin_app).
     Con -Recrear borra la base y la crea de nuevo (se pierden los datos).
 
+    Con -Demo carga además los datos de demostración de Homún.
+
 .EXAMPLE
     ./database/crear_bd.ps1
-    ./database/crear_bd.ps1 -Recrear
+    ./database/crear_bd.ps1 -Recrear -Demo
 #>
-param([switch]$Recrear)
+param([switch]$Recrear, [switch]$Demo)
 
 . (Join-Path $PSScriptRoot '_comun.ps1')
 
@@ -62,3 +64,7 @@ else {
 
 $tablas = Invoke-Psql $admin $base @('-tAc', "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'")
 Write-Host "Listo: la base '$base' tiene $tablas tablas."
+
+if ($Demo) {
+    & (Join-Path $PSScriptRoot 'cargar_demo.ps1')
+}

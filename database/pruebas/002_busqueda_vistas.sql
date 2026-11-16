@@ -6,7 +6,7 @@ BEGIN;
 -- Datos de prueba ficticios (Homún como ejemplo); se deshacen al final
 INSERT INTO usuarios (id_usuario, nombre, correo, hash_contrasena)
 VALUES (9101, 'Operador Prueba', 'op.vistas@prueba.test', 'x');
-INSERT INTO municipios (id_municipio, codigo, nombre) VALUES (9101, 'T36', 'Homún'), (9102, 'T50', 'Mérida');
+INSERT INTO municipios (id_municipio, codigo, nombre) VALUES (9101, 'T36', 'Homún (prueba)'), (9102, 'T50', 'Mérida (prueba)');
 INSERT INTO localidades (id_localidad, id_municipio, nombre) VALUES (9101, 9101, 'Homún'), (9102, 9102, 'Mérida');
 INSERT INTO ubicaciones (id_ubicacion, id_localidad, latitud, longitud)
 VALUES (9101, 9102, 20.967, -89.623), (9102, 9101, 20.739, -89.285), (9103, 9101, 20.740, -89.280);
@@ -27,15 +27,15 @@ CREATE TEMP TABLE resultados (caso text, ok boolean, detalle text) ON COMMIT DRO
 -- Búsqueda
 INSERT INTO resultados
 SELECT 'Buscar "homun" encuentra Homún', count(*) = 1, string_agg(nombre, ', ')
-FROM localidades WHERE f_normalizar(nombre) LIKE '%' || f_normalizar('homun') || '%';
+FROM localidades WHERE id_localidad IN (9101, 9102) AND f_normalizar(nombre) LIKE '%' || f_normalizar('homun') || '%';
 
 INSERT INTO resultados
 SELECT 'Buscar "MERIDA" encuentra Mérida', count(*) = 1, string_agg(nombre, ', ')
-FROM localidades WHERE f_normalizar(nombre) LIKE '%' || f_normalizar('MERIDA') || '%';
+FROM localidades WHERE id_localidad IN (9101, 9102) AND f_normalizar(nombre) LIKE '%' || f_normalizar('MERIDA') || '%';
 
 INSERT INTO resultados
 SELECT 'Buscar con error "omun" sugiere Homún primero', nombre = 'Homún', nombre
-FROM localidades ORDER BY similarity(f_normalizar(nombre), f_normalizar('omun')) DESC LIMIT 1;
+FROM localidades WHERE id_localidad IN (9101, 9102) ORDER BY similarity(f_normalizar(nombre), f_normalizar('omun')) DESC LIMIT 1;
 
 -- v_recursos_publicados
 INSERT INTO resultados
@@ -43,7 +43,7 @@ SELECT 'Solo muestra lo publicado', count(*) = 2, string_agg(titulo, ', ' ORDER 
 FROM v_recursos_publicados WHERE id_recurso BETWEEN 9101 AND 9103;
 
 INSERT INTO resultados
-SELECT 'La ruta toma el municipio de su primera parada', municipio = 'Mérida', municipio
+SELECT 'La ruta toma el municipio de su primera parada', municipio = 'Mérida (prueba)', municipio
 FROM v_recursos_publicados WHERE id_recurso = 9101;
 
 -- v_paradas_ruta

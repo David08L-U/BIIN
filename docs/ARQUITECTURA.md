@@ -310,7 +310,8 @@ Los usuarios de la aplicación se crean desde la API (registro, siempre como via
 
 | Script | Qué hace |
 |---|---|
-| `crear_bd.ps1 [-Recrear]` | Crea la base completa |
+| `crear_bd.ps1 [-Recrear] [-Demo]` | Crea la base completa; con `-Demo` carga también la demo |
+| `cargar_demo.ps1 [-Borrar]` | Carga o borra los datos de demostración de Homún |
 | `crear_usuario.ps1 -Correo -Nombre -Rol [-Rutas]` | Crea un usuario con rol; pide la contraseña en pantalla |
 | `respaldar_bd.ps1` | Respaldo `.dump` en `database/backups/` (paquete 8.2.4) |
 | `restaurar_bd.ps1 [-Archivo]` | Restaura un respaldo; pide confirmación |
@@ -318,6 +319,22 @@ Los usuarios de la aplicación se crean desde la API (registro, siempre como via
 | `pruebas/002_busqueda_vistas.sql` | 9 pruebas de búsqueda y vistas |
 
 Todos leen las conexiones de `appsettings.Development.json`; ninguna contraseña va en el repositorio ni en la línea de comandos.
+
+### 4.13 Datos de demostración
+
+`database/seed/demo/001_homun.sql` carga datos **ficticios** para desarrollo, con Homún como ejemplo. Solo son reales los nombres de los municipios y las coordenadas aproximadas de sus centros; rutas, horarios, tarifas, unidades, negocios, lugares y eventos son inventados.
+
+| Qué | Contenido |
+|---|---|
+| Municipios | Mérida, Kanasín, Acanceh, Cuzamá y Homún, con su cabecera (se conservan al borrar la demo) |
+| Rutas | `DEMO-MER-HOM` (5 paradas) y `DEMO-HOM-MER`, con trazo, horarios diarios y 7 tarifas por tramo |
+| Salidas | Hoy y los próximos 6 días, generadas de los horarios, con unidades `DEMO-COMBI-01/02` |
+| Lugares | Un cenote con horario y costo, una iglesia y un cenote **pendiente** que no debe verse en público |
+| Negocio | Una cocina económica con horario y precios |
+| Eventos | Una vaquería el próximo sábado y un concierto **cancelado** |
+| Recorrido | «Un día de cenotes en Homún» con 5 etapas (CU-13) |
+
+Reglas para quien agregue datos demo: título con `[DEMO]`, códigos con `DEMO-`, autor `demo@biin.test` (cuenta inactiva sin acceso), y que `999_borrar_demo.sql` los pueda quitar. Las salidas se fijan al día de la carga: si ya pasaron, borrar y volver a cargar.
 
 ## 5. Diagramas de clases (Unidad 2)
 
