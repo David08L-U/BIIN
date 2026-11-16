@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Biin.Api/Biin.Api.csproj" />
+    <Project Path="src/Biin.Application/Biin.Application.csproj" />
+    <Project Path="src/Biin.Domain/Biin.Domain.csproj" />
+    <Project Path="src/Biin.Infrastructure/Biin.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Biin.IntegrationTests/Biin.IntegrationTests.csproj" />
+    <Project Path="tests/Biin.UnitTests/Biin.UnitTests.csproj" />
+  </Folder>
+</Solution>

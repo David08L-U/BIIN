@@ -29,10 +29,81 @@ Una **aplicación web progresiva (PWA)** para planear viajes entre municipios de
 
 | | |
 |---|---|
-| **Etapa** | Cascada — Diseño (actividades 4–6) |
+| **Etapa** | Programación del MVP completo — **entrega funcionando el 3 dic 2026** (las fechas de sprints de Notion son de Estructura de Datos) |
+| **Hecho** | Esquema SQL (30 tablas, triggers, catálogos) · backend por capas con registro/login JWT · frontend con rutas, sesión y mapa |
 | **Hitos cerrados** | H1 Planeación · H2 Investigación de usuario · H3 Diagramas UML · H4 Prototipo de alta fidelidad |
 | **Próximos** | H5 Validación con stakeholders (20 nov 2026) · H6 Modelo de BD aprobado (9 dic 2026) · **H7 Arquitectura y repositorio (16 dic 2026), al cierre del Sprint 1** |
 | **Última actualización** | 11 nov 2026 |
+
+## Cómo ejecutar
+
+**Requisitos:** .NET SDK 10, Node.js 22 o superior, PostgreSQL 16 o superior.
+
+**1. Configuración local.** Copiar `backend/src/Biin.Api/appsettings.Development.example.json` como `appsettings.Development.json` y llenar ahí:
+
+| Clave | Qué poner |
+|---|---|
+| `ConnectionStrings:BiinAdmin` | La contraseña de `postgres`. Solo la usan los scripts de `database/` |
+| `ConnectionStrings:Biin` | Una contraseña inventada para `biin_app`, el usuario con el que se conecta la API. El script lo crea con esa contraseña |
+| `Jwt:Clave` | Una clave aleatoria de 32 caracteres o más |
+
+Ese archivo no se sube a Git. **La plantilla `.example` nunca lleva datos reales.**
+
+**2. Base de datos.** Crea la base `biin`, las tablas, la búsqueda, las vistas, los triggers, los catálogos y el usuario `biin_app`.
+
+```bash
+pwsh ./database/crear_bd.ps1
+```
+
+Con `-Recrear` borra la base y la crea de nuevo. Después crea el primer administrador; la contraseña se pide en pantalla:
+
+```bash
+pwsh ./database/crear_usuario.ps1 -Correo tu@correo.com -Nombre "Tu Nombre" -Rol administrador
+```
+
+El mismo script crea operadores (`-Rol operador -Rutas CODIGO1,CODIGO2`) y colaboradores.
+
+**Datos de demostración (Homún).** Para programar y probar sin esperar los datos validados:
+
+```bash
+pwsh ./database/cargar_demo.ps1
+```
+
+Carga la ruta Mérida → Kanasín → Acanceh → Cuzamá → Homún y su regreso, horarios, tarifas, salidas de 7 días, un cenote, una iglesia, una cocina económica, una vaquería, un concierto cancelado y un recorrido sugerido. **Todo es ficticio y lleva `[DEMO]`**; se quita con `-Borrar`. Para probar el reporte de cupo, crea un operador de la demo:
+
+```bash
+pwsh ./database/crear_usuario.ps1 -Correo operador@biin.test -Nombre "Operador Demo" -Rol operador -Rutas DEMO-MER-HOM,DEMO-HOM-MER
+```
+
+**Respaldos:** `pwsh ./database/respaldar_bd.ps1` guarda un `.dump` en `database/backups/` (no se sube a Git) y `pwsh ./database/restaurar_bd.ps1` carga el más reciente.
+
+**Pruebas de la base** (no dejan datos):
+
+```bash
+psql -U postgres -d biin -f database/pruebas/001_reglas.sql -f database/pruebas/002_busqueda_vistas.sql
+```
+
+**3. Backend.**
+
+```bash
+dotnet run --project backend/src/Biin.Api --urls http://localhost:5080
+```
+
+Comprobar en http://localhost:5080/api/salud que diga `"baseDeDatos": "ok"`. La especificación OpenAPI está en `/openapi/v1.json`.
+
+**4. Frontend.** En otra terminal:
+
+```bash
+npm install --prefix frontend
+```
+
+```bash
+npm run dev --prefix frontend
+```
+
+Abrir http://localhost:5173. Las llamadas a `/api` se reenvían al backend.
+
+**Pruebas:** `dotnet test backend/Biin.slnx` y `npm test --prefix frontend`.
 
 ## Documentación
 

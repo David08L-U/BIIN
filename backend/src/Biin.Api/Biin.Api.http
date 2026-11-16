@@ -1,0 +1,27 @@
+@api = http://localhost:5080
+
+### Estado de la API y de la base de datos
+GET {{api}}/api/salud
+
+### Registrar cuenta (CU-01)
+POST {{api}}/api/auth/registro
+Content-Type: application/json
+
+{
+  "nombre": "Usuario de prueba",
+  "correo": "prueba@biin.test",
+  "contrasena": "Prueba1234"
+}
+
+### Iniciar sesión (CU-01)
+POST {{api}}/api/auth/login
+Content-Type: application/json
+
+{
+  "correo": "prueba@biin.test",
+  "contrasena": "Prueba1234"
+}
+
+### Usuario actual (pegar el token del login)
+GET {{api}}/api/auth/yo
+Authorization: Bearer PEGAR_TOKEN
