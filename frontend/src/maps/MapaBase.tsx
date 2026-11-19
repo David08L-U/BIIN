@@ -1,24 +1,9 @@
-import type { ReactNode } from 'react'
+import { useState,type ReactNode } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import type { LatLngExpression } from 'leaflet'
-import { CENTRO_YUCATAN } from './constantes'
-
-interface MapaBaseProps {
-  centro?: LatLngExpression
-  zoom?: number
-  alto?: string
-  children?: ReactNode
-}
-
-/** Mapa de OpenStreetMap que comparten todos los módulos. */
-export default function MapaBase({ centro = CENTRO_YUCATAN, zoom = 9, alto = '60vh', children }: MapaBaseProps) {
-  return (
-    <MapContainer center={centro} zoom={zoom} style={{ height: alto, width: '100%' }} scrollWheelZoom>
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      {children}
-    </MapContainer>
-  )
+import ControlesMapa from './ControlesMapa'
+interface MapaBaseProps{centro?:LatLngExpression;zoom?:number;alto?:string;children?:ReactNode;controles?:boolean}
+export default function MapaBase({centro=[20.966,-89.62],zoom=14,alto='100%',children,controles=true}:MapaBaseProps){
+ const [fallo,setFallo]=useState(false)
+ return <div className="mapa-base" style={{height:alto}}><MapContainer center={centro} zoom={zoom} style={{height:'100%',width:'100%'}} scrollWheelZoom={false} zoomControl={false}><TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" eventHandlers={{tileerror:()=>setFallo(true)}}/>{children}{controles&&<ControlesMapa/>}</MapContainer>{fallo&&<div className="mapa-fallo" role="status">No se pudo cargar parte del mapa. Revisa tu conexión; los datos de la ruta siguen disponibles.</div>}</div>
 }
