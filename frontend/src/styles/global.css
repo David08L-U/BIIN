@@ -1,17 +1,25 @@
-/* Estilos globales. Diseño primero para 360 px (RNF01) y contraste 4.5:1 (RNF06). */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+/* Base visual tomada del HTML de Melanie. RNF01 / RNF02. */
 
 :root {
-  --color-primario: #0f5c55;
-  --color-primario-oscuro: #0a403b;
-  --color-fondo: #f7f7f4;
+  --color-primario: #2b1810;
+  --color-primario-oscuro: #1a0f09;
+  --color-fondo: #fff8f1;
   --color-superficie: #ffffff;
-  --color-texto: #1d2321;
-  --color-texto-suave: #4a524f;
-  --color-borde: #c9cfcc;
-  --color-error: #b3261e;
+  --color-texto: #1e1b17;
+  --color-texto-suave: #4f4440;
+  --color-borde: #e8e1da;
+  --color-error: #ba1a1a;
+
+  --color-secundario: #855400;
+  --color-acento: #fdae3f;
+  --color-superficie-suave: #faf3eb;
+
   --radio: 8px;
   --espacio: 16px;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  font-family: 'Plus Jakarta Sans', sans-serif;
   line-height: 1.5;
   color: var(--color-texto);
   background: var(--color-fondo);
@@ -26,6 +34,13 @@
 body {
   margin: 0;
   min-width: 320px;
+}
+
+h1,
+h2,
+h3,
+.marca {
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 a {
