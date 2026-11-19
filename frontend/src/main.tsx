@@ -1,3 +1,4 @@
+import { registrarPwa } from './offline/registrarPwa'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import 'leaflet/dist/leaflet.css'
@@ -9,3 +10,5 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 )
+
+registrarPwa()
