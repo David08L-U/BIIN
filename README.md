@@ -35,6 +35,10 @@ Una **aplicación web progresiva (PWA)** para planear viajes entre municipios de
 | **Próximos** | H5 Validación con stakeholders (20 nov 2026) · H6 Modelo de BD aprobado (9 dic 2026) · **H7 Arquitectura y repositorio (16 dic 2026), al cierre del Sprint 1** |
 | **Última actualización** | 11 nov 2026 |
 
+## Frontend basado en el prototipo
+
+Nueva implementación de pantallas, navegación y borradores locales en React + TypeScript. Incluye los cinco destinos del prototipo y distingue siempre los datos demostrativos de información validada. Consulta [guía del frontend](docs/FRONTEND_PROTOTIPO.md) para ejecutarlo, probarlo y conocer las integraciones pendientes.
+
 ## Cómo ejecutar
 
 **Requisitos:** .NET SDK 10, Node.js 22 o superior, PostgreSQL 16 o superior.
