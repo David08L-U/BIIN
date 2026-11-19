@@ -1,10 +1,30 @@
 @import url('/assets/fonts.css');
 :root {
- --color-primario:#2b1810; --color-primario-oscuro:#130b07;
- --color-fondo:#fff8f1; --color-superficie:#fff; --color-texto:#1e1b17;
- --color-texto-suave:#655954; --color-borde:#e8e1da; --color-error:#a52a22;
- --ambar:#855400; --ambar-claro:#ffddb7; --crema:#faf3eb; --radio:16px; --espacio:20px;
- font-family:'Plus Jakarta Sans',sans-serif; line-height:1.5; color:var(--color-texto); background:var(--color-fondo);
- font-synthesis:none; text-rendering:optimizeLegibility;
+  --color-primario: #2b1810;
+  --color-primario-oscuro: #130b07;
+  --color-fondo: #fff8f1;
+  --color-superficie: #fff;
+  --color-texto: #1e1b17;
+  --color-texto-suave: #655954;
+  --color-borde: #e8e1da;
+  --color-error: #a52a22;
+  --ambar: #855400;
+  --ambar-claro: #ffddb7;
+  --crema: #faf3eb;
+  --radio: 16px;
+  --espacio: 20px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  line-height: 1.5;
+  color: var(--color-texto);
+  background: var(--color-fondo);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
 }
-h1,h2,h3,.marca {font-family:'Space Grotesk',sans-serif;line-height:1.2;letter-spacing:-.03em}
+h1,
+h2,
+h3,
+.marca {
+  font-family: 'Space Grotesk', sans-serif;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}

@@ -1,7 +1,69 @@
 import CabeceraPagina from '../../../components/ui/CabeceraPagina'
 import { useAlmacenLocal } from '../../../hooks/useAlmacenLocal'
-const esBooleano=(x:unknown):x is boolean=>typeof x==='boolean'
-export default function AyudaPage(){
- const [contraste,setContraste,error]=useAlmacenLocal('biin.contraste',false,esBooleano)
- return <section className="pagina ayuda-page"><CabeceraPagina titulo="Ayuda y accesibilidad" volver="/perfil"/><div className="tarjeta"><h2>Tu forma de explorar</h2><label className="preferencia"><span>Mayor contraste de texto y bordes</span><input type="checkbox" checked={contraste} onChange={e=>{if(setContraste(e.target.checked))document.documentElement.dataset.contraste=String(e.target.checked)}}/></label>{error&&<p role="alert">{error}</p>}<p>La interfaz respeta la preferencia del sistema para reducir animaciones. Todos los controles pueden utilizarse con teclado.</p></div><div className="tarjeta"><h2>Preguntas frecuentes</h2><details><summary>¿Puedo reservar o pagar un asiento?</summary><p>Esta versión solo muestra el prototipo. No realiza reservas ni pagos. Confirma disponibilidad directamente con el operador.</p></details><details><summary>¿Son reales las tarifas y horarios?</summary><p>Son valores de demostración tomados de las pantallas del equipo y están pendientes de validación.</p></details><details><summary>¿Dónde quedan mis planes?</summary><p>En el almacenamiento de este navegador. Borrar los datos del sitio elimina tus borradores y favoritos. Puedes descargar cada itinerario como JSON.</p></details><details><summary>¿Qué funciona sin conexión?</summary><p>Después de abrir la versión compilada con conexión, la interfaz queda disponible offline. Mapas, inicio de sesión y registro necesitan internet y el servidor. No se descargan mapas completos.</p></details></div></section>
+const esBooleano = (x: unknown): x is boolean => typeof x === 'boolean'
+export default function AyudaPage() {
+  const [contraste, setContraste, error] = useAlmacenLocal(
+    'biin.contraste',
+    false,
+    esBooleano,
+  )
+  return (
+    <section className="pagina ayuda-page">
+      <CabeceraPagina titulo="Ayuda y accesibilidad" volver="/perfil" />
+      <div className="tarjeta">
+        <h2>Tu forma de explorar</h2>
+        <label className="preferencia">
+          <span>Mayor contraste de texto y bordes</span>
+          <input
+            type="checkbox"
+            checked={contraste}
+            onChange={(e) => {
+              if (setContraste(e.target.checked))
+                document.documentElement.dataset.contraste = String(
+                  e.target.checked,
+                )
+            }}
+          />
+        </label>
+        {error && <p role="alert">{error}</p>}
+        <p>
+          La interfaz respeta la preferencia del sistema para reducir
+          animaciones. Todos los controles pueden utilizarse con teclado.
+        </p>
+      </div>
+      <div className="tarjeta">
+        <h2>Preguntas frecuentes</h2>
+        <details>
+          <summary>¿Puedo reservar o pagar un asiento?</summary>
+          <p>
+            Esta versión solo muestra el prototipo. No realiza reservas ni
+            pagos. Confirma disponibilidad directamente con el operador.
+          </p>
+        </details>
+        <details>
+          <summary>¿Son reales las tarifas y horarios?</summary>
+          <p>
+            Son valores de demostración tomados de las pantallas del equipo y
+            están pendientes de validación.
+          </p>
+        </details>
+        <details>
+          <summary>¿Dónde quedan mis planes?</summary>
+          <p>
+            En el almacenamiento de este navegador. Borrar los datos del sitio
+            elimina tus borradores y favoritos. Puedes descargar cada itinerario
+            como JSON.
+          </p>
+        </details>
+        <details>
+          <summary>¿Qué funciona sin conexión?</summary>
+          <p>
+            Después de abrir la versión compilada con conexión, la interfaz
+            queda disponible offline. Mapas, inicio de sesión y registro
+            necesitan internet y el servidor. No se descargan mapas completos.
+          </p>
+        </details>
+      </div>
+    </section>
+  )
 }

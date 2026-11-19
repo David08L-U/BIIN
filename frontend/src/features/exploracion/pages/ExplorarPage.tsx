@@ -1,12 +1,110 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { actividades,destinos } from '../../../services/catalogo'
+import { actividades, destinos } from '../../../services/catalogo'
 import { normalizar } from '../../../utils/formato'
 import TarjetaActividad from '../components/TarjetaActividad'
 import EstadoVacio from '../../../components/ui/EstadoVacio'
 import CabeceraPagina from '../../../components/ui/CabeceraPagina'
-export default function ExplorarPage(){
- const [destino,setDestino]=useState('todos'),[categoria,setCategoria]=useState('Todas'),[q,setQ]=useState('')
- const lista=actividades.filter(a=>(destino==='todos'||a.destinoId===destino)&&(categoria==='Todas'||a.categoria===categoria)&&normalizar(`${a.titulo} ${a.descripcion}`).includes(normalizar(q)))
- return <section className="pagina"><CabeceraPagina titulo="Explorar Yucatán" subtitulo="HISTORIAS, SABORES Y LUGARES"/><div className="titulo-bloque"><h2>Lo mejor está en el camino.</h2><p>Descubre las experiencias de nuestro prototipo y planea tu próxima visita.</p></div><div className="filtros-explorar"><div className="campo"><label htmlFor="localidad">Localidad</label><select id="localidad" value={destino} onChange={e=>setDestino(e.target.value)}><option value="todos">Todas las localidades</option>{destinos.map(d=><option key={d.id} value={d.id}>{d.nombre}</option>)}</select></div><div className="campo"><label htmlFor="buscar-lugar">Buscar experiencia</label><input id="buscar-lugar" placeholder="Cenote, mercado, taller…" value={q} onChange={e=>setQ(e.target.value)}/></div></div><div className="chips" aria-label="Interés">{['Todas','Cultura','Gastronomía','Cenotes','Talleres','Eventos'].map(c=><button className={`chip ${categoria===c?'activo':''}`} key={c} aria-pressed={categoria===c} onClick={()=>setCategoria(c)}>{c}</button>)}</div><p className="muted" role="status">{lista.length} experiencias del prototipo</p><div className="grid-experiencias">{lista.map(a=><div className="experiencia-item" key={a.id}><TarjetaActividad actividad={a}/><Link className="experiencia-enlace" to={`/personalizar/${a.destinoId}`}>Planear visita a {destinos.find(d=>d.id===a.destinoId)?.nombre}</Link></div>)}</div>{!lista.length&&<EstadoVacio titulo={categoria==='Eventos'?'Aún no hay eventos publicados':'No hay experiencias con estos filtros'}><p>{categoria==='Eventos'?'Los eventos se mostrarán cuando exista información validada con fechas y estado.':'Cambia la localidad, el interés o el texto de búsqueda.'}</p></EstadoVacio>}</section>
+export default function ExplorarPage() {
+  const [destino, setDestino] = useState('todos'),
+    [categoria, setCategoria] = useState('Todas'),
+    [q, setQ] = useState('')
+  const lista = actividades.filter(
+    (a) =>
+      (destino === 'todos' || a.destinoId === destino) &&
+      (categoria === 'Todas' || a.categoria === categoria) &&
+      normalizar(`${a.titulo} ${a.descripcion}`).includes(normalizar(q)),
+  )
+  return (
+    <section className="pagina">
+      <CabeceraPagina
+        titulo="Explorar Yucatán"
+        subtitulo="HISTORIAS, SABORES Y LUGARES"
+      />
+      <div className="titulo-bloque">
+        <h2>Lo mejor está en el camino.</h2>
+        <p>
+          Descubre las experiencias de nuestro prototipo y planea tu próxima
+          visita.
+        </p>
+      </div>
+      <div className="filtros-explorar">
+        <div className="campo">
+          <label htmlFor="localidad">Localidad</label>
+          <select
+            id="localidad"
+            value={destino}
+            onChange={(e) => setDestino(e.target.value)}
+          >
+            <option value="todos">Todas las localidades</option>
+            {destinos.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="campo">
+          <label htmlFor="buscar-lugar">Buscar experiencia</label>
+          <input
+            id="buscar-lugar"
+            placeholder="Cenote, mercado, taller…"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+          />
+        </div>
+      </div>
+      <div className="chips" aria-label="Interés">
+        {[
+          'Todas',
+          'Cultura',
+          'Gastronomía',
+          'Cenotes',
+          'Talleres',
+          'Eventos',
+        ].map((c) => (
+          <button
+            className={`chip ${categoria === c ? 'activo' : ''}`}
+            key={c}
+            aria-pressed={categoria === c}
+            onClick={() => setCategoria(c)}
+          >
+            {c}
+          </button>
+        ))}
+      </div>
+      <p className="muted" role="status">
+        {lista.length} experiencias del prototipo
+      </p>
+      <div className="grid-experiencias">
+        {lista.map((a) => (
+          <div className="experiencia-item" key={a.id}>
+            <TarjetaActividad actividad={a} />
+            <Link
+              className="experiencia-enlace"
+              to={`/personalizar/${a.destinoId}`}
+            >
+              Planear visita a{' '}
+              {destinos.find((d) => d.id === a.destinoId)?.nombre}
+            </Link>
+          </div>
+        ))}
+      </div>
+      {!lista.length && (
+        <EstadoVacio
+          titulo={
+            categoria === 'Eventos'
+              ? 'Aún no hay eventos publicados'
+              : 'No hay experiencias con estos filtros'
+          }
+        >
+          <p>
+            {categoria === 'Eventos'
+              ? 'Los eventos se mostrarán cuando exista información validada con fechas y estado.'
+              : 'Cambia la localidad, el interés o el texto de búsqueda.'}
+          </p>
+        </EstadoVacio>
+      )}
+    </section>
+  )
 }

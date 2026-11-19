@@ -4,4 +4,5 @@ import { actividadesDemo } from '../features/exploracion/demo/actividades'
 export const modoDemo = import.meta.env.VITE_CATALOGO_DEMO !== 'false'
 export const destinos = modoDemo ? destinosDemo : []
 export const actividades = modoDemo ? actividadesDemo : []
-export const buscarDestino = (id: string | undefined) => destinos.find(d=>d.id===id)
+export const buscarDestino = (id: string | undefined) =>
+  destinos.find((d) => d.id === id)
