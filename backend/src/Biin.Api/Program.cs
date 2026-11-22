@@ -10,6 +10,7 @@ const string PoliticaFrontend = "frontend";
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAutenticacionJwt(builder.Configuration);
+builder.Services.AddRateLimitingBiin(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -30,6 +31,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors(PoliticaFrontend);
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 

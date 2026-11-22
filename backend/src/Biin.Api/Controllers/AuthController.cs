@@ -1,8 +1,10 @@
+using Biin.Api.Configuration;
 using Biin.Api.Extensions;
 using Biin.Application.DTOs.Auth;
 using Biin.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Biin.Api.Controllers;
 
@@ -12,8 +14,10 @@ namespace Biin.Api.Controllers;
 public class AuthController(AuthService auth) : ControllerBase
 {
     [HttpPost("registro")]
+    [EnableRateLimiting(PoliticasRateLimit.Autenticacion)]
     [ProducesResponseType<AuthResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
     public async Task<ActionResult<AuthResponse>> Registrar(RegistroRequest req, CancellationToken ct)
     {
         var respuesta = await auth.RegistrarAsync(req, ct);
@@ -21,8 +25,10 @@ public class AuthController(AuthService auth) : ControllerBase
     }
 
     [HttpPost("login")]
+    [EnableRateLimiting(PoliticasRateLimit.Autenticacion)]
     [ProducesResponseType<AuthResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
     public Task<AuthResponse> IniciarSesion(LoginRequest req, CancellationToken ct) =>
         auth.IniciarSesionAsync(req, ct);
 
