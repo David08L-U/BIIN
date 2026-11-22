@@ -1,3 +1,4 @@
+using Biin.Application.Interfaces;
 using Biin.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,6 +10,7 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddScoped<AuthService>();
+        services.AddScoped<IAutorizacionOperador, AutorizacionOperadorService>();
         return services;
     }
 }

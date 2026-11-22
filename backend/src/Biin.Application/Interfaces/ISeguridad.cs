@@ -22,3 +22,9 @@ public interface IRevocacionToken
     /// <summary>Indica si el token (jti) fue revocado antes de vencer.</summary>
     bool EstaRevocado(string jti);
 }
+
+public interface IAutorizacionOperador
+{
+    /// <summary>Indica si el usuario está autorizado para operar la ruta en operador_ruta (RF04, RNF04).</summary>
+    Task<bool> PuedeOperarRutaAsync(int idUsuario, int idRuta, CancellationToken ct = default);
+}
