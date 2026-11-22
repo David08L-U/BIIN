@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using Biin.Api.Configuration;
 using Biin.Domain.Enums;
+using Biin.Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Biin.Api.Extensions;
@@ -28,5 +30,19 @@ public static class AutorizacionExtensions
                     .AddRequirements(new OperadorDeRutaRequirement()));
 
         return services;
+    }
+
+    /// <summary>
+    /// Comprueba si el usuario autenticado puede operar la ruta indicada;
+    /// si no está autorizado lanza <see cref="AccesoDenegadoException"/> (HTTP 403).
+    /// </summary>
+    public static async Task AsegurarOperadorDeRutaAsync(
+        this IAuthorizationService autorizacion,
+        ClaimsPrincipal usuario,
+        int idRuta)
+    {
+        var resultado = await autorizacion.AuthorizeAsync(usuario, idRuta, PoliticasAutorizacion.OperadorDeRuta);
+        if (!resultado.Succeeded)
+            throw new AccesoDenegadoException("No estás autorizado para operar esta ruta.");
     }
 }

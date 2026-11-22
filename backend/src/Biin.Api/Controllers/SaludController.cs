@@ -1,4 +1,5 @@
 using Biin.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,7 @@ namespace Biin.Api.Controllers;
 /// <summary>Comprueba que la API está arriba y que llega a PostgreSQL.</summary>
 [ApiController]
 [Route("api/salud")]
+[AllowAnonymous]
 public class SaludController(BiinDbContext db) : ControllerBase
 {
     [HttpGet]
