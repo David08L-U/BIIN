@@ -26,6 +26,20 @@ Content-Type: application/json
 GET {{api}}/api/auth/yo
 Authorization: Bearer PEGAR_TOKEN
 
+### Cambiar contraseña propia (revoca el token actual) (CU-01)
+PUT {{api}}/api/auth/contrasena
+Authorization: Bearer PEGAR_TOKEN
+Content-Type: application/json
+
+{
+  "contrasenaActual": "Prueba1234",
+  "contrasenaNueva": "NuevaClave1234"
+}
+
+### Cerrar sesión (revoca el token actual) (CU-01)
+POST {{api}}/api/auth/logout
+Authorization: Bearer PEGAR_TOKEN
+
 ### Perfil completo del usuario autenticado (CU-01)
 GET {{api}}/api/usuarios/perfil
 Authorization: Bearer PEGAR_TOKEN

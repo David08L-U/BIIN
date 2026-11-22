@@ -82,6 +82,35 @@ public class AuthService(
             revocacion.Revocar(jti, expiraEnUtc.Value);
     }
 
+    public async Task CambiarContrasenaAsync(
+        int idUsuario,
+        CambiarContrasenaRequest req,
+        string? jtiActual,
+        DateTime? expiraEnUtc,
+        CancellationToken ct = default)
+    {
+        ValidacionUsuario.ValidarContrasena(req.ContrasenaNueva);
+
+        var usuario = await db.Usuarios
+            .SingleOrDefaultAsync(u => u.IdUsuario == idUsuario, ct)
+            ?? throw new NoEncontradoException("Usuario no encontrado.");
+
+        if (!usuario.Activo)
+            throw new NoAutenticadoException("La cuenta está desactivada.");
+
+        if (!hash.Verificar(req.ContrasenaActual, usuario.HashContrasena))
+            throw new ReglaNegocioException("La contraseña actual es incorrecta.");
+
+        if (req.ContrasenaNueva == req.ContrasenaActual ||
+            hash.Verificar(req.ContrasenaNueva, usuario.HashContrasena))
+            throw new ReglaNegocioException("La nueva contraseña debe ser diferente a la actual.");
+
+        usuario.HashContrasena = hash.Generar(req.ContrasenaNueva);
+        await db.SaveChangesAsync(ct);
+
+        CerrarSesion(jtiActual, expiraEnUtc);
+    }
+
     private AuthResponse CrearRespuesta(Usuario usuario, IReadOnlyList<string> roles)
     {
         var (token, expira) = tokens.Generar(usuario, roles);

@@ -55,4 +55,16 @@ public class AuthController(AuthService auth) : ControllerBase
         auth.CerrarSesion(User.Jti(), User.ExpiraEnUtc());
         return NoContent();
     }
+
+    /// <summary>Cambia la contraseña del usuario autenticado y revoca el token previo (CU-01, RNF04).</summary>
+    [Authorize]
+    [HttpPut("contrasena")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> CambiarContrasena(CambiarContrasenaRequest req, CancellationToken ct)
+    {
+        await auth.CambiarContrasenaAsync(User.IdUsuario(), req, User.Jti(), User.ExpiraEnUtc(), ct);
+        return NoContent();
+    }
 }
