@@ -61,6 +61,9 @@ public class AuthService(IAppDbContext db, IHashContrasena hash, IGeneradorToken
             .SingleOrDefaultAsync(u => u.IdUsuario == idUsuario, ct)
             ?? throw new NoEncontradoException("Usuario no encontrado.");
 
+        if (!usuario.Activo)
+            throw new NoAutenticadoException("La cuenta está desactivada.");
+
         return new UsuarioDto(usuario.IdUsuario, usuario.Nombre, usuario.Correo,
             usuario.Roles.Select(r => r.Rol.Nombre).ToList());
     }

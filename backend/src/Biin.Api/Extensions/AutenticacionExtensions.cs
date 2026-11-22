@@ -1,10 +1,12 @@
 using System.Security.Claims;
 using System.Text;
+using Biin.Application.Interfaces;
 using Biin.Domain.Enums;
 using Biin.Domain.Exceptions;
 using Biin.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
@@ -40,6 +42,52 @@ public static class AutenticacionExtensions
 
                 o.Events = new JwtBearerEvents
                 {
+                    OnTokenValidated = async context =>
+                    {
+                        var principal = context.Principal;
+                        if (principal is null)
+                        {
+                            context.Fail(new NoAutenticadoException("El token de acceso no es válido."));
+                            return;
+                        }
+
+                        var jti = principal.Jti();
+                        if (!string.IsNullOrWhiteSpace(jti))
+                        {
+                            var revocacion = context.HttpContext.RequestServices
+                                .GetRequiredService<IRevocacionToken>();
+                            if (revocacion.EstaRevocado(jti))
+                            {
+                                context.Fail(new NoAutenticadoException("La sesión fue cerrada. Inicia sesión nuevamente."));
+                                return;
+                            }
+                        }
+
+                        var sub = principal.FindFirstValue(JwtRegisteredClaimNames.Sub);
+                        if (!int.TryParse(sub, out var idUsuario))
+                        {
+                            context.Fail(new NoAutenticadoException("Token sin identificador de usuario."));
+                            return;
+                        }
+
+                        var db = context.HttpContext.RequestServices.GetRequiredService<IAppDbContext>();
+                        var activo = await db.Usuarios
+                            .AsNoTracking()
+                            .Where(u => u.IdUsuario == idUsuario)
+                            .Select(u => (bool?)u.Activo)
+                            .SingleOrDefaultAsync(context.HttpContext.RequestAborted);
+
+                        if (activo is null)
+                        {
+                            context.Fail(new NoAutenticadoException("La cuenta ya no existe."));
+                            return;
+                        }
+
+                        if (!activo.Value)
+                        {
+                            context.Fail(new NoAutenticadoException("La cuenta está desactivada."));
+                        }
+                    },
                     OnChallenge = async context =>
                     {
                         context.HandleResponse();
