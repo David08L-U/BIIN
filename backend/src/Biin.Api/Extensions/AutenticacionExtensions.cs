@@ -4,6 +4,7 @@ using Biin.Domain.Enums;
 using Biin.Domain.Exceptions;
 using Biin.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
@@ -36,11 +37,55 @@ public static class AutenticacionExtensions
                     NameClaimType = JwtRegisteredClaimNames.Name,
                     RoleClaimType = ClaimTypes.Role
                 };
+
+                o.Events = new JwtBearerEvents
+                {
+                    OnChallenge = async context =>
+                    {
+                        context.HandleResponse();
+                        if (context.Response.HasStarted)
+                            return;
+
+                        var detalle = ObtenerDetalleNoAutenticado(context);
+
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        await context.Response.WriteAsJsonAsync(new ProblemDetails
+                        {
+                            Status = StatusCodes.Status401Unauthorized,
+                            Title = "No autenticado",
+                            Detail = detalle,
+                            Instance = context.Request.Path
+                        }, options: null, contentType: "application/problem+json");
+                    },
+                    OnForbidden = async context =>
+                    {
+                        if (context.Response.HasStarted)
+                            return;
+
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        await context.Response.WriteAsJsonAsync(new ProblemDetails
+                        {
+                            Status = StatusCodes.Status403Forbidden,
+                            Title = "Acceso denegado",
+                            Detail = "No tienes permisos suficientes para realizar esta acción.",
+                            Instance = context.Request.Path
+                        }, options: null, contentType: "application/problem+json");
+                    }
+                };
             });
 
         services.AddAuthorization();
         return services;
     }
+
+    private static string ObtenerDetalleNoAutenticado(JwtBearerChallengeContext context) =>
+        context.AuthenticateFailure switch
+        {
+            NoAutenticadoException ex => ex.Message,
+            SecurityTokenExpiredException => "La sesión expiró. Inicia sesión nuevamente.",
+            not null => "El token de acceso no es válido.",
+            null => "Se requiere iniciar sesión para acceder a este recurso."
+        };
 
     /// <summary>Id del usuario autenticado, tomado del claim "sub" del token.</summary>
     public static int IdUsuario(this ClaimsPrincipal user) =>
