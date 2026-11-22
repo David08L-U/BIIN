@@ -122,7 +122,6 @@ public static class AutenticacionExtensions
                 };
             });
 
-        services.AddAuthorization();
         return services;
     }
 

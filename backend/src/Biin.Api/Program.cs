@@ -10,6 +10,7 @@ const string PoliticaFrontend = "frontend";
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAutenticacionJwt(builder.Configuration);
+builder.Services.AddAutorizacionPorRoles();
 builder.Services.AddRateLimitingBiin(builder.Configuration);
 
 builder.Services.AddControllers();
