@@ -1,5 +1,7 @@
 using System.Security.Claims;
 using System.Text;
+using Biin.Domain.Enums;
+using Biin.Domain.Exceptions;
 using Biin.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -44,5 +46,27 @@ public static class AutenticacionExtensions
     public static int IdUsuario(this ClaimsPrincipal user) =>
         int.TryParse(user.FindFirstValue(JwtRegisteredClaimNames.Sub), out var id)
             ? id
-            : throw new UnauthorizedAccessException("Token sin identificador de usuario.");
+            : throw new NoAutenticadoException("Token sin identificador de usuario.");
+
+    /// <summary>Identificador único del token (claim "jti"), usado para revocación de sesión.</summary>
+    public static string? Jti(this ClaimsPrincipal user) =>
+        user.FindFirstValue(JwtRegisteredClaimNames.Jti);
+
+    /// <summary>Fecha de expiración UTC del token (claim "exp").</summary>
+    public static DateTime? ExpiraEnUtc(this ClaimsPrincipal user) =>
+        long.TryParse(user.FindFirstValue(JwtRegisteredClaimNames.Exp), out var unixSeconds)
+            ? DateTimeOffset.FromUnixTimeSeconds(unixSeconds).UtcDateTime
+            : null;
+
+    /// <summary>Lista de roles incluidos en el token del usuario.</summary>
+    public static IReadOnlyList<string> RolesUsuario(this ClaimsPrincipal user) =>
+        user.FindAll(ClaimTypes.Role).Select(c => c.Value).Distinct(StringComparer.Ordinal).ToList();
+
+    /// <summary>Indica si el usuario cuenta con el rol indicado.</summary>
+    public static bool TieneRol(this ClaimsPrincipal user, string rol) =>
+        user.IsInRole(rol);
+
+    /// <summary>Indica si el usuario tiene el rol de administrador.</summary>
+    public static bool EsAdministrador(this ClaimsPrincipal user) =>
+        user.IsInRole(Roles.Administrador);
 }
