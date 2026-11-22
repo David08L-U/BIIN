@@ -44,4 +44,15 @@ public class AuthController(AuthService auth) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public Task<PerfilUsuarioDto> Yo(CancellationToken ct) =>
         auth.ObtenerActualAsync(User.IdUsuario(), ct);
+
+    /// <summary>Cierra la sesión revocando el token actual hasta su expiración (CU-01, RF01).</summary>
+    [Authorize]
+    [HttpPost("logout")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public IActionResult CerrarSesion()
+    {
+        auth.CerrarSesion(User.Jti(), User.ExpiraEnUtc());
+        return NoContent();
+    }
 }

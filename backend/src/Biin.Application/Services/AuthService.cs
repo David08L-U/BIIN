@@ -9,8 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Biin.Application.Services;
 
-/// <summary>Registro, inicio de sesión y datos del usuario actual (CU-01, RF01).</summary>
-public class AuthService(IAppDbContext db, IHashContrasena hash, IGeneradorToken tokens)
+/// <summary>Registro, inicio/cierre de sesión y datos del usuario actual (CU-01, RF01).</summary>
+public class AuthService(
+    IAppDbContext db,
+    IHashContrasena hash,
+    IGeneradorToken tokens,
+    IRevocacionToken revocacion)
 {
     public async Task<AuthResponse> RegistrarAsync(RegistroRequest req, CancellationToken ct = default)
     {
@@ -70,6 +74,12 @@ public class AuthService(IAppDbContext db, IHashContrasena hash, IGeneradorToken
             throw new NoAutenticadoException("La cuenta está desactivada.");
 
         return UsuariosService.MapearPerfil(usuario);
+    }
+
+    public void CerrarSesion(string? jti, DateTime? expiraEnUtc)
+    {
+        if (!string.IsNullOrWhiteSpace(jti) && expiraEnUtc.HasValue)
+            revocacion.Revocar(jti, expiraEnUtc.Value);
     }
 
     private AuthResponse CrearRespuesta(Usuario usuario, IReadOnlyList<string> roles)
