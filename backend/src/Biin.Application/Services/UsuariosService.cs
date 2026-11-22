@@ -1,5 +1,6 @@
 using Biin.Application.DTOs.Usuarios;
 using Biin.Application.Interfaces;
+using Biin.Application.Validators;
 using Biin.Domain.Entities;
 using Biin.Domain.Enums;
 using Biin.Domain.Exceptions;
@@ -32,11 +33,8 @@ public class UsuariosService(IAppDbContext db, IHashContrasena hash, IRevocacion
         if (!usuario.Activo)
             throw new NoAutenticadoException("La cuenta está desactivada.");
 
-        var nombre = req.Nombre.Trim();
-        if (nombre.Length is < 2 or > 120)
-            throw new ReglaNegocioException("El nombre debe tener entre 2 y 120 caracteres.");
-
-        var correo = req.Correo.Trim().ToLowerInvariant();
+        var nombre = ValidacionUsuario.NormalizarNombre(req.Nombre);
+        var correo = ValidacionUsuario.NormalizarCorreo(req.Correo);
         if (!string.Equals(usuario.Correo, correo, StringComparison.OrdinalIgnoreCase))
         {
             var correoEnUso = await db.Usuarios

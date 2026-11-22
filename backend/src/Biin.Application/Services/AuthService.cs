@@ -1,5 +1,6 @@
 using Biin.Application.DTOs.Auth;
 using Biin.Application.Interfaces;
+using Biin.Application.Validators;
 using Biin.Domain.Entities;
 using Biin.Domain.Enums;
 using Biin.Domain.Exceptions;
@@ -12,7 +13,9 @@ public class AuthService(IAppDbContext db, IHashContrasena hash, IGeneradorToken
 {
     public async Task<AuthResponse> RegistrarAsync(RegistroRequest req, CancellationToken ct = default)
     {
-        var correo = req.Correo.Trim().ToLowerInvariant();
+        var nombre = ValidacionUsuario.NormalizarNombre(req.Nombre);
+        var correo = ValidacionUsuario.NormalizarCorreo(req.Correo);
+        ValidacionUsuario.ValidarContrasena(req.Contrasena);
 
         if (await db.Usuarios.AnyAsync(u => u.Correo.ToLower() == correo, ct))
             throw new ConflictoException("Ya existe una cuenta con ese correo.");
@@ -22,12 +25,12 @@ public class AuthService(IAppDbContext db, IHashContrasena hash, IGeneradorToken
 
         var usuario = new Usuario
         {
-            Nombre = req.Nombre.Trim(),
+            Nombre = nombre,
             Correo = correo,
             HashContrasena = hash.Generar(req.Contrasena),
             FechaRegistro = DateTime.UtcNow
         };
-        usuario.Roles.Add(new UsuarioRol { Rol = rolViajero });
+        usuario.Roles.Add(new UsuarioRol { Usuario = usuario, Rol = rolViajero, IdRol = rolViajero.IdRol });
 
         db.Usuarios.Add(usuario);
         await db.SaveChangesAsync(ct);
@@ -50,7 +53,7 @@ public class AuthService(IAppDbContext db, IHashContrasena hash, IGeneradorToken
         if (!usuario.Activo)
             throw new NoAutenticadoException("La cuenta está desactivada.");
 
-        var roles = usuario.Roles.Select(r => r.Rol.Nombre).ToList();
+        var roles = usuario.Roles.Select(r => r.Rol.Nombre).OrderBy(n => n).ToList();
         return CrearRespuesta(usuario, roles);
     }
 

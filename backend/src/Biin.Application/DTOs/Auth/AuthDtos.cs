@@ -13,7 +13,7 @@ public record RegistroRequest(
     string Correo,
 
     [Required(ErrorMessage = "La contraseña es obligatoria.")]
-    [StringLength(100, MinimumLength = 8, ErrorMessage = "La contraseña debe tener al menos 8 caracteres.")]
+    [StringLength(72, MinimumLength = 8, ErrorMessage = "La contraseña debe tener entre 8 y 72 caracteres.")]
     string Contrasena);
 
 public record LoginRequest(
@@ -23,6 +23,14 @@ public record LoginRequest(
 
     [Required(ErrorMessage = "La contraseña es obligatoria.")]
     string Contrasena);
+
+public record CambiarContrasenaRequest(
+    [Required(ErrorMessage = "La contraseña actual es obligatoria.")]
+    string ContrasenaActual,
+
+    [Required(ErrorMessage = "La nueva contraseña es obligatoria.")]
+    [StringLength(72, MinimumLength = 8, ErrorMessage = "La nueva contraseña debe tener entre 8 y 72 caracteres.")]
+    string ContrasenaNueva);
 
 public record UsuarioDto(int IdUsuario, string Nombre, string Correo, IReadOnlyList<string> Roles);
 

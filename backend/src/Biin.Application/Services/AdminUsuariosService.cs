@@ -1,6 +1,7 @@
 using Biin.Application.DTOs.Admin;
 using Biin.Application.DTOs.Usuarios;
 using Biin.Application.Interfaces;
+using Biin.Application.Validators;
 using Biin.Domain.Entities;
 using Biin.Domain.Enums;
 using Biin.Domain.Exceptions;
@@ -82,14 +83,9 @@ public class AdminUsuariosService(IAppDbContext db, IHashContrasena hash, IBitac
         CrearUsuarioAdminRequest req,
         CancellationToken ct = default)
     {
-        var nombre = req.Nombre.Trim();
-        if (nombre.Length is < 2 or > 120)
-            throw new ReglaNegocioException("El nombre debe tener entre 2 y 120 caracteres.");
-
-        if (string.IsNullOrWhiteSpace(req.Contrasena) || req.Contrasena.Length is < 8 or > 72)
-            throw new ReglaNegocioException("La contraseña debe tener entre 8 y 72 caracteres.");
-
-        var correo = req.Correo.Trim().ToLowerInvariant();
+        var nombre = ValidacionUsuario.NormalizarNombre(req.Nombre);
+        ValidacionUsuario.ValidarContrasena(req.Contrasena);
+        var correo = ValidacionUsuario.NormalizarCorreo(req.Correo);
         if (await db.Usuarios.AnyAsync(u => u.Correo.ToLower() == correo, ct))
             throw new ConflictoException("Ya existe una cuenta con ese correo.");
 
