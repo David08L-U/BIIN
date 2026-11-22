@@ -1,4 +1,5 @@
 using Biin.Application.DTOs.Auth;
+using Biin.Application.DTOs.Usuarios;
 using Biin.Application.Interfaces;
 using Biin.Application.Validators;
 using Biin.Domain.Entities;
@@ -57,18 +58,18 @@ public class AuthService(IAppDbContext db, IHashContrasena hash, IGeneradorToken
         return CrearRespuesta(usuario, roles);
     }
 
-    public async Task<UsuarioDto> ObtenerActualAsync(int idUsuario, CancellationToken ct = default)
+    public async Task<PerfilUsuarioDto> ObtenerActualAsync(int idUsuario, CancellationToken ct = default)
     {
         var usuario = await db.Usuarios
             .Include(u => u.Roles).ThenInclude(ur => ur.Rol)
+            .Include(u => u.RutasOperadas).ThenInclude(or => or.Ruta).ThenInclude(r => r.Recurso)
             .SingleOrDefaultAsync(u => u.IdUsuario == idUsuario, ct)
             ?? throw new NoEncontradoException("Usuario no encontrado.");
 
         if (!usuario.Activo)
             throw new NoAutenticadoException("La cuenta está desactivada.");
 
-        return new UsuarioDto(usuario.IdUsuario, usuario.Nombre, usuario.Correo,
-            usuario.Roles.Select(r => r.Rol.Nombre).ToList());
+        return UsuariosService.MapearPerfil(usuario);
     }
 
     private AuthResponse CrearRespuesta(Usuario usuario, IReadOnlyList<string> roles)

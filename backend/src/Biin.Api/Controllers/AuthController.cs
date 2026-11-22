@@ -1,6 +1,7 @@
 using Biin.Api.Configuration;
 using Biin.Api.Extensions;
 using Biin.Application.DTOs.Auth;
+using Biin.Application.DTOs.Usuarios;
 using Biin.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,11 +37,11 @@ public class AuthController(AuthService auth) : ControllerBase
     public Task<AuthResponse> IniciarSesion(LoginRequest req, CancellationToken ct) =>
         auth.IniciarSesionAsync(req, ct);
 
-    /// <summary>Datos del usuario dueño del token.</summary>
+    /// <summary>Datos completos del usuario dueño del token, incluyendo roles y rutas operadas.</summary>
     [Authorize]
     [HttpGet("yo")]
-    [ProducesResponseType<UsuarioDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<PerfilUsuarioDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public Task<UsuarioDto> Yo(CancellationToken ct) =>
+    public Task<PerfilUsuarioDto> Yo(CancellationToken ct) =>
         auth.ObtenerActualAsync(User.IdUsuario(), ct);
 }
