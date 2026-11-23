@@ -27,7 +27,7 @@ export default function Layout() {
         Saltar al contenido
       </a>
 
-      {pathname !== '/' && (
+      {pathname !== '/' && pathname !== '/rutas' && (
         <header className="biin-cabecera-simple">
           <button
             className="biin-icon-button"

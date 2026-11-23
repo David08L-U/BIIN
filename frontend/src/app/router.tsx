@@ -9,6 +9,7 @@ import LoginPage from '../features/auth/pages/LoginPage'
 import RegistroPage from '../features/auth/pages/RegistroPage'
 
 import InicioPage from '../features/transporte/pages/InicioPage'
+import RutasPage from '../features/transporte/pages/RutasPage'
 
 export const router = createBrowserRouter([
   {
@@ -20,10 +21,14 @@ export const router = createBrowserRouter([
       },
       {
         path: 'rutas',
+        element: <RutasPage />,
+      },
+      {
+        path: 'rutas/:id',
         element: (
           <PaginaEnConstruccion
-            titulo="Rutas y destinos"
-            casos="CU-02, CU-03"
+            titulo="Detalle de ruta"
+            casos="CU-03"
           />
         ),
       },

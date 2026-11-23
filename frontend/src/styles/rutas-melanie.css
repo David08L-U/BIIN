@@ -1,0 +1,407 @@
+/* Catálogo basado en biin_seleccionar_destino/code.html de Melanie. */
+
+.rutas-melanie {
+  padding-bottom: 32px;
+  color: #2b1810;
+}
+
+.rutas-barra {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 12px;
+}
+
+.rutas-menu {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border: 1px solid #eae6df;
+  border-radius: 12px;
+  background: #faf3eb;
+  color: #2b1810;
+  cursor: pointer;
+}
+
+.rutas-menu .biin-icon {
+  font-size: 22px;
+}
+
+.rutas-buscador {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+}
+
+.rutas-buscador > .biin-icon {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  color: #4f4440cc;
+  font-size: 20px;
+  pointer-events: none;
+}
+
+.rutas-buscador input {
+  display: block;
+  width: 100%;
+  height: 44px;
+  min-width: 0;
+  padding: 0 38px 0 40px;
+  border: 1px solid #eae6df;
+  border-radius: 12px;
+  background: #faf3eb;
+  color: #1e1b17;
+  font: inherit;
+  font-size: 14px;
+}
+
+.rutas-buscador input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.rutas-buscador input::placeholder {
+  color: #4f444099;
+}
+
+.rutas-buscador input:focus-visible {
+  outline: 2px solid #855400;
+  outline-offset: 2px;
+  background: #fff;
+}
+
+.rutas-limpiar {
+  position: absolute;
+  top: 0;
+  right: 3px;
+  width: 34px;
+  height: 44px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #4f4440;
+  cursor: pointer;
+}
+
+.rutas-limpiar .biin-icon {
+  font-size: 18px;
+}
+
+.rutas-saludo {
+  padding: 8px 16px 16px;
+}
+
+.rutas-saludo h1 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 32px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.rutas-saludo p {
+  margin: 2px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: #4f4440;
+}
+
+.rutas-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 16px 8px;
+  scrollbar-width: thin;
+}
+
+.rutas-chips button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  min-height: 36px;
+  border: 1px solid #eae6df;
+  border-radius: 999px;
+  background: #fff;
+  color: #4f4440;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.rutas-chips .biin-icon {
+  font-size: 16px;
+}
+
+.rutas-chips button.activo {
+  background: #2b1810;
+  border-color: #2b1810;
+  color: #fff;
+  box-shadow: 0 1px 3px #2b181010;
+}
+
+.rutas-nota {
+  margin: 8px 16px 0;
+  color: #855400;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.rutas-conteo {
+  margin: 4px 16px 10px;
+  font-size: 11px;
+  color: #74655d;
+}
+
+.rutas-catalogo {
+  display: grid;
+  gap: 12px;
+  padding: 0 16px;
+}
+
+.rutas-tarjeta {
+  display: block;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #eae6df;
+  border-radius: 12px;
+  color: #2b1810;
+  text-decoration: none;
+  box-shadow: 0 2px 8px -2px #2b18100a;
+  transition: border-color 0.15s ease;
+}
+
+.rutas-tarjeta:hover {
+  border-color: #cdbda9;
+}
+
+.rutas-tarjeta-cuerpo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  min-width: 0;
+}
+
+.rutas-icono-destino {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border: 1px solid #eae6df;
+  border-radius: 8px;
+  background: #faf3eb;
+  color: #2b1810;
+}
+
+.rutas-icono-destino .biin-icon {
+  font-size: 24px;
+}
+
+.rutas-icono-destino.relleno .biin-icon {
+  font-variation-settings: 'FILL' 1;
+}
+
+.rutas-destino-textos {
+  flex: 1;
+  min-width: 0;
+}
+
+.rutas-destino-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.rutas-destino-titulo h2 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.rutas-etiqueta {
+  display: inline-flex;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid #eae6df;
+  background: #f4ede5;
+  color: #4f4440;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 15px;
+}
+
+.rutas-etiqueta.popular {
+  background: #fdf3e2;
+  color: #855400;
+  border-color: #f5dfb7;
+}
+
+.rutas-destino-textos p {
+  margin: 3px 0 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: #4f4440;
+}
+
+.rutas-ver {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid #eae6df;
+  background: #faf3eb;
+}
+
+.rutas-ver .biin-icon {
+  font-size: 18px;
+}
+
+.rutas-tarjeta:hover .rutas-ver {
+  background: #2b1810;
+  color: #fff;
+}
+
+.rutas-tarjeta-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid #eae6dfb3;
+  background: #faf3eb80;
+  padding: 10px 16px;
+}
+
+.rutas-metadata {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: #4f4440;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.rutas-metadata > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.rutas-metadata .biin-icon {
+  font-size: 14px;
+  color: #855400;
+}
+
+.rutas-precio {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  white-space: nowrap;
+  color: #4f4440;
+  font-size: 11px;
+}
+
+.rutas-precio strong {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+  color: #2b1810;
+}
+
+.rutas-terminales {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 16px 0;
+  padding: 16px;
+  border: 1px solid #eae6df;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 8px -2px #2b18100a;
+}
+
+.rutas-terminal-icono {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid #eae6df;
+  background: #faf3eb;
+}
+
+.rutas-terminal-icono .biin-icon {
+  font-size: 20px;
+}
+
+.rutas-terminales strong {
+  display: block;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+}
+
+.rutas-terminales p {
+  margin: 3px 0 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: #4f4440;
+}
+
+.rutas-vacio {
+  padding: 35px 24px;
+  text-align: center;
+}
+
+.rutas-vacio > .biin-icon {
+  color: #855400;
+  font-size: 32px;
+}
+
+.rutas-vacio h2 {
+  margin: 12px 0 8px;
+  font-size: 20px;
+}
+
+.rutas-vacio p {
+  font-size: 14px;
+  color: #4f4440;
+}
+
+.rutas-vacio button {
+  margin-top: 8px;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: #2b1810;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+@media (max-width: 370px) {
+  .rutas-metadata {
+    gap: 10px;
+    font-size: 11px;
+  }
+
+  .rutas-tarjeta-pie {
+    padding-inline: 12px;
+  }
+}
