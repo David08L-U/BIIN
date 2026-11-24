@@ -150,7 +150,7 @@ BIIN/
 
 Dentro de cada `features/<modulo>/` se usan las subcarpetas que hagan falta: `components/`, `pages/`, `hooks/` y `api/`. Se crean conforme se programe el módulo.
 
-**Implementación provisional de itinerarios de Izamal, Valladolid y Tekit (CU-09 / RF09):**
+**Implementación provisional de itinerarios de Izamal, Valladolid, Tekit y Homún (CU-09 / RF09):**
 `features/mi-viaje` separa datos demostrativos (`data/`), cálculo puro (`plan/`),
 interfaz y almacenamiento (`storage/`). Mientras no exista un servicio HTTP de
 itinerarios, guarda en `localStorage` por `idUsuario`, sin sincronización con el
@@ -164,7 +164,11 @@ compatibilidad de persistencia. Tekit añade una jornada con modalidad textil,
 borrador en URL y guardado compatible en la misma clave. El resumen y los bloques
 secuenciales se comparten con Izamal; las acciones de compartir y descarga de texto
 se comparten con Valladolid, conservando sus contratos. Ver
-[ITINERARIOS_TEKIT.md](ITINERARIOS_TEKIT.md). No cambia el modelo de BD.
+[ITINERARIOS_TEKIT.md](ITINERARIOS_TEKIT.md). Homún reutiliza las jornadas de
+Valladolid mediante un cálculo parametrizado que conserva sus contratos y usa
+`recorridoSecuencial.ts` para sumas y bloques. Conserva tipos de traslado, imágenes
+del prototipo y guardado compatible en la misma clave. Ver
+[ITINERARIOS_HOMUN.md](ITINERARIOS_HOMUN.md). No cambia el modelo de BD.
 
 ## 4. Modelo de base de datos (27 tablas, 3FN)
 
