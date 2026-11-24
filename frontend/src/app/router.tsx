@@ -15,6 +15,8 @@ import ItinerarioIzamalPage from '../features/mi-viaje/pages/ItinerarioIzamalPag
 import PersonalizarIzamalPage from '../features/mi-viaje/pages/PersonalizarIzamalPage'
 import ItinerarioValladolidPage from '../features/mi-viaje/pages/ItinerarioValladolidPage'
 import PersonalizarValladolidPage from '../features/mi-viaje/pages/PersonalizarValladolidPage'
+import ItinerarioTekitPage from '../features/mi-viaje/pages/ItinerarioTekitPage'
+import PersonalizarTekitPage from '../features/mi-viaje/pages/PersonalizarTekitPage'
 import MiViajePage from '../features/mi-viaje/pages/MiViajePage'
 
 export const router = createBrowserRouter([
@@ -48,6 +50,14 @@ export const router = createBrowserRouter([
       {
         path: 'rutas/valladolid/personalizar',
         element: <PersonalizarValladolidPage />,
+      },
+      {
+        path: 'rutas/tekit/itinerario',
+        element: <ItinerarioTekitPage />,
+      },
+      {
+        path: 'rutas/tekit/personalizar',
+        element: <PersonalizarTekitPage />,
       },
       {
         path: 'login',

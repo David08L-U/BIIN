@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import type { RutaPrototipo } from '../data/rutasPrototipo'
 import { detalleTekitPrototipo as detalle } from '../data/detalleTekitPrototipo'
-import type { OpcionVisitaTekit } from '../data/detalleTekitPrototipo'
 import { useFavoritoRuta } from '../hooks/useFavoritoRuta'
+import { useBorradorTekit } from '../../mi-viaje/hooks/useBorradorTekit'
+import { cambiarModalidadTekit, urlBorradorTekit } from '../../mi-viaje/plan/borradorTekit'
 import '../../../styles/detalle-tekit.css'
 
 function Icono({ nombre, tamano }: { nombre: string; tamano: number }) {
@@ -22,9 +23,10 @@ function ImagenTekit({ src, alt }: { src: string; alt: string }) {
 /** CU-03 / RF03: detalle propio de Tekit, con información sin confirmar. */
 export default function DetalleTekitPage({ ruta }: { ruta: RutaPrototipo }) {
   const { favorito, alternarFavorito, aviso } = useFavoritoRuta(ruta.id)
-  const [opcion, setOpcion] = useState<OpcionVisitaTekit>('medio-dia')
+  const { borrador, actualizar } = useBorradorTekit()
+  const navegar = useNavigate()
+  const opcion = borrador.configuracion.estancia
   const [mostrarReferencia, setMostrarReferencia] = useState(false)
-  const [mensaje, setMensaje] = useState('')
 
   return (
     <article className="tekit-detalle" aria-labelledby="tekit-titulo">
@@ -86,17 +88,16 @@ export default function DetalleTekitPage({ ruta }: { ruta: RutaPrototipo }) {
           <div className="tekit-foto-textos"><span>Top Destino Yucatán</span><h2 id="tekit-cultura-titulo">Descubre Tekit a tu ritmo</h2><p>Ruta Textil · Talleres de Bordado · Gastronomía Local</p></div>
         </div>
         <div className="tekit-planificador">
-          <div className="tekit-itinerario-intro"><h3>Hacer mi itinerario · Personalizado</h3><p>Selecciona tu estancia o modalidad de visita. El planificador de Tekit estará disponible en una próxima etapa.</p></div>
+          <div className="tekit-itinerario-intro"><h3>Hacer mi itinerario · Personalizado</h3><p>Selecciona tu estancia o modalidad de visita. Configura tu tiempo y elige un plan recomendado o tus propias paradas.</p></div>
           <fieldset className="tekit-estancia">
             <legend className="tekit-solo-lectores">Estancia o modalidad de visita</legend>
             <div className="tekit-estancia-opciones">
-              {detalle.opciones.map(elegible => <label key={elegible.id}><input type="radio" name="visita-tekit" value={elegible.id} checked={opcion === elegible.id} onChange={() => setOpcion(elegible.id)} /><span><strong>{elegible.nombre}</strong><small>{elegible.detalle}</small></span></label>)}
+              {detalle.opciones.map(elegible => <label key={elegible.id}><input type="radio" name="visita-tekit" value={elegible.id} checked={opcion === elegible.id} onChange={() => actualizar(cambiarModalidadTekit(borrador, elegible.id))} /><span><strong>{elegible.nombre}</strong><small>{elegible.detalle}</small></span></label>)}
             </div>
           </fieldset>
           <ul className="tekit-lugares" aria-label="Lugares destacados del prototipo">{detalle.lugares.map(lugar => <li key={lugar}><Icono nombre="check_circle" tamano={14} />{lugar}</li>)}</ul>
           <div className="tekit-acciones">
-            <button type="button" className="tekit-itinerario-boton" aria-describedby="tekit-estado-planificador" onClick={() => setMensaje('El planificador de Tekit todavía no está disponible. No se ha creado ni guardado ningún itinerario.')}><span>Hacer mi itinerario en Tekit</span><Icono nombre="arrow_forward" tamano={20} /></button>
-            <div id="tekit-estado-planificador" className="tekit-estado-planificador" role="status" aria-atomic="true">{mensaje}</div>
+            <button type="button" className="tekit-itinerario-boton" onClick={() => navegar(urlBorradorTekit(borrador.modo === 'personalizado' ? 'personalizar' : 'itinerario', borrador))}><span>Hacer mi itinerario en Tekit</span><Icono nombre="arrow_forward" tamano={20} /></button>
           </div>
         </div>
       </section>

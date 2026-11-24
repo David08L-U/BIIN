@@ -14,7 +14,7 @@ export default function Layout() {
   const esAcceso = pathname === '/login' || pathname === '/registro'
   const esFlujoIzamal = /^\/rutas\/izamal(?:\/(?:itinerario|personalizar))?\/?$/.test(pathname)
   const esDetalleValladolid = /^\/rutas\/valladolid(?:\/(?:itinerario|personalizar))?\/?$/.test(pathname)
-  const esDetalleTekit = /^\/rutas\/tekit\/?$/.test(pathname)
+  const esDetalleTekit = /^\/rutas\/tekit(?:\/(?:itinerario|personalizar))?\/?$/.test(pathname)
   const esDetalleHomun = /^\/rutas\/homun\/?$/.test(pathname)
   const esDetalleTicul = /^\/rutas\/ticul\/?$/.test(pathname)
 

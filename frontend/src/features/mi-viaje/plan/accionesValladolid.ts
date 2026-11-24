@@ -1,25 +1,10 @@
 import type { BorradorValladolid, PlanValladolid } from './itinerarioValladolid'
 import { horaLocal } from './tiempoLocal'
+import { compartirPlan, descargarTextoPlan } from './accionesPlan'
+export type { AvisoCompartir } from './accionesPlan'
 
-export interface AvisoCompartir { estado: 'compartido' | 'copiado' | 'manual' | 'cancelado'; mensaje: string }
-
-export async function compartirValladolid(url: string): Promise<AvisoCompartir> {
-  if (typeof navigator.share === 'function') {
-    try {
-      await navigator.share({ title: 'Tu Itinerario BIIN en Valladolid', text: 'Vista previa estimada del plan de visita.', url })
-      return { estado: 'compartido', mensaje: 'Vista previa compartida.' }
-    } catch (error) {
-      // DOMException puede proceder de otro contexto y no ser instanceof Error.
-      if (typeof error === 'object' && error !== null && 'name' in error && error.name === 'AbortError') return { estado: 'cancelado', mensaje: 'Se canceló compartir. El plan no ha cambiado.' }
-    }
-  }
-  try {
-    if (typeof navigator.clipboard?.writeText === 'function') {
-      await navigator.clipboard.writeText(url)
-      return { estado: 'copiado', mensaje: 'Enlace de la vista previa copiado.' }
-    }
-  } catch { /* La alternativa manual conserva el enlace sin afirmar que se copió. */ }
-  return { estado: 'manual', mensaje: 'No se pudo compartir ni copiar automáticamente. Selecciona el enlace y cópialo con el teclado o el menú del navegador.' }
+export function compartirValladolid(url: string) {
+  return compartirPlan(url, 'Tu Itinerario BIIN en Valladolid')
 }
 
 export function textoPlanValladolid(borrador: BorradorValladolid, plan: PlanValladolid): string {
@@ -37,16 +22,5 @@ export function textoPlanValladolid(borrador: BorradorValladolid, plan: PlanVall
 }
 
 export function descargarValladolid(borrador: BorradorValladolid, plan: PlanValladolid): void {
-  const archivo = new Blob([textoPlanValladolid(borrador, plan)], { type: 'text/plain;charset=utf-8' })
-  const url = URL.createObjectURL(archivo)
-  const enlace = document.createElement('a')
-  try {
-    enlace.href = url
-    enlace.download = `biin-valladolid-${borrador.configuracion.fecha}.txt`
-    document.body.append(enlace)
-    enlace.click()
-  } finally {
-    enlace.remove()
-    setTimeout(() => URL.revokeObjectURL(url), 0)
-  }
+  descargarTextoPlan(textoPlanValladolid(borrador, plan), `biin-valladolid-${borrador.configuracion.fecha}.txt`)
 }

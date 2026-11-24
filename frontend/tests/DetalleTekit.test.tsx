@@ -7,6 +7,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Layout from '../src/components/layout/Layout'
 import DetalleRutaPage from '../src/features/transporte/pages/DetalleRutaPage'
 import RutasPage from '../src/features/transporte/pages/RutasPage'
+import ItinerarioTekitPage from '../src/features/mi-viaje/pages/ItinerarioTekitPage'
+import PersonalizarTekitPage from '../src/features/mi-viaje/pages/PersonalizarTekitPage'
 
 vi.mock('../src/features/auth/useAuth', () => ({
   useAuth: () => ({ usuario: null, cargando: false, cerrarSesion: vi.fn(), tieneRol: () => false }),
@@ -21,6 +23,8 @@ function montar(url = '/rutas/tekit') {
       children: [
         { path: 'rutas', element: <RutasPage /> },
         { path: 'rutas/:id', element: <DetalleRutaPage /> },
+        { path: 'rutas/tekit/itinerario', element: <ItinerarioTekitPage /> },
+        { path: 'rutas/tekit/personalizar', element: <PersonalizarTekitPage /> },
       ],
     }],
     { initialEntries: [url] },
@@ -186,16 +190,18 @@ describe('Detalle propio de Tekit CU-03 / RF03', () => {
     expect(screen.getByRole('radio', { name: /Ruta Textil.*Compras/ })).toBeInTheDocument()
   })
 
-  it('anuncia el planificador pendiente conservando la modalidad sin navegar ni guardar', async () => {
+  it.each([['Medio día', 'medio-dia', 240], ['Día completo', 'dia-completo', 360], ['Ruta Textil', 'ruta-textil', null]])('abre el planificador desde %s y conserva su opción al volver', async (nombre, modalidad, minutos) => {
     const { router } = montar()
-    await userEvent.click(screen.getByRole('radio', { name: /Ruta Textil.*Compras/ }))
+    await userEvent.click(screen.getByRole('radio', { name: new RegExp(nombre as string) }))
     await userEvent.click(screen.getByRole('button', { name: 'Hacer mi itinerario en Tekit' }))
-    expect(screen.getByText(/El planificador de Tekit todavía no está disponible/)).toHaveAttribute('role', 'status')
-    expect(screen.getByText(/No se ha creado ni guardado ningún itinerario/)).toBeInTheDocument()
-    expect(screen.getByRole('radio', { name: /Ruta Textil.*Compras/ })).toBeChecked()
-    expect(router.state.location.pathname).toBe('/rutas/tekit')
+    expect(router.state.location.pathname).toBe('/rutas/tekit/itinerario')
+    expect(screen.getByLabelText('Estancia o modalidad')).toHaveValue(modalidad)
+    expect(screen.getByLabelText('Tiempo disponible (minutos)')).toHaveValue(minutos)
+    expect(screen.queryByRole('heading', { name: 'Paso a paso a pie' })).not.toBeInTheDocument()
     expect(localStorage.length).toBe(0)
     expect(screen.queryByRole('heading', { name: 'Tu Itinerario en Izamal' })).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('link', { name: 'Volver a detalle de ruta' }))
+    expect(screen.getByRole('radio', { name: new RegExp(nombre as string) })).toBeChecked()
   })
 
   it('abre y cierra la referencia de terminal con teclado, sin simular GPS', async () => {
