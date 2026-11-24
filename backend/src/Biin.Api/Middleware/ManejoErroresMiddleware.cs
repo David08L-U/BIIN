@@ -1,5 +1,6 @@
 using Biin.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace Biin.Api.Middleware;
@@ -15,16 +16,23 @@ public class ManejoErroresMiddleware(RequestDelegate next, ILogger<ManejoErrores
         }
         catch (Exception ex)
         {
-            var (estado, titulo) = ex switch
+            // EF Core envuelve PostgresException dentro de DbUpdateException al guardar cambios
+            var excepcionRaiz = ex is DbUpdateException { InnerException: PostgresException pgInner }
+                ? pgInner
+                : ex;
+
+            var (estado, titulo) = excepcionRaiz switch
             {
                 ReglaNegocioException => (StatusCodes.Status400BadRequest, "Regla de negocio"),
-                NoAutenticadoException => (StatusCodes.Status401Unauthorized, "No autenticado"),
+                NoAutenticadoException or UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "No autenticado"),
                 AccesoDenegadoException => (StatusCodes.Status403Forbidden, "Acceso denegado"),
                 NoEncontradoException => (StatusCodes.Status404NotFound, "No encontrado"),
                 ConflictoException => (StatusCodes.Status409Conflict, "Conflicto"),
-                // Violaciones de CHECK o triggers de la base de datos
+                // Violaciones de CHECK, UNIQUE, FK o triggers de la base de datos
                 PostgresException { SqlState: PostgresErrorCodes.CheckViolation } =>
                     (StatusCodes.Status400BadRequest, "Dato inválido"),
+                PostgresException { SqlState: PostgresErrorCodes.ForeignKeyViolation } =>
+                    (StatusCodes.Status400BadRequest, "Referencia inválida"),
                 PostgresException { SqlState: PostgresErrorCodes.UniqueViolation } =>
                     (StatusCodes.Status409Conflict, "Registro duplicado"),
                 _ => (StatusCodes.Status500InternalServerError, "Error interno")
@@ -35,7 +43,7 @@ public class ManejoErroresMiddleware(RequestDelegate next, ILogger<ManejoErrores
 
             var detalle = estado == StatusCodes.Status500InternalServerError
                 ? "Ocurrió un error inesperado."
-                : ex is PostgresException pg ? pg.MessageText : ex.Message;
+                : excepcionRaiz is PostgresException pg ? pg.MessageText : excepcionRaiz.Message;
 
             context.Response.StatusCode = estado;
             await context.Response.WriteAsJsonAsync(new ProblemDetails

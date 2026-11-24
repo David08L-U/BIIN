@@ -1,0 +1,907 @@
+{
+  "info": {
+    "_postman_id": "b11a0002-0000-4000-8000-000000000002",
+    "name": "BIIN — Auth, Perfil y Roles (CU-01 / CU-12 / RNF04)",
+    "description": "Colección de pruebas del módulo Backend de Usuarios, Autenticación y Roles de BIIN.\n\nInstrucciones:\n1. Importa esta colección y el entorno `BIIN-Local.example.postman_environment.json`.\n2. Duplica el entorno como `BIIN-Local.local.postman_environment.json` (ignorado por Git) y pon las contraseñas reales de `admin@biin.test` y `operador@biin.test` creados con `database/crear_usuario.ps1`.\n3. Ejecuta las carpetas en orden o con Collection Runner.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "0. Salud (Público / RF01)",
+      "item": [
+        {
+          "name": "Estado de API y PostgreSQL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200 OK', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('API y BD conectadas con 4 roles', () => {",
+                  "  pm.expect(body.api).to.eql('ok');",
+                  "  pm.expect(body.baseDeDatos).to.eql('ok');",
+                  "  pm.expect(body.roles).to.be.at.least(4);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/salud"
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Auth y Sesión (CU-01 / RF01 / RNF04)",
+      "item": [
+        {
+          "name": "Registro de viajero (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Crea cuenta (201) o ya existe (409 en re-ejecución)', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([201, 409]);",
+                  "});",
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.environment.set('tokenViajero', body.token);",
+                  "  pm.test('Asigna únicamente rol viajero', () => {",
+                  "    pm.expect(body.usuario.roles).to.eql(['viajero']);",
+                  "  });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Viajero Postman\",\n  \"correo\": \"{{viajeroCorreo}}\",\n  \"contrasena\": \"{{viajeroContrasena}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/registro"
+          }
+        },
+        {
+          "name": "Registro duplicado con mayúsculas (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rechaza correo duplicado con 409', () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Viajero Duplicado\",\n  \"correo\": \"VIAJERO.POSTMAN@BIIN.TEST\",\n  \"contrasena\": \"{{viajeroContrasena}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/registro"
+          }
+        },
+        {
+          "name": "Registro con contraseña inválida (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rechaza contraseña corta con 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Corto\",\n  \"correo\": \"invalido@biin.test\",\n  \"contrasena\": \"123\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/registro"
+          }
+        },
+        {
+          "name": "Login viajero exitoso (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login exitoso (200)', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.environment.set('tokenViajero', body.token);",
+                  "pm.test('Incluye token y usuario', () => {",
+                  "  pm.expect(body.token).to.be.a('string').and.not.empty;",
+                  "  pm.expect(body.usuario.roles).to.include('viajero');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{viajeroCorreo}}\",\n  \"contrasena\": \"{{viajeroContrasena}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Login con credenciales incorrectas (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 401 Unauthorized', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{viajeroCorreo}}\",\n  \"contrasena\": \"ContrasenaEquivocada\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Yo sin token (401 ProblemDetails)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 401 ProblemDetails', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.headers.get('Content-Type')).to.include('application/problem+json');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/auth/yo"
+          }
+        },
+        {
+          "name": "Yo con token de viajero (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Devuelve perfil completo (200)', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Contiene fechaRegistro, roles y rutasOperadas', () => {",
+                  "  pm.expect(body).to.have.property('fechaRegistro');",
+                  "  pm.expect(body.roles).to.include('viajero');",
+                  "  pm.expect(body.rutasOperadas).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenViajero}}" }
+            ],
+            "url": "{{baseUrl}}/api/auth/yo"
+          }
+        },
+        {
+          "name": "Cambiar contraseña con actual incorrecta (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rechaza contraseña actual incorrecta (400)', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenViajero}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contrasenaActual\": \"Equivocada123\",\n  \"contrasenaNueva\": \"{{viajeroContrasenaNueva}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/contrasena"
+          }
+        },
+        {
+          "name": "Cambiar contraseña exitoso (204 y revoca token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Cambia contraseña (204)', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenViajero}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contrasenaActual\": \"{{viajeroContrasena}}\",\n  \"contrasenaNueva\": \"{{viajeroContrasenaNueva}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/contrasena"
+          }
+        },
+        {
+          "name": "Yo con token revocado tras cambio de clave (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rechaza token previo revocado (401)', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenViajero}}" }
+            ],
+            "url": "{{baseUrl}}/api/auth/yo"
+          }
+        },
+        {
+          "name": "Login con nueva contraseña (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login con nueva clave (200)', () => pm.response.to.have.status(200));",
+                  "pm.environment.set('tokenViajero', pm.response.json().token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{viajeroCorreo}}\",\n  \"contrasena\": \"{{viajeroContrasenaNueva}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Restaurar contraseña original del viajero (204)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Restaura clave original (204)', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenViajero}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contrasenaActual\": \"{{viajeroContrasenaNueva}}\",\n  \"contrasenaNueva\": \"{{viajeroContrasena}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/contrasena"
+          }
+        },
+        {
+          "name": "Login viajero previo a logout (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login (200)', () => pm.response.to.have.status(200));",
+                  "pm.environment.set('tokenViajero', pm.response.json().token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{viajeroCorreo}}\",\n  \"contrasena\": \"{{viajeroContrasena}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Logout (204)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Cierra sesión (204)', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenViajero}}" }
+            ],
+            "url": "{{baseUrl}}/api/auth/logout"
+          }
+        },
+        {
+          "name": "Yo después de logout (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rechaza token tras logout (401)', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenViajero}}" }
+            ],
+            "url": "{{baseUrl}}/api/auth/yo"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Perfil propio (CU-01 / RF01)",
+      "item": [
+        {
+          "name": "Login viajero para pruebas de perfil (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login (200)', () => pm.response.to.have.status(200));",
+                  "pm.environment.set('tokenViajero', pm.response.json().token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{viajeroCorreo}}\",\n  \"contrasena\": \"{{viajeroContrasena}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Obtener perfil sin token (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 401 sin token', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/usuarios/perfil"
+          }
+        },
+        {
+          "name": "Obtener perfil propio (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Devuelve perfil (200)', () => pm.response.to.have.status(200));",
+                  "pm.test('No expone hashContrasena', () => {",
+                  "  pm.expect(pm.response.json()).to.not.have.property('hashContrasena');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenViajero}}" }
+            ],
+            "url": "{{baseUrl}}/api/usuarios/perfil"
+          }
+        },
+        {
+          "name": "Actualizar perfil propio (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Actualiza perfil (200)', () => pm.response.to.have.status(200));",
+                  "pm.test('Nombre actualizado y recortado', () => {",
+                  "  pm.expect(pm.response.json().nombre).to.eql('Viajero Postman Editado');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenViajero}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"  Viajero Postman Editado  \",\n  \"correo\": \"{{viajeroCorreo}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/usuarios/perfil"
+          }
+        },
+        {
+          "name": "Desactivar cuenta con contraseña errónea (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rechaza desactivación con clave errónea (400)', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenViajero}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contrasenaActual\": \"Incorrecta123\"\n}"
+            },
+            "url": "{{baseUrl}}/api/usuarios/perfil"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Matriz de Permisos por Rol (RNF04)",
+      "item": [
+        {
+          "name": "Login operador demo (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login operador (200)', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.environment.set('tokenOperador', body.token);",
+                  "pm.test('Tiene rol operador', () => pm.expect(body.usuario.roles).to.include('operador'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{operadorCorreo}}\",\n  \"contrasena\": \"{{operadorContrasena}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Admin usuarios sin token (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rechaza anónimo con 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/admin/usuarios"
+          }
+        },
+        {
+          "name": "Admin usuarios como viajero (403 ProblemDetails)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rechaza viajero con 403 ProblemDetails', () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  pm.expect(pm.response.headers.get('Content-Type')).to.include('application/problem+json');",
+                  "  pm.expect(pm.response.json().title).to.eql('Acceso denegado');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenViajero}}" }
+            ],
+            "url": "{{baseUrl}}/api/admin/usuarios"
+          }
+        },
+        {
+          "name": "Admin usuarios como operador (403 ProblemDetails)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rechaza operador con 403 ProblemDetails', () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  pm.expect(pm.response.headers.get('Content-Type')).to.include('application/problem+json');",
+                  "  pm.expect(pm.response.json().title).to.eql('Acceso denegado');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenOperador}}" }
+            ],
+            "url": "{{baseUrl}}/api/admin/usuarios"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Administración de Usuarios y Roles (CU-12 / RF12 / RNF04)",
+      "item": [
+        {
+          "name": "Login administrador (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login admin (200)', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.environment.set('tokenAdmin', body.token);",
+                  "pm.test('Tiene rol administrador', () => pm.expect(body.usuario.roles).to.include('administrador'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{adminCorreo}}\",\n  \"contrasena\": \"{{adminContrasena}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Listar catálogo de roles (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Devuelve 4 roles (200)', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().length).to.be.at.least(4);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenAdmin}}" }
+            ],
+            "url": "{{baseUrl}}/api/admin/roles"
+          }
+        },
+        {
+          "name": "Listar usuarios con filtros (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Lista paginada (200)', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('No expone hashContrasena', () => {",
+                  "  pm.expect(body.items).to.be.an('array');",
+                  "  if (body.items.length > 0) {",
+                  "    pm.expect(body.items[0]).to.not.have.property('hashContrasena');",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenAdmin}}" }
+            ],
+            "url": "{{baseUrl}}/api/admin/usuarios?pagina=1&tamano=20&activo=true"
+          }
+        },
+        {
+          "name": "Crear operador con ruta demo (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Crea usuario operador (201)', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.environment.set('idUsuarioCreado', String(body.idUsuario));",
+                  "pm.test('Conserva viajero y asigna operador', () => {",
+                  "  pm.expect(body.roles).to.include('viajero');",
+                  "  pm.expect(body.roles).to.include('operador');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenAdmin}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Operador Postman {{$timestamp}}\",\n  \"correo\": \"operador.{{$timestamp}}@biin.test\",\n  \"contrasena\": \"Operador1234\",\n  \"roles\": [\"operador\"],\n  \"idRutas\": [{{idRutaDemo}}]\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/usuarios"
+          }
+        },
+        {
+          "name": "Detalle del usuario creado (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Obtiene detalle (200)', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenAdmin}}" }
+            ],
+            "url": "{{baseUrl}}/api/admin/usuarios/{{idUsuarioCreado}}"
+          }
+        },
+        {
+          "name": "Actualizar rutas del operador (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Actualiza operador_ruta (200)', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenAdmin}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idRutas\": [{{idRutaDemo}}]\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/usuarios/{{idUsuarioCreado}}/rutas"
+          }
+        },
+        {
+          "name": "Quitar rol operador (200, limpia rutas y conserva viajero)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Actualiza roles (200)', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Conserva viajero y limpia rutasOperadas', () => {",
+                  "  pm.expect(body.roles).to.eql(['viajero']);",
+                  "  pm.expect(body.rutasOperadas).to.have.lengthOf(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenAdmin}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roles\": []\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/usuarios/{{idUsuarioCreado}}/roles"
+          }
+        },
+        {
+          "name": "Desactivar cuenta (retiro lógico, 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Desactiva usuario (200)', () => pm.response.to.have.status(200));",
+                  "pm.test('activo queda en false', () => pm.expect(pm.response.json().activo).to.eql(false));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenAdmin}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activo\": false\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/usuarios/{{idUsuarioCreado}}/estado"
+          }
+        },
+        {
+          "name": "Reactivar cuenta (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Reactiva usuario (200)', () => pm.response.to.have.status(200));",
+                  "pm.test('activo queda en true', () => pm.expect(pm.response.json().activo).to.eql(true));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenAdmin}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activo\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/usuarios/{{idUsuarioCreado}}/estado"
+          }
+        }
+      ]
+    }
+  ]
+}

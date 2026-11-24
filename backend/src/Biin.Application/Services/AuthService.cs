@@ -1,5 +1,7 @@
 using Biin.Application.DTOs.Auth;
+using Biin.Application.DTOs.Usuarios;
 using Biin.Application.Interfaces;
+using Biin.Application.Validators;
 using Biin.Domain.Entities;
 using Biin.Domain.Enums;
 using Biin.Domain.Exceptions;
@@ -7,12 +9,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Biin.Application.Services;
 
-/// <summary>Registro, inicio de sesión y datos del usuario actual (CU-01, RF01).</summary>
-public class AuthService(IAppDbContext db, IHashContrasena hash, IGeneradorToken tokens)
+/// <summary>Registro, inicio/cierre de sesión y datos del usuario actual (CU-01, RF01).</summary>
+public class AuthService(
+    IAppDbContext db,
+    IHashContrasena hash,
+    IGeneradorToken tokens,
+    IRevocacionToken revocacion)
 {
     public async Task<AuthResponse> RegistrarAsync(RegistroRequest req, CancellationToken ct = default)
     {
-        var correo = req.Correo.Trim().ToLowerInvariant();
+        var nombre = ValidacionUsuario.NormalizarNombre(req.Nombre);
+        var correo = ValidacionUsuario.NormalizarCorreo(req.Correo);
+        ValidacionUsuario.ValidarContrasena(req.Contrasena);
 
         if (await db.Usuarios.AnyAsync(u => u.Correo.ToLower() == correo, ct))
             throw new ConflictoException("Ya existe una cuenta con ese correo.");
@@ -22,12 +30,12 @@ public class AuthService(IAppDbContext db, IHashContrasena hash, IGeneradorToken
 
         var usuario = new Usuario
         {
-            Nombre = req.Nombre.Trim(),
+            Nombre = nombre,
             Correo = correo,
             HashContrasena = hash.Generar(req.Contrasena),
             FechaRegistro = DateTime.UtcNow
         };
-        usuario.Roles.Add(new UsuarioRol { Rol = rolViajero });
+        usuario.Roles.Add(new UsuarioRol { Usuario = usuario, Rol = rolViajero, IdRol = rolViajero.IdRol });
 
         db.Usuarios.Add(usuario);
         await db.SaveChangesAsync(ct);
@@ -50,19 +58,57 @@ public class AuthService(IAppDbContext db, IHashContrasena hash, IGeneradorToken
         if (!usuario.Activo)
             throw new NoAutenticadoException("La cuenta está desactivada.");
 
-        var roles = usuario.Roles.Select(r => r.Rol.Nombre).ToList();
+        var roles = usuario.Roles.Select(r => r.Rol.Nombre).OrderBy(n => n).ToList();
         return CrearRespuesta(usuario, roles);
     }
 
-    public async Task<UsuarioDto> ObtenerActualAsync(int idUsuario, CancellationToken ct = default)
+    public async Task<PerfilUsuarioDto> ObtenerActualAsync(int idUsuario, CancellationToken ct = default)
     {
         var usuario = await db.Usuarios
             .Include(u => u.Roles).ThenInclude(ur => ur.Rol)
+            .Include(u => u.RutasOperadas).ThenInclude(or => or.Ruta).ThenInclude(r => r.Recurso)
             .SingleOrDefaultAsync(u => u.IdUsuario == idUsuario, ct)
             ?? throw new NoEncontradoException("Usuario no encontrado.");
 
-        return new UsuarioDto(usuario.IdUsuario, usuario.Nombre, usuario.Correo,
-            usuario.Roles.Select(r => r.Rol.Nombre).ToList());
+        if (!usuario.Activo)
+            throw new NoAutenticadoException("La cuenta está desactivada.");
+
+        return UsuariosService.MapearPerfil(usuario);
+    }
+
+    public void CerrarSesion(string? jti, DateTime? expiraEnUtc)
+    {
+        if (!string.IsNullOrWhiteSpace(jti) && expiraEnUtc.HasValue)
+            revocacion.Revocar(jti, expiraEnUtc.Value);
+    }
+
+    public async Task CambiarContrasenaAsync(
+        int idUsuario,
+        CambiarContrasenaRequest req,
+        string? jtiActual,
+        DateTime? expiraEnUtc,
+        CancellationToken ct = default)
+    {
+        ValidacionUsuario.ValidarContrasena(req.ContrasenaNueva);
+
+        var usuario = await db.Usuarios
+            .SingleOrDefaultAsync(u => u.IdUsuario == idUsuario, ct)
+            ?? throw new NoEncontradoException("Usuario no encontrado.");
+
+        if (!usuario.Activo)
+            throw new NoAutenticadoException("La cuenta está desactivada.");
+
+        if (!hash.Verificar(req.ContrasenaActual, usuario.HashContrasena))
+            throw new ReglaNegocioException("La contraseña actual es incorrecta.");
+
+        if (req.ContrasenaNueva == req.ContrasenaActual ||
+            hash.Verificar(req.ContrasenaNueva, usuario.HashContrasena))
+            throw new ReglaNegocioException("La nueva contraseña debe ser diferente a la actual.");
+
+        usuario.HashContrasena = hash.Generar(req.ContrasenaNueva);
+        await db.SaveChangesAsync(ct);
+
+        CerrarSesion(jtiActual, expiraEnUtc);
     }
 
     private AuthResponse CrearRespuesta(Usuario usuario, IReadOnlyList<string> roles)

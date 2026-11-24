@@ -21,8 +21,10 @@ public static class DependencyInjection
         services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<BiinDbContext>());
 
         services.Configure<JwtOptions>(config.GetSection(JwtOptions.Seccion));
+        services.AddMemoryCache();
         services.AddSingleton<IHashContrasena, BcryptHashContrasena>();
         services.AddSingleton<IGeneradorToken, JwtGeneradorToken>();
+        services.AddSingleton<IRevocacionToken, MemoriaRevocacionToken>();
 
         return services;
     }
