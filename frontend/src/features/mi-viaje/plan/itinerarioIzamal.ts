@@ -1,5 +1,6 @@
 import { lugaresIzamal, MARGEN_FINAL_MINUTOS, ordenRecomendadoIzamal, TRASLADO_FINAL_MINUTOS } from '../data/lugaresIzamal'
 import { inicioLocal as construirInicioLocal, instanteLocal, horaLocal } from './tiempoLocal'
+import { bloquesRecorrido, recomendarRecorrido, resumirRecorrido } from './recorridoSecuencial'
 
 export type EstanciaIzamal = 'medio-dia' | 'dia-completo' | 'tarde-magica'
 export type ModoItinerario = 'recomendado' | 'personalizado'
@@ -56,18 +57,11 @@ export function validarConfiguracion(config: ConfiguracionViaje): string[] {
 }
 
 export function resumirSeleccion(seleccion: string[]) {
-  const elegidos = seleccion.map(id => lugaresIzamal.find(lugar => lugar.id === id)).filter(lugar => lugar !== undefined)
-  const visitasMinutos = elegidos.reduce((suma, lugar) => suma + lugar.visitaMinutos, 0)
-  const trasladosMinutos = elegidos.length ? elegidos.reduce((suma, lugar) => suma + lugar.trasladoMinutos, TRASLADO_FINAL_MINUTOS) : 0
-  return { visitasMinutos, trasladosMinutos, margenMinutos: MARGEN_FINAL_MINUTOS, totalMinutos: visitasMinutos + trasladosMinutos + MARGEN_FINAL_MINUTOS }
+  return resumirRecorrido(lugaresIzamal, seleccion, TRASLADO_FINAL_MINUTOS, MARGEN_FINAL_MINUTOS)
 }
 
 export function recomendarLugares(minutos: number): string[] {
-  const seleccion: string[] = []
-  for (const id of ordenRecomendadoIzamal) {
-    if (resumirSeleccion([...seleccion, id]).totalMinutos <= minutos) seleccion.push(id)
-  }
-  return seleccion
+  return recomendarRecorrido(lugaresIzamal, ordenRecomendadoIzamal, minutos, TRASLADO_FINAL_MINUTOS, MARGEN_FINAL_MINUTOS)
 }
 
 export function calcularPlan(borrador: BorradorIzamal): ResultadoPlan {
@@ -79,19 +73,7 @@ export function calcularPlan(borrador: BorradorIzamal): ResultadoPlan {
   if (new Set(seleccion).size !== seleccion.length || seleccion.some(id => !lugaresIzamal.some(lugar => lugar.id === id))) return { plan: null, errores: ['La selección contiene lugares no disponibles o repetidos. Restablece la selección.'] }
   const resumen = resumirSeleccion(seleccion)
   if (resumen.totalMinutos > disponibles) return { plan: null, errores: [`La selección excede el tiempo disponible por ${resumen.totalMinutos - disponibles} minutos. Quita lugares o aumenta el tiempo; no se ha eliminado ninguna visita.`] }
-  const bloques: BloquePlan[] = []
-  let cursor = 0
-  const agregar = (tipo: BloquePlan['tipo'], titulo: string, minutos: number, lugarId?: string) => {
-    bloques.push({ tipo, titulo, lugarId, inicio: cursor, fin: cursor + minutos })
-    cursor += minutos
-  }
-  for (const id of seleccion) {
-    const lugar = lugaresIzamal.find(opcion => opcion.id === id)!
-    agregar('traslado', `Desplazamiento estimado a ${lugar.nombre}`, lugar.trasladoMinutos, id)
-    agregar('visita', lugar.nombre, lugar.visitaMinutos, id)
-  }
-  agregar('traslado', 'Desplazamiento final estimado al punto de regreso', TRASLADO_FINAL_MINUTOS)
-  agregar('margen', 'Margen final para preparar el regreso', MARGEN_FINAL_MINUTOS)
+  const bloques = bloquesRecorrido(lugaresIzamal, seleccion, TRASLADO_FINAL_MINUTOS, MARGEN_FINAL_MINUTOS)
   return { plan: { seleccion: [...seleccion], bloques, ...resumen, libresMinutos: disponibles - resumen.totalMinutos }, errores: [] }
 }
 
