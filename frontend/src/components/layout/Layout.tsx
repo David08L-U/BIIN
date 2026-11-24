@@ -15,6 +15,7 @@ export default function Layout() {
   const esFlujoIzamal = /^\/rutas\/izamal(?:\/(?:itinerario|personalizar))?\/?$/.test(pathname)
   const esDetalleValladolid = /^\/rutas\/valladolid\/?$/.test(pathname)
   const esDetalleTekit = /^\/rutas\/tekit\/?$/.test(pathname)
+  const esDetalleHomun = /^\/rutas\/homun\/?$/.test(pathname)
 
   if (esAcceso) {
     return (
@@ -30,7 +31,7 @@ export default function Layout() {
         Saltar al contenido
       </a>
 
-      {pathname !== '/' && pathname !== '/rutas' && !esFlujoIzamal && !esDetalleValladolid && !esDetalleTekit && (
+      {pathname !== '/' && pathname !== '/rutas' && !esFlujoIzamal && !esDetalleValladolid && !esDetalleTekit && !esDetalleHomun && (
         <header className="biin-cabecera-simple">
           <button
             className="biin-icon-button"
