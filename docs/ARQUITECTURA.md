@@ -150,6 +150,14 @@ BIIN/
 
 Dentro de cada `features/<modulo>/` se usan las subcarpetas que hagan falta: `components/`, `pages/`, `hooks/` y `api/`. Se crean conforme se programe el módulo.
 
+**Implementación provisional de itinerarios de Izamal (CU-09 / RF09):**
+`features/mi-viaje` separa datos demostrativos (`data/`), cálculo puro (`plan/`),
+interfaz y almacenamiento (`storage/`). Mientras no exista un servicio HTTP de
+itinerarios, guarda en `localStorage` por `idUsuario`, sin sincronización con el
+servidor. `/mi-viaje` conserva la protección de sesión. El borrador se conserva en
+la URL para recarga y retorno desde login. Ver [ITINERARIOS_IZAMAL.md](ITINERARIOS_IZAMAL.md)
+para límites, supuestos del cálculo y formato de persistencia. No cambia el modelo de BD.
+
 ## 4. Modelo de base de datos (27 tablas, 3FN)
 
 Convención de la documentación: tablas y columnas en **snake_case, en español y en plural** (`usuarios`, `id_usuario`). PK = clave primaria, FK = clave foránea.
