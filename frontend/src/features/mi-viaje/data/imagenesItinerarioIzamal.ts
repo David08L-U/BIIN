@@ -1,0 +1,6 @@
+/** Imágenes originales de biin_mi_itinerario_en_izamal/code.html. */
+export const imagenesItinerarioIzamal: Record<string, { src: string; alt: string }> = {
+  mapa: { alt: 'Referencia ilustrativa de Izamal del prototipo, sin ubicación en tiempo real', src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0boOaeVmBiJa0OtzrcMOHGaKeoVoznd6OXQzuQLt7GGlwDoctpK8SCfbH3CNp_IUFe4qdf1KFss01y0Nq3BT3ybBWPBIw9YBOQPQOniKlduJvtk8Tu0Hyk58WtWmuAqASEkzkWFqdMkKvi_jI-WjBQsXVbiWqS3aI0wn46RYw9aDZpX13P4KPX7XapW6WgS_SGAjS5POrP2Ap4tN9hqBgXJ3QYl3PPGcF9Wxz-kNl' },
+  convento: { alt: 'Convento de Izamal, imagen demostrativa del prototipo', src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBNqlQoUpvD713E2OIDBQ5UpzKA-zr8-X6wOPbkNT224C72gW2_ZqC3a5s86JJ1Os6y7t9WY0uDnNdhly8IGfgzJfYrdRxpE1neA71LLkxgPHJyA5gz5dFwnoxYfqJtoyV1BFwAJm5fp8o-cBNoASDlLWcJa8SX0h__8EiQCkvSgB1sjAdnCXUR-2aWrhKHQtHpbyC1c_I3R0R2KmxIlASQbWtgUi8m35MH7jp4O-33' },
+  piramide: { alt: 'Pirámide de Izamal, imagen demostrativa del prototipo', src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAcYxKAKynYW2Pq3zPNgAmkGqWDd_XauzHW_gt6jGJTVsdkPJBha2TOG80Sla2GkO21vBMWnN5PlenLdQMTBVbaLeGcngTv3K4cU_DRfwTbz2vFfOif3RHgYrcsgGGYR-us4u9U1UdS1DVNqgOCB87nEYlElnYiCf6lhoZ1tXJzE8k0ja2qKnERgfHfsPTvTNgStk4PwElcWgDOUEnTVEH6q59SemMTuI5BoOhB5sJ1' },
+}
