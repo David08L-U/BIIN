@@ -7,6 +7,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Layout from '../src/components/layout/Layout'
 import DetalleRutaPage from '../src/features/transporte/pages/DetalleRutaPage'
 import RutasPage from '../src/features/transporte/pages/RutasPage'
+import ItinerarioHomunPage from '../src/features/mi-viaje/pages/ItinerarioHomunPage'
+import PersonalizarHomunPage from '../src/features/mi-viaje/pages/PersonalizarHomunPage'
 
 vi.mock('../src/features/auth/useAuth', () => ({
   useAuth: () => ({ usuario: null, cargando: false, cerrarSesion: vi.fn(), tieneRol: () => false }),
@@ -20,6 +22,8 @@ function montar(url = '/rutas/homun') {
       children: [
         { path: 'rutas', element: <RutasPage /> },
         { path: 'rutas/:id', element: <DetalleRutaPage /> },
+        { path: 'rutas/homun/itinerario', element: <ItinerarioHomunPage /> },
+        { path: 'rutas/homun/personalizar', element: <PersonalizarHomunPage /> },
       ],
     }],
     { initialEntries: [url] },
@@ -192,16 +196,22 @@ describe('Detalle propio de Homún CU-03 / RF03', () => {
     expect(screen.getByRole('radio', { name: /Fin de semana/ })).toBeInTheDocument()
   })
 
-  it('anuncia el planificador pendiente y conserva la estancia sin navegar ni guardar', async () => {
+  it.each([['Medio día', 'medio-dia', 270], ['Día completo', 'dia-completo', 540], ['Fin de semana', 'fin-de-semana', 270]] as const)('abre el planificador desde %s conservando estancia y retorno', async (nombre, estancia, minutos) => {
     const { router } = montar()
-    await userEvent.click(screen.getByRole('radio', { name: /Fin de semana.*2 días/ }))
+    await userEvent.click(screen.getByRole('radio', { name: new RegExp(nombre) }))
     await userEvent.click(screen.getByRole('button', { name: 'Hacer mi itinerario en Homún' }))
-    expect(screen.getByText(/El planificador de Homún todavía no está disponible/)).toHaveAttribute('role', 'status')
-    expect(screen.getByText(/No se ha creado ni guardado ningún itinerario/)).toBeInTheDocument()
-    expect(screen.getByRole('radio', { name: /Fin de semana.*2 días/ })).toBeChecked()
-    expect(router.state.location.pathname).toBe('/rutas/homun')
+    expect(router.state.location.pathname).toBe('/rutas/homun/itinerario')
+    expect(screen.getByLabelText('Estancia')).toHaveValue(estancia)
+    expect(screen.getByLabelText('Tiempo disponible del Día 1 (minutos)')).toHaveValue(minutos)
+    if (estancia === 'fin-de-semana') expect(screen.getByLabelText('Tiempo disponible del Día 2 (minutos)')).toHaveValue(270)
+    expect(screen.queryByRole('heading', { name: 'Paso a paso en mototaxi y a pie' })).not.toBeInTheDocument()
     expect(localStorage.length).toBe(0)
     expect(screen.queryByRole('heading', { name: 'Tu Itinerario en Izamal' })).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('link', { name: 'Personalizar' }))
+    expect(screen.getByText('0 lugares seleccionados')).toBeInTheDocument()
+    expect(screen.getByLabelText('Estancia')).toHaveValue(estancia)
+    await userEvent.click(screen.getByRole('link', { name: 'Volver a detalle de ruta' }))
+    expect(screen.getByRole('radio', { name: new RegExp(nombre) })).toBeChecked()
   })
 
   it('no afirma horarios, disponibilidad, distancia ni ubicación en tiempo real', () => {

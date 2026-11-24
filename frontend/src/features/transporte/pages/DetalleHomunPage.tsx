@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import type { RutaPrototipo } from '../data/rutasPrototipo'
 import { detalleHomunPrototipo as detalle } from '../data/detalleHomunPrototipo'
-import type { EstanciaHomun } from '../data/detalleHomunPrototipo'
 import { useFavoritoRuta } from '../hooks/useFavoritoRuta'
+import { useBorradorHomun } from '../../mi-viaje/hooks/useBorradorHomun'
+import { cambiarEstanciaHomun, urlBorradorHomun } from '../../mi-viaje/plan/borradorHomun'
 import '../../../styles/detalle-homun.css'
 
 function Icono({ nombre, tamano }: { nombre: string; tamano: number }) {
@@ -22,8 +23,9 @@ function ImagenHomun({ src, alt }: { src: string; alt: string }) {
 /** CU-03 / RF03: composición beige propia de Homún, sin información operativa. */
 export default function DetalleHomunPage({ ruta }: { ruta: RutaPrototipo }) {
   const { favorito, alternarFavorito, aviso } = useFavoritoRuta(ruta.id)
-  const [estancia, setEstancia] = useState<EstanciaHomun>('medio-dia')
-  const [mensaje, setMensaje] = useState('')
+  const { borrador, actualizar } = useBorradorHomun()
+  const estancia = borrador.configuracion.estancia
+  const navegar = useNavigate()
 
   return (
     <article className="homun-detalle" aria-labelledby="homun-titulo">
@@ -82,17 +84,16 @@ export default function DetalleHomunPage({ ruta }: { ruta: RutaPrototipo }) {
         </div>
         <div className="homun-cultura-contenido">
           <div><h2 id="homun-cultura-titulo">Descubre Homún a tu ritmo</h2><p>{detalle.referenciaCultural}</p></div>
-          <div className="homun-itinerario-intro"><h3><Icono nombre="auto_awesome" tamano={18} />Hacer mi itinerario · Personalizado</h3><p>Selecciona tu estancia para preparar tu visita. El planificador de Homún estará disponible en una próxima etapa.</p></div>
+          <div className="homun-itinerario-intro"><h3><Icono nombre="auto_awesome" tamano={18} />Hacer mi itinerario · Personalizado</h3><p>Selecciona tu estancia, configura tus jornadas y elige un recorrido recomendado o tus propias paradas.</p></div>
           <fieldset className="homun-estancia">
             <legend>Tiempo disponible estimado</legend>
             <div className="homun-estancia-opciones">
-              {detalle.estancias.map(opcion => <label key={opcion.id}><input type="radio" name="estancia-homun" value={opcion.id} checked={estancia === opcion.id} onChange={() => setEstancia(opcion.id)} /><span><strong>{opcion.nombre}</strong><small>({opcion.duracion})</small></span></label>)}
+              {detalle.estancias.map(opcion => <label key={opcion.id}><input type="radio" name="estancia-homun" value={opcion.id} checked={estancia === opcion.id} onChange={() => actualizar(cambiarEstanciaHomun(borrador, opcion.id))} /><span><strong>{opcion.nombre}</strong><small>({opcion.duracion})</small></span></label>)}
             </div>
           </fieldset>
           <div className="homun-lugares"><p>Lugares destacados del prototipo</p><ul aria-label="Lugares destacados de Homún">{detalle.lugares.map(lugar => <li key={lugar}>{lugar}</li>)}</ul></div>
           <div className="homun-acciones">
-            <button type="button" className="homun-itinerario-boton" aria-describedby="homun-estado-planificador" onClick={() => setMensaje('El planificador de Homún todavía no está disponible. No se ha creado ni guardado ningún itinerario.')}><span>Hacer mi itinerario en Homún</span><Icono nombre="arrow_forward" tamano={18} /></button>
-            <div id="homun-estado-planificador" className="homun-estado-planificador" role="status" aria-atomic="true">{mensaje}</div>
+            <button type="button" className="homun-itinerario-boton" onClick={() => navegar(urlBorradorHomun(borrador.modo === 'personalizado' ? 'personalizar' : 'itinerario', borrador))}><span>Hacer mi itinerario en Homún</span><Icono nombre="arrow_forward" tamano={18} /></button>
           </div>
         </div>
       </section>
