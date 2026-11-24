@@ -10,6 +10,7 @@ import RegistroPage from '../features/auth/pages/RegistroPage'
 
 import InicioPage from '../features/transporte/pages/InicioPage'
 import RutasPage from '../features/transporte/pages/RutasPage'
+import DetalleRutaPage from '../features/transporte/pages/DetalleRutaPage'
 
 export const router = createBrowserRouter([
   {
@@ -25,12 +26,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'rutas/:id',
-        element: (
-          <PaginaEnConstruccion
-            titulo="Detalle de ruta"
-            casos="CU-03"
-          />
-        ),
+        element: <DetalleRutaPage />,
       },
       {
         path: 'login',
