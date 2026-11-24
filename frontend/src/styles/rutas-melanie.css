@@ -56,7 +56,8 @@
   background: #faf3eb;
   color: #1e1b17;
   font: inherit;
-  font-size: 14px;
+  font-size: 16px;
+  line-height: 24px;
 }
 
 .rutas-buscador input::-webkit-search-cancel-button {
@@ -125,14 +126,15 @@
   justify-content: center;
   gap: 6px;
   flex-shrink: 0;
-  padding: 8px 14px;
+  padding: 6px 14px;
   min-height: 36px;
   border: 1px solid #eae6df;
   border-radius: 999px;
   background: #fff;
   color: #4f4440;
   font: inherit;
-  font-size: 12px;
+  font-size: 16px;
+  line-height: 24px;
   cursor: pointer;
 }
 
@@ -184,13 +186,14 @@
 
 .rutas-tarjeta-cuerpo {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
-  padding: 16px;
+  padding: 16px 16px 12px;
   min-width: 0;
 }
 
 .rutas-icono-destino {
+  align-self: center;
   width: 44px;
   height: 44px;
   display: grid;
@@ -219,7 +222,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 8px;
+  gap: 2px 8px;
 }
 
 .rutas-destino-titulo h2 {
@@ -231,24 +234,25 @@
 
 .rutas-etiqueta {
   display: inline-flex;
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: 999px;
   border: 1px solid #eae6df;
   background: #f4ede5;
   color: #4f4440;
-  font-size: 11px;
+  font-size: 16px;
   font-weight: 600;
-  line-height: 15px;
+  line-height: 24px;
 }
 
 .rutas-etiqueta.popular {
+  letter-spacing: 0.025em;
   background: #fdf3e2;
   color: #855400;
   border-color: #f5dfb7;
 }
 
 .rutas-destino-textos p {
-  margin: 3px 0 0;
+  margin: 2px 0 0;
   font-size: 12px;
   line-height: 16px;
   color: #4f4440;
@@ -289,8 +293,8 @@
   align-items: center;
   gap: 16px;
   color: #4f4440;
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 16px;
+  line-height: 24px;
 }
 
 .rutas-metadata > span {
@@ -311,10 +315,13 @@
   gap: 4px;
   white-space: nowrap;
   color: #4f4440;
-  font-size: 11px;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
 }
 
 .rutas-precio strong {
+  letter-spacing: -0.025em;
   font-family: 'Space Grotesk', sans-serif;
   font-size: 18px;
   line-height: 24px;
@@ -397,78 +404,15 @@
 
 @media (max-width: 370px) {
   .rutas-metadata {
-    gap: 10px;
-    font-size: 11px;
-  }
-
-  .rutas-tarjeta-pie {
-    padding-inline: 12px;
-  }
-}
-
-
-/* Ajuste de tipografía y espaciado según el HTML original de Melanie. */
-
-.rutas-buscador input {
-  font-size: 16px;
-  line-height: 24px;
-}
-
-.rutas-chips button {
-  padding: 6px 14px;
-  font-size: 16px;
-  line-height: 24px;
-}
-
-.rutas-tarjeta-cuerpo {
-  align-items: flex-start;
-  padding-bottom: 12px;
-}
-
-.rutas-icono-destino {
-  align-self: center;
-}
-
-.rutas-destino-titulo {
-  gap: 2px 8px;
-}
-
-.rutas-etiqueta {
-  padding: 2px 8px;
-  font-size: 16px;
-  line-height: 24px;
-}
-
-.rutas-etiqueta.popular {
-  letter-spacing: 0.025em;
-}
-
-.rutas-destino-textos p {
-  margin-top: 2px;
-}
-
-.rutas-metadata {
-  font-size: 16px;
-  line-height: 24px;
-}
-
-.rutas-precio {
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 500;
-}
-
-.rutas-precio strong {
-  letter-spacing: -0.025em;
-}
-
-@media (max-width: 370px) {
-  .rutas-metadata {
     gap: 8px;
     font-size: 13px;
   }
 
   .rutas-precio {
     font-size: 12px;
+  }
+
+  .rutas-tarjeta-pie {
+    padding-inline: 12px;
   }
 }
