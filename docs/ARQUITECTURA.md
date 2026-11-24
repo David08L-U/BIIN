@@ -150,13 +150,17 @@ BIIN/
 
 Dentro de cada `features/<modulo>/` se usan las subcarpetas que hagan falta: `components/`, `pages/`, `hooks/` y `api/`. Se crean conforme se programe el módulo.
 
-**Implementación provisional de itinerarios de Izamal (CU-09 / RF09):**
+**Implementación provisional de itinerarios de Izamal y Valladolid (CU-09 / RF09):**
 `features/mi-viaje` separa datos demostrativos (`data/`), cálculo puro (`plan/`),
 interfaz y almacenamiento (`storage/`). Mientras no exista un servicio HTTP de
 itinerarios, guarda en `localStorage` por `idUsuario`, sin sincronización con el
 servidor. `/mi-viaje` conserva la protección de sesión. El borrador se conserva en
 la URL para recarga y retorno desde login. Ver [ITINERARIOS_IZAMAL.md](ITINERARIOS_IZAMAL.md)
-para límites, supuestos del cálculo y formato de persistencia. No cambia el modelo de BD.
+para límites y supuestos de Izamal. Valladolid añade dos jornadas de calendario local
+independientes para fin de semana y registros con destino explícito, conservando la
+lectura de los registros antiguos de Izamal en la misma clave v1. Ver
+[ITINERARIOS_VALLADOLID.md](ITINERARIOS_VALLADOLID.md) para cálculo, acciones y
+compatibilidad de persistencia. No cambia el modelo de BD.
 
 ## 4. Modelo de base de datos (27 tablas, 3FN)
 

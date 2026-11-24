@@ -30,7 +30,11 @@ El regreso es un objetivo elegido por el usuario, sin reserva ni salida confirma
 El guardado usa `localStorage`, clave `biin:itinerarios:v1:<idUsuario>`. Guarda
 versión, identificador, fecha de guardado y borrador; el resultado se recalcula al
 abrirlo. La identidad del plan evita duplicados con la misma fecha, hora, duración
-y secuencia de visitas. Se valida el contenido al leerlo; los datos dañados se
+y secuencia de visitas. La ampliación de Valladolid mantiene esta clave y acepta
+los registros antiguos sin destino como Izamal. Los registros nuevos identifican
+su destino; su identidad incluye estancia, modo, configuración y selección por
+jornada. Los exports de cálculo, borrador y guardado de Izamal siguen disponibles.
+Ver [ITINERARIOS_VALLADOLID.md](ITINERARIOS_VALLADOLID.md). Se valida el contenido al leerlo; los datos dañados se
 informan y no se sobrescriben. Un error de lectura o escritura no impide preparar
 una vista previa y nunca se presenta como un guardado exitoso.
 
