@@ -1,32 +1,53 @@
 import { calcularPlan } from '../plan/itinerarioIzamal'
 import { lugaresIzamal } from '../data/lugaresIzamal'
 import type { BorradorIzamal } from '../plan/itinerarioIzamal'
+import { calcularPlanValladolid } from '../plan/itinerarioValladolid'
+import type { BorradorValladolid } from '../plan/itinerarioValladolid'
 
 export interface ItinerarioLocal {
+  /** Los registros v1 antiguos sin destino pertenecen a Izamal. */
+  destino?: 'izamal'
   id: string
   guardadoEn: string
   borrador: BorradorIzamal
 }
+export interface ItinerarioValladolidLocal {
+  destino: 'valladolid'
+  id: string
+  guardadoEn: string
+  borrador: BorradorValladolid
+}
+export type ItinerarioGuardado = ItinerarioLocal | ItinerarioValladolidLocal
 interface LecturaLocales {
-  itinerarios: ItinerarioLocal[]
+  itinerarios: ItinerarioGuardado[]
   error: string | null
 }
 const mensajeDanado = 'Hay itinerarios locales dañados o de una versión incompatible. No se sobrescribirán; puedes seguir preparando una vista previa.'
 
 function esObjeto(valor: unknown): valor is Record<string, unknown> {
-  return typeof valor === 'object' && valor !== null
+  return typeof valor === 'object' && valor !== null && !Array.isArray(valor)
 }
 
 function esBorrador(valor: unknown): valor is BorradorIzamal {
   if (!esObjeto(valor) || !esObjeto(valor.configuracion) || valor.generado !== true || !Array.isArray(valor.seleccion) || !valor.seleccion.every(id => typeof id === 'string' && lugaresIzamal.some(lugar => lugar.id === id)) || new Set(valor.seleccion).size !== valor.seleccion.length) return false
+  if ('destino' in valor && valor.destino !== 'izamal') return false
   const config = valor.configuracion
   return (valor.modo === 'recomendado' || valor.modo === 'personalizado') &&
     (config.estancia === 'medio-dia' || config.estancia === 'dia-completo' || config.estancia === 'tarde-magica') &&
     typeof config.fecha === 'string' && typeof config.horaInicio === 'string' && typeof config.minutosDisponibles === 'string'
 }
 
-function esItinerario(valor: unknown): valor is ItinerarioLocal {
-  return esObjeto(valor) && typeof valor.id === 'string' && valor.id.length > 0 && typeof valor.guardadoEn === 'string' && Number.isFinite(Date.parse(valor.guardadoEn)) && esBorrador(valor.borrador) && calcularPlan(valor.borrador).plan !== null
+function esBorradorValladolid(valor: unknown): valor is BorradorValladolid {
+  if (!esObjeto(valor) || valor.destino !== 'valladolid' || valor.generado !== true || !esObjeto(valor.configuracion) || !Array.isArray(valor.seleccion)) return false
+  const config = valor.configuracion
+  return ['estancia', 'fecha', 'horaInicio', 'minutosDisponibles', 'horaInicioDia2', 'minutosDia2'].every(campo => typeof config[campo] === 'string') &&
+    typeof valor.modo === 'string' && valor.seleccion.every(s => esObjeto(s) && typeof s.lugarId === 'string' && Number.isSafeInteger(s.dia)) && calcularPlanValladolid(valor as unknown as BorradorValladolid).plan !== null
+}
+
+function esItinerario(valor: unknown): valor is ItinerarioGuardado {
+  if (!esObjeto(valor) || typeof valor.id !== 'string' || !valor.id.length || typeof valor.guardadoEn !== 'string' || !Number.isFinite(Date.parse(valor.guardadoEn))) return false
+  if (valor.destino === 'valladolid') return esBorradorValladolid(valor.borrador)
+  return (valor.destino === undefined || valor.destino === 'izamal') && esBorrador(valor.borrador) && calcularPlan(valor.borrador).plan !== null
 }
 
 function claveCuenta(idUsuario: number): string {
@@ -52,19 +73,32 @@ export function leerItinerariosLocales(idUsuario: number): LecturaLocales {
   }
 }
 
-function identidad(borrador: BorradorIzamal): string {
-  const plan = calcularPlan(borrador).plan
-  return JSON.stringify([borrador.configuracion.fecha, borrador.configuracion.horaInicio, Number(borrador.configuracion.minutosDisponibles), plan?.seleccion])
+function identidad(item: ItinerarioGuardado): string {
+  const config = item.borrador.configuracion
+  if (item.destino === 'valladolid') {
+    const plan = calcularPlanValladolid(item.borrador).plan!
+    return JSON.stringify(['valladolid', config.estancia, item.borrador.modo, plan.jornadas.map(dia => [dia.fecha, dia.horaInicio, Number(dia.minutosDisponibles), dia.seleccion])])
+  }
+  const plan = calcularPlan(item.borrador).plan!
+  return JSON.stringify(['izamal', config.estancia, item.borrador.modo, [[config.fecha, config.horaInicio, Number(config.minutosDisponibles), plan.seleccion]]])
 }
 
-export function guardarItinerarioLocal(idUsuario: number, borrador: BorradorIzamal): { guardado: ItinerarioLocal | null; error: string | null } {
-  if (!esBorrador(borrador) || !calcularPlan(borrador).plan) return { guardado: null, error: 'Genera un plan válido antes de guardarlo.' }
+type Guardado<T> = { guardado: T | null; error: string | null }
+// Conserva el contrato de Izamal y ofrece un resultado discriminado para Valladolid.
+export function guardarItinerarioLocal(idUsuario: number, borrador: BorradorIzamal): Guardado<ItinerarioLocal>
+export function guardarItinerarioLocal(idUsuario: number, borrador: BorradorValladolid): Guardado<ItinerarioValladolidLocal>
+export function guardarItinerarioLocal(idUsuario: number, borrador: BorradorIzamal | BorradorValladolid): Guardado<ItinerarioGuardado> {
+  let candidato: ItinerarioGuardado
+  if (esBorradorValladolid(borrador)) candidato = { destino: 'valladolid', id: '', guardadoEn: '', borrador }
+  else if (esBorrador(borrador) && calcularPlan(borrador).plan) candidato = { destino: 'izamal', id: '', guardadoEn: '', borrador }
+  else return { guardado: null, error: 'Genera un plan válido antes de guardarlo.' }
   const lectura = leerItinerariosLocales(idUsuario)
   if (lectura.error) return { guardado: null, error: lectura.error }
   try {
-    const existente = lectura.itinerarios.find(item => identidad(item.borrador) === identidad(borrador))
+    const clave = identidad(candidato)
+    const existente = lectura.itinerarios.find(item => identidad(item) === clave)
     if (existente) return { guardado: existente, error: null }
-    const guardado: ItinerarioLocal = { id: `izamal:${encodeURIComponent(identidad(borrador))}`, guardadoEn: new Date().toISOString(), borrador }
+    const guardado: ItinerarioGuardado = { ...candidato, id: `${candidato.destino}:${encodeURIComponent(clave)}`, guardadoEn: new Date().toISOString() }
     const texto = JSON.stringify({ version: 1, itinerarios: [...lectura.itinerarios, guardado] })
     localStorage.setItem(claveCuenta(idUsuario), texto)
     return { guardado, error: null }
