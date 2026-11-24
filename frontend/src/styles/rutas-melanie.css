@@ -405,3 +405,70 @@
     padding-inline: 12px;
   }
 }
+
+
+/* Ajuste de tipografía y espaciado según el HTML original de Melanie. */
+
+.rutas-buscador input {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.rutas-chips button {
+  padding: 6px 14px;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.rutas-tarjeta-cuerpo {
+  align-items: flex-start;
+  padding-bottom: 12px;
+}
+
+.rutas-icono-destino {
+  align-self: center;
+}
+
+.rutas-destino-titulo {
+  gap: 2px 8px;
+}
+
+.rutas-etiqueta {
+  padding: 2px 8px;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.rutas-etiqueta.popular {
+  letter-spacing: 0.025em;
+}
+
+.rutas-destino-textos p {
+  margin-top: 2px;
+}
+
+.rutas-metadata {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.rutas-precio {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+}
+
+.rutas-precio strong {
+  letter-spacing: -0.025em;
+}
+
+@media (max-width: 370px) {
+  .rutas-metadata {
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .rutas-precio {
+    font-size: 12px;
+  }
+}
