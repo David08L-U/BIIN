@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import type { RutaPrototipo } from '../data/rutasPrototipo'
 import { detalleValladolidPrototipo as detalle } from '../data/detalleValladolidPrototipo'
 import type { EstanciaValladolid } from '../data/detalleValladolidPrototipo'
 import { useFavoritoRuta } from '../hooks/useFavoritoRuta'
+import { useBorradorValladolid } from '../../mi-viaje/hooks/useBorradorValladolid'
+import { cambiarEstanciaValladolid, urlBorradorValladolid } from '../../mi-viaje/plan/borradorValladolid'
 import '../../../styles/detalle-valladolid.css'
 
 function Icono({ nombre, tamano }: { nombre: string; tamano: number }) {
@@ -23,8 +25,10 @@ function ImagenValladolid({ src, alt }: { src: string; alt: string }) {
 /** CU-03 / RF03: composición propia de Valladolid, sin datos operativos confirmados. */
 export default function DetalleValladolidPage({ ruta }: { ruta: RutaPrototipo }) {
   const { favorito, alternarFavorito, aviso } = useFavoritoRuta(ruta.id)
-  const [estancia, setEstancia] = useState<EstanciaValladolid>('medio-dia')
-  const [mensaje, setMensaje] = useState('')
+  const { borrador, actualizar } = useBorradorValladolid()
+  const estancia = borrador.configuracion.estancia
+  const navegar = useNavigate()
+  const setEstancia = (opcion: EstanciaValladolid) => actualizar(cambiarEstanciaValladolid(borrador, opcion))
 
   return (
     <article className="valladolid-detalle" aria-labelledby="valladolid-titulo">
@@ -106,7 +110,7 @@ export default function DetalleValladolidPage({ ruta }: { ruta: RutaPrototipo })
           <div><h2 id="valladolid-cultura-titulo">Descubre Valladolid a tu ritmo</h2><p>Calzada de los Frailes · Cenote Zací · Gastronomía Colonial</p></div>
           <div className="valladolid-itinerario-intro">
             <h3><Icono nombre="auto_awesome" tamano={18} />Hacer mi itinerario · Personalizado</h3>
-            <p>Selecciona tu estancia para preparar tu visita. El planificador de Valladolid estará disponible en una próxima etapa.</p>
+            <p>Selecciona tu estancia para preparar una propuesta estimada y elegir tus visitas. Fin de semana organiza dos jornadas separadas.</p>
           </div>
           <fieldset className="valladolid-estancia">
             <legend>Tiempo disponible estimado</legend>
@@ -121,10 +125,9 @@ export default function DetalleValladolidPage({ ruta }: { ruta: RutaPrototipo })
           </fieldset>
           <div className="valladolid-lugares"><p>Paradas imperdibles del prototipo</p><ul>{detalle.lugares.map(lugar => <li key={lugar}>{lugar}</li>)}</ul></div>
           <div className="valladolid-acciones">
-            <button type="button" className="valladolid-itinerario-boton" aria-describedby="valladolid-estado-planificador" onClick={() => setMensaje('El planificador de Valladolid todavía no está disponible. No se ha creado ni guardado ningún itinerario.')}>
+            <button type="button" className="valladolid-itinerario-boton" onClick={() => navegar(urlBorradorValladolid('itinerario', { ...borrador, generado: false }))}>
               <span>Hacer mi itinerario en Valladolid</span><Icono nombre="arrow_forward" tamano={18} />
             </button>
-            <div id="valladolid-estado-planificador" className="valladolid-estado-planificador" role="status" aria-atomic="true">{mensaje}</div>
           </div>
         </div>
       </section>

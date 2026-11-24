@@ -13,6 +13,8 @@ import RutasPage from '../features/transporte/pages/RutasPage'
 import DetalleRutaPage from '../features/transporte/pages/DetalleRutaPage'
 import ItinerarioIzamalPage from '../features/mi-viaje/pages/ItinerarioIzamalPage'
 import PersonalizarIzamalPage from '../features/mi-viaje/pages/PersonalizarIzamalPage'
+import ItinerarioValladolidPage from '../features/mi-viaje/pages/ItinerarioValladolidPage'
+import PersonalizarValladolidPage from '../features/mi-viaje/pages/PersonalizarValladolidPage'
 import MiViajePage from '../features/mi-viaje/pages/MiViajePage'
 
 export const router = createBrowserRouter([
@@ -38,6 +40,14 @@ export const router = createBrowserRouter([
       {
         path: 'rutas/izamal/personalizar',
         element: <PersonalizarIzamalPage />,
+      },
+      {
+        path: 'rutas/valladolid/itinerario',
+        element: <ItinerarioValladolidPage />,
+      },
+      {
+        path: 'rutas/valladolid/personalizar',
+        element: <PersonalizarValladolidPage />,
       },
       {
         path: 'login',

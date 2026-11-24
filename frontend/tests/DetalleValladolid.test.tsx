@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Layout from '../src/components/layout/Layout'
 import DetalleRutaPage from '../src/features/transporte/pages/DetalleRutaPage'
 import RutasPage from '../src/features/transporte/pages/RutasPage'
+import ItinerarioValladolidPage from '../src/features/mi-viaje/pages/ItinerarioValladolidPage'
 
 vi.mock('../src/features/auth/useAuth', () => ({
   useAuth: () => ({ usuario: null, cargando: false, cerrarSesion: vi.fn(), tieneRol: () => false }),
@@ -21,6 +22,7 @@ function montar(url = '/rutas/valladolid') {
       children: [
         { path: 'rutas', element: <RutasPage /> },
         { path: 'rutas/:id', element: <DetalleRutaPage /> },
+        { path: 'rutas/valladolid/itinerario', element: <ItinerarioValladolidPage /> },
       ],
     }],
     { initialEntries: [url] },
@@ -179,12 +181,16 @@ describe('Detalle de Valladolid CU-03 / RF03', () => {
     expect(screen.getByRole('button', { name: 'Hacer mi itinerario en Valladolid' })).toBeInTheDocument()
   })
 
-  it('anuncia el planificador pendiente sin navegar, generar ni guardar y conserva la estancia', async () => {
+  it('abre el planificador de dos jornadas sin generar ni guardar y conserva la estancia al volver', async () => {
     const { router } = montar()
     await userEvent.click(screen.getByRole('radio', { name: /Fin de semana/ }))
     await userEvent.click(screen.getByRole('button', { name: 'Hacer mi itinerario en Valladolid' }))
-    expect(screen.getByText(/El planificador de Valladolid todavía no está disponible/)).toHaveAttribute('role', 'status')
-    expect(screen.getByText(/No se ha creado ni guardado ningún itinerario/)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Tu Itinerario en Valladolid' })).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/rutas/valladolid/itinerario')
+    expect(screen.getByLabelText('Tiempo disponible del Día 1 (minutos)')).toHaveValue(270)
+    expect(screen.getByLabelText('Tiempo disponible del Día 2 (minutos)')).toHaveValue(270)
+    expect(screen.queryByRole('heading', { name: 'Paso a paso a pie' })).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('link', { name: 'Volver a detalle de ruta' }))
     expect(screen.getByRole('radio', { name: /Fin de semana.*2 días/ })).toBeChecked()
     expect(router.state.location.pathname).toBe('/rutas/valladolid')
     expect(localStorage.length).toBe(0)

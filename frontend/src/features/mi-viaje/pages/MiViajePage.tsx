@@ -3,6 +3,8 @@ import { useAuth } from '../../auth/useAuth'
 import { leerItinerariosLocales } from '../storage/itinerariosLocales'
 import { urlBorrador } from '../plan/borradorIzamal'
 import { calcularPlan, duracionPlan } from '../plan/itinerarioIzamal'
+import { calcularPlanValladolid } from '../plan/itinerarioValladolid'
+import { urlBorradorValladolid } from '../plan/borradorValladolid'
 import '../../../styles/itinerario-izamal.css'
 
 /** CU-09: el router conserva RutaProtegida; solo se lee la cuenta actual. */
@@ -16,9 +18,14 @@ export default function MiViajePage() {
     {error && <p role="alert" className="iz-plan-error">{error}</p>}
     {!itinerarios.length && <p role="status">Todavía no hay itinerarios guardados para esta cuenta en este navegador.</p>}
     <ul>{itinerarios.map(item => {
+      if (item.destino === 'valladolid') {
+        const plan = calcularPlanValladolid(item.borrador).plan!
+        return <li key={item.id} className="iz-plan-tarjeta"><h2>Valladolid · {item.borrador.modo}</h2>{plan.jornadas.map(dia => <p key={dia.dia}>Día {dia.dia} · {dia.fecha} · {dia.horaInicio} · {dia.seleccion.length} lugares · {duracionPlan(dia.totalMinutos)}</p>)}<p>Guardado en este navegador: {new Date(item.guardadoEn).toLocaleString()}</p><Link to={urlBorradorValladolid('itinerario', item.borrador)}>Abrir itinerario de Valladolid</Link></li>
+      }
       const plan = calcularPlan(item.borrador).plan!
       return <li key={item.id} className="iz-plan-tarjeta"><h2>Izamal · {item.borrador.modo}</h2><p>{item.borrador.configuracion.fecha} · {item.borrador.configuracion.horaInicio} · {plan.seleccion.length} lugares · {duracionPlan(plan.totalMinutos)}</p><p>Guardado en este navegador: {new Date(item.guardadoEn).toLocaleString()}</p><Link to={urlBorrador('itinerario', item.borrador)}>Abrir itinerario de Izamal</Link></li>
     })}</ul>
     <Link className="iz-plan-primario" to="/rutas/izamal">Preparar otro itinerario en Izamal</Link>
+    <Link className="iz-plan-primario" to="/rutas/valladolid">Preparar otro itinerario en Valladolid</Link>
   </section>
 }
