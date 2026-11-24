@@ -2,8 +2,9 @@ import { Link, useParams } from 'react-router'
 import PaginaEnConstruccion from '../../../components/layout/PaginaEnConstruccion'
 import { rutasPrototipo } from '../data/rutasPrototipo'
 import DetalleIzamalPage from './DetalleIzamalPage'
+import DetalleValladolidPage from './DetalleValladolidPage'
 
-/** CU-03 / RF03: solo Izamal tiene por ahora su diseño implementado. */
+/** CU-03 / RF03: detalles implementados de Izamal y Valladolid. */
 export default function DetalleRutaPage() {
   const { id } = useParams()
   const ruta = rutasPrototipo.find(opcion => opcion.id === id)
@@ -18,9 +19,8 @@ export default function DetalleRutaPage() {
     )
   }
 
-  if (ruta.id !== 'izamal') {
-    return <PaginaEnConstruccion titulo="Detalle de ruta" casos="CU-03" />
-  }
+  if (ruta.id === 'izamal') return <DetalleIzamalPage ruta={ruta} />
+  if (ruta.id === 'valladolid') return <DetalleValladolidPage ruta={ruta} />
 
-  return <DetalleIzamalPage ruta={ruta} />
+  return <PaginaEnConstruccion titulo="Detalle de ruta" casos="CU-03" />
 }
