@@ -8,6 +8,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import Layout from '../src/components/layout/Layout'
 import DetalleRutaPage from '../src/features/transporte/pages/DetalleRutaPage'
 import RutasPage from '../src/features/transporte/pages/RutasPage'
+import ItinerarioIzamalPage from '../src/features/mi-viaje/pages/ItinerarioIzamalPage'
+import PersonalizarIzamalPage from '../src/features/mi-viaje/pages/PersonalizarIzamalPage'
 
 vi.mock('../src/features/auth/useAuth', () => ({
   useAuth: () => ({ usuario: null, cerrarSesion: vi.fn(), tieneRol: () => false }),
@@ -20,6 +22,8 @@ function montar(ruta = '/rutas/izamal') {
       children: [
         { path: 'rutas', element: <RutasPage /> },
         { path: 'rutas/:id', element: <DetalleRutaPage /> },
+        { path: 'rutas/izamal/itinerario', element: <ItinerarioIzamalPage /> },
+        { path: 'rutas/izamal/personalizar', element: <PersonalizarIzamalPage /> },
       ],
     }],
     { initialEntries: [ruta] },
@@ -157,18 +161,20 @@ describe('Detalle de Izamal CU-03 / RF03', () => {
     expect(detalle).not.toHaveTextContent(/7\s*(asientos|disponibles)|próxima salida|10:30|10:45|11:05|11:18|11:28|estás aquí|unidad 14/i)
   })
 
-  it('anuncia que los itinerarios no están disponibles sin navegar ni crear uno', async () => {
+  it.each([
+    ['Itinerario recomendado en Izamal', 'itinerario', 'Tu Itinerario en Izamal'],
+    ['Personalizar mi itinerario', 'personalizar', 'Personalizar Itinerario'],
+  ])('abre %s conservando estancia y sin generar un resultado', async (boton, destino, titulo) => {
     const { router } = montar()
     const user = userEvent.setup()
     await user.click(screen.getByRole('radio', { name: /Día completo/ }))
-    await user.click(screen.getByRole('button', { name: 'Itinerario recomendado en Izamal' }))
-
-    expect(screen.getByText(/El itinerario recomendado aún no está disponible/)).toHaveAttribute('role', 'status')
-    expect(screen.getByText(/No se ha creado ningún itinerario/)).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Personalizar mi itinerario' }))
-    expect(screen.getByText(/El itinerario personalizado aún no está disponible/)).toHaveAttribute('role', 'status')
+    await user.click(screen.getByRole('button', { name: boton }))
+    expect(router.state.location.pathname).toBe(`/rutas/izamal/${destino}`)
+    expect(screen.getByRole('heading', { name: titulo, level: 1 })).toBeInTheDocument()
+    expect(screen.getByLabelText('Tiempo disponible (minutos)')).toHaveValue(480)
+    expect(screen.queryByRole('heading', { name: 'Paso a paso a pie' })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('link', { name: 'Volver a detalle de ruta' }))
     expect(screen.getByRole('radio', { name: /Día completo/ })).toBeChecked()
-    expect(router.state.location.pathname).toBe('/rutas/izamal')
     expect(localStorage.length).toBe(0)
   })
 
