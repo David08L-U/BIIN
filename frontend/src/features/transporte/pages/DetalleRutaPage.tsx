@@ -3,8 +3,9 @@ import PaginaEnConstruccion from '../../../components/layout/PaginaEnConstruccio
 import { rutasPrototipo } from '../data/rutasPrototipo'
 import DetalleIzamalPage from './DetalleIzamalPage'
 import DetalleValladolidPage from './DetalleValladolidPage'
+import DetalleTekitPage from './DetalleTekitPage'
 
-/** CU-03 / RF03: detalles implementados de Izamal y Valladolid. */
+/** CU-03 / RF03: detalles implementados de Izamal, Valladolid y Tekit. */
 export default function DetalleRutaPage() {
   const { id } = useParams()
   const ruta = rutasPrototipo.find(opcion => opcion.id === id)
@@ -21,6 +22,7 @@ export default function DetalleRutaPage() {
 
   if (ruta.id === 'izamal') return <DetalleIzamalPage ruta={ruta} />
   if (ruta.id === 'valladolid') return <DetalleValladolidPage ruta={ruta} />
+  if (ruta.id === 'tekit') return <DetalleTekitPage ruta={ruta} />
 
   return <PaginaEnConstruccion titulo="Detalle de ruta" casos="CU-03" />
 }

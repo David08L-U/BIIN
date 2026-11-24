@@ -142,7 +142,7 @@ describe('Detalle de Izamal CU-03 / RF03', () => {
     expect(screen.getByRole('heading', { name: '¿A dónde viajaremos hoy?' })).toBeInTheDocument()
   })
 
-  it.each(['tekit', 'homun', 'ticul'])('conserva el detalle provisional de %s', id => {
+  it.each(['homun', 'ticul'])('conserva el detalle provisional de %s', id => {
     montar(`/rutas/${id}`)
     expect(screen.getByRole('heading', { name: 'Detalle de ruta' })).toBeInTheDocument()
     expect(screen.getByText('Este módulo está en desarrollo (CU-03).')).toBeInTheDocument()
