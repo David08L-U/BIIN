@@ -12,7 +12,7 @@ export default function Layout() {
   const cerrarMenu = () => menu.current?.close()
 
   const esAcceso = pathname === '/login' || pathname === '/registro'
-  const esDetalleIzamal = /^\/rutas\/izamal\/?$/.test(pathname)
+  const esFlujoIzamal = /^\/rutas\/izamal(?:\/(?:itinerario|personalizar))?\/?$/.test(pathname)
 
   if (esAcceso) {
     return (
@@ -28,7 +28,7 @@ export default function Layout() {
         Saltar al contenido
       </a>
 
-      {pathname !== '/' && pathname !== '/rutas' && !esDetalleIzamal && (
+      {pathname !== '/' && pathname !== '/rutas' && !esFlujoIzamal && (
         <header className="biin-cabecera-simple">
           <button
             className="biin-icon-button"

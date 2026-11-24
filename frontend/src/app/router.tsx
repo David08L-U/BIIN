@@ -11,6 +11,9 @@ import RegistroPage from '../features/auth/pages/RegistroPage'
 import InicioPage from '../features/transporte/pages/InicioPage'
 import RutasPage from '../features/transporte/pages/RutasPage'
 import DetalleRutaPage from '../features/transporte/pages/DetalleRutaPage'
+import ItinerarioIzamalPage from '../features/mi-viaje/pages/ItinerarioIzamalPage'
+import PersonalizarIzamalPage from '../features/mi-viaje/pages/PersonalizarIzamalPage'
+import MiViajePage from '../features/mi-viaje/pages/MiViajePage'
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +30,14 @@ export const router = createBrowserRouter([
       {
         path: 'rutas/:id',
         element: <DetalleRutaPage />,
+      },
+      {
+        path: 'rutas/izamal/itinerario',
+        element: <ItinerarioIzamalPage />,
+      },
+      {
+        path: 'rutas/izamal/personalizar',
+        element: <PersonalizarIzamalPage />,
       },
       {
         path: 'login',
@@ -77,12 +88,7 @@ export const router = createBrowserRouter([
           },
           {
             path: 'mi-viaje',
-            element: (
-              <PaginaEnConstruccion
-                titulo="Mi viaje"
-                casos="CU-09, CU-10"
-              />
-            ),
+            element: <MiViajePage />,
           },
         ],
       },

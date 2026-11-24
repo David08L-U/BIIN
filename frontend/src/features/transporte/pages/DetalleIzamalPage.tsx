@@ -1,8 +1,12 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import type { RutaPrototipo } from '../data/rutasPrototipo'
 import { detalleIzamalPrototipo as detalle } from '../data/detalleIzamalPrototipo'
 import { useFavoritoRuta } from '../hooks/useFavoritoRuta'
+import { useBorradorIzamal } from '../../mi-viaje/hooks/useBorradorIzamal'
+import { urlBorrador } from '../../mi-viaje/plan/borradorIzamal'
+import { estanciasIzamal } from '../../mi-viaje/plan/itinerarioIzamal'
+import type { EstanciaIzamal, ModoItinerario } from '../../mi-viaje/plan/itinerarioIzamal'
 import '../../../styles/detalle-izamal.css'
 
 function Icono({ nombre }: { nombre: string }) {
@@ -29,13 +33,16 @@ function ImagenPrototipo({ src, alt, icono }: {
 /** CU-03 / RF03: composición del HTML de Melanie, con datos no confirmados. */
 export default function DetalleIzamalPage({ ruta }: { ruta: RutaPrototipo }) {
   const { favorito, alternarFavorito, aviso } = useFavoritoRuta(ruta.id)
-  const [estancia, setEstancia] = useState<string>(detalle.estancias[0].id)
-  const [mensajeItinerario, setMensajeItinerario] = useState('')
+  const { borrador, actualizar } = useBorradorIzamal()
+  const navegar = useNavigate()
+  const estancia = borrador.configuracion.estancia
 
-  function avisarItinerario(tipo: 'recomendado' | 'personalizado') {
-    setMensajeItinerario(
-      `El itinerario ${tipo} aún no está disponible. No se ha creado ningún itinerario.`,
-    )
+  function cambiarEstancia(valor: EstanciaIzamal) {
+    actualizar({ configuracion: { ...borrador.configuracion, estancia: valor, minutosDisponibles: estanciasIzamal[valor].minutos } })
+  }
+
+  function abrirItinerario(modo: ModoItinerario) {
+    navegar(urlBorrador(modo === 'recomendado' ? 'itinerario' : 'personalizar', { ...borrador, modo, generado: false }))
   }
 
   return (
@@ -152,7 +159,7 @@ export default function DetalleIzamalPage({ ruta }: { ruta: RutaPrototipo }) {
               <h3><Icono nombre="edit_calendar" />Hacer mi itinerario</h3>
               <span>Personalizado</span>
             </div>
-            <p>Selecciona tu tiempo disponible para planear tu visita. La creación de itinerarios aún no está disponible.</p>
+            <p>Selecciona tu tiempo disponible para preparar un itinerario estimado o elegir los lugares de tu visita.</p>
           </div>
           <fieldset className="izamal-estancia">
             <legend>Tiempo de estancia:</legend>
@@ -164,7 +171,7 @@ export default function DetalleIzamalPage({ ruta }: { ruta: RutaPrototipo }) {
                     name="estancia-izamal"
                     value={opcion.id}
                     checked={estancia === opcion.id}
-                    onChange={() => setEstancia(opcion.id)}
+                    onChange={() => cambiarEstancia(opcion.id)}
                   />
                   <span className="izamal-estancia-opcion">
                     <strong>{opcion.nombre}</strong>
@@ -183,16 +190,15 @@ export default function DetalleIzamalPage({ ruta }: { ruta: RutaPrototipo }) {
             </ul>
           </div>
           <div className="izamal-acciones-itinerario">
-            <button type="button" className="izamal-accion-principal" onClick={() => avisarItinerario('recomendado')} aria-describedby="izamal-estado-itinerario">
+            <button type="button" className="izamal-accion-principal" onClick={() => abrirItinerario('recomendado')}>
               <Icono nombre="explore" />
               <span>Itinerario recomendado en Izamal</span>
               <Icono nombre="arrow_forward" />
             </button>
-            <button type="button" className="izamal-accion-secundaria" onClick={() => avisarItinerario('personalizado')} aria-describedby="izamal-estado-itinerario">
+            <button type="button" className="izamal-accion-secundaria" onClick={() => abrirItinerario('personalizado')}>
               <Icono nombre="tune" /><span>Personalizar mi itinerario</span>
             </button>
           </div>
-          <p id="izamal-estado-itinerario" className="izamal-mensaje" role="status" aria-atomic="true">{mensajeItinerario}</p>
         </div>
       </section>
       <p id="izamal-aviso-favorito" className="izamal-nota-favorito" role="status" aria-atomic="true">{aviso}</p>
