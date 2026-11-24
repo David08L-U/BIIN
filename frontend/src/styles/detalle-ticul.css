@@ -100,6 +100,4 @@
 .ticul-itinerario-boton > span:first-child { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .ticul-itinerario-boton > span:first-child > .biin-icon { color: #fdae3f; }
 .ticul-itinerario-boton:hover { background: #070100; }
-.ticul-estado-planificador { color: #4f4440; font-size: 12px; line-height: 18px; }
-.ticul-estado-planificador:not(:empty) { margin-top: 8px; }
 .ticul-detalle .ticul-nota-favorito { margin-top: 16px; color: #855400; font-size: 11px; line-height: 16px; }

@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import type { RutaPrototipo } from '../data/rutasPrototipo'
 import { detalleTiculPrototipo as detalle } from '../data/detalleTiculPrototipo'
-import type { EstanciaTicul } from '../data/detalleTiculPrototipo'
 import { useFavoritoRuta } from '../hooks/useFavoritoRuta'
+import { useBorradorTicul } from '../../mi-viaje/hooks/useBorradorTicul'
+import { cambiarModalidadTicul, urlBorradorTicul } from '../../mi-viaje/plan/borradorTicul'
 import '../../../styles/detalle-ticul.css'
 
 function Icono({ nombre, tamano }: { nombre: string; tamano: number }) {
@@ -22,8 +23,9 @@ function ImagenTicul({ src, alt }: { src: string; alt: string }) {
 /** CU-03 / RF03: composición propia de Ticul, con mapa ilustrativo y modalidades. */
 export default function DetalleTiculPage({ ruta }: { ruta: RutaPrototipo }) {
   const { favorito, alternarFavorito, aviso } = useFavoritoRuta(ruta.id)
-  const [estancia, setEstancia] = useState<EstanciaTicul>('medio-dia')
-  const [mensaje, setMensaje] = useState('')
+  const { borrador, actualizar } = useBorradorTicul()
+  const estancia = borrador.configuracion.estancia
+  const navegar = useNavigate()
 
   return (
     <article className="ticul-detalle" aria-labelledby="ticul-titulo">
@@ -81,17 +83,16 @@ export default function DetalleTiculPage({ ruta }: { ruta: RutaPrototipo }) {
           <ImagenTicul src={detalle.imagenCultural} alt="Imagen de artesanía y taller del prototipo para Ticul" />
           <div className="ticul-foto-textos"><span className="ticul-top-destino"><Icono nombre="auto_awesome" tamano={12} />Top Destino del Sur</span><h2 id="ticul-cultura-titulo">Descubre Ticul a tu ritmo</h2><p>{detalle.referenciaCultural}</p></div>
         </div>
-        <div className="ticul-itinerario-intro"><h3><Icono nombre="schedule" tamano={14} />Hacer mi itinerario · Personalizado</h3><p>Selecciona tu estancia o modalidad. El planificador de Ticul estará disponible en una próxima etapa.</p></div>
+        <div className="ticul-itinerario-intro"><h3><Icono nombre="schedule" tamano={14} />Hacer mi itinerario · Personalizado</h3><p>Selecciona tu estancia o modalidad. Configura tu tiempo y elige un recorrido recomendado o tus propias paradas.</p></div>
         <fieldset className="ticul-estancia">
           <legend>Estancia o modalidad</legend>
           <div className="ticul-estancia-opciones">
-            {detalle.estancias.map(opcion => <label key={opcion.id}><input type="radio" name="estancia-ticul" value={opcion.id} checked={estancia === opcion.id} onChange={() => setEstancia(opcion.id)} /><span>{opcion.nombre}</span></label>)}
+            {detalle.estancias.map(opcion => <label key={opcion.id}><input type="radio" name="estancia-ticul" value={opcion.id} checked={estancia === opcion.id} onChange={() => actualizar(cambiarModalidadTicul(borrador, opcion.id))} /><span>{opcion.nombre}</span></label>)}
           </div>
         </fieldset>
         <div className="ticul-lugares"><p>Lugares destacados del prototipo</p><ul aria-label="Lugares destacados de Ticul">{detalle.lugares.map(lugar => <li key={lugar.nombre}><Icono nombre={lugar.icono} tamano={12} />{lugar.nombre}</li>)}</ul></div>
         <div className="ticul-acciones">
-          <button type="button" className="ticul-itinerario-boton" aria-describedby="ticul-estado-planificador" onClick={() => setMensaje('El planificador de Ticul todavía no está disponible. No se ha creado ni guardado ningún itinerario.')}><span><Icono nombre="route" tamano={18} /><span>Hacer mi itinerario en Ticul</span></span><Icono nombre="arrow_forward" tamano={18} /></button>
-          <div id="ticul-estado-planificador" className="ticul-estado-planificador" role="status" aria-atomic="true">{mensaje}</div>
+          <button type="button" className="ticul-itinerario-boton" onClick={() => navegar(urlBorradorTicul(borrador.modo === 'personalizado' ? 'personalizar' : 'itinerario', borrador))}><span><Icono nombre="route" tamano={18} /><span>Hacer mi itinerario en Ticul</span></span><Icono nombre="arrow_forward" tamano={18} /></button>
         </div>
       </section>
       <p id="ticul-aviso-favorito" className="ticul-nota-favorito" role="status" aria-atomic="true">{aviso}</p>

@@ -7,6 +7,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Layout from '../src/components/layout/Layout'
 import DetalleRutaPage from '../src/features/transporte/pages/DetalleRutaPage'
 import RutasPage from '../src/features/transporte/pages/RutasPage'
+import ItinerarioTiculPage from '../src/features/mi-viaje/pages/ItinerarioTiculPage'
+import PersonalizarTiculPage from '../src/features/mi-viaje/pages/PersonalizarTiculPage'
 
 vi.mock('../src/features/auth/useAuth', () => ({
   useAuth: () => ({ usuario: null, cargando: false, cerrarSesion: vi.fn(), tieneRol: () => false }),
@@ -20,6 +22,8 @@ function montar(url = '/rutas/ticul') {
       children: [
         { path: 'rutas', element: <RutasPage /> },
         { path: 'rutas/:id', element: <DetalleRutaPage /> },
+        { path: 'rutas/ticul/itinerario', element: <ItinerarioTiculPage /> },
+        { path: 'rutas/ticul/personalizar', element: <PersonalizarTiculPage /> },
       ],
     }],
     { initialEntries: [url] },
@@ -201,20 +205,21 @@ describe('Detalle propio de Ticul CU-03 / RF03', () => {
     expect(screen.getByRole('button', { name: 'Hacer mi itinerario en Ticul' })).toBeInTheDocument()
   })
 
-  it.each(['Medio día (3–4 horas)', 'Día completo (Ruta Puuc)', 'Tour de Compras'])('anuncia el planificador pendiente conservando %s sin crear, guardar ni navegar', async opcion => {
+  it.each([['Medio día (3–4 horas)', 'medio-dia', 240], ['Día completo (Ruta Puuc)', 'dia-completo', null], ['Tour de Compras', 'tour-compras', null]] as const)('abre el planificador desde %s conservando modalidad y retorno', async (opcion, modalidad, minutos) => {
     const { router } = montar()
     await userEvent.click(screen.getByRole('radio', { name: opcion }))
-    const boton = screen.getByRole('button', { name: 'Hacer mi itinerario en Ticul' })
-    expect(screen.getByRole('article', { name: 'Ticul' })).not.toHaveTextContent('No se ha creado ni guardado ningún itinerario')
-    await userEvent.click(boton)
-    const mensaje = screen.getByText(/El planificador de Ticul todavía no está disponible/)
-    expect(mensaje).toHaveAttribute('role', 'status')
-    expect(mensaje).toHaveTextContent('No se ha creado ni guardado ningún itinerario')
-    expect(boton).toHaveAccessibleDescription(mensaje.textContent ?? '')
-    expect(screen.getByRole('radio', { name: opcion })).toBeChecked()
-    expect(router.state.location.pathname).toBe('/rutas/ticul')
+    await userEvent.click(screen.getByRole('button', { name: 'Hacer mi itinerario en Ticul' }))
+    expect(router.state.location.pathname).toBe('/rutas/ticul/itinerario')
+    expect(screen.getByLabelText('Estancia o modalidad')).toHaveValue(modalidad)
+    expect(screen.getByLabelText('Tiempo disponible (minutos)')).toHaveValue(minutos)
+    expect(screen.queryByRole('heading', { name: 'Paso a paso a pie & mototaxi' })).not.toBeInTheDocument()
     expect(localStorage.length).toBe(0)
     expect(screen.queryByRole('heading', { name: 'Tu Itinerario en Izamal' })).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('link', { name: 'Personalizar' }))
+    expect(screen.getByText('0 lugares seleccionados')).toBeInTheDocument()
+    expect(screen.getByLabelText('Estancia o modalidad')).toHaveValue(modalidad)
+    await userEvent.click(screen.getByRole('link', { name: 'Volver a detalle de ruta' }))
+    expect(screen.getByRole('radio', { name: opcion })).toBeChecked()
   })
 
   it('no afirma GPS, tráfico, horarios, medios de pago ni disponibilidad en tiempo real', () => {

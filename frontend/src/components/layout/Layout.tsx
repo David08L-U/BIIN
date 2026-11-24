@@ -16,7 +16,7 @@ export default function Layout() {
   const esDetalleValladolid = /^\/rutas\/valladolid(?:\/(?:itinerario|personalizar))?\/?$/.test(pathname)
   const esDetalleTekit = /^\/rutas\/tekit(?:\/(?:itinerario|personalizar))?\/?$/.test(pathname)
   const esDetalleHomun = /^\/rutas\/homun(?:\/(?:itinerario|personalizar))?\/?$/.test(pathname)
-  const esDetalleTicul = /^\/rutas\/ticul\/?$/.test(pathname)
+  const esDetalleTicul = /^\/rutas\/ticul(?:\/(?:itinerario|personalizar))?\/?$/.test(pathname)
 
   if (esAcceso) {
     return (

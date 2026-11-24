@@ -19,6 +19,8 @@ import ItinerarioTekitPage from '../features/mi-viaje/pages/ItinerarioTekitPage'
 import PersonalizarTekitPage from '../features/mi-viaje/pages/PersonalizarTekitPage'
 import ItinerarioHomunPage from '../features/mi-viaje/pages/ItinerarioHomunPage'
 import PersonalizarHomunPage from '../features/mi-viaje/pages/PersonalizarHomunPage'
+import ItinerarioTiculPage from '../features/mi-viaje/pages/ItinerarioTiculPage'
+import PersonalizarTiculPage from '../features/mi-viaje/pages/PersonalizarTiculPage'
 import MiViajePage from '../features/mi-viaje/pages/MiViajePage'
 
 export const router = createBrowserRouter([
@@ -68,6 +70,14 @@ export const router = createBrowserRouter([
       {
         path: 'rutas/homun/personalizar',
         element: <PersonalizarHomunPage />,
+      },
+      {
+        path: 'rutas/ticul/itinerario',
+        element: <ItinerarioTiculPage />,
+      },
+      {
+        path: 'rutas/ticul/personalizar',
+        element: <PersonalizarTiculPage />,
       },
       {
         path: 'login',

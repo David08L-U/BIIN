@@ -9,6 +9,8 @@ import { calcularPlanTekit } from '../plan/itinerarioTekit'
 import { urlBorradorTekit } from '../plan/borradorTekit'
 import { calcularPlanHomun } from '../plan/itinerarioHomun'
 import { urlBorradorHomun } from '../plan/borradorHomun'
+import { calcularPlanTicul } from '../plan/itinerarioTicul'
+import { urlBorradorTicul } from '../plan/borradorTicul'
 import '../../../styles/itinerario-izamal.css'
 
 /** CU-09: el router conserva RutaProtegida; solo se lee la cuenta actual. */
@@ -22,6 +24,10 @@ export default function MiViajePage() {
     {error && <p role="alert" className="iz-plan-error">{error}</p>}
     {!itinerarios.length && <p role="status">Todavía no hay itinerarios guardados para esta cuenta en este navegador.</p>}
     <ul>{itinerarios.map(item => {
+      if (item.destino === 'ticul') {
+        const plan = calcularPlanTicul(item.borrador).plan!
+        return <li key={item.id} className="iz-plan-tarjeta"><h2>Ticul · {item.borrador.modo}</h2><p>{item.borrador.configuracion.fecha} · {item.borrador.configuracion.horaInicio} · {plan.seleccion.length} lugares · {duracionPlan(plan.totalMinutos)}</p><p>Guardado en este navegador: {new Date(item.guardadoEn).toLocaleString()}</p><Link to={urlBorradorTicul('itinerario', item.borrador)}>Abrir itinerario de Ticul</Link></li>
+      }
       if (item.destino === 'homun') {
         const plan = calcularPlanHomun(item.borrador).plan!
         return <li key={item.id} className="iz-plan-tarjeta"><h2>Homún · {item.borrador.modo}</h2>{plan.jornadas.map(d => <p key={d.dia}>Día {d.dia} · {d.fecha} · {d.horaInicio} · {d.seleccion.length} lugares · {duracionPlan(d.totalMinutos)}</p>)}<p>Guardado en este navegador: {new Date(item.guardadoEn).toLocaleString()}</p><Link to={urlBorradorHomun('itinerario', item.borrador)}>Abrir itinerario de Homún</Link></li>
@@ -41,5 +47,6 @@ export default function MiViajePage() {
     <Link className="iz-plan-primario" to="/rutas/valladolid">Preparar otro itinerario en Valladolid</Link>
     <Link className="iz-plan-primario" to="/rutas/tekit">Preparar otro itinerario en Tekit</Link>
     <Link className="iz-plan-primario" to="/rutas/homun">Preparar otro itinerario en Homún</Link>
+    <Link className="iz-plan-primario" to="/rutas/ticul">Preparar otro itinerario en Ticul</Link>
   </section>
 }
