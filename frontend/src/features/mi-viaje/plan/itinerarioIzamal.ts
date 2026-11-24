@@ -1,4 +1,5 @@
 import { lugaresIzamal, MARGEN_FINAL_MINUTOS, ordenRecomendadoIzamal, TRASLADO_FINAL_MINUTOS } from '../data/lugaresIzamal'
+import { inicioLocal as construirInicioLocal, instanteLocal, horaLocal } from './tiempoLocal'
 
 export type EstanciaIzamal = 'medio-dia' | 'dia-completo' | 'tarde-magica'
 export type ModoItinerario = 'recomendado' | 'personalizado'
@@ -41,12 +42,7 @@ export const estanciasIzamal = {
 
 /** Constructor local; nunca interpreta YYYY-MM-DD como una fecha UTC. */
 export function inicioLocal(config: ConfiguracionViaje): Date | null {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(config.fecha) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(config.horaInicio)) return null
-  const [ano, mes, dia] = config.fecha.split('-').map(Number)
-  const [hora, minuto] = config.horaInicio.split(':').map(Number)
-  if (ano < 1000 || ano > 9999) return null
-  const fecha = new Date(ano, mes - 1, dia, hora, minuto)
-  return fecha.getFullYear() === ano && fecha.getMonth() === mes - 1 && fecha.getDate() === dia && fecha.getHours() === hora && fecha.getMinutes() === minuto ? fecha : null
+  return construirInicioLocal(config)
 }
 
 export function validarConfiguracion(config: ConfiguracionViaje): string[] {
@@ -100,18 +96,11 @@ export function calcularPlan(borrador: BorradorIzamal): ResultadoPlan {
 }
 
 export function instantePlan(config: ConfiguracionViaje, minutos: number): Date {
-  const inicio = inicioLocal(config)
-  if (!inicio) throw new Error('Configuración de fecha y hora inválida.')
-  return new Date(inicio.getTime() + minutos * 60_000)
+  return instanteLocal(config, minutos)
 }
 
 export function horaPlan(config: ConfiguracionViaje, minutos: number): string {
-  const fecha = instantePlan(config, minutos)
-  const inicio = inicioLocal(config)!
-  return fecha.toLocaleString(undefined, {
-    ...(fecha.toDateString() !== inicio.toDateString() ? { day: '2-digit', month: 'short' } as const : {}),
-    hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
-  })
+  return horaLocal(config, minutos)
 }
 
 export function duracionPlan(minutos: number): string {
