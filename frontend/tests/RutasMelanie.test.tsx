@@ -12,6 +12,7 @@ import {
 import { describe, expect, it } from 'vitest'
 
 import RutasPage from '../src/features/transporte/pages/RutasPage'
+import DetalleRutaPage from '../src/features/transporte/pages/DetalleRutaPage'
 
 function montar(ruta = '/rutas') {
   const router = createMemoryRouter(
@@ -28,7 +29,7 @@ function montar(ruta = '/rutas') {
           },
           {
             path: 'rutas/:id',
-            element: <p>Detalle de ruta</p>,
+            element: <DetalleRutaPage />,
           },
         ],
       },
@@ -181,5 +182,8 @@ describe('Catálogo de rutas de Melanie CU-02', () => {
     expect(router.state.location.pathname).toBe(
       '/rutas/izamal',
     )
+    expect(
+      screen.getByRole('heading', { name: 'Izamal', level: 1 }),
+    ).toBeInTheDocument()
   })
 })
