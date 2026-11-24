@@ -16,6 +16,7 @@ export default function Layout() {
   const esDetalleValladolid = /^\/rutas\/valladolid\/?$/.test(pathname)
   const esDetalleTekit = /^\/rutas\/tekit\/?$/.test(pathname)
   const esDetalleHomun = /^\/rutas\/homun\/?$/.test(pathname)
+  const esDetalleTicul = /^\/rutas\/ticul\/?$/.test(pathname)
 
   if (esAcceso) {
     return (
@@ -31,7 +32,7 @@ export default function Layout() {
         Saltar al contenido
       </a>
 
-      {pathname !== '/' && pathname !== '/rutas' && !esFlujoIzamal && !esDetalleValladolid && !esDetalleTekit && !esDetalleHomun && (
+      {pathname !== '/' && pathname !== '/rutas' && !esFlujoIzamal && !esDetalleValladolid && !esDetalleTekit && !esDetalleHomun && !esDetalleTicul && (
         <header className="biin-cabecera-simple">
           <button
             className="biin-icon-button"
