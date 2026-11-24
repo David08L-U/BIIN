@@ -3,6 +3,8 @@ import { lugaresIzamal } from '../data/lugaresIzamal'
 import type { BorradorIzamal } from '../plan/itinerarioIzamal'
 import { calcularPlanValladolid } from '../plan/itinerarioValladolid'
 import type { BorradorValladolid } from '../plan/itinerarioValladolid'
+import { calcularPlanTekit } from '../plan/itinerarioTekit'
+import type { BorradorTekit } from '../plan/itinerarioTekit'
 
 export interface ItinerarioLocal {
   /** Los registros v1 antiguos sin destino pertenecen a Izamal. */
@@ -17,7 +19,13 @@ export interface ItinerarioValladolidLocal {
   guardadoEn: string
   borrador: BorradorValladolid
 }
-export type ItinerarioGuardado = ItinerarioLocal | ItinerarioValladolidLocal
+export interface ItinerarioTekitLocal {
+  destino: 'tekit'
+  id: string
+  guardadoEn: string
+  borrador: BorradorTekit
+}
+export type ItinerarioGuardado = ItinerarioLocal | ItinerarioValladolidLocal | ItinerarioTekitLocal
 interface LecturaLocales {
   itinerarios: ItinerarioGuardado[]
   error: string | null
@@ -44,9 +52,17 @@ function esBorradorValladolid(valor: unknown): valor is BorradorValladolid {
     typeof valor.modo === 'string' && valor.seleccion.every(s => esObjeto(s) && typeof s.lugarId === 'string' && Number.isSafeInteger(s.dia)) && calcularPlanValladolid(valor as unknown as BorradorValladolid).plan !== null
 }
 
+function esBorradorTekit(valor: unknown): valor is BorradorTekit {
+  if (!esObjeto(valor) || valor.destino !== 'tekit' || valor.generado !== true || !esObjeto(valor.configuracion) || !Array.isArray(valor.seleccion)) return false
+  const config = valor.configuracion
+  return ['estancia', 'fecha', 'horaInicio', 'minutosDisponibles'].every(campo => typeof config[campo] === 'string') &&
+    typeof valor.modo === 'string' && valor.seleccion.every(id => typeof id === 'string') && calcularPlanTekit(valor as unknown as BorradorTekit).plan !== null
+}
+
 function esItinerario(valor: unknown): valor is ItinerarioGuardado {
   if (!esObjeto(valor) || typeof valor.id !== 'string' || !valor.id.length || typeof valor.guardadoEn !== 'string' || !Number.isFinite(Date.parse(valor.guardadoEn))) return false
   if (valor.destino === 'valladolid') return esBorradorValladolid(valor.borrador)
+  if (valor.destino === 'tekit') return esBorradorTekit(valor.borrador)
   return (valor.destino === undefined || valor.destino === 'izamal') && esBorrador(valor.borrador) && calcularPlan(valor.borrador).plan !== null
 }
 
@@ -75,6 +91,10 @@ export function leerItinerariosLocales(idUsuario: number): LecturaLocales {
 
 function identidad(item: ItinerarioGuardado): string {
   const config = item.borrador.configuracion
+  if (item.destino === 'tekit') {
+    const plan = calcularPlanTekit(item.borrador).plan!
+    return JSON.stringify(['tekit', config.estancia, item.borrador.modo, [[config.fecha, config.horaInicio, Number(config.minutosDisponibles), plan.seleccion]]])
+  }
   if (item.destino === 'valladolid') {
     const plan = calcularPlanValladolid(item.borrador).plan!
     return JSON.stringify(['valladolid', config.estancia, item.borrador.modo, plan.jornadas.map(dia => [dia.fecha, dia.horaInicio, Number(dia.minutosDisponibles), dia.seleccion])])
@@ -84,12 +104,14 @@ function identidad(item: ItinerarioGuardado): string {
 }
 
 type Guardado<T> = { guardado: T | null; error: string | null }
-// Conserva el contrato de Izamal y ofrece un resultado discriminado para Valladolid.
+// Conserva el contrato de Izamal y discrimina los resultados de Valladolid y Tekit.
 export function guardarItinerarioLocal(idUsuario: number, borrador: BorradorIzamal): Guardado<ItinerarioLocal>
 export function guardarItinerarioLocal(idUsuario: number, borrador: BorradorValladolid): Guardado<ItinerarioValladolidLocal>
-export function guardarItinerarioLocal(idUsuario: number, borrador: BorradorIzamal | BorradorValladolid): Guardado<ItinerarioGuardado> {
+export function guardarItinerarioLocal(idUsuario: number, borrador: BorradorTekit): Guardado<ItinerarioTekitLocal>
+export function guardarItinerarioLocal(idUsuario: number, borrador: BorradorIzamal | BorradorValladolid | BorradorTekit): Guardado<ItinerarioGuardado> {
   let candidato: ItinerarioGuardado
   if (esBorradorValladolid(borrador)) candidato = { destino: 'valladolid', id: '', guardadoEn: '', borrador }
+  else if (esBorradorTekit(borrador)) candidato = { destino: 'tekit', id: '', guardadoEn: '', borrador }
   else if (esBorrador(borrador) && calcularPlan(borrador).plan) candidato = { destino: 'izamal', id: '', guardadoEn: '', borrador }
   else return { guardado: null, error: 'Genera un plan válido antes de guardarlo.' }
   const lectura = leerItinerariosLocales(idUsuario)
