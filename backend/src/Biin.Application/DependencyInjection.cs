@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddScoped<NegociosService>();
         services.AddScoped<EventosService>();
         services.AddScoped<LugaresService>();
+        services.AddScoped<ExplorarService>();
         return services;
     }
 }
