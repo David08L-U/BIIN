@@ -1,5 +1,7 @@
+import ModosPlan from '../components/ModosPlan'
+import CabeceraPlan from '../components/CabeceraPlan'
 import { useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 import ConfiguracionValladolid from '../components/ConfiguracionValladolid'
 import Icono from '../components/IconoItinerario'
 import { categoriasValladolid, lugaresValladolid } from '../data/lugaresValladolid'
@@ -8,8 +10,6 @@ import { useBorradorValladolid } from '../hooks/useBorradorValladolid'
 import { urlBorradorValladolid } from '../plan/borradorValladolid'
 import { calcularPlanValladolid, resumirJornadaValladolid, ventanasValladolid } from '../plan/itinerarioValladolid'
 import { duracionPlan } from '../plan/itinerarioIzamal'
-import '../../../styles/itinerario-izamal.css'
-import '../../../styles/itinerario-valladolid.css'
 
 /** Reutiliza la estructura aprobada del selector, sin cambiar la pantalla de Izamal. */
 export default function PersonalizarValladolidPage() {
@@ -31,13 +31,12 @@ export default function PersonalizarValladolidPage() {
     setErrores(resultado.errores)
     if (resultado.plan) navegar(urlBorradorValladolid('itinerario', { ...borrador, generado: true }))
   }
-  return <article className="iz-plan iz-personalizar va-personalizar" aria-labelledby="va-personalizar-titulo">
-    <header className="iz-plan-cabecera iz-personalizar-cabecera">
-      <Link className="iz-plan-icono-boton" to={urlBorradorValladolid('detalle', borrador)} aria-label="Volver a detalle de ruta"><Icono nombre="arrow_back" tamano={24} /></Link>
-      <div><h1 id="va-personalizar-titulo">Personalizar Itinerario</h1><p className="iz-plan-ceja">Valladolid · La Sultana del Oriente</p></div>
-      <div className="iz-personalizar-utilidades"><button type="button" className="iz-plan-icono-boton" aria-label="Reiniciar selección" onClick={restablecer}><Icono nombre="restart_alt" tamano={22} /></button><span className="iz-plan-avatar" aria-hidden="true"><Icono nombre="person" tamano={18} /></span></div>
-    </header>
-    <div className="va-modos" role="group" aria-label="Modo de planificación"><Link to={urlBorradorValladolid('itinerario', { ...borrador, modo: 'recomendado', generado: false })}>Recomendado</Link><Link aria-current="page" to={urlBorradorValladolid('personalizar', { ...borrador, modo: 'personalizado', generado: false })}>Personalizado</Link></div>
+  return <article className="iz-plan iz-personalizar" aria-labelledby="va-personalizar-titulo">
+    <CabeceraPlan id="va-personalizar-titulo" titulo="Personalizar Itinerario" subtitulo="Valladolid · La Sultana del Oriente" volver={urlBorradorValladolid('detalle', borrador)} personalizar acciones={<>
+          <button type="button" className="iz-plan-icono-boton" aria-label="Reiniciar selección" onClick={restablecer}><Icono nombre="restart_alt" tamano={22} /></button>
+          <span className="iz-plan-avatar" aria-hidden="true"><Icono nombre="person" tamano={18} /></span>
+        </>} />
+      <ModosPlan modo={borrador.modo} recomendado={urlBorradorValladolid('itinerario', { ...borrador, modo: 'recomendado', generado: false })} personalizado={urlBorradorValladolid('personalizar', { ...borrador, modo: 'personalizado', generado: false })} />
     <form noValidate onSubmit={generar}>
       <section className="iz-plan-contexto">
         <div className="iz-plan-transito"><Icono nombre="directions_bus" /><strong>BIIN · Ruta Mérida-Valladolid</strong><span>Sin confirmar</span></div>
@@ -46,7 +45,7 @@ export default function PersonalizarValladolidPage() {
           const resumen = resumirJornadaValladolid(borrador.seleccion.filter(s => s.dia === v.dia).map(s => s.lugarId))
           const disponibles = /^\d+$/.test(v.minutosDisponibles) && Number(v.minutosDisponibles) >= 15 && Number(v.minutosDisponibles) <= 720 ? Number(v.minutosDisponibles) : 0
           const restante = disponibles - resumen.totalMinutos
-          return <div className="iz-plan-presupuesto va-presupuesto" role="status" aria-label={`Resumen del Día ${v.dia}`} key={v.dia}>
+          return <div className="iz-plan-presupuesto" role="status" aria-label={`Resumen del Día ${v.dia}`} key={v.dia}>
             <div><span><Icono nombre="schedule" />Día {v.dia} · Tiempo acumulado</span><strong>{duracionPlan(resumen.totalMinutos)} / {disponibles ? duracionPlan(disponibles) : 'Sin configurar'}</strong></div>
             <progress aria-label={`Tiempo utilizado del Día ${v.dia}`} value={Math.min(resumen.totalMinutos, disponibles || 1)} max={disponibles || 1} />
             <p>{resumen.visitasMinutos} min de visitas + {resumen.trasladosMinutos} min de desplazamientos (incluye traslado final) + 15 min de margen final.</p>
@@ -67,7 +66,7 @@ export default function PersonalizarValladolidPage() {
           return <article key={lugar.id} className="iz-plan-lugar iz-plan-tarjeta">
             <label className="iz-plan-lugar-seleccion"><input type="checkbox" aria-label={lugar.nombre} checked={!!elegida} onChange={() => seleccionar(lugar.id)} /><span className="iz-plan-lugar-textos"><span className="iz-plan-lugar-titulo">{lugar.nombre}</span><span className="iz-plan-insignia">{lugar.etiqueta}</span></span></label>
             <div className="iz-plan-lugar-detalle"><p>{lugar.descripcion}</p><div className="iz-plan-metadatos"><span><Icono nombre="timer" tamano={14} />{duracionPlan(lugar.visitaMinutos)}</span><span><Icono nombre="directions_walk" tamano={14} />{lugar.trasladoMinutos} min estimados</span><span>Demostración</span></div>
-              {elegida && ventanas.length === 2 && <label className="va-asignacion">Jornada de {lugar.nombre}<select value={elegida.dia} onChange={e => { actualizar({ seleccion: borrador.seleccion.map(s => s.lugarId === lugar.id ? { ...s, dia: Number(e.target.value) } : s) }); setErrores([]) }}><option value="1">Día 1</option><option value="2">Día 2</option></select></label>}
+              {elegida && ventanas.length === 2 && <label className="iz-plan-asignacion">Jornada de {lugar.nombre}<select value={elegida.dia} onChange={e => { actualizar({ seleccion: borrador.seleccion.map(s => s.lugarId === lugar.id ? { ...s, dia: Number(e.target.value) } : s) }); setErrores([]) }}><option value="1">Día 1</option><option value="2">Día 2</option></select></label>}
             </div>
           </article>
         })}</div>
