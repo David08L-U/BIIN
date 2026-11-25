@@ -20,6 +20,7 @@ public static class DependencyInjection
         services.AddScoped<LugaresService>();
         services.AddScoped<ExplorarService>();
         services.AddScoped<ItinerariosService>();
+        services.AddScoped<AdminContenidosService>();
         return services;
     }
 }
