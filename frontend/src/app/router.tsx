@@ -28,11 +28,17 @@ import ItinerarioTiculPage from '../features/mi-viaje/pages/ItinerarioTiculPage'
 import PersonalizarTiculPage from '../features/mi-viaje/pages/PersonalizarTiculPage'
 
 import MiViajePage from '../features/mi-viaje/pages/MiViajePage'
+import PerfilPage from '../features/perfil/pages/PerfilPage'
+import VistaPreviaPerfilPage from '../features/perfil/pages/VistaPreviaPerfilPage'
 
 export const router = createBrowserRouter([
   {
     element: <EntradaApp />,
     children: [
+      ...(import.meta.env.DEV ? [{
+        path: 'vista-previa/perfil',
+        element: <VistaPreviaPerfilPage />,
+      }] : []),
       {
         index: true,
         element: <InicioPage />,
@@ -125,12 +131,7 @@ export const router = createBrowserRouter([
         children: [
           {
             path: 'perfil',
-            element: (
-              <PaginaEnConstruccion
-                titulo="Mi perfil"
-                casos="CU-01"
-              />
-            ),
+            element: <PerfilPage />,
           },
           {
             path: 'mi-viaje',

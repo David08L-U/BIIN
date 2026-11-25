@@ -15,6 +15,8 @@ export default function Layout() {
   const cerrarMenu = () => menu.current?.close()
 
   const esAcceso = pathname === '/login' || pathname === '/registro'
+  const esVistaPreviaPerfil = import.meta.env.DEV && /^\/vista-previa\/perfil\/?$/.test(pathname)
+  const esPerfil = /^\/perfil\/?$/.test(pathname) || esVistaPreviaPerfil
 
   const esFlujoIzamal =
     /^\/rutas\/izamal(?:\/(?:itinerario|personalizar))?\/?$/.test(pathname)
@@ -51,7 +53,8 @@ export default function Layout() {
         !esDetalleValladolid &&
         !esDetalleTekit &&
         !esDetalleHomun &&
-        !esDetalleTicul && (
+        !esDetalleTicul &&
+        !esPerfil && (
           <header className="biin-cabecera-simple">
             <button
               className="biin-icon-button"
@@ -106,7 +109,7 @@ export default function Layout() {
           <span>Mi viaje</span>
         </NavLink>
 
-        <NavLink to="/perfil">
+        <NavLink to={esVistaPreviaPerfil ? '/vista-previa/perfil' : '/perfil'}>
           <span aria-hidden="true" className="biin-icon">
             person
           </span>
