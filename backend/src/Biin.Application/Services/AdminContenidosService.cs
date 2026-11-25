@@ -169,6 +169,69 @@ public class AdminContenidosService(IAppDbContext db, IBitacoraAdmin bitacora, I
         return (inicio, fin);
     }
 
+    // Estados (RF12, RF06)
+
+    /// <summary>Publica un contenido revisado: queda visible al público y al asistente de IA.</summary>
+    public async Task<ContenidoAdminDto> PublicarAsync(int idAdmin, int idRecurso, CancellationToken ct = default)
+    {
+        var recurso = await CargarAsync(idRecurso, null, ct, seguimiento: true);
+        if (recurso.EstadoPublicacion == EstadoPublicacion.Publicado)
+            throw new ReglaNegocioException("El contenido ya está publicado.");
+
+        var revisor = await db.Usuarios.SingleOrDefaultAsync(u => u.IdUsuario == idAdmin, ct)
+            ?? throw new NoAutenticadoException("Usuario no encontrado.");
+        var estadoAnterior = recurso.EstadoPublicacion;
+        recurso.EstadoPublicacion = EstadoPublicacion.Publicado;
+        recurso.IdRevisor = idAdmin;
+        recurso.Revisor = revisor;
+        recurso.FechaRevision = reloj.AhoraUtc;
+        recurso.ActualizadoEn = reloj.AhoraUtc;
+
+        bitacora.Registrar(idAdmin, AccionesBitacora.Publicar, "recursos", idRecurso.ToString(),
+            new { estadoAnterior = estadoAnterior.ToString().ToLowerInvariant() });
+        await db.SaveChangesAsync(ct);
+        return ADto(recurso);
+    }
+
+    /// <summary>Retira un contenido sin borrarlo: deja de verse en público pero se conserva para favoritos e historial.</summary>
+    public async Task<ContenidoAdminDto> ArchivarAsync(int idAdmin, int idRecurso, CancellationToken ct = default)
+    {
+        var recurso = await CargarAsync(idRecurso, null, ct, seguimiento: true);
+        if (recurso.EstadoPublicacion == EstadoPublicacion.Archivado)
+            throw new ReglaNegocioException("El contenido ya está archivado.");
+
+        var estadoAnterior = recurso.EstadoPublicacion;
+        recurso.EstadoPublicacion = EstadoPublicacion.Archivado;
+        recurso.ActualizadoEn = reloj.AhoraUtc;
+
+        bitacora.Registrar(idAdmin, AccionesBitacora.Archivar, "recursos", idRecurso.ToString(),
+            new { estadoAnterior = estadoAnterior.ToString().ToLowerInvariant() });
+        await db.SaveChangesAsync(ct);
+        return ADto(recurso);
+    }
+
+    /// <summary>Marca un evento como programado, cancelado o finalizado (RF06: los cambios se muestran al público).</summary>
+    public async Task<ContenidoAdminDto> CambiarEstadoEventoAsync(
+        int idAdmin, int idRecurso, CambiarEstadoEventoRequest req, CancellationToken ct = default)
+    {
+        if (!Enum.IsDefined(req.EstadoEvento))
+            throw new ReglaNegocioException("Estado de evento no válido.");
+
+        var recurso = await CargarAsync(idRecurso, TipoRecurso.Evento, ct, seguimiento: true);
+        var evento = recurso.Evento!;
+        if (evento.EstadoEvento == req.EstadoEvento)
+            return ADto(recurso);
+
+        var estadoAnterior = evento.EstadoEvento;
+        evento.EstadoEvento = req.EstadoEvento;
+        recurso.ActualizadoEn = reloj.AhoraUtc;
+
+        bitacora.Registrar(idAdmin, AccionesBitacora.Editar, "eventos", idRecurso.ToString(),
+            new { estadoAnterior = estadoAnterior.ToString().ToLowerInvariant(), estadoNuevo = req.EstadoEvento.ToString().ToLowerInvariant() });
+        await db.SaveChangesAsync(ct);
+        return ADto(recurso);
+    }
+
     // Piezas comunes
 
     private IQueryable<Recurso> ConsultaCompleta() =>
