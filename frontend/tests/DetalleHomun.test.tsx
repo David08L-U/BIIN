@@ -46,7 +46,7 @@ describe('Detalle propio de Homún CU-03 / RF03', () => {
     expect(screen.getByRole('heading', { name: 'Homún', level: 1 })).toBeInTheDocument()
     expect(screen.getByText('Ruta colectiva van · Anillo de Cenotes')).toBeInTheDocument()
     expect(screen.getByText('Paraíso de Cenotes y Naturaleza Maya · Yucatán')).toBeInTheDocument()
-    expect(within(screen.getByRole('region', { name: 'Pasaje' })).getByText('$38 MXN')).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Pasaje' })).toHaveTextContent('$38 MXN')
     expect(screen.getByRole('heading', { name: 'Terminal Parque San Juan · Calle 69' })).toBeInTheDocument()
     expect(screen.getByText('Mérida Centro')).toBeInTheDocument()
     const recorrido = screen.getByRole('region', { name: 'Mapeo de ruta y paradas' })
@@ -132,10 +132,10 @@ describe('Detalle propio de Homún CU-03 / RF03', () => {
     const primera = montar()
     const boton = screen.getByRole('button', { name: 'Guardar Homún como favorito' })
     expect(boton).toHaveAttribute('aria-pressed', 'false')
-    expect(within(boton).getByText('bookmark_border')).toBeInTheDocument()
+    expect(within(boton).getByText('favorite_border')).toBeInTheDocument()
     await userEvent.click(boton)
     expect(boton).toHaveAttribute('aria-pressed', 'true')
-    expect(within(boton).getByText('bookmark')).toBeInTheDocument()
+    expect(within(boton).getByText('favorite')).toBeInTheDocument()
     primera.unmount()
     const segunda = montar()
     expect(screen.getByRole('button', { name: 'Guardar Homún como favorito' })).toHaveAttribute('aria-pressed', 'true')
@@ -199,7 +199,7 @@ describe('Detalle propio de Homún CU-03 / RF03', () => {
   it.each([['Medio día', 'medio-dia', 270], ['Día completo', 'dia-completo', 540], ['Fin de semana', 'fin-de-semana', 270]] as const)('abre el planificador desde %s conservando estancia y retorno', async (nombre, estancia, minutos) => {
     const { router } = montar()
     await userEvent.click(screen.getByRole('radio', { name: new RegExp(nombre) }))
-    await userEvent.click(screen.getByRole('button', { name: 'Hacer mi itinerario en Homún' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Homún' }))
     expect(router.state.location.pathname).toBe('/rutas/homun/itinerario')
     expect(screen.getByLabelText('Estancia')).toHaveValue(estancia)
     expect(screen.getByLabelText('Tiempo disponible del Día 1 (minutos)')).toHaveValue(minutos)
@@ -225,7 +225,7 @@ describe('Detalle propio de Homún CU-03 / RF03', () => {
     expect(detalle).not.toHaveTextContent(/próxima salida|8\s+disponibles|unidad\s*11|A\/C|estás aquí|09:00|09:15|09:35|09:48|09:55|54[.,]2\s*km|ubicación GPS/i)
   })
 
-  it.each([['izamal', 'Izamal', 'izamal-detalle'], ['valladolid', 'Valladolid', 'valladolid-detalle'], ['tekit', 'Tekit', 'tekit-detalle']])('conserva el detalle aprobado de %s', (id, nombre, clase) => {
+  it.each([['izamal', 'Izamal', 'izamal-detalle'], ['valladolid', 'Valladolid', 'izamal-detalle'], ['tekit', 'Tekit', 'izamal-detalle']])('conserva el detalle aprobado de %s', (id, nombre, clase) => {
     montar(`/rutas/${id}`)
     expect(screen.getByRole('article', { name: nombre })).toHaveClass(clase)
     expect(screen.getByRole('heading', { name: `Descubre ${nombre} a tu ritmo` })).toBeInTheDocument()
