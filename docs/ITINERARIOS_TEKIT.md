@@ -1,5 +1,12 @@
 # Itinerarios de Tekit — CU-09 / RF09, HU09
 
+El detalle, el recorrido y la personalización usan la composición visual de
+Izamal con el contenido textil y el circuito ilustrativo de Tekit. Ruta Textil
+· Compras empieza con ambos campos vacíos.
+
+El tiempo disponible se introduce en Horas y Minutos. El total válido va de
+15 min a 12 h. La URL y los planes guardados siguen utilizando minutos totales.
+
 Implementación frontend demostrativa de la actividad 13 del plan del proyecto.
 Se conservan los flujos de Izamal y Valladolid y el detalle aprobado de Tekit.
 No añade dependencias ni modifica backend, autenticación, permisos o modelo de BD.
@@ -12,13 +19,6 @@ No añade dependencias ni modifica backend, autenticación, permisos o modelo de
 - `/rutas/tekit/personalizar`: patrón de categorías, selección, contadores y
   presupuesto de tiempo aprobado en Izamal, con contenido y estilos propios de Tekit.
 - `/mi-viaje`: protegido con el acceso existente; lista y abre los tres destinos.
-
-La cabecera alinea el título junto al regreso. El resultado conserva la composición
-del HTML de Tekit: resumen textil, conexión blanca, filtros horizontales, tarjetas
-compactas con horarios redondeados, cierre, circuito ilustrativo, consejos y acciones.
-El circuito es un esquema del orden de visita sin escala, posiciones GPS ni radio
-geográfico verificado. El HTML original no aporta una imagen de mapa del circuito.
-Las cuatro tarjetas del itinerario original tampoco contienen fotografías de visitas.
 
 Hay una sola navegación inferior, con Rutas activa. Los controles tienen etiquetas,
 foco visible, uso de teclado y espacio final sobre la navegación. El CSS es exclusivo

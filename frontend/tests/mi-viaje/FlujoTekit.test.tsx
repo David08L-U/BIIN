@@ -35,7 +35,8 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
     expect(screen.getAllByRole('navigation', { name: 'Navegación principal' })).toHaveLength(1)
     expect(within(nav).getByRole('link', { name: 'Rutas' })).toHaveAttribute('aria-current', 'page')
     expect(container.querySelector('.biin-cabecera-simple')).not.toBeInTheDocument()
-    expect(screen.getByLabelText('Tiempo disponible (minutos)')).toHaveValue(240)
+    expect(screen.getByLabelText('Horas')).toHaveValue(4)
+    expect(screen.getByLabelText('Minutos')).toHaveValue(0)
     expect(screen.queryByRole('heading', { name: 'Paso a paso a pie' })).not.toBeInTheDocument()
   })
 
@@ -85,12 +86,14 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
     montar('/rutas/tekit')
     await userEvent.click(screen.getByRole('radio', { name: /Ruta Textil.*Compras/ }))
     await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Tekit' }))
-    expect(screen.getByLabelText('Tiempo disponible (minutos)')).toHaveValue(null)
+    expect(screen.getByLabelText('Horas')).toHaveValue(null)
+    expect(screen.getByLabelText('Minutos')).toHaveValue(null)
     fireEvent.change(screen.getByLabelText('Fecha de visita'), { target: { value: '2026-11-30' } })
     await userEvent.click(screen.getByRole('button', { name: 'Generar itinerario recomendado' }))
     expect(screen.getByRole('alert')).toHaveTextContent('no tiene duración fija')
     expect(screen.getByRole('button', { name: 'Guardar itinerario' })).toBeDisabled()
-    fireEvent.change(screen.getByLabelText('Tiempo disponible (minutos)'), { target: { value: '360' } })
+    fireEvent.change(screen.getByLabelText('Horas'), { target: { value: '6' } })
+    fireEvent.change(screen.getByLabelText('Minutos'), { target: { value: '0' } })
     await userEvent.click(screen.getByRole('button', { name: 'Generar itinerario recomendado' }))
     expect(screen.getAllByText(/Visita estimada:/)).toHaveLength(2)
     expect(screen.queryByRole('heading', { name: 'Cocina Económica Doña Lupita y Mercado' })).not.toBeInTheDocument()
@@ -110,7 +113,7 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
 
   it.each([
     ['Hora de inicio', '', 'hora de inicio válida'],
-    ['Tiempo disponible (minutos)', '12.5', 'número entero'],
+    ['Horas', '1.5', 'número entero'],
     ['Fecha de visita', '', 'fecha válida'],
   ])('valida %s antes de generar', async (campo, valor, mensaje) => {
     montar(`/rutas/tekit/itinerario?${config}`)
@@ -160,7 +163,8 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
     expect(new URLSearchParams(router.state.location.search).get('lugares')).toBe('taller-bordado,corredor-textil')
     await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
     await userEvent.selectOptions(screen.getByLabelText('Estancia o modalidad'), 'ruta-textil')
-    expect(screen.getByLabelText('Tiempo disponible (minutos)')).toHaveValue(null)
+    expect(screen.getByLabelText('Horas')).toHaveValue(null)
+    expect(screen.getByLabelText('Minutos')).toHaveValue(null)
     expect(screen.queryByRole('heading', { name: 'Paso a paso a pie' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Guardar itinerario' })).toBeDisabled()
   })

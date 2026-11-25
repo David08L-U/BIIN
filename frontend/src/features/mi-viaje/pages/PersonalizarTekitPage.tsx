@@ -9,7 +9,7 @@ import type { CategoriaTekit } from '../data/lugaresTekit'
 import { useBorradorTekit } from '../hooks/useBorradorTekit'
 import { parametrosBorradorTekit, urlBorradorTekit } from '../plan/borradorTekit'
 import { calcularPlanTekit, resumirSeleccionTekit } from '../plan/itinerarioTekit'
-import { duracionPlan } from '../plan/duracion'
+import { duracionPlan, leerDuracion } from '../plan/duracion'
 
 export default function PersonalizarTekitPage() {
   const { borrador, actualizar } = useBorradorTekit('personalizado')
@@ -18,8 +18,7 @@ export default function PersonalizarTekitPage() {
   const clave = parametrosBorradorTekit(borrador).toString()
   const [intento, setIntento] = useState<{ clave: string; errores: string[] } | null>(null)
   const resumen = resumirSeleccionTekit(borrador.seleccion)
-  const n = Number(borrador.configuracion.minutosDisponibles)
-  const disponibles = /^\d+$/.test(borrador.configuracion.minutosDisponibles) && Number.isSafeInteger(n) && n >= 15 && n <= 720 ? n : null
+  const disponibles = leerDuracion(borrador.configuracion.minutosDisponibles)
   const contador = (id: CategoriaTekit) => lugaresTekit.filter(l => l.categoria === id && borrador.seleccion.includes(l.id)).length
   const errores = borrador.generado ? calcularPlanTekit(borrador).errores : intento?.clave === clave ? intento.errores : []
   function restablecer() { actualizar({ seleccion: [], generado: false }); setIntento(null) }
