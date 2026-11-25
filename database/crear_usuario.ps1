@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Crea un usuario de BIIN con un rol, por ejemplo el primer administrador.
 

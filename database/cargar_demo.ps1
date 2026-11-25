@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Carga o borra los datos de demostración (Homún como ejemplo).
 

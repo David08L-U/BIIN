@@ -1,4 +1,4 @@
-<#
+﻿<#
     Funciones compartidas por los scripts de database/.
     Lee las conexiones de backend/src/Biin.Api/appsettings.Development.json:
       ConnectionStrings:BiinAdmin  usuario postgres, solo para estos scripts

@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Comprueba que la base de BIIN esté completa y ejecuta las pruebas SQL.
 
@@ -33,7 +33,8 @@ Write-Resultado 'Tablas del modelo' ($tablas -eq 30) "($tablas de 30)"
 $vistas = [int](Invoke-Psql $admin $base @('-tAc', "SELECT count(*) FROM information_schema.views WHERE table_schema = 'public' AND table_name IN ('v_recursos_publicados', 'v_paradas_ruta', 'v_cupo_vigente')"))
 Write-Resultado 'Vistas de consulta' ($vistas -eq 3) "($vistas de 3)"
 
-$funcion = Invoke-Psql $admin $base @('-tAc', "SELECT f_normalizar('Homún MÉRIDA')")
+# Va por la entrada estándar: Windows pasa los argumentos en ANSI y psql espera UTF-8
+$funcion = Invoke-Psql $admin $base @('-tA') -Entrada "SELECT f_normalizar('Homún MÉRIDA');"
 Write-Resultado 'Búsqueda sin acentos' ($funcion -eq 'homun merida') "(f_normalizar devuelve '$funcion')"
 
 $roles = [int](Invoke-Psql $admin $base @('-tAc', "SELECT count(*) FROM roles WHERE nombre IN ('viajero', 'colaborador', 'operador', 'administrador')"))

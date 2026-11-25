@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Crea la base de datos de BIIN y ejecuta todos los scripts en orden.
 
