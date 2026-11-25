@@ -72,12 +72,14 @@ BIIN/
 │   │   │   └── Configuration/
 │   │   ├── Biin.Application/      Reglas de negocio
 │   │   │   ├── Services/
-│   │   │   ├── DTOs/
-│   │   │   ├── Interfaces/
+│   │   │   ├── DTOs/              Comun/ (paginación), Catalogos/, Contenidos/, Itinerarios/, Admin/…
+│   │   │   ├── Interfaces/        IAppDbContext, IReloj, IBitacoraAdmin…
+│   │   │   ├── Consultas/         FuncionesBd: f_normalizar() usable en LINQ
 │   │   │   ├── Validators/
 │   │   │   └── Mappings/
 │   │   ├── Biin.Domain/           Modelo sin dependencias externas
 │   │   │   ├── Entities/
+│   │   │   ├── Vistas/            Filas de las vistas v_* (solo lectura)
 │   │   │   ├── Enums/
 │   │   │   └── Exceptions/
 │   │   └── Biin.Infrastructure/   Datos y servicios externos
@@ -86,6 +88,7 @@ BIIN/
 │   │       │   └── Migrations/
 │   │       ├── Repositories/
 │   │       ├── ExternalServices/
+│   │       ├── Tiempo/            RelojSistema (IReloj)
 │   │       └── Security/
 │   └── tests/
 │       ├── Biin.UnitTests/
@@ -123,6 +126,10 @@ BIIN/
 - Los servicios (`Application/Services`) consultan con `IAppDbContext`, que expone los `DbSet` de EF Core. `Repositories/` queda para consultas complejas que convenga aislar.
 - Las reglas de negocio lanzan las excepciones de `Domain/Exceptions`; `ManejoErroresMiddleware` las convierte en el código HTTP correcto (400, 401, 403, 404, 409) con `ProblemDetails`.
 - Cada servicio nuevo se registra en `Application/DependencyInjection.cs`.
+- Las vistas de `004_vistas.sql` se leen como entidades sin llave (`VRecursosPublicados`, `VParadasRuta`, `VCupoVigente`). Lo que ve el público o el asistente de IA debe salir de contenido **publicado** (RF08).
+- Para buscar sin acentos dentro de una consulta: `FuncionesBd.Normalizar(columna).Contains(FuncionesBd.NormalizarTexto(texto))`; EF Core lo traduce a `f_normalizar()` y usa los índices trigram.
+- Las reglas que dependen de la hora usan `IReloj` (no `DateTime.UtcNow`) y `ZonaYucatan` para convertir a la hora local (UTC−6). Las columnas `timestamptz` se guardan en UTC; una hora sin zona se rechaza con 400.
+- Los enums viajan en JSON como texto snake_case (`"cancelado"`, `"en_curso"`), igual que en la base.
 
 ### Versiones
 
@@ -142,11 +149,26 @@ BIIN/
 | Cuenta y sesión | CU-01 | `features/auth` | Auth, Usuarios |
 | Transporte | CU-02, CU-03, CU-13 | `features/transporte` | Rutas, Tarifas, Horarios |
 | Operador | CU-04 | `features/cupo` | Salidas, ReportesCupo |
-| Exploración | CU-05, CU-06, CU-07, CU-14 | `features/exploracion` | Recursos, Negocios, Eventos, Lugares, Categorias |
+| Exploración | CU-05, CU-06, CU-07, CU-14 | `features/exploracion` | Catalogos, Negocios, Eventos, Lugares, Explorar |
 | Mi Viaje | CU-09, CU-10 | `features/mi-viaje` | Itinerarios, Favoritos |
 | Asistente de IA | CU-08 | `features/asistente` | Asistente |
 | Consulta sin conexión | CU-11 | `src/offline` | (usa los endpoints de consulta) |
 | Administración | CU-12 | `features/admin` | Admin* |
+
+### Endpoints del backend ya implementados
+
+| Ruta | Acceso | Qué hace |
+|---|---|---|
+| `GET /api/catalogos/{categorias,municipios,localidades}` | Público | Filtros; localidades buscan sin acentos |
+| `GET /api/negocios`, `/api/negocios/{id}` | Público | RF05: localidad, municipio, categoría, presupuesto, texto; horarios y «abierto ahora» |
+| `GET /api/eventos`, `/api/eventos/{id}` | Público | RF06: próximos por defecto, rango de días en hora de Yucatán, estado (incluye cancelados) |
+| `GET /api/lugares`, `/api/lugares/{id}` | Público | RF07: categoría, costo máximo, condiciones de acceso |
+| `GET /api/explorar` | Público | CU-14: todo lo publicado de una categoría, sin rutas ni eventos terminados |
+| `/api/itinerarios[/{id}[/actividades…]]` | Viajero | RF09: CRUD, actividades, reordenar, traslados estimados y advertencias |
+| `/api/admin/contenidos…` | Administrador | RF12: crear/editar negocios, lugares y eventos, publicar, archivar, cancelar evento, horarios, fotos |
+| `/api/admin/{localidades,ubicaciones,bitacora}` | Administrador | Geografía para contenidos y bitácora 17.1.5 |
+
+**Advertencias de un itinerario** (no bloquean, se devuelven en el detalle): `conflicto_horario`, `traslado_insuficiente`, `fuera_de_fechas`, `fuera_de_horario`, `evento_cancelado`, `contenido_no_disponible`. El traslado es una estimación (haversine × 1.3 a 40 km/h) y no sustituye horarios ni recorridos reales.
 
 Dentro de cada `features/<modulo>/` se usan las subcarpetas que hagan falta: `components/`, `pages/`, `hooks/` y `api/`. Se crean conforme se programe el módulo.
 
@@ -313,12 +335,13 @@ Los usuarios de la aplicación se crean desde la API (registro, siempre como via
 | `crear_bd.ps1 [-Recrear] [-Demo]` | Crea la base completa; con `-Demo` carga también la demo |
 | `cargar_demo.ps1 [-Borrar]` | Carga o borra los datos de demostración de Homún |
 | `crear_usuario.ps1 -Correo -Nombre -Rol [-Rutas]` | Crea un usuario con rol; pide la contraseña en pantalla |
+| `verificar_bd.ps1` | Comprueba 30 tablas, 3 vistas, `f_normalizar`, roles y permisos de `biin_app`, y ejecuta `pruebas/*.sql` |
 | `respaldar_bd.ps1` | Respaldo `.dump` en `database/backups/` (paquete 8.2.4) |
 | `restaurar_bd.ps1 [-Archivo]` | Restaura un respaldo; pide confirmación |
 | `pruebas/001_reglas.sql` | 15 pruebas de restricciones y triggers |
 | `pruebas/002_busqueda_vistas.sql` | 9 pruebas de búsqueda y vistas |
 
-Todos leen las conexiones de `appsettings.Development.json`; ninguna contraseña va en el repositorio ni en la línea de comandos.
+Todos leen las conexiones de `appsettings.Development.json`; ninguna contraseña va en el repositorio ni en la línea de comandos. Se guardan en UTF-8 con BOM y mandan el SQL con acentos por la entrada estándar, para que funcionen igual en PowerShell 7 y en Windows PowerShell 5.1. `psql` se busca en `BIIN_PG_BIN`, en las carpetas de PostgreSQL 18, 17 o 16 y en el `PATH`.
 
 ### 4.13 Datos de demostración
 
@@ -348,7 +371,8 @@ Tres áreas del dominio (ver FigJam → Zona 2 → Versión 2 → Diagramas de c
 
 | Nivel | Herramienta | Qué se verifica |
 |---|---|---|
-| Unitarias backend | **xUnit** | Servicios y reglas: búsqueda por orden de paradas, vigencia del cupo |
+| Unitarias backend | **xUnit** | Servicios y reglas: búsqueda por orden de paradas, vigencia del cupo, horarios de visita, traslados, advertencias de itinerario |
+| Integración con BD | **xUnit + PostgreSQL real** (`[FactBd]`, variable `BIIN_PRUEBAS_BD`) | Que cada DbSet coincida con el esquema SQL, que EF Core traduzca filtros y `f_normalizar`, y los flujos CU-01, CU-09 y CU-12 de punta a punta |
 | Unitarias frontend | **Vitest + React Testing Library** | Componentes y validación de formularios |
 | API / integración | **Postman** | Endpoints, códigos de respuesta, JWT y permisos por rol |
 | PWA, rendimiento, accesibilidad | **Lighthouse** | Instalación, offline, tiempos de carga, contraste (RNF01, 03, 06, 07) |
