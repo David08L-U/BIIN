@@ -24,11 +24,12 @@ export default function CampoDuracion({ valor, onChange, dia, ayuda }: {
   ayuda?: string
 }) {
   const id = useId()
-  const inicial = () => ({ valor, ...separar(valor), editado: false })
+  const inicial = () => ({ recibido: valor, enviado: valor, ...separar(valor), editado: false })
   // La URL recibe un vacío mientras hay una edición parcial. Conserva los dos
   // campos mientras el usuario edita y sincronízalos cuando llega otro total.
   const [edicion, setEdicion] = useState(inicial)
-  const actual = edicion.valor === valor ? edicion : inicial()
+  const actual = valor === edicion.recibido ? edicion
+    : valor === edicion.enviado ? { ...edicion, recibido: valor } : inicial()
   if (actual !== edicion) setEdicion(actual)
   const error = actual.editado || valor ? validar(actual.horas, actual.minutos) : ''
   const descripcion = ayuda ? `${id} ${ayuda}` : id
@@ -38,7 +39,7 @@ export default function CampoDuracion({ valor, onChange, dia, ayuda }: {
     const total = validar(siguiente.horas, siguiente.minutos)
       ? ''
       : String(Number(siguiente.horas) * 60 + Number(siguiente.minutos))
-    setEdicion({ ...siguiente, valor: total })
+    setEdicion({ ...siguiente, enviado: total })
     onChange(total)
   }
 

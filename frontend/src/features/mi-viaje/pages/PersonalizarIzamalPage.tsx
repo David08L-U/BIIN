@@ -1,4 +1,4 @@
-import { duracionPlan } from '../plan/duracion'
+import { duracionPlan, leerDuracion } from '../plan/duracion'
 import ModosPlan from '../components/ModosPlan'
 import CabeceraPlan from '../components/CabeceraPlan'
 import { useState, type FormEvent } from 'react'
@@ -17,9 +17,8 @@ export default function PersonalizarIzamalPage() {
   const [categoria, setCategoria] = useState<CategoriaIzamal>('gastronomia')
   const [errores, setErrores] = useState<string[]>([])
   const resumen = resumirSeleccion(borrador.seleccion)
-  const minutos = Number(borrador.configuracion.minutosDisponibles)
-  const disponibles = /^\d+$/.test(borrador.configuracion.minutosDisponibles) && Number.isSafeInteger(minutos) && minutos >= 15 && minutos <= 720 ? minutos : 0
-  const restante = disponibles - resumen.totalMinutos
+  const disponibles = leerDuracion(borrador.configuracion.minutosDisponibles)
+  const restante = disponibles === null ? null : disponibles - resumen.totalMinutos
   const categoriaActual = categoriasIzamal.find(opcion => opcion.id === categoria)!
   const contador = (id: CategoriaIzamal) => lugaresIzamal.filter(lugar => lugar.categoria === id && borrador.seleccion.includes(lugar.id)).length
 
@@ -54,10 +53,10 @@ export default function PersonalizarIzamalPage() {
           <div className="iz-plan-transito"><Icono nombre="directions_bus" /><strong>Van BIIN · Ruta Mérida-Izamal</strong><span>Sin confirmar</span></div>
           <p>Elige tus paradas por categoría para armar tu ruta a pie personalizada dentro de tu margen de estancia en Izamal.</p>
           <div className="iz-plan-presupuesto" role="status" aria-live="polite">
-            <div><span><Icono nombre="schedule" />Tiempo acumulado</span><strong>{duracionPlan(resumen.totalMinutos)} / {disponibles > 0 && Number.isFinite(disponibles) ? duracionPlan(disponibles) : 'Sin configurar'}</strong></div>
-            <progress aria-label="Tiempo utilizado" value={Math.min(resumen.totalMinutos, disponibles || 1)} max={disponibles || 1} />
+            <div><span><Icono nombre="schedule" />Tiempo acumulado</span><strong>{duracionPlan(resumen.totalMinutos)} / {disponibles === null ? 'Sin configurar' : duracionPlan(disponibles)}</strong></div>
+            <progress aria-label="Tiempo utilizado" value={Math.min(resumen.totalMinutos, disponibles ?? 1)} max={disponibles || 1} />
             <p>{duracionPlan(resumen.visitasMinutos)} de visitas + {duracionPlan(resumen.trasladosMinutos)} de desplazamientos estimados + 15 min de margen final.</p>
-            <p>{restante >= 0 ? `Tiempo libre: ${duracionPlan(restante)}` : `Excede el tiempo disponible por ${duracionPlan(Math.abs(restante))}.`}</p>
+            <p>{restante === null ? 'Configura tu tiempo disponible.' : restante >= 0 ? `Tiempo libre: ${duracionPlan(restante)}` : `Excede el tiempo disponible por ${duracionPlan(Math.abs(restante))}.`}</p>
           </div>
         </section>
         <ConfiguracionViaje configuracion={borrador.configuracion} onChange={configuracion => { actualizar({ configuracion }); setErrores([]) }} />

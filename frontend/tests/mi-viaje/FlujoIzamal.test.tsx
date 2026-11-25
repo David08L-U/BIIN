@@ -38,7 +38,8 @@ afterAll(() => routerAplicacion.dispose())
 describe('Flujo de itinerarios de Izamal CU-09', () => {
   it.each(['itinerario', 'personalizar'])('abre directamente %s y conserva una sola navegación con Rutas activa', modo => {
     const { container } = montar(`/rutas/izamal/${modo}?estancia=tarde-magica`)
-    expect(screen.getByLabelText('Tiempo disponible (minutos)')).toHaveValue(180)
+    expect(screen.getByLabelText('Horas')).toHaveValue(3)
+    expect(screen.getByLabelText('Minutos')).toHaveValue(0)
     expect(screen.getAllByRole('navigation', { name: 'Navegación principal' })).toHaveLength(1)
     expect(within(screen.getByRole('navigation', { name: 'Navegación principal' })).getByRole('link', { name: 'Rutas' })).toHaveAttribute('aria-current', 'page')
     expect(container.querySelector('.biin-cabecera-simple')).not.toBeInTheDocument()
@@ -78,7 +79,7 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
 
   it.each([
     ['Hora de inicio', '', 'Elige una hora de inicio válida'],
-    ['Tiempo disponible (minutos)', '12.5', 'número entero entre 15 min y 12 h'],
+    ['Horas', '1.5', 'número entero entre 15 min y 12 h'],
   ])('valida %s antes de generar una recomendación', async (campo, valor, mensaje) => {
     montar(`/rutas/izamal/itinerario?${configuracion}`)
     fireEvent.change(screen.getByLabelText(campo), { target: { value: valor } })
@@ -90,12 +91,14 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
 
   it('no elimina la selección que excede el presupuesto y permite corregirla', async () => {
     montar(`/rutas/izamal/personalizar?${configuracion}&lugares=kinich,convento`)
-    fireEvent.change(screen.getByLabelText('Tiempo disponible (minutos)'), { target: { value: '120' } })
+    fireEvent.change(screen.getByLabelText('Horas'), { target: { value: '2' } })
+    fireEvent.change(screen.getByLabelText('Minutos'), { target: { value: '0' } })
     await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
     expect(screen.getByRole('alert')).toHaveTextContent('excede el tiempo disponible por 27 min')
     expect(screen.getByRole('checkbox', { name: 'Restaurante Kinich' })).toBeChecked()
     expect(screen.getByText('2 lugares seleccionados')).toBeInTheDocument()
-    fireEvent.change(screen.getByLabelText('Tiempo disponible (minutos)'), { target: { value: '240' } })
+    fireEvent.change(screen.getByLabelText('Horas'), { target: { value: '4' } })
+    fireEvent.change(screen.getByLabelText('Minutos'), { target: { value: '0' } })
     await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
     expect(screen.getByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
   })
@@ -118,6 +121,29 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     expect(screen.getByLabelText('Hora de inicio')).toHaveValue('12:45')
     expect(screen.getByLabelText('Fecha de visita')).toHaveValue('2026-11-30')
     expect(screen.getByText('0 lugares seleccionados')).toBeInTheDocument()
+  })
+
+  it('invalida el resultado al vaciar minutos y mantiene el total en la URL al completar la duración', async () => {
+    const { router } = montar('/rutas/izamal/itinerario?fecha=2026-11-30&inicio=10:00&minutos=270&generado=1')
+    const horas = screen.getByLabelText('Horas')
+    const minutos = screen.getByLabelText('Minutos')
+    expect(horas).toHaveValue(4)
+    expect(minutos).toHaveValue(30)
+    expect(screen.getByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
+
+    await userEvent.clear(minutos)
+    expect(minutos).toHaveValue(null)
+    expect(horas).toHaveValue(4)
+    expect(new URLSearchParams(router.state.location.search).get('minutos')).toBe('')
+    expect(screen.getByRole('button', { name: 'Guardar itinerario' })).toBeDisabled()
+    await userEvent.click(screen.getByRole('button', { name: 'Generar itinerario recomendado' }))
+    expect(screen.getByRole('alert')).toHaveTextContent('entre 15 min y 12 h')
+    expect(screen.queryByRole('heading', { name: 'Paso a paso a pie' })).not.toBeInTheDocument()
+
+    await userEvent.type(minutos, '45')
+    expect(new URLSearchParams(router.state.location.search).get('minutos')).toBe('285')
+    await userEvent.click(screen.getByRole('button', { name: 'Generar itinerario recomendado' }))
+    expect(screen.getByText(/4 h 45 min disponibles/)).toBeInTheDocument()
   })
 
   it('personaliza un plan previo conservando selección y permite limpiar el resultado anterior', async () => {

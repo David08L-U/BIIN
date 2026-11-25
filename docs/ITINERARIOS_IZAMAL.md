@@ -1,5 +1,12 @@
 # Itinerarios de Izamal — CU-09 / RF09
 
+El detalle de Izamal define la plantilla común de rutas. El itinerario y la
+personalización comparten la cabecera, los controles de modo y los estilos de
+configuración, filtros, recorrido y acciones con los otros destinos.
+
+El tiempo disponible se introduce en Horas y Minutos. El total válido va de
+15 min a 12 h. La URL y los planes guardados siguen utilizando minutos totales.
+
 Implementación provisional en `frontend/src/features/mi-viaje`. El backend actual
 contiene entidades de itinerario, pero todavía no ofrece un servicio HTTP utilizable.
 No se modificaron autenticación, permisos ni tablas.
