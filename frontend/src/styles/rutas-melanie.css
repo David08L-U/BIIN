@@ -101,7 +101,7 @@
   margin: 0;
   font-size: 26px;
   line-height: 32px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.02em;
 }
 
@@ -173,11 +173,11 @@
   display: block;
   overflow: hidden;
   background: var(--color-superficie);
-  border: 1px solid #eae6df;
+  border: 1px solid var(--color-borde-tarjeta);
   border-radius: 12px;
   color: var(--color-primario);
   text-decoration: none;
-  box-shadow: 0 2px 8px -2px #2b18100a;
+  box-shadow: var(--sombra-tarjeta);
   transition: border-color 0.15s ease;
 }
 
