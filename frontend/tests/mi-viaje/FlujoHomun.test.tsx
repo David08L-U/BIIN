@@ -136,7 +136,7 @@ describe('Flujo de Homún CU-09 / RF09', () => {
     expect(screen.getByRole('button', { name: 'Guardar itinerario' })).toBeDisabled()
     await userEvent.click(screen.getByRole('link', { name: 'Volver a detalle de ruta' }))
     expect(screen.getByRole('radio', { name: /Fin de semana/ })).toBeChecked()
-    await userEvent.click(screen.getByRole('button', { name: 'Hacer mi itinerario en Homún' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Homún' }))
     expect(screen.getByLabelText('Hora de inicio del Día 2')).toHaveValue('10:00')
   })
   it('conserva configuración y selección al alternar modos y navegar atrás/adelante', async () => {
