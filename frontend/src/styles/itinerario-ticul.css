@@ -1,5 +1,5 @@
 /* Ticul: resumen ámbar, conexión blanca y cronología del prototipo. */
-.ti-plan { min-width: 0; padding-bottom: 32px; background: #fff8f1; color: #1e1b17; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; line-height: 20px; }
+.ti-plan { min-width: 0; padding-bottom: 32px; background: var(--color-fondo); color: #1e1b17; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; line-height: 20px; }
 .ti-plan * { box-sizing: border-box; min-width: 0; }
 .ti-plan :is(h1, h2, h3, p) { margin: 0; }
 .ti-plan :is(h1, h2, h3) { font-family: var(--fuente-titulos); font-size: 18px; line-height: 24px; font-weight: 600; }
@@ -12,7 +12,7 @@
 .ti-plan :is(button, a, input, select):focus-visible { outline: 3px solid #855400; outline-offset: 3px; }
 .ti-plan :is(button, a, input, select) { scroll-margin-block: 100px 110px; }
 .ti-plan .biin-icon { flex-shrink: 0; }
-.ti-cabecera { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 12px; padding: 8px 20px; background: #fff8f1; box-shadow: 0 1px 2px #0000000d; }
+.ti-cabecera { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 12px; padding: 8px 20px; background: var(--color-fondo); box-shadow: 0 1px 2px #0000000d; }
 .ti-titulo { flex: 1; }
 .ti-cabecera .ti-ceja { color: #855400; font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 .ti-icono-boton { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 40px; width: 40px; height: 40px; padding: 0; border-radius: 50%; background: #f4ede5; }
@@ -21,7 +21,7 @@
 .ti-contenido { display: flex; flex-direction: column; gap: 16px; padding: 16px 20px 0; }
 .ti-resumen-chip { display: inline-flex; align-items: center; align-self: flex-start; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #fdae3f; color: #6d4400; box-shadow: 0 1px 2px #0000000d; font-size: 12px; line-height: 16px; font-weight: 600; }
 .ti-nota, .ti-vacio { color: #4f4440; font-size: 12px; line-height: 18px; }
-.ti-tarjeta { border-radius: 12px; background: #fff; box-shadow: 0 1px 2px #0000000d; }
+.ti-tarjeta { border: 1px solid var(--color-borde-tarjeta); border-radius: 12px; background: var(--color-superficie); box-shadow: var(--sombra-tarjeta); }
 .ti-modos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .ti-modos a { display: grid; place-items: center; min-height: 40px; padding: 8px; border-radius: 8px; background: #f4ede5; color: #1e1b17; font-size: 12px; font-weight: 600; text-decoration: none; }
 .ti-modos a[aria-current] { background: #070100; color: #fff; }
@@ -60,7 +60,7 @@
 .ti-cronologia::before { content: ''; position: absolute; left: 7px; top: 12px; bottom: 24px; width: 2px; background: #e8e1da; }
 .ti-cronologia > li { position: relative; }
 .ti-marcador { position: absolute; left: -20px; top: 6px; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: #855400; box-shadow: 0 1px 2px #0000000d; }
-.ti-marcador::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #fff8f1; }
+.ti-marcador::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--color-fondo); }
 .ti-marcador-cierre { background: #070100; color: #fff; }
 .ti-marcador-cierre::after { content: none; }
 .ti-paso { display: flex; flex-direction: column; gap: 8px; padding: 16px; }

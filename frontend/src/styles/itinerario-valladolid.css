@@ -2,7 +2,7 @@
  * cronología de 32 px, imágenes de visitas 112 px y mapa de 176 px.
  * La personalización reutiliza la estructura aprobada; estas reglas no alteran Izamal.
  */
-.va-plan { width: 100%; min-width: 0; padding-bottom: 32px; background: #fff8f1; color: #1e1b17; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; line-height: 20px; overflow-wrap: anywhere; }
+.va-plan { width: 100%; min-width: 0; padding-bottom: 32px; background: var(--color-fondo); color: #1e1b17; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; line-height: 20px; overflow-wrap: anywhere; }
 .va-plan :is(h1, h2, h3, h4, p) { margin: 0; }
 .va-plan :is(h1, h2, h3, h4) { font-family: var(--fuente-titulos); font-size: 18px; line-height: 24px; font-weight: 600; }
 .va-plan h1 { font-weight: 700; }
@@ -22,7 +22,7 @@
 .va-contenido { display: flex; flex-direction: column; gap: 16px; min-width: 0; padding: 16px 20px 0; }
 .va-estancia { display: inline-flex; align-self: flex-start; align-items: center; gap: 4px; border-radius: 999px; padding: 4px 16px; background: #f4ede5; font-size: 12px; line-height: 16px; font-weight: 600; }
 .va-estancia .biin-icon { color: #855400; }
-.va-tarjeta { min-width: 0; border-radius: 12px; background: #fff; box-shadow: 0 1px 2px #0000000d; }
+.va-tarjeta { min-width: 0; border: 1px solid var(--color-borde-tarjeta); border-radius: 12px; background: var(--color-superficie); box-shadow: var(--sombra-tarjeta); }
 .va-modos { display: flex; flex-wrap: wrap; gap: 8px; }
 .va-modos a { display: flex; align-items: center; justify-content: center; min-height: 38px; border: 1px solid #d3c3be66; border-radius: 999px; padding: 6px 14px; background: #fff; color: #1e1b17; font-size: 12px; line-height: 16px; text-decoration: none; }
 .va-modos a[aria-current='page'] { background: #070100; color: #fff; }

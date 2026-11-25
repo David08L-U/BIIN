@@ -8,11 +8,13 @@
 
   --color-primario: #352219;
   --color-primario-oscuro: #23150e;
-  --color-fondo: #fff8f0;
+  --color-fondo: #fafaf8;
   --color-superficie: #ffffff;
   --color-texto: var(--color-primario);
   --color-texto-suave: #66554b;
   --color-borde: #e8ddd2;
+  --color-borde-tarjeta: rgba(0, 0, 0, 0.65);
+  --sombra-tarjeta: 0 1px 3px rgba(0, 0, 0, 0.08);
   --color-secundario: #b94d32;
   --color-secundario-texto: #983d26;
   --color-secundario-suave: #f7e4da;

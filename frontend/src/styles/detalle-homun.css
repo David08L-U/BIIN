@@ -9,7 +9,7 @@
   gap: 16px;
   min-width: 0;
   padding: calc(4px + env(safe-area-inset-top)) 20px 40px;
-  background: #fff8f1;
+  background: var(--color-fondo);
   color: #1e1b17;
   font-size: 14px;
   line-height: 20px;
@@ -31,7 +31,7 @@
 .homun-presentacion h1 { padding-top: 4px; font-size: 26px; line-height: 32px; font-weight: 700; letter-spacing: -0.025em; }
 .homun-presentacion p { color: #4f4440; }
 
-.homun-superficie { min-width: 0; border-radius: 12px; padding: 16px; background: #faf3eb; box-shadow: 0 1px 2px #0000000d; }
+.homun-superficie { min-width: 0; border: 1px solid var(--color-borde-tarjeta); border-radius: 12px; padding: 16px; background: var(--color-superficie); box-shadow: var(--sombra-tarjeta); }
 .homun-metricas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .homun-metrica { display: flex; flex-direction: column; justify-content: space-between; gap: 12px; }
 .homun-metrica-cabecera { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; color: #4f4440; }
@@ -57,7 +57,7 @@
 .homun-imagen, .homun-imagen-alternativa { position: absolute; inset: 0; width: 100%; height: 100%; }
 .homun-imagen { display: block; object-fit: cover; }
 .homun-imagen-alternativa { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 12px 16px 48px; background: #e8e1da; color: #4f4440; font-size: 11px; line-height: 16px; text-align: center; }
-.homun-imagen-alternativa > span:last-child { position: relative; z-index: 1; border-radius: 4px; padding: 4px 8px; background: #fff8f1; }
+.homun-imagen-alternativa > span:last-child { position: relative; z-index: 1; border-radius: 4px; padding: 4px 8px; background: var(--color-fondo); }
 .homun-mapa::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, #070100cc, #07010033, transparent); pointer-events: none; }
 .homun-mapa-leyenda { position: absolute; z-index: 1; bottom: 10px; left: 10px; right: 10px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; color: #fff; font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.04em; }
 .homun-mapa-leyenda > span:first-child { display: flex; align-items: center; gap: 4px; }
@@ -69,7 +69,7 @@
 .homun-marcador { display: grid; place-items: center; width: 24px; height: 24px; margin-top: 2px; border-radius: 50%; background: #eee7df; }
 .homun-marcador::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #817470; }
 .homun-parada-origen .homun-marcador { background: #070100; box-shadow: 0 1px 2px #0000000d; }
-.homun-parada-origen .homun-marcador::before { background: #fff8f1; }
+.homun-parada-origen .homun-marcador::before { background: var(--color-fondo); }
 .homun-parada-destino .homun-marcador { background: #855400; color: #fff; box-shadow: 0 1px 2px #0000000d; }
 .homun-parada-destino .homun-marcador::before { content: none; }
 .homun-parada-titulo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 8px; }

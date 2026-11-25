@@ -1,5 +1,5 @@
 /* Tekit: composición y tokens del prototipo de Melanie, aislados del resto. */
-.tk-plan { min-width: 0; padding-bottom: 32px; background: #fff8f1; color: #1e1b17; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; line-height: 20px; }
+.tk-plan { min-width: 0; padding-bottom: 32px; background: var(--color-fondo); color: #1e1b17; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; line-height: 20px; }
 .tk-plan * { box-sizing: border-box; min-width: 0; }
 .tk-plan h1, .tk-plan h2, .tk-plan h3, .tk-plan p { margin: 0; }
 .tk-plan h1, .tk-plan h2, .tk-plan h3 { font-family: var(--fuente-titulos); }
@@ -27,7 +27,7 @@
 .tk-modos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .tk-modos a { min-height: 40px; display: grid; place-items: center; padding: 8px; border-radius: 8px; background: #eee7df; color: #1e1b17; font-size: 12px; font-weight: 600; text-decoration: none; }
 .tk-modos a[aria-current] { background: #070100; color: #fff; }
-.tk-tarjeta { border-radius: 12px; background: #fff; box-shadow: 0 1px 2px #0000000d; }
+.tk-tarjeta { border: 1px solid var(--color-borde-tarjeta); border-radius: 12px; background: var(--color-superficie); box-shadow: var(--sombra-tarjeta); }
 .tk-formulario, .tk-personalizar form { display: flex; flex-direction: column; gap: 16px; }
 .tk-config { display: flex; flex-direction: column; gap: 12px; width: 100%; border: 0; margin: 0; padding: 16px; }
 .tk-config legend { display: flex; align-items: center; gap: 8px; padding: 0 4px; font-weight: 600; }
@@ -80,7 +80,7 @@
 .tk-circuito-ilustrado ol { display: flex; justify-content: space-around; gap: 8px; position: relative; list-style: none; margin: 0; padding: 0; }
 .tk-circuito-ilustrado ol::before { content: ''; position: absolute; top: 19px; left: 12%; right: 12%; border-top: 2px dashed #855400; }
 .tk-circuito-ilustrado li { display: flex; flex: 1; flex-direction: column; align-items: center; gap: 8px; z-index: 1; text-align: center; }
-.tk-circuito-ilustrado li > span { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid #855400; border-radius: 50%; background: #fff8f1; color: #855400; }
+.tk-circuito-ilustrado li > span { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid #855400; border-radius: 50%; background: var(--color-fondo); color: #855400; }
 .tk-circuito-ilustrado small { font-size: 10px; line-height: 14px; color: #4f4440; }
 .tk-circuito-ilustrado > p { margin-top: 12px; font-size: 11px; line-height: 16px; color: #4f4440; }
 .tk-consejos { display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 12px; background: #faf3eb; }
@@ -101,7 +101,7 @@
 .tk-presupuesto strong { font-size: 14px; }
 .tk-presupuesto p { font-size: 12px; line-height: 18px; color: #4f4440; }
 .tk-presupuesto progress { width: 100%; height: 10px; accent-color: #855400; }
-.tk-contador { display: inline-grid; place-items: center; min-width: 20px; height: 20px; border-radius: 50%; background: #fff8f1; color: #1e1b17; }
+.tk-contador { display: inline-grid; place-items: center; min-width: 20px; height: 20px; border-radius: 50%; background: var(--color-fondo); color: #1e1b17; }
 .tk-selector { display: flex; flex-direction: column; gap: 12px; }
 .tk-lugar { display: flex; flex-direction: column; gap: 10px; padding: 16px; }
 .tk-lugar label { flex-direction: row; align-items: flex-start; gap: 12px; cursor: pointer; }

@@ -158,10 +158,10 @@
 
 .izamal-tarjeta {
   min-width: 0;
-  border: 1px solid #d3c3be99;
+  border: 1px solid var(--color-borde-tarjeta);
   border-radius: 12px;
   background: var(--color-superficie);
-  box-shadow: 0 1px 2px #0000000d;
+  box-shadow: var(--sombra-tarjeta);
 }
 
 .izamal-metricas {

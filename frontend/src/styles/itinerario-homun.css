@@ -1,5 +1,5 @@
 /* Homún: tokens, bloques beige e imágenes del prototipo. Estilos exclusivos. */
-.hm-plan { min-width: 0; padding-bottom: 32px; background: #fff8f1; color: #1e1b17; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; line-height: 20px; }
+.hm-plan { min-width: 0; padding-bottom: 32px; background: var(--color-fondo); color: #1e1b17; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; line-height: 20px; }
 .hm-plan * { box-sizing: border-box; min-width: 0; }
 .hm-plan :is(h1, h2, h3, h4, p) { margin: 0; }
 .hm-plan :is(h1, h2, h3, h4) { font-family: var(--fuente-titulos); font-weight: 600; }
@@ -23,7 +23,7 @@
 .hm-resumen-chip { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; border-radius: 999px; padding: 8px 14px; background: #faf3eb; color: #070100; font-size: 12px; line-height: 16px; font-weight: 600; }
 .hm-resumen-chip .biin-icon { color: #855400; }
 .hm-nota, .hm-vacio { color: #4f4440; font-size: 12px; line-height: 18px; }
-.hm-tarjeta { border-radius: 12px; background: #fff; box-shadow: 0 1px 2px #0000000d; }
+.hm-tarjeta { border: 1px solid var(--color-borde-tarjeta); border-radius: 12px; background: var(--color-superficie); box-shadow: var(--sombra-tarjeta); }
 .hm-modos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .hm-modos a { display: grid; place-items: center; min-height: 40px; padding: 8px; border-radius: 8px; background: #f4ede5; color: #1e1b17; font-size: 12px; font-weight: 600; text-decoration: none; }
 .hm-modos a[aria-current] { background: #070100; color: #fff; }

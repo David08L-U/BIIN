@@ -519,13 +519,13 @@
   align-items: center;
   gap: 11px;
   background: var(--color-superficie);
-  border: 1px solid #eae6df;
+  border: 1px solid var(--color-borde-tarjeta);
   border-radius: 12px;
   min-height: 100px;
   padding: 12px;
   color: var(--color-primario);
   text-decoration: none;
-  box-shadow: 0 2px 8px #2b181009;
+  box-shadow: var(--sombra-tarjeta);
 }
 
 .melanie-ruta-icono {
