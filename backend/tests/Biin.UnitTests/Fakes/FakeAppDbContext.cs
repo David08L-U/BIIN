@@ -89,6 +89,28 @@ public sealed class FakeAppDbContext : IAppDbContext
             }
         }
 
+        var recursos = Set<Recurso>().Items;
+        foreach (var r in recursos.Where(r => r.IdRecurso == 0))
+        {
+            r.IdRecurso = recursos.Max(x => x.IdRecurso) + 1;
+            if (r.Negocio is not null) r.Negocio.IdRecurso = r.IdRecurso;
+            if (r.Lugar is not null) r.Lugar.IdRecurso = r.IdRecurso;
+            if (r.Evento is not null) r.Evento.IdRecurso = r.IdRecurso;
+            foreach (var rc in r.Categorias) rc.IdRecurso = r.IdRecurso;
+        }
+
+        var fotos = Set<Fotografia>().Items;
+        foreach (var f in fotos.Where(f => f.IdFotografia == 0))
+            f.IdFotografia = fotos.Max(x => x.IdFotografia) + 1;
+
+        var localidades = Set<Localidad>().Items;
+        foreach (var l in localidades.Where(l => l.IdLocalidad == 0))
+            l.IdLocalidad = localidades.Max(x => x.IdLocalidad) + 1;
+
+        var ubicaciones = Set<Ubicacion>().Items;
+        foreach (var u in ubicaciones.Where(u => u.IdUbicacion == 0))
+            u.IdUbicacion = ubicaciones.Max(x => x.IdUbicacion) + 1;
+
         var itinerarios = Set<Itinerario>().Items;
         foreach (var i in itinerarios.Where(i => i.IdItinerario == 0))
             i.IdItinerario = itinerarios.Max(x => x.IdItinerario) + 1;
