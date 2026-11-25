@@ -203,10 +203,6 @@
   z-index: 0;
 }
 
-.melanie-mapa .leaflet-tile-pane {
-  filter: grayscale(1) brightness(0.9) contrast(1.38);
-}
-
 .melanie-mapa button:focus-visible {
   outline: 3px solid var(--color-secundario);
   outline-offset: -3px;

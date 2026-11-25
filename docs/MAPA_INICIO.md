@@ -7,7 +7,7 @@ ilustrativos y sus referencias de transporte.
 El proveedor de teselas es OpenStreetMap. La atribución enlaza a los derechos
 de autor desde el propio mapa. El navegador carga las teselas HTTPS a demanda
 y utiliza la caché HTTP del proveedor. No se requieren claves privadas.
-La escala de grises y el contraste se aplican a la capa de teselas. Las
+La capa base se presenta a color, sin filtros ni transformaciones de teselas. Las
 jerarquías de calles y sus rótulos proceden de la cartografía del proveedor.
 
 El botón **Usar mi ubicación** inicia `watchPosition` en un contexto seguro.
