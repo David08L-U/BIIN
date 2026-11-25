@@ -203,7 +203,7 @@
 }
 
 .melanie-mapa .leaflet-tile-pane {
-  filter: grayscale(1);
+  filter: grayscale(1) contrast(1.24);
 }
 
 .melanie-mapa button:focus-visible {
@@ -215,7 +215,7 @@
   border: 3px solid #2b1810;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 0 0 7px #fdae3f30, 0 0 0 14px #fdae3f20;
+  box-shadow: 0 0 0 3px #fff8f0, 0 0 0 8px #d9952040, 0 3px 8px #35221955;
   object-fit: cover;
 }
 
