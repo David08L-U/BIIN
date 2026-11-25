@@ -38,11 +38,22 @@ function Get-ConexionAdmin {
 }
 
 function Find-HerramientaPg([string]$nombre) {
-    $ruta = "C:\Program Files\PostgreSQL\18\bin\$nombre.exe"
-    if (Test-Path $ruta) { return $ruta }
+    # 1. Carpeta indicada por el desarrollador (instalación portable o no estándar)
+    if ($env:BIIN_PG_BIN) {
+        $ruta = Join-Path $env:BIIN_PG_BIN "$nombre.exe"
+        if (Test-Path $ruta) { return $ruta }
+        $ruta = Join-Path $env:BIIN_PG_BIN $nombre
+        if (Test-Path $ruta) { return $ruta }
+    }
+    # 2. Instaladores oficiales de Windows (16 o superior, la más nueva primero)
+    foreach ($version in 18, 17, 16) {
+        $ruta = "C:\Program Files\PostgreSQL\$version\bin\$nombre.exe"
+        if (Test-Path $ruta) { return $ruta }
+    }
+    # 3. Lo que esté en el PATH
     $cmd = Get-Command $nombre -ErrorAction SilentlyContinue
     if ($cmd) { return $cmd.Source }
-    throw "No se encontró $nombre. Instala PostgreSQL 18 o agrega su carpeta bin al PATH."
+    throw "No se encontró $nombre. Instala PostgreSQL 16 o superior, agrega su carpeta bin al PATH o define BIIN_PG_BIN."
 }
 
 function Invoke-PgComando {
