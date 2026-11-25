@@ -66,6 +66,10 @@ function Invoke-PgComando {
     $exe = Find-HerramientaPg $Herramienta
     $env:PGPASSWORD = $Conexion.Contrasena
     $env:PGCLIENTENCODING = 'UTF8'
+    # Windows PowerShell 5.1 manda la entrada canalizada en ASCII y convierte
+    # "á" o "ñ" en "?" (nombres y contraseñas). Se fuerza UTF-8 sin BOM.
+    $encodingAnterior = $OutputEncoding
+    $OutputEncoding = [System.Text.UTF8Encoding]::new($false)
     try {
         $base = @('-h', $Conexion.Servidor, '-p', $Conexion.Puerto, '-U', $Conexion.Usuario)
         if ($Entrada) { $salida = $Entrada | & $exe @base @Argumentos }
@@ -74,6 +78,7 @@ function Invoke-PgComando {
         $salida
     }
     finally {
+        $OutputEncoding = $encodingAnterior
         Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
     }
 }
