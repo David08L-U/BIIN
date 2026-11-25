@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { DomEvent, icon } from 'leaflet'
 import { Circle, Marker, Tooltip, useMap } from 'react-leaflet'
 import MapaBase from '../../../maps/MapaBase'
+import { encuadrarUbicacion } from '../../../maps/encuadreUbicacion'
 import { useUbicacionInicio } from '../hooks/useUbicacionInicio'
 
 const marquesita = icon({
@@ -14,7 +15,7 @@ const marquesita = icon({
 
 function ContenidoMapa({ fallo }: { fallo: boolean }) {
   const mapa = useMap()
-  const { posicion, estado, usarUbicacion } = useUbicacionInicio(({ punto }) => mapa.panTo(punto, { animate: false }))
+  const { posicion, estado, usarUbicacion } = useUbicacionInicio(({ punto }) => encuadrarUbicacion(mapa, punto))
   const desactualizada = posicion !== null && estado.tipo !== 'vigente'
   const color = desactualizada ? '#625954' : '#1769aa'
   const controles = useRef<HTMLDivElement>(null)
@@ -63,7 +64,7 @@ function ContenidoMapa({ fallo }: { fallo: boolean }) {
 export default function MapaInicio() {
   const [fallo, setFallo] = useState(false)
   const falloEnCarga = useRef(false)
-  return <MapaBase alto="100%" zoom={13} controlZoom={false} eventosTeselas={{
+  return <MapaBase alto="100%" zoom={13} saltoZoom={0.1} controlZoom={false} eventosTeselas={{
     loading: () => { falloEnCarga.current = false },
     tileerror: () => { falloEnCarga.current = true; setFallo(true) },
     load: () => setFallo(falloEnCarga.current),

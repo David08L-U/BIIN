@@ -9,9 +9,11 @@ de autor desde el propio mapa. El navegador carga las teselas HTTPS a demanda
 y utiliza la caché HTTP del proveedor. No se requieren claves privadas.
 
 El botón **Usar mi ubicación** inicia `watchPosition` en un contexto seguro.
-La primera lectura centra el mapa y las siguientes actualizan el punto y su
-círculo de precisión sin mover la vista. El mismo botón permite volver a
-centrar. La aplicación cancela el seguimiento al salir de Inicio o si falla.
+La primera lectura y el botón de recentrado ajustan el mapa a un radio aproximado
+de 2 km. Leaflet ajusta el zoom a los límites geográficos y al espacio visible.
+Las lecturas siguientes actualizan el punto y su círculo de precisión sin mover
+la vista. El radio del encuadre es independiente de la precisión del dispositivo.
+La aplicación cancela el seguimiento al salir de Inicio o si falla.
 Una lectura anterior se señala como desactualizada mientras siga visible.
 
 BIIN mantiene la lectura solo en memoria de la pantalla. Sus coordenadas

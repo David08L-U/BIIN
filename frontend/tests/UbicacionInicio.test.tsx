@@ -1,9 +1,11 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
+import { latLng } from 'leaflet'
 import type { ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import MapaInicio from '../src/features/transporte/components/MapaInicio'
+import { limitesUbicacion } from '../src/maps/encuadreUbicacion'
 
-const mapa = vi.hoisted(() => ({ panTo: vi.fn(), zoomIn: vi.fn(), zoomOut: vi.fn() }))
+const mapa = vi.hoisted(() => ({ fitBounds: vi.fn(), getContainer: () => document.body, zoomIn: vi.fn(), zoomOut: vi.fn() }))
 vi.mock('react-leaflet', () => ({
   useMap: () => mapa,
   MapContainer: ({ children }: { children: ReactNode }) => <div>{children}</div>,
@@ -41,11 +43,21 @@ function usarUbicacion() {
 
 beforeEach(() => {
   vi.stubGlobal('isSecureContext', true)
-  mapa.panTo.mockClear()
+  mapa.fitBounds.mockClear()
 })
 afterEach(() => vi.unstubAllGlobals())
 
 describe('ubicación de Inicio con la API simulada', () => {
+  it.each([0, 21, 60])('cubre unos 2 km hacia el norte y el este a latitud %i', latitud => {
+    const centro = latLng(latitud, -30)
+    const limites = limitesUbicacion([centro.lat, centro.lng])
+    const radios = [centro.distanceTo([limites.getNorth(), centro.lng]), centro.distanceTo([centro.lat, limites.getEast()])]
+    for (const radio of radios) {
+      expect(radio).toBeGreaterThan(1980)
+      expect(radio).toBeLessThan(2020)
+    }
+  })
+
   it('pide permiso mediante el botón, actualiza el punto y centra solo al iniciar o a petición', () => {
     const api = simularAPI()
     const { unmount } = render(<MapaInicio />)
@@ -64,19 +76,22 @@ describe('ubicación de Inicio con la API simulada', () => {
     expect(screen.getByText('Tu ubicación')).toBeInTheDocument()
     expect(screen.getByTestId('precision')).toHaveAttribute('data-radio', '75')
     expect(screen.getByText(/Tu ubicación aproximada.*75 m/)).toBeInTheDocument()
-    expect(mapa.panTo).toHaveBeenCalledExactlyOnceWith([1, 2], { animate: false })
+    expect(mapa.fitBounds).toHaveBeenCalledTimes(1)
+    const encuadre = mapa.fitBounds.mock.calls[0][0]
+    expect(encuadre.getCenter()).toEqual(latLng(1, 2))
+    expect(latLng(1, 2).distanceTo([encuadre.getNorth(), 2])).toBeCloseTo(1998, 0)
 
     api.recibir(2, 3, 30)
     expect(screen.getByTestId('ubicacion')).toHaveAttribute('data-punto', '2,3')
     expect(screen.getByTestId('precision')).toHaveAttribute('data-radio', '30')
-    expect(mapa.panTo).toHaveBeenCalledTimes(1)
+    expect(mapa.fitBounds).toHaveBeenCalledTimes(1)
     fireEvent.click(screen.getByRole('button', { name: 'Centrar en mi ubicación' }))
-    expect(mapa.panTo).toHaveBeenLastCalledWith([2, 3], { animate: false })
+    expect(mapa.fitBounds.mock.lastCall?.[0].getCenter()).toEqual(latLng(2, 3))
     expect(api.watchPosition).toHaveBeenCalledTimes(1)
     unmount()
     expect(api.clearWatch).toHaveBeenCalledExactlyOnceWith(0)
     api.recibir(3, 4, 10)
-    expect(mapa.panTo).toHaveBeenCalledTimes(2)
+    expect(mapa.fitBounds).toHaveBeenCalledTimes(2)
   })
 
   it.each([
