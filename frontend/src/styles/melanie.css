@@ -198,39 +198,6 @@
   z-index: 0;
 }
 
-.melanie-mapa .leaflet-top {
-  top: 74px;
-}
-
-.melanie-mapa-arrastre {
-  width: 100%;
-  height: 100%;
-  touch-action: pan-y;
-  cursor: grab;
-}
-
-.melanie-mapa-arrastre:active {
-  cursor: grabbing;
-}
-
-.melanie-mapa-capa {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-origin: center;
-}
-
-.melanie-mapa-svg,
-.melanie-mapa-svg svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.melanie-mapa-svg svg text {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
 /* Buscador flotante */
 
 .melanie-buscador {
@@ -312,162 +279,12 @@
 
 /* Paradas */
 
-.melanie-parada {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  z-index: 5;
-  padding: 0;
-  width: 24px;
-  height: 24px;
-  border: 0;
-  background: none;
-  cursor: pointer;
-}
-
-.melanie-parada-punto {
-  display: block;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #fff;
-  border: 2px solid #2b1810;
-  box-shadow: 0 2px 4px #2b181020;
-}
-
-.melanie-parada-punto::after {
-  content: '';
-  display: block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #2b1810;
-  margin: 5px;
-}
-
-.melanie-parada-nombre {
-  position: absolute;
-  top: 26px;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  padding: 2px 8px;
-  border: 1px solid #e8e1da77;
-  border-radius: 6px;
-  background: #fffffff2;
-  font-size: 9px;
-  font-weight: 600;
-  color: #1e1b17;
-  box-shadow: 0 1px 3px #2b181010;
-}
-
-/* Marcador de la marquesita */
-
-.melanie-origen {
-  position: absolute;
-  left: 44%;
-  top: 46%;
-  transform: translate(-50%, -100%);
-  z-index: 10;
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-}
-
-.melanie-origen-foto {
-  position: relative;
-  display: block;
-  width: 48px;
-  height: 48px;
-  padding: 2.5px;
-  border-radius: 50%;
-  background: #2b1810;
-  box-shadow: 0 0 0 7px #fdae3f30, 0 0 0 14px #fdae3f20;
-}
-
-.melanie-origen-recorte {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #fff;
-}
-
-.melanie-origen-foto img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  transform: rotate(12deg) scale(1.1);
-}
-
-.melanie-origen-badge {
-  position: absolute;
-  left: 50%;
-  top: -28px;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-  padding: 3px 10px;
-  border-radius: 99px;
-  background: #2b1810;
-  border: 1px solid #fdae3f66;
-  color: #ffdbcd;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.melanie-origen-punta {
-  display: block;
-  width: 0;
-  height: 0;
-  margin: -1px auto 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 8px solid #2b1810;
-}
-
-/* Ficha de la parada seleccionada */
-
-.melanie-parada-ficha {
-  position: absolute;
-  top: 80px;
-  left: 16px;
-  right: 16px;
-  z-index: 30;
-  padding: 18px 38px 18px 18px;
-  background: #fffffff5;
-  border: 1px solid #e8e1da;
-  border-radius: 16px;
-  box-shadow: 0 5px 16px #2b181015;
-  font-size: 13px;
-}
-
-.melanie-parada-ficha p {
-  margin: 6px 0 12px;
-}
-
-.melanie-cerrar {
-  position: absolute;
-  right: 8px;
-  top: 8px;
-  width: 28px;
-  height: 28px;
-  border: 0;
-  border-radius: 50%;
-  background: #f4ede5;
-  cursor: pointer;
-}
-
 /* Controles del mapa */
 
 .melanie-controles {
   position: absolute;
   right: 16px;
-  bottom: 20px;
+  bottom: 26px;
   z-index: 15;
   display: flex;
   flex-direction: column;
@@ -507,12 +324,13 @@
 
 .melanie-mapa-nota {
   position: absolute;
-  bottom: 3px;
+  bottom: 22px;
   left: 8px;
+  max-width: calc(100% - 80px);
   z-index: 5;
-  font-size: 9px;
-  color: #6d5d50;
-  background: #fff8f1cc;
+  font-size: 12px;
+  color: #4f4440;
+  background: #fff8f1;
   padding: 1px 5px;
   border-radius: 4px;
   pointer-events: none;

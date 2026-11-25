@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {
   createMemoryRouter,
@@ -91,42 +91,27 @@ describe('Inicio basado en el prototipo de Melanie', () => {
     expect(router.state.location.search).toBe('?q=Izamal')
   })
 
-  it('muestra y cierra la ficha de una parada CU-03', async () => {
+  it('abre el mapa geográfico con atribución, desplazamiento y zoom', async () => {
     montar()
-    const user = userEvent.setup()
-
-    await user.click(
-      screen.getByRole('button', {
-        name: 'Ver parada Terminal Noreste',
-      }),
-    )
-
-    expect(screen.getByRole('status')).toHaveTextContent(
-      'Terminal Noreste',
-    )
-
-    await user.click(
-      screen.getByRole('button', {
-        name: 'Cerrar detalles',
-      }),
-    )
-
-    expect(
-      screen.queryByRole('status'),
-    ).not.toBeInTheDocument()
+    const mapa = document.querySelector('.leaflet-container')
+    expect(mapa).toHaveClass('leaflet-grab')
+    expect(screen.getByRole('link', { name: 'OpenStreetMap' })).toHaveAttribute('href', 'https://www.openstreetmap.org/copyright')
+    expect(screen.getByText(/Vista general de Mérida/)).toBeInTheDocument()
+    expect(screen.queryByText('Estás aquí')).not.toBeInTheDocument()
+    const tesela = mapa?.querySelector('img.leaflet-tile')
+    expect(tesela).toHaveAttribute('src', expect.stringContaining('https://tile.openstreetmap.org/13/'))
+    await userEvent.click(screen.getByRole('button', { name: 'Acercar mapa' }))
+    expect(mapa?.querySelector('img[src*="openstreetmap.org/14/"]')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Alejar mapa' }))
+    expect(mapa?.querySelector('img[src*="openstreetmap.org/13/"]')).toBeInTheDocument()
   })
 
-  it('identifica el marcador como ilustrativo RNF05', async () => {
+  it('anuncia el fallo de las teselas conservando la referencia y el buscador', () => {
     montar()
-
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: 'Ver origen ilustrativo del prototipo',
-      }),
-    )
-
-    expect(screen.getByRole('status')).toHaveTextContent(
-      'No representa tu ubicación GPS.',
-    )
+    const tesela = document.querySelector('.leaflet-tile')!
+    fireEvent.error(tesela)
+    expect(screen.getByRole('status')).toHaveTextContent('No se pudo cargar parte del mapa')
+    expect(screen.getByText(/Vista general de Mérida/)).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Buscar rutas o destinos' })).toBeInTheDocument()
   })
 })
