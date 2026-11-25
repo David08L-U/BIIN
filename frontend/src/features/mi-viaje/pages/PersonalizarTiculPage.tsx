@@ -9,7 +9,7 @@ import type { CategoriaTicul } from '../data/lugaresTicul'
 import { useBorradorTicul } from '../hooks/useBorradorTicul'
 import { parametrosBorradorTicul, urlBorradorTicul } from '../plan/borradorTicul'
 import { calcularPlanTicul, resumirSeleccionTicul } from '../plan/itinerarioTicul'
-import { duracionPlan } from '../plan/duracion'
+import { duracionPlan, leerDuracion } from '../plan/duracion'
 
 export default function PersonalizarTiculPage() {
   const { borrador, actualizar } = useBorradorTicul('personalizado')
@@ -19,8 +19,7 @@ export default function PersonalizarTiculPage() {
   const [intento, setIntento] = useState<{ clave: string; errores: string[] } | null>(null)
   const errores = borrador.generado ? calcularPlanTicul(borrador).errores : intento?.clave === clave ? intento.errores : []
   const resumen = resumirSeleccionTicul(borrador.seleccion)
-  const n = Number(borrador.configuracion.minutosDisponibles)
-  const disponibles = /^\d+$/.test(borrador.configuracion.minutosDisponibles) && Number.isSafeInteger(n) && n >= 15 && n <= 720 ? n : null
+  const disponibles = leerDuracion(borrador.configuracion.minutosDisponibles)
   const contador = (id: CategoriaTicul) => lugaresTicul.filter(l => l.categoria === id && borrador.seleccion.includes(l.id)).length
   function restablecer() { actualizar({ seleccion: [], generado: false }); setIntento(null) }
   function generar(e: FormEvent) {

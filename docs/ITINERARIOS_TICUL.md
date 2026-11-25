@@ -1,5 +1,12 @@
 # Itinerarios estimados de Ticul · CU-09 / RF09
 
+El detalle, el recorrido y la personalización usan la composición visual de
+Izamal con las referencias artesanales, fotografías y mapa de Ticul. Día
+completo (Ruta Puuc) y Tour de Compras empiezan con ambos campos vacíos.
+
+El tiempo disponible se introduce en Horas y Minutos. El total válido va de
+15 min a 12 h. La URL y los planes guardados siguen utilizando minutos totales.
+
 ## Alcance y referencias
 
 Implementación frontend del recomendado y la selección personalizada de Ticul.
@@ -8,12 +15,6 @@ Se consultaron los archivos locales de ../BIIN-prototipo-melanie:
 - biin_mi_itinerario_en_ticul/code.html.
 - biin_detalle_de_ruta_ticul/code.html.
 - biin-compatible.css y las interacciones pertinentes de biin-interaction.js.
-
-La composición conserva cabecera con regreso, título, guardar y compartir,
-resumen ámbar, conexión blanca, filtros, cronología con línea vertical y pequeños
-marcadores, cuatro fotografías originales, cierre, mapa ilustrativo y consejos.
-La personalización sigue el patrón aprobado de selección y usa categorías propias.
-El CSS está limitado al prefijo ti- y no modifica los estilos de otras pantallas.
 
 ## Modalidades y configuración
 

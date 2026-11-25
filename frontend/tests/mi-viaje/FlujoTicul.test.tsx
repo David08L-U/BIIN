@@ -39,7 +39,8 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
     expect(screen.getAllByRole('navigation', { name: 'Navegación principal' })).toHaveLength(1)
     expect(within(nav).getByRole('link', { name: 'Rutas' })).toHaveAttribute('aria-current', 'page')
     expect(container.querySelector('.biin-cabecera-simple')).not.toBeInTheDocument()
-    expect(screen.getByLabelText('Tiempo disponible (minutos)')).toHaveValue(240)
+    expect(screen.getByLabelText('Horas')).toHaveValue(4)
+    expect(screen.getByLabelText('Minutos')).toHaveValue(0)
     expect(screen.queryByRole('heading', { name: 'Paso a paso a pie & mototaxi' })).not.toBeInTheDocument()
   })
   it('comienza personalizado vacío y valida fecha y selección antes de generar', async () => {
@@ -78,7 +79,8 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
     expect(p.has('lugares')).toBe(false); expect(p.has('generado')).toBe(false)
     expect(screen.getByLabelText('Fecha de visita')).toHaveValue('2026-11-30')
     expect(screen.getByLabelText('Hora de inicio')).toHaveValue('09:00')
-    expect(screen.getByLabelText('Tiempo disponible (minutos)')).toHaveValue(300)
+    expect(screen.getByLabelText('Horas')).toHaveValue(5)
+    expect(screen.getByLabelText('Minutos')).toHaveValue(0)
     await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
     expect(screen.getByRole('alert')).toHaveTextContent('Selecciona al menos un lugar')
   })
@@ -90,7 +92,8 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
     expect(new URLSearchParams(router.state.location.search).get('lugares')).toBe(todas)
     expect(localStorage.length).toBe(0)
     expect(screen.queryByRole('heading', { name: 'Paso a paso a pie & mototaxi' })).not.toBeInTheDocument()
-    fireEvent.change(screen.getByLabelText('Tiempo disponible (minutos)'), { target: { value: '242' } })
+    fireEvent.change(screen.getByLabelText('Horas'), { target: { value: '4' } })
+    fireEvent.change(screen.getByLabelText('Minutos'), { target: { value: '2' } })
     await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
     expect(screen.getAllByText(/Visita estimada:/)).toHaveLength(4)
     expect(screen.getByText(/4 h 2 min estimadas/)).toBeInTheDocument()
@@ -98,11 +101,13 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
   it.each(['dia-completo', 'tour-compras'])('%s solicita minutos sin duración inventada y limita el recomendado a Ticul', async modalidad => {
     montar('/rutas/ticul/itinerario?' + config)
     await userEvent.selectOptions(screen.getByLabelText('Estancia o modalidad'), modalidad)
-    expect(screen.getByLabelText('Tiempo disponible (minutos)')).toHaveValue(null)
+    expect(screen.getByLabelText('Horas')).toHaveValue(null)
+    expect(screen.getByLabelText('Minutos')).toHaveValue(null)
     await userEvent.click(screen.getByRole('button', { name: 'Generar itinerario recomendado' }))
     expect(screen.getByRole('alert')).toHaveTextContent('no tiene duración fija')
     expect(screen.getByRole('button', { name: 'Guardar itinerario' })).toBeDisabled()
-    fireEvent.change(screen.getByLabelText('Tiempo disponible (minutos)'), { target: { value: '300' } })
+    fireEvent.change(screen.getByLabelText('Horas'), { target: { value: '5' } })
+    fireEvent.change(screen.getByLabelText('Minutos'), { target: { value: '0' } })
     await userEvent.click(screen.getByRole('button', { name: 'Generar itinerario recomendado' }))
     expect(screen.getAllByText(/Visita estimada:/)).toHaveLength(modalidad === 'tour-compras' ? 2 : 4)
     if (modalidad === 'tour-compras') {
@@ -113,7 +118,7 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
   })
   it.each([
     ['Fecha de visita', '', 'fecha válida'], ['Hora de inicio', '25:00', 'hora de inicio válida'],
-    ['Tiempo disponible (minutos)', '12.5', 'número entero'], ['Tiempo disponible (minutos)', '721', 'número entero'],
+    ['Horas', '1.5', 'número entero'], ['Horas', '13', 'número entero'],
   ])('valida %s antes de generar', async (campo, valor, mensaje) => {
     montar('/rutas/ticul/itinerario?' + config)
     fireEvent.change(screen.getByLabelText(campo), { target: { value: valor } })
@@ -203,7 +208,8 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Entrar' }))
     expect(await screen.findByRole('heading', { name: 'Paso a paso a pie & mototaxi' })).toBeInTheDocument()
     expect(screen.getByLabelText('Estancia o modalidad')).toHaveValue('tour-compras')
-    expect(screen.getByLabelText('Tiempo disponible (minutos)')).toHaveValue(300)
+    expect(screen.getByLabelText('Horas')).toHaveValue(5)
+    expect(screen.getByLabelText('Minutos')).toHaveValue(0)
     expect(leerBorradorTicul(new URLSearchParams(router.state.location.search)).seleccion).toEqual(['corredor-calzado', 'comida-mercado'])
     await userEvent.click(screen.getByRole('button', { name: 'Guardar itinerario' }))
     expect(screen.getByText('Guardado en este navegador')).toHaveAttribute('role', 'status')
