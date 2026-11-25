@@ -32,7 +32,7 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
   it.each([['Medio día', 'medio-dia', 270], ['Día completo', 'dia-completo', 540], ['Fin de semana', 'fin-de-semana', 270]] as const)('conserva %s desde el detalle, al personalizar y al volver', async (nombre, estancia, minutos) => {
     const { router } = montar('/rutas/valladolid')
     await userEvent.click(screen.getByRole('radio', { name: new RegExp(nombre) }))
-    await userEvent.click(screen.getByRole('button', { name: 'Hacer mi itinerario en Valladolid' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Valladolid' }))
     expect(router.state.location.pathname).toBe('/rutas/valladolid/itinerario')
     expect(screen.getByLabelText('Tiempo disponible del Día 1 (minutos)')).toHaveValue(minutos)
     expect(screen.getByLabelText('Estancia')).toHaveValue(estancia)
@@ -179,7 +179,7 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
     expect(screen.queryByRole('heading', { name: 'Paso a paso a pie' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Guardar itinerario' })).toBeDisabled()
     await userEvent.click(screen.getByRole('link', { name: 'Volver a detalle de ruta' }))
-    await userEvent.click(screen.getByRole('button', { name: 'Hacer mi itinerario en Valladolid' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Valladolid' }))
     expect(screen.getByLabelText('Hora de inicio del Día 2')).toHaveValue('10:00')
   })
 
