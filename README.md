@@ -30,10 +30,10 @@ Una **aplicación web progresiva (PWA)** para planear viajes entre municipios de
 | | |
 |---|---|
 | **Etapa** | Programación del MVP completo — **entrega funcionando el 3 dic 2026** (las fechas de sprints de Notion son de Estructura de Datos) |
-| **Hecho** | Esquema SQL (30 tablas, triggers, catálogos) · backend por capas con registro/login JWT · frontend con rutas, sesión y mapa |
+| **Hecho** | Esquema SQL (30 tablas, triggers, catálogos) · backend por capas con registro/login JWT, roles y administración de usuarios · **backend de catálogos, negocios, eventos, lugares y explorar (12), itinerarios (13) y administración de contenidos con bitácora (17.1)**, probado contra PostgreSQL · frontend con rutas, sesión y mapa |
 | **Hitos cerrados** | H1 Planeación · H2 Investigación de usuario · H3 Diagramas UML · H4 Prototipo de alta fidelidad |
 | **Próximos** | H5 Validación con stakeholders (20 nov 2026) · H6 Modelo de BD aprobado (9 dic 2026) · **H7 Arquitectura y repositorio (16 dic 2026), al cierre del Sprint 1** |
-| **Última actualización** | 11 nov 2026 |
+| **Última actualización** | 25 nov 2026 |
 
 ## Cómo ejecutar
 
@@ -53,6 +53,18 @@ Ese archivo no se sube a Git. **La plantilla `.example` nunca lleva datos reales
 
 ```bash
 pwsh ./database/crear_bd.ps1
+```
+
+Los scripts funcionan con PowerShell 7 (`pwsh`) y con Windows PowerShell 5.1 (`powershell -File`). Buscan `psql` en `BIIN_PG_BIN`, en `C:Program FilesPostgreSQL8|17|16in` o en el `PATH`; si usas una instalación portable, define la variable antes de correrlos:
+
+```powershell
+$env:BIIN_PG_BIN = "C:utaapgsqlin"
+```
+
+Para comprobar que la base quedó completa (30 tablas, 3 vistas, `f_normalizar`, roles, permisos de `biin_app` y las pruebas SQL):
+
+```bash
+pwsh ./database/verificar_bd.ps1
 ```
 
 Con `-Recrear` borra la base y la crea de nuevo. Después crea el primer administrador; la contraseña se pide en pantalla:
@@ -104,6 +116,15 @@ npm run dev --prefix frontend
 Abrir http://localhost:5173. Las llamadas a `/api` se reenvían al backend.
 
 **Pruebas:** `dotnet test backend/Biin.slnx` y `npm test --prefix frontend`.
+
+Las pruebas marcadas con `[FactBd]` corren contra un PostgreSQL real con la demo cargada (`crear_bd.ps1 -Demo`); sin la variable `BIIN_PRUEBAS_BD` se omiten. Crean datos con correos `@pruebas.biin.test` y los borran al terminar:
+
+```powershell
+$env:BIIN_PRUEBAS_BD = "Host=localhost;Port=5432;Database=biin;Username=biin_app;Password=LA_DE_TU_APPSETTINGS"
+dotnet test backend/Biin.slnx
+```
+
+Ejemplos de cada endpoint en `backend/src/Biin.Api/Biin.Api.http` y colecciones en `postman/` (Auth y Roles; Contenidos, Itinerarios y Administración).
 
 ## Documentación
 
