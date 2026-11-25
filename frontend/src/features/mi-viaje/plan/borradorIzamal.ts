@@ -1,5 +1,10 @@
 import { estanciasIzamal } from './itinerarioIzamal'
-import type { BorradorIzamal, EstanciaIzamal } from './itinerarioIzamal'
+import type { BorradorIzamal, ConfiguracionViaje, EstanciaIzamal } from './itinerarioIzamal'
+
+export function cambiarEstanciaIzamal(configuracion: ConfiguracionViaje, estancia: string): ConfiguracionViaje {
+  if (estancia !== 'medio-dia' && estancia !== 'dia-completo' && estancia !== 'tarde-magica') return configuracion
+  return { ...configuracion, estancia, minutosDisponibles: estanciasIzamal[estancia].minutos }
+}
 
 export function leerBorradorIzamal(parametros: URLSearchParams): BorradorIzamal {
   const valor = parametros.get('estancia')

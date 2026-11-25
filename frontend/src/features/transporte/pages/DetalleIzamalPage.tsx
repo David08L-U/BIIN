@@ -2,8 +2,7 @@ import { useNavigate } from 'react-router'
 import type { RutaPrototipo } from '../data/rutasPrototipo'
 import { detalleIzamalPrototipo as detalle } from '../data/detalleIzamalPrototipo'
 import { useBorradorIzamal } from '../../mi-viaje/hooks/useBorradorIzamal'
-import { urlBorrador } from '../../mi-viaje/plan/borradorIzamal'
-import { estanciasIzamal } from '../../mi-viaje/plan/itinerarioIzamal'
+import { cambiarEstanciaIzamal, urlBorrador } from '../../mi-viaje/plan/borradorIzamal'
 import type { EstanciaIzamal, ModoItinerario } from '../../mi-viaje/plan/itinerarioIzamal'
 
 import DetalleDestino from '../components/DetalleDestino'
@@ -15,7 +14,7 @@ export default function DetalleIzamalPage({ ruta }: { ruta: RutaPrototipo }) {
   const estancia = borrador.configuracion.estancia
 
   function cambiarEstancia(valor: EstanciaIzamal) {
-    actualizar({ configuracion: { ...borrador.configuracion, estancia: valor, minutosDisponibles: estanciasIzamal[valor].minutos } })
+    actualizar({ configuracion: cambiarEstanciaIzamal(borrador.configuracion, valor) })
   }
 
   function abrirItinerario(modo: ModoItinerario) {

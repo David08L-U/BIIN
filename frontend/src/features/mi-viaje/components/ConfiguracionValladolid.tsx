@@ -1,31 +1,23 @@
-import CampoDuracion from './CampoDuracion'
+import ConfiguracionVisita from './ConfiguracionVisita'
 import { cambiarEstanciaValladolid } from '../plan/borradorValladolid'
 import { esEstanciaValladolid, estanciasValladolid, ventanasValladolid } from '../plan/itinerarioValladolid'
 import type { BorradorValladolid } from '../plan/itinerarioValladolid'
-import Icono from './IconoItinerario'
 
 export default function ConfiguracionValladolid({ borrador, onChange }: { borrador: BorradorValladolid; onChange: (borrador: BorradorValladolid) => void }) {
   const config = borrador.configuracion
   const cambiar = (campo: keyof typeof config, valor: string) => onChange({ ...borrador, generado: false, configuracion: { ...config, [campo]: valor } })
-  return <fieldset className="iz-plan-config">
-    <legend><Icono nombre="edit_calendar" tamano={20} />Configura tu visita</legend>
-    <p>Plan estimado · Fecha y hora en la zona local de este navegador.</p>
-    <div className="iz-plan-campos">
-      <label>Estancia<select value={config.estancia} onChange={e => { if (esEstanciaValladolid(e.target.value)) onChange(cambiarEstanciaValladolid(borrador, e.target.value)) }}>
-        {!esEstanciaValladolid(config.estancia) && <option value={config.estancia}>Selecciona una estancia válida</option>}
-        {Object.entries(estanciasValladolid).map(([id, opcion]) => <option key={id} value={id}>{opcion.nombre}</option>)}
-      </select></label>
-      <label>Fecha de visita<input type="date" required value={config.fecha} onChange={e => cambiar('fecha', e.target.value)} /></label>
-    </div>
-    {ventanasValladolid(config).map(ventana => <fieldset className="iz-plan-ventana" key={ventana.dia}>
-      <legend>Día {ventana.dia}{ventana.fecha && ` · ${ventana.fecha}`}</legend>
-      {ventana.dia === 2 && <label>Fecha del Día 2<input type="date" value={ventana.fecha} readOnly /><span>Fecha consecutiva calculada por calendario local.</span></label>}
-      <div className="iz-plan-campos">
-        <label>Hora de inicio del Día {ventana.dia}<input type="time" required min="06:00" max="22:00" value={ventana.horaInicio} onChange={e => cambiar(ventana.dia === 1 ? 'horaInicio' : 'horaInicioDia2', e.target.value)} /></label>
-        <CampoDuracion key={config.estancia} dia={ventana.dia} valor={ventana.minutosDisponibles} onChange={valor => cambiar(ventana.dia === 1 ? 'minutosDisponibles' : 'minutosDia2', valor)} />
-      </div>
-    </fieldset>)}
+  return <ConfiguracionVisita
+    estancia={config.estancia}
+    opciones={estanciasValladolid}
+    fecha={config.fecha}
+    jornadas={ventanasValladolid(config)}
+    horario={{ min: '06:00', max: '22:00' }}
+    cambiarEstancia={valor => { if (esEstanciaValladolid(valor)) onChange(cambiarEstanciaValladolid(borrador, valor)) }}
+    cambiarFecha={valor => cambiar('fecha', valor)}
+    cambiarHora={(dia, valor) => cambiar(dia === 1 ? 'horaInicio' : 'horaInicioDia2', valor)}
+    cambiarDuracion={(dia, valor) => cambiar(dia === 1 ? 'minutosDisponibles' : 'minutosDia2', valor)}
+  >
     <p>Inicio y regreso son objetivos tuyos; transporte sin confirmar. Ventanas de 06:00 a 22:00 como límite del planificador, sin acreditar aperturas. Cada jornada incluye traslado final y 15 min de margen.</p>
     {config.estancia === 'fin-de-semana' && <p>Dos jornadas independientes, sin actividades nocturnas, alojamiento ni transporte entre días. Al pasar a una sola jornada, todas las visitas elegidas se asignan al Día 1 y debes generar de nuevo.</p>}
-  </fieldset>
+  </ConfiguracionVisita>
 }
