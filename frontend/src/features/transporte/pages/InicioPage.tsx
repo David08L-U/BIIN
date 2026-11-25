@@ -98,7 +98,7 @@ export default function InicioPage() {
 
   return (
     <section className="melanie-inicio">
-      <div className="melanie-mapa">
+      <div className="melanie-mapa" role="region" aria-label="Mapa de Inicio">
         <MapaInicio />
 
         <form

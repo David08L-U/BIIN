@@ -8,6 +8,18 @@ El proveedor de teselas es OpenStreetMap. La atribución enlaza a los derechos
 de autor desde el propio mapa. El navegador carga las teselas HTTPS a demanda
 y utiliza la caché HTTP del proveedor. No se requieren claves privadas.
 
+El botón **Usar mi ubicación** inicia `watchPosition` en un contexto seguro.
+La primera lectura centra el mapa y las siguientes actualizan el punto y su
+círculo de precisión sin mover la vista. El mismo botón permite volver a
+centrar. La aplicación cancela el seguimiento al salir de Inicio o si falla.
+Una lectura anterior se señala como desactualizada mientras siga visible.
+
+BIIN mantiene la lectura solo en memoria de la pantalla. Sus coordenadas
+no se guardan ni se incluyen en URLs, registros, analítica o peticiones a
+la API de BIIN. El proveedor cartográfico recibe las solicitudes normales de
+teselas correspondientes al área visible, identificadas por índice de tesela.
+La ubicación representa al usuario y su precisión estimada.
+
 - [Documentación de Leaflet](https://leafletjs.com/reference.html)
 - [Documentación de React Leaflet](https://react-leaflet.js.org/docs/api-map/)
 - [Política de teselas de OpenStreetMap](https://operations.osmfoundation.org/policies/tiles/)

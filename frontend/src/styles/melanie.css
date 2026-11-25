@@ -198,6 +198,15 @@
   z-index: 0;
 }
 
+.melanie-mapa .leaflet-map-pane {
+  z-index: 0;
+}
+
+.melanie-mapa button:focus-visible {
+  outline: 3px solid #855400;
+  outline-offset: -3px;
+}
+
 /* Buscador flotante */
 
 .melanie-buscador {
