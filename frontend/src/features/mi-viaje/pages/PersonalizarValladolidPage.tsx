@@ -1,3 +1,4 @@
+import FiltrosPlan from '../components/FiltrosPlan'
 import ModosPlan from '../components/ModosPlan'
 import CabeceraPlan from '../components/CabeceraPlan'
 import { useState, type FormEvent } from 'react'
@@ -55,9 +56,7 @@ export default function PersonalizarValladolidPage() {
       </section>
       <ConfiguracionValladolid borrador={borrador} onChange={nuevo => { actualizar(nuevo); setErrores([]) }} />
       <p className="iz-plan-nota">Lugares, descripciones, imágenes, visitas y caminatas del prototipo: demostrativos, sin fecha de validación. Aperturas, tarifas y transporte sin confirmar.</p>
-      <div className="iz-plan-filtros" role="group" aria-label="Categorías de lugares">
-        {categoriasValladolid.map(c => <button type="button" key={c.id} aria-pressed={categoria === c.id} onClick={() => setCategoria(c.id)}><Icono nombre={c.icono} tamano={16} /><span>{c.nombre}</span><span className="iz-plan-contador">{contador(c.id)}</span></button>)}
-      </div>
+      <FiltrosPlan etiqueta="Categorías de lugares" opciones={categoriasValladolid} activo={categoria} seleccionar={setCategoria} contador={contador} />
       <section className="iz-plan-selector" aria-labelledby="va-categoria-titulo">
         <div className="iz-plan-categoria-titulo"><h2 id="va-categoria-titulo"><Icono nombre={categoriaActual.icono} />{categoriaActual.titulo}</h2><span>{contador(categoria)} seleccionados</span></div>
         <p className="iz-plan-categoria-descripcion">{categoriaActual.descripcion}</p>

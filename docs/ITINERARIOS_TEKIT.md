@@ -14,15 +14,15 @@ No añade dependencias ni modifica backend, autenticación, permisos o modelo de
 ## Pantallas y navegación
 
 - `/rutas/tekit`: las tres opciones del detalle abren el planificador y conservan
-  la modalidad; volver al detalle conserva configuración, selección y modo.
+  la modalidad; volver al detalle conserva configuración y selección. Puedes
+  reabrir el modo con el botón de recomendado o de personalización.
 - `/rutas/tekit/itinerario`: configuración y resultado recomendado o personalizado.
 - `/rutas/tekit/personalizar`: patrón de categorías, selección, contadores y
-  presupuesto de tiempo aprobado en Izamal, con contenido y estilos propios de Tekit.
-- `/mi-viaje`: protegido con el acceso existente; lista y abre los tres destinos.
+  presupuesto de tiempo de la plantilla de Izamal, con los lugares de Tekit.
+- `/mi-viaje`: protegido con el acceso existente; lista los planes de la cuenta para los cinco destinos.
 
 Hay una sola navegación inferior, con Rutas activa. Los controles tienen etiquetas,
-foco visible, uso de teclado y espacio final sobre la navegación. El CSS es exclusivo
-de Tekit. Está preparado para 360, 393 y 480 px; la revisión visual queda pendiente.
+foco visible, uso de teclado y espacio final sobre la navegación.
 
 ## Configuración y borrador
 

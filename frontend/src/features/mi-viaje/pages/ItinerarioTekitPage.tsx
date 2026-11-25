@@ -1,3 +1,4 @@
+import FiltrosPlan from '../components/FiltrosPlan'
 import CabeceraPlan from '../components/CabeceraPlan'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
@@ -84,7 +85,11 @@ export default function ItinerarioTekitPage() {
           </div>
           <p className="iz-plan-nota">Visitas {duracionPlan(plan.visitasMinutos)} + desplazamientos {duracionPlan(plan.trasladosMinutos)} (incluye regreso) + margen {duracionPlan(plan.margenMinutos)} = {duracionPlan(plan.totalMinutos)}.</p>
         </section>
-        <div className="iz-plan-filtros" role="group" aria-label="Filtrar recorrido">{([['todas', 'Ruta Sugerida'], ['textil', 'Ruta Textil & Talleres'], ['gastronomia', 'Gastronomía']] as const).map(([id, nombre]) => <button type="button" key={id} aria-pressed={filtro === id} onClick={() => setFiltro(id)}>{nombre}</button>)}</div>
+        <FiltrosPlan etiqueta="Filtrar recorrido" opciones={[
+            { id: 'todas', nombre: 'Ruta Sugerida' },
+            { id: 'textil', nombre: 'Ruta Textil & Talleres' },
+            { id: 'gastronomia', nombre: 'Gastronomía' },
+          ]} activo={filtro} seleccionar={setFiltro} />
         <section className="iz-plan-recorrido" aria-labelledby="tk-pasos-titulo">
           <div className="iz-plan-categoria-titulo"><h2 id="tk-pasos-titulo"><Icono nombre="footprint" tamano={18} />Paso a paso a pie</h2><span>{plan.seleccion.length} lugares</span></div>
           <ol className="iz-plan-linea" aria-label="Visitas de Tekit">

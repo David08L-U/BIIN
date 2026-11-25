@@ -1,3 +1,4 @@
+import FiltrosPlan from '../components/FiltrosPlan'
 import { duracionPlan } from '../plan/duracion'
 import ModosPlan from '../components/ModosPlan'
 import CabeceraPlan from '../components/CabeceraPlan'
@@ -75,10 +76,7 @@ export default function ItinerarioIzamalPage() {
           <div className="iz-plan-conexion-fila"><Icono nombre="departure_board" tamano={14} /><div><p className="iz-plan-ceja">Hora objetivo de regreso</p><strong>{horaPlan(borrador.configuracion, Number(borrador.configuracion.minutosDisponibles))}</strong><p>Objetivo del usuario; no es una salida confirmada de van.</p></div></div>
           <p className="iz-plan-nota">Visitas {duracionPlan(plan.visitasMinutos)} + desplazamientos estimados {duracionPlan(plan.trasladosMinutos)} + margen final {duracionPlan(plan.margenMinutos)} = {duracionPlan(plan.totalMinutos)}.</p>
         </section>
-        <div className="iz-plan-filtros" role="group" aria-label="Filtrar recorrido">
-          <button type="button" aria-pressed={filtro === 'todas'} onClick={() => setFiltro('todas')}>Ruta Sugerida</button>
-          {filtrosRecorridoIzamal.map(categoria => <button type="button" key={categoria.id} aria-pressed={filtro === categoria.id} onClick={() => setFiltro(categoria.id)}>{categoria.nombre}</button>)}
-        </div>
+        <FiltrosPlan etiqueta="Filtrar recorrido" opciones={[{ id: 'todas', nombre: 'Ruta Sugerida' }, ...filtrosRecorridoIzamal]} activo={filtro} seleccionar={setFiltro} />
         <section className="iz-plan-recorrido" aria-labelledby="iz-plan-pasos">
           <div className="iz-plan-categoria-titulo"><h2 id="iz-plan-pasos">Paso a paso a pie</h2><span>{plan.seleccion.length} lugares</span></div>
           <ol className="iz-plan-linea">

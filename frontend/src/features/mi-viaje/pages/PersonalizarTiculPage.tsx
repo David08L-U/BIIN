@@ -1,3 +1,4 @@
+import FiltrosPlan from '../components/FiltrosPlan'
 import CabeceraPlan from '../components/CabeceraPlan'
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
@@ -40,7 +41,7 @@ export default function PersonalizarTiculPage() {
         </section>
         <ConfiguracionTicul borrador={borrador} onChange={actualizar} />
         <p className="iz-plan-nota">Datos demostrativos, sin fecha de validación. Tiempos estimados; precios, aperturas y acceso sin confirmar. Mototaxi sin disponibilidad confirmada. {avisoTrasladoComidaTicul}</p>
-        <div className="iz-plan-filtros" role="group" aria-label="Categorías de lugares">{categoriasTicul.map(c => <button type="button" key={c.id} aria-pressed={categoria === c.id} onClick={() => setCategoria(c.id)}><Icono nombre={c.icono} tamano={16} />{c.nombre}<span className="iz-plan-contador">{contador(c.id)}</span></button>)}</div>
+        <FiltrosPlan etiqueta="Categorías de lugares" opciones={categoriasTicul} activo={categoria} seleccionar={setCategoria} contador={contador} />
         <section className="iz-plan-selector" aria-labelledby="ti-categoria-titulo"><div className="iz-plan-categoria-titulo"><h2 id="ti-categoria-titulo">{categoriasTicul.find(c => c.id === categoria)!.nombre}</h2><span>{contador(categoria)} seleccionados</span></div>
           {lugaresTicul.filter(l => l.categoria === categoria).map(l => <article className="iz-plan-lugar iz-plan-tarjeta" key={l.id}><label className="iz-plan-lugar-seleccion"><input type="checkbox" aria-label={l.nombre} checked={borrador.seleccion.includes(l.id)} onChange={() => actualizar({ seleccion: borrador.seleccion.includes(l.id) ? borrador.seleccion.filter(id => id !== l.id) : [...borrador.seleccion, l.id] })} /><span className="iz-plan-lugar-textos"><strong className="iz-plan-lugar-titulo">{l.nombre}</strong><span className="iz-plan-insignia">{l.etiqueta}</span></span></label><p>{l.descripcion}</p><div className="iz-plan-metadatos"><span><Icono nombre="timer" tamano={14} />Visita: {duracionPlan(l.visitaMinutos)}</span><span><Icono nombre={l.traslado.icono} tamano={14} />{nombreTrasladoTicul(l)}</span></div></article>)}
         </section>

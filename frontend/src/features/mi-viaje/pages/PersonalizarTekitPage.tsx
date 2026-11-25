@@ -1,3 +1,4 @@
+import FiltrosPlan from '../components/FiltrosPlan'
 import CabeceraPlan from '../components/CabeceraPlan'
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
@@ -48,9 +49,7 @@ export default function PersonalizarTekitPage() {
         </section>
         <ConfiguracionTekit borrador={borrador} onChange={actualizar} />
         <p className="iz-plan-nota">Datos demostrativos, sin fecha de validación. Visitas y desplazamientos son supuestos del prototipo; no son mediciones geográficas. Aperturas, precios y visitas guiadas sin confirmar.</p>
-        <div className="iz-plan-filtros" role="group" aria-label="Categorías de lugares">
-          {categoriasTekit.map(c => <button type="button" key={c.id} aria-pressed={categoria === c.id} onClick={() => setCategoria(c.id)}><Icono nombre={c.icono} tamano={16} />{c.nombre}<span className="iz-plan-contador">{contador(c.id)}</span></button>)}
-        </div>
+        <FiltrosPlan etiqueta="Categorías de lugares" opciones={categoriasTekit} activo={categoria} seleccionar={setCategoria} contador={contador} />
         <section aria-labelledby="tk-categoria-titulo" className="iz-plan-selector">
           <div className="iz-plan-categoria-titulo"><h2 id="tk-categoria-titulo">{categoriasTekit.find(c => c.id === categoria)!.nombre}</h2><span>{contador(categoria)} seleccionados</span></div>
           {lugaresTekit.filter(l => l.categoria === categoria).map(lugar => <article className="iz-plan-lugar iz-plan-tarjeta" key={lugar.id}>

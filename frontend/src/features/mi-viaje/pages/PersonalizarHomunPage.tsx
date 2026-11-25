@@ -1,3 +1,4 @@
+import FiltrosPlan from '../components/FiltrosPlan'
 import CabeceraPlan from '../components/CabeceraPlan'
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
@@ -52,7 +53,7 @@ export default function PersonalizarHomunPage() {
         </section>
         <ConfiguracionHomun borrador={borrador} onChange={actualizar} />
         <p className="iz-plan-nota">Datos demostrativos sin fecha de validación. Visitas y traslados son supuestos del prototipo. Mototaxi sin disponibilidad ni precio confirmados; no está contratado. {avisoRegresoHomun}</p>
-        <div className="iz-plan-filtros" role="group" aria-label="Categorías de lugares">{categoriasHomun.map(c => <button type="button" key={c.id} aria-pressed={categoria === c.id} onClick={() => setCategoria(c.id)}><Icono nombre={c.icono} tamano={16} />{c.nombre}<span className="iz-plan-contador">{contador(c.id)}</span></button>)}</div>
+        <FiltrosPlan etiqueta="Categorías de lugares" opciones={categoriasHomun} activo={categoria} seleccionar={setCategoria} contador={contador} />
         <section className="iz-plan-selector" aria-labelledby="hm-categoria-titulo">
           <div className="iz-plan-categoria-titulo"><h2 id="hm-categoria-titulo">{categoriasHomun.find(c => c.id === categoria)!.nombre}</h2><span>{contador(categoria)} seleccionados</span></div>
           {lugaresHomun.filter(l => l.categoria === categoria).map(l => {

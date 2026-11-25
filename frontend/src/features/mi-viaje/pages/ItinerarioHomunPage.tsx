@@ -1,3 +1,4 @@
+import FiltrosPlan from '../components/FiltrosPlan'
 import CabeceraPlan from '../components/CabeceraPlan'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
@@ -87,7 +88,11 @@ export default function ItinerarioHomunPage() {
       {!borrador.generado && <p className="iz-plan-vacio" role="status">Aún no hay un plan vigente. Si cambiaste configuración o selección, genera de nuevo.</p>}
       {plan && <>
         {plan.jornadas.map(d => <ConexionHomun key={d.dia} dia={d} />)}
-        <div className="iz-plan-filtros" role="group" aria-label="Filtrar recorrido">{([['todas', 'Ruta Sugerida'], ['cenotes', 'Cenotes & Cavernas'], ['gastronomia', 'Gastronomía']] as const).map(([id, nombre]) => <button type="button" key={id} aria-pressed={filtro === id} onClick={() => setFiltro(id)}>{nombre}</button>)}</div>
+        <FiltrosPlan etiqueta="Filtrar recorrido" opciones={[
+            { id: 'todas', nombre: 'Ruta Sugerida' },
+            { id: 'cenotes', nombre: 'Cenotes & Cavernas' },
+            { id: 'gastronomia', nombre: 'Gastronomía' },
+          ]} activo={filtro} seleccionar={setFiltro} />
         <section className="iz-plan-recorrido" aria-labelledby="hm-pasos-titulo">
           <div className="iz-plan-categoria-titulo"><h2 id="hm-pasos-titulo"><Icono nombre="timeline" tamano={16} />Paso a paso en mototaxi y a pie</h2><span>{plan.seleccion.length} lugares</span></div>
           {plan.jornadas.map(d => {

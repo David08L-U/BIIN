@@ -1,3 +1,4 @@
+import FiltrosPlan from '../components/FiltrosPlan'
 import { duracionPlan, leerDuracion } from '../plan/duracion'
 import ModosPlan from '../components/ModosPlan'
 import CabeceraPlan from '../components/CabeceraPlan'
@@ -61,13 +62,7 @@ export default function PersonalizarIzamalPage() {
         </section>
         <ConfiguracionViaje configuracion={borrador.configuracion} onChange={configuracion => { actualizar({ configuracion }); setErrores([]) }} />
         <p className="iz-plan-nota">Lugares, descripciones y duraciones del prototipo: demostrativos, sin fecha de validación. Precios, aperturas y traslados sin verificar.</p>
-        <div className="iz-plan-filtros" role="group" aria-label="Categorías de lugares">
-          {categoriasIzamal.map(opcion => (
-            <button type="button" key={opcion.id} aria-pressed={categoria === opcion.id} onClick={() => setCategoria(opcion.id)}>
-              <Icono nombre={opcion.icono} tamano={16} /><span>{opcion.nombre}</span><span className="iz-plan-contador">{contador(opcion.id)}</span>
-            </button>
-          ))}
-        </div>
+        <FiltrosPlan etiqueta="Categorías de lugares" opciones={categoriasIzamal} activo={categoria} seleccionar={setCategoria} contador={contador} />
         <section className="iz-plan-selector" aria-labelledby="iz-plan-categoria">
           <div className="iz-plan-categoria-titulo"><h2 id="iz-plan-categoria"><Icono nombre={categoriaActual.icono} />{categoriaActual.titulo}</h2><span>{contador(categoria)} seleccionados</span></div>
           <p className="iz-plan-categoria-descripcion">{categoriaActual.descripcion}</p>

@@ -1,3 +1,4 @@
+import FiltrosPlan from '../components/FiltrosPlan'
 import ModosPlan from '../components/ModosPlan'
 import CabeceraPlan from '../components/CabeceraPlan'
 import { useState, type FormEvent } from 'react'
@@ -85,7 +86,7 @@ export default function ItinerarioValladolidPage() {
 
         </>} />
     <div className="iz-plan-contenido">
-      <div className="iz-plan-estancia"><span><Icono nombre="schedule" tamano={16} />{nombreEstancia} en la Sultana del Oriente · Plan estimado</span><span className="iz-plan-insignia">Plan estimado</span></div>
+      <div className="iz-plan-estancia"><span><Icono nombre="schedule" tamano={16} />{nombreEstancia} en la Sultana del Oriente</span><span className="iz-plan-insignia">Plan estimado</span></div>
       <ModosPlan modo={borrador.modo} recomendado={urlBorradorValladolid('itinerario', { ...borrador, modo: 'recomendado', generado: false })} personalizado={personalizar} />
       <form className="iz-plan-formulario" noValidate onSubmit={generar}><ConfiguracionValladolid borrador={borrador} onChange={nuevo => actualizar(nuevo)} /><button type="submit" className="iz-plan-primario">Generar itinerario {borrador.modo === 'personalizado' ? 'personalizado' : 'recomendado'}<Icono nombre="arrow_forward" tamano={18} /></button></form>
       <p className="iz-plan-nota">Vista previa estimada. Lugares, imágenes, visitas y caminatas del prototipo, sin fecha de validación. Tarifas, aperturas y transporte sin confirmar. No es una optimización geográfica real.</p>
@@ -93,7 +94,11 @@ export default function ItinerarioValladolidPage() {
       {!borrador.generado && <p className="iz-plan-vacio" role="status">Aún no hay un plan vigente. Si cambiaste configuración o selección, genera de nuevo.</p>}
       {plan && <>
         {plan.jornadas.map(dia => <Conexion dia={dia} key={dia.dia} />)}
-        <div className="iz-plan-filtros" role="group" aria-label="Filtrar recorrido">{([['todas', 'Ruta Sugerida'], ['cultural-cenotes', 'Cultural & Cenotes'], ['gastronomia', 'Gastronomía']] as const).map(([id, nombre]) => <button type="button" key={id} aria-pressed={filtro === id} onClick={() => setFiltro(id)}>{nombre}</button>)}</div>
+        <FiltrosPlan etiqueta="Filtrar recorrido" opciones={[
+            { id: 'todas', nombre: 'Ruta Sugerida' },
+            { id: 'cultural-cenotes', nombre: 'Cultural & Cenotes' },
+            { id: 'gastronomia', nombre: 'Gastronomía' },
+          ]} activo={filtro} seleccionar={setFiltro} />
         <section className="iz-plan-recorrido" aria-labelledby="va-pasos-titulo">
           <div className="iz-plan-categoria-titulo"><h2 id="va-pasos-titulo">Paso a paso a pie</h2><span>{plan.seleccion.length} lugares</span></div>
           {plan.jornadas.map(dia => {

@@ -1,3 +1,4 @@
+import FiltrosPlan from '../components/FiltrosPlan'
 import CabeceraPlan from '../components/CabeceraPlan'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
@@ -81,7 +82,11 @@ export default function ItinerarioTiculPage() {
           <div className="iz-plan-conexion-fila"><span className="iz-plan-punto" aria-hidden="true" /><div><p className="iz-plan-ceja">Hora objetivo de regreso · {horaLocal(c, Number(c.minutosDisponibles))}</p><strong>Referencia del paradero en Ticul</strong><p>Objetivo del usuario; no es una salida confirmada. Consulta paradero y transporte con la terminal.</p></div></div>
           <p className="iz-plan-nota">Visitas {duracionPlan(plan.visitasMinutos)} + traslados {duracionPlan(plan.trasladosMinutos)} (incluye regreso) + margen {duracionPlan(plan.margenMinutos)} = {duracionPlan(plan.totalMinutos)}.</p>
         </section>
-        <div className="iz-plan-filtros" role="group" aria-label="Filtrar recorrido">{([['todas', 'Ruta Sugerida'], ['artesanias', 'Alfarería & Zapaterías'], ['gastronomia', 'Gastronomía']] as const).map(([id, nombre]) => <button type="button" key={id} aria-pressed={filtro === id} onClick={() => setFiltro(id)}>{nombre}</button>)}</div>
+        <FiltrosPlan etiqueta="Filtrar recorrido" opciones={[
+            { id: 'todas', nombre: 'Ruta Sugerida' },
+            { id: 'artesanias', nombre: 'Alfarería & Zapaterías' },
+            { id: 'gastronomia', nombre: 'Gastronomía' },
+          ]} activo={filtro} seleccionar={setFiltro} />
         <section className="iz-plan-recorrido" aria-labelledby="ti-pasos-titulo">
           <div className="iz-plan-categoria-titulo"><h2 id="ti-pasos-titulo">Paso a paso a pie &amp; mototaxi</h2><span>{plan.seleccion.length} lugares</span></div>
           <ol className="iz-plan-linea" aria-label="Recorrido de Ticul">
