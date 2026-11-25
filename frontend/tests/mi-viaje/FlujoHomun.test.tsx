@@ -37,7 +37,8 @@ describe('Flujo de Homún CU-09 / RF09', () => {
     expect(screen.getAllByRole('navigation', { name: 'Navegación principal' })).toHaveLength(1)
     expect(within(nav).getByRole('link', { name: 'Rutas' })).toHaveAttribute('aria-current', 'page')
     expect(container.querySelector('.biin-cabecera-simple')).not.toBeInTheDocument()
-    expect(screen.getByLabelText('Tiempo disponible del Día 1 (minutos)')).toHaveValue(270)
+    expect(screen.getByLabelText('Horas del Día 1')).toHaveValue(4)
+    expect(screen.getByLabelText('Minutos del Día 1')).toHaveValue(30)
     expect(screen.queryByRole('heading', { name: 'Paso a paso en mototaxi y a pie' })).not.toBeInTheDocument()
   })
   it('comienza personalizado vacío y exige fecha y selección', async () => {
@@ -106,9 +107,9 @@ describe('Flujo de Homún CU-09 / RF09', () => {
   })
   it.each([
     ['Fecha de visita', '', 'fecha válida'], ['Hora de inicio del Día 1', '25:00', 'hora de inicio válida'],
-    ['Tiempo disponible del Día 1 (minutos)', '12.5', 'número entero'],
+    ['Horas del Día 1', '1.5', 'número entero'],
     ['Hora de inicio del Día 2', '21:00', 'Día 2: la ventana'],
-    ['Tiempo disponible del Día 2 (minutos)', '2880', 'Día 2: el tiempo'],
+    ['Horas del Día 2', '48', 'Día 2: el tiempo'],
   ])('valida %s antes de generar', async (campo, valor, mensaje) => {
     montar(`/rutas/homun/itinerario?${finde}`)
     fireEvent.change(screen.getByLabelText(campo), { target: { value: valor } })

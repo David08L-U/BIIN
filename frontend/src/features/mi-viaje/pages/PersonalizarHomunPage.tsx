@@ -9,7 +9,7 @@ import type { CategoriaHomun } from '../data/lugaresHomun'
 import { useBorradorHomun } from '../hooks/useBorradorHomun'
 import { parametrosBorradorHomun, urlBorradorHomun } from '../plan/borradorHomun'
 import { calcularPlanHomun, resumirJornadaHomun, ventanasHomun } from '../plan/itinerarioHomun'
-import { duracionPlan } from '../plan/duracion'
+import { duracionPlan, leerDuracion } from '../plan/duracion'
 
 export default function PersonalizarHomunPage() {
   const { borrador, actualizar } = useBorradorHomun('personalizado')
@@ -41,8 +41,7 @@ export default function PersonalizarHomunPage() {
         <section className="iz-plan-contexto"><h2><Icono nombre="water_drop" tamano={20} />Elige tu circuito en Homún</h2><p>Selecciona tus lugares por categoría. Para fin de semana, asigna cada visita a una jornada. El orden sigue tu selección dentro de cada día.</p>
           {ventanas.map(v => {
             const r = resumirJornadaHomun(borrador.seleccion.filter(s => s.dia === v.dia).map(s => s.lugarId))
-            const n = Number(v.minutosDisponibles)
-            const disponibles = /^\d+$/.test(v.minutosDisponibles) && Number.isSafeInteger(n) && n >= 15 && n <= 720 ? n : null
+            const disponibles = leerDuracion(v.minutosDisponibles)
             return <div className="iz-plan-presupuesto iz-plan-tarjeta" key={v.dia} role="status" aria-label={`Resumen del Día ${v.dia}`}>
               <div><span>Día {v.dia} · Tiempo acumulado</span><strong>{duracionPlan(r.totalMinutos)} / {disponibles === null ? 'Sin configurar' : duracionPlan(disponibles)}</strong></div>
               <progress aria-label={`Tiempo utilizado del Día ${v.dia}`} value={Math.min(r.totalMinutos, disponibles ?? 1)} max={disponibles ?? 1} />

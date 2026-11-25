@@ -1,5 +1,11 @@
 # Itinerarios de Homún — CU-09 / RF09, HU09
 
+El detalle, el recorrido y la personalización usan la composición visual de
+Izamal con sus cenotes, traslados en mototaxi y configuración por jornada.
+
+El tiempo disponible se introduce en Horas y Minutos. El total válido va de
+15 min a 12 h. La URL y los planes guardados siguen utilizando minutos totales.
+
 Implementación frontend demostrativa de la actividad 13 del plan del proyecto.
 Reutiliza el cálculo secuencial y el comportamiento de jornadas de Valladolid,
 manteniendo los contratos de los tres destinos existentes. No añade dependencias
@@ -7,20 +13,12 @@ ni cambia backend, autenticación, permisos o modelo de BD.
 
 ## Pantallas y composición
 
-- `/rutas/homun`: el botón del detalle abre el flujo con la estancia elegida.
+- `/rutas/homun`: los botones del detalle abren el flujo con la estancia elegida.
 - `/rutas/homun/itinerario`: configuración y resultado recomendado o personalizado.
 - `/rutas/homun/personalizar`: selección inicialmente vacía por categorías, contador
   y presupuesto independiente por jornada. Las visitas de fin de semana se asignan
   a Día 1 o Día 2 con un selector nativo.
 - `/mi-viaje`: conserva la protección existente y abre Izamal, Valladolid, Tekit y Homún.
-
-El itinerario conserva la composición propia del HTML de Homún: título junto al
-regreso, resumen del circuito, conexión blanca con bloques beige de inicio y regreso,
-filtros horizontales, tarjetas con tres imágenes originales, cierre beige, mapa,
-consejos y acciones finales. La plaza no tiene imagen de visita en ese HTML.
-Las imágenes tienen alternativa visible si fallan. Hay una sola navegación inferior
-con Rutas activa, controles nativos, etiquetas y foco visible. El CSS usa el prefijo
-`hm-`, sin alterar los estilos de otras pantallas.
 
 Fuentes locales leídas:
 

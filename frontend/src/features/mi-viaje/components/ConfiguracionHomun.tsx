@@ -1,3 +1,4 @@
+import CampoDuracion from './CampoDuracion'
 import { useId } from 'react'
 import { cambiarEstanciaHomun } from '../plan/borradorHomun'
 import { esEstanciaHomun, estanciasHomun, ventanasHomun } from '../plan/itinerarioHomun'
@@ -21,7 +22,7 @@ export default function ConfiguracionHomun({ borrador, onChange }: { borrador: B
         <label htmlFor={fechaDia2Id}>Fecha del Día 2<input id={fechaDia2Id} type="date" readOnly value={v.fecha} aria-describedby={ayudaFechaDia2Id} /></label>
         <p id={ayudaFechaDia2Id}>Fecha consecutiva calculada por calendario local.</p>
       </div>}
-      <div className="iz-plan-campos"><label>Hora de inicio del Día {v.dia}<input type="time" min="06:00" max="22:00" required value={v.horaInicio} onChange={e => cambiar(v.dia === 1 ? 'horaInicio' : 'horaInicioDia2', e.target.value)} /></label><label>Tiempo disponible del Día {v.dia} (minutos)<input type="number" inputMode="numeric" min="15" max="720" step="1" required value={v.minutosDisponibles} onChange={e => cambiar(v.dia === 1 ? 'minutosDisponibles' : 'minutosDia2', e.target.value)} /></label></div>
+      <div className="iz-plan-campos"><label>Hora de inicio del Día {v.dia}<input type="time" min="06:00" max="22:00" required value={v.horaInicio} onChange={e => cambiar(v.dia === 1 ? 'horaInicio' : 'horaInicioDia2', e.target.value)} /></label><CampoDuracion key={c.estancia} dia={v.dia} valor={v.minutosDisponibles} onChange={valor => cambiar(v.dia === 1 ? 'minutosDisponibles' : 'minutosDia2', valor)} /></div>
     </fieldset>)}
     <p>Ventanas entre 06:00 y 22:00 como límite del planificador, sin acreditar aperturas. Cada jornada incluye regreso final estimado y 15 min de margen.</p>
     {c.estancia === 'fin-de-semana' && <p>Dos jornadas independientes, sin actividades nocturnas ni transporte o alojamiento entre días. Al pasar a una jornada, las visitas se asignan al Día 1 y debes generar de nuevo.</p>}
