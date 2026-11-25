@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router'
 
-import Layout from '../components/layout/Layout'
+import EntradaApp from '../components/layout/EntradaApp'
 import PaginaEnConstruccion from '../components/layout/PaginaEnConstruccion'
 import NoEncontradoPage from '../components/layout/NoEncontradoPage'
 
@@ -11,21 +11,27 @@ import RegistroPage from '../features/auth/pages/RegistroPage'
 import InicioPage from '../features/transporte/pages/InicioPage'
 import RutasPage from '../features/transporte/pages/RutasPage'
 import DetalleRutaPage from '../features/transporte/pages/DetalleRutaPage'
+
 import ItinerarioIzamalPage from '../features/mi-viaje/pages/ItinerarioIzamalPage'
 import PersonalizarIzamalPage from '../features/mi-viaje/pages/PersonalizarIzamalPage'
+
 import ItinerarioValladolidPage from '../features/mi-viaje/pages/ItinerarioValladolidPage'
 import PersonalizarValladolidPage from '../features/mi-viaje/pages/PersonalizarValladolidPage'
+
 import ItinerarioTekitPage from '../features/mi-viaje/pages/ItinerarioTekitPage'
 import PersonalizarTekitPage from '../features/mi-viaje/pages/PersonalizarTekitPage'
+
 import ItinerarioHomunPage from '../features/mi-viaje/pages/ItinerarioHomunPage'
 import PersonalizarHomunPage from '../features/mi-viaje/pages/PersonalizarHomunPage'
+
 import ItinerarioTiculPage from '../features/mi-viaje/pages/ItinerarioTiculPage'
 import PersonalizarTiculPage from '../features/mi-viaje/pages/PersonalizarTiculPage'
+
 import MiViajePage from '../features/mi-viaje/pages/MiViajePage'
 
 export const router = createBrowserRouter([
   {
-    element: <Layout />,
+    element: <EntradaApp />,
     children: [
       {
         index: true,
