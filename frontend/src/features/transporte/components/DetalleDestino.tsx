@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { Link } from 'react-router'
 import type { RutaPrototipo } from '../data/rutasPrototipo'
 import { useFavoritoRuta } from '../hooks/useFavoritoRuta'
@@ -9,20 +9,23 @@ function Icono({ nombre }: { nombre: string }) {
   return <span className="biin-icon" aria-hidden="true">{nombre}</span>
 }
 
-function ImagenPrototipo({ src, alt, icono }: {
+function ImagenPrototipo({ src, alt, icono, recorte }: {
   src: string
   alt: string
   icono: string
+  recorte?: string
 }) {
   const [fallo, setFallo] = useState(false)
+  const avisoId = useId()
 
   return fallo ? (
-    <div className="izamal-imagen-alternativa" role="img" aria-label={alt}>
+    <div className="izamal-imagen-alternativa" role="img" aria-label={alt} aria-describedby={avisoId}>
       <Icono nombre={icono} />
-      <span>Imagen del prototipo no disponible</span>
+      <span id={avisoId}>Imagen del prototipo no disponible</span>
     </div>
   ) : (
-    <img className="izamal-imagen" src={src} alt={alt} onError={() => setFallo(true)} />
+    <img className="izamal-imagen" src={src} alt={alt} style={recorte ? { objectViewBox: recorte } : undefined}
+      onError={() => setFallo(true)} />
   )
 }
 
@@ -35,6 +38,7 @@ export type DatosDetalle<Id extends string> = {
   corredor: string
   imagenRecorrido: string
   imagenCultural: string
+  recorteCultural?: string
   referenciaCultural: string
   etiquetaCultural?: string
   puebloMagico?: boolean
@@ -164,7 +168,8 @@ export default function DetalleDestino<Id extends string>({ ruta, detalle, estan
 
       <section className="izamal-tarjeta izamal-cultura" aria-labelledby="izamal-cultura">
         <div className="izamal-foto-cultural">
-          <ImagenPrototipo src={detalle.imagenCultural} alt={detalle.altCultural ?? `Imagen cultural de ${nombre} del prototipo`} icono="temple_buddhist" />
+          <ImagenPrototipo src={detalle.imagenCultural} alt={detalle.altCultural ?? `Imagen cultural de ${nombre} del prototipo`}
+            icono="temple_buddhist" recorte={detalle.recorteCultural} />
           <span className="izamal-top-destino"><Icono nombre="auto_awesome" /> {detalle.distintivo ?? 'Top Destino'}</span>
           <div className="izamal-foto-textos">
             {detalle.etiquetaCultural && <p className="izamal-pueblo-amarillo"><Icono nombre="location_on" />{detalle.etiquetaCultural}</p>}

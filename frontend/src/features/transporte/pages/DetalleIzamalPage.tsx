@@ -31,6 +31,7 @@ export default function DetalleIzamalPage({ ruta }: { ruta: RutaPrototipo }) {
     referenciaTerminal: 'Mérida Centro Histórico',
     corredor: 'Trayecto Carretera Mérida-Tixkokob-Izamal',
     referenciaCultural: 'Convento Franciscano · Pirámide Kinich Kakmó · Gastronomía',
+    altCultural: 'Atrio y arcadas amarillas del convento de San Antonio de Padua en Izamal',
     etiquetaCultural: 'Pueblo Mágico Amarillo',
     notaDatos: 'Tarifa y recorrido del prototipo, pendientes de validar. Sin fecha de validación.',
     notaRecorrido: `El detalle original indica ${detalle.tiempo}; el catálogo, ${ruta.tiempo}. Tiempos pendientes de validar. El origen es ilustrativo; no representa tu ubicación.`,

@@ -176,7 +176,7 @@ describe('Detalle de Izamal CU-03 / RF03', () => {
   it('conserva el recorrido y las acciones cuando fallan las imágenes originales', () => {
     montar()
     const mapa = screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Izamal del prototipo' })
-    const cultura = screen.getByRole('img', { name: 'Imagen cultural de Izamal del prototipo' })
+    const cultura = screen.getByRole('img', { name: 'Atrio y arcadas amarillas del convento de San Antonio de Padua en Izamal' })
     fireEvent.error(mapa)
     fireEvent.error(cultura)
 

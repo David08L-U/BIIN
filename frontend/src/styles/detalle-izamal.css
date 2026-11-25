@@ -581,7 +581,7 @@
 }
 
 .izamal-foto-cultural::after {
-  background: linear-gradient(to top, #2b1810e6, #2b181066, transparent);
+  background: linear-gradient(to top, #2b1810e6, #2b181059 51%, transparent 74%);
 }
 
 .izamal-foto-cultural .izamal-imagen-alternativa {

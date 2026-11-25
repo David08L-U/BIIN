@@ -1,3 +1,9 @@
+import homunRestauranteCenote from '../../../assets/destinos/homun-restaurante-cenote.jpg'
+
+import homunTzaUjunKat from '../../../assets/destinos/homun-tza-ujun-kat.jpg'
+
+import homunSantaRosa from '../../../assets/destinos/homun-santa-rosa.jpg'
+
 import { duracionPlan } from '../plan/duracion'
 /** Referencias demostrativas de biin_mi_itinerario_en_hom_n/code.html, sin fecha de validación.
  * Duraciones y traslados son supuestos, no mediciones geográficas ni servicios confirmados. */
@@ -23,7 +29,7 @@ export const lugaresHomun = [
       "icono": "electric_rickshaw"
     },
     "imagen": {
-      "src": "https://lh3.googleusercontent.com/aida-public/AB6AXuApQL6IOvtYDNkbM5UiJiVx7oMuc1H8sJSpFQTj7jjRjppW9QdX8kpFQdlcw4SamQe2BCyFmDXOETzQYeRxa6cwdV11DGmNxMM5KBhfoLjjq3N_lQN168uM6aiZufbO08j8G98v3tMsiC6rQv8AkfSBVhM9najSlIsFWTuo6PmN7_KSBCfOMf7PtSLN-HTN5c-RRrMhpTF3d3eviCGGxl28owsmk6_s0glyw8uncwPT",
+      "src": homunSantaRosa,
       "alt": "Caverna y agua turquesa, referencia del prototipo para Cenote Santa Rosa"
     }
   },
@@ -42,7 +48,7 @@ export const lugaresHomun = [
       "icono": "transfer_within_a_station"
     },
     "imagen": {
-      "src": "https://lh3.googleusercontent.com/aida-public/AB6AXuATcKspI8n4-M9alQiGm8wdiAgDDNFNg8ZYArL0ldKyudoqSK5ypaXt4CF9ILMNhxYFHL9jYhNf1svpOIuw57Pjq84UX9EV6tTzkGSDs2i8EXMHUOOcMvnoAf2ESnXmsbtxXk2aXf5RnfHTO1hsVV4p1_0fF7otwZPlnoM6cVL0J4s-BWuP1kZMk5HUTbNAY5iuiW7gU5dJebisD1RsjtT5xAjJZSMBgRVllXLfg48u",
+      "src": homunTzaUjunKat,
       "alt": "Caverna semiabierta con luz natural, referencia del prototipo para Cenote Tza Ujun Kat"
     }
   },
@@ -61,7 +67,7 @@ export const lugaresHomun = [
       "icono": "electric_rickshaw"
     },
     "imagen": {
-      "src": "https://lh3.googleusercontent.com/aida-public/AB6AXuDCxuC0Cb-eqwKI4yV05m1jnCDyuVVLSUl7jRoImvHSn17dYA3jK_EKwVNgwvLzQfXGAt10BPv23DGcYCI1-XK9HvoEf_u1tBoOecliJFmaQ4SsgloW1jjmtyuqgay2sHzuafWDEkynyLFjidLRXHE2m7-SmFHvuL8jCPkZlS6ZXjkgTXPuVOXKBqrxpMT6vVoAfR825L6VDX6e2xbXtd04LhHWg3fJrKGgex3-iDAR",
+      "src": homunRestauranteCenote,
       "alt": "Comida yucateca, referencia gastronómica del prototipo de Homún"
     }
   },

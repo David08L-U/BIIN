@@ -1,3 +1,5 @@
+import izamalConvento from '../../../assets/destinos/izamal-convento.jpg'
+
 /**
  * CU-03 / RF03. Transcripción demostrativa de
  * BIIN-prototipo-melanie/biin_detalle_de_ruta_izamal/code.html.
@@ -7,7 +9,8 @@
 export const detalleIzamalPrototipo = {
   tiempo: '~58 min',
   imagenRecorrido: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBwmx1eXUWd5HJLNqx3NsG28MpKo7oyLXXa3RbYEvHpvo4KvGVNKBrPAFGAnJsUrhOPR4GjmPYSEgXJizB8uHCg5BILU4tM2dAVwfdtx5f5LcQdU8Ig-VmxoGkSxrgeG0jbzPn_b5c08x3R8XmnJuj3Ytgxjt-7ehF20nKLIBtmN2tiPMMVcGiWSwyxPHF8vANDySY6aoqehZiwwVW79rDr6BDWoRHOavthahpG6-OW',
-  imagenCultural: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDzYxago3xzghqyFBbn6w4TpGIWlkkIbU3HE9P4Y7yOzjB43MafPxFumLa4kaAavIGyQ2lcxYDM1o_EdTy_wkj5T_B7RFraWiOS7Bn0ciFIJtGbgfsVoHm9r8RkehvucBgGffIZLC2qORIpeFCnYnFwzTVMtPq0ff5TrNLqQprEoU94gAia2Uj5R8A5qZmlBeXwzWS7VXZUNllupYj4MBFFNupSZ3ltHJSuLcLArkpC',
+  imagenCultural: izamalConvento,
+  recorteCultural: 'inset(6% 0 0)',
   paradas: [
     {
       nombre: 'Mérida (Terminal Noreste)',

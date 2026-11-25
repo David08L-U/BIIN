@@ -1,3 +1,5 @@
+import homunCenote from '../../../assets/destinos/homun-cenote.jpg'
+
 /** CU-03 / RF03. Referencias demostrativas del HTML de Homún de Melanie.
  * Sin fecha de validación. Tarifa y duración se reutilizan desde el catálogo.
  * Se omiten los lugares copiados de Valladolid y se usa un alt cultural neutral;
@@ -10,7 +12,7 @@ export const detalleHomunPrototipo = {
   referenciaTerminal: 'Mérida Centro',
   corredor: 'Corredor Oriente Cenotes',
   imagenRecorrido: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAxpHJPsN46xsmqIIafjqq99a6hNdtsaLbJHBwus0vS0lRgkW_K87OFyOmpdJYIjSnsERnH9YctGN1PK4LskOh4oR6ta5NVTCCBfZ7xSRCjn7PQ2qbqwwp7-TO0UpsgaPsKzDVqqHZSNkfVTWasCKxwa-WeF75uBbZJnRRIeo9oesEKTtrOKIn4MlW_udQf28xV9qzLVKxte_yAWaYacJxwWDJlolygIkbE71GfRH9F',
-  imagenCultural: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCgbMQTfRYE6ebq9-hGLIAdWMPGK36uSkQwgWMFx7R8Kc975pzi9jT2nVEt0JewsYiMeMenV3BlaRNWgyN8vpkSkiYgH4LnSiMhqoMM8Ia60XJ_2aA36GkJAUz5r-CBRdqPEY2WZFOfj751kW-wuljUoMStYBdwH0FERqP9IEkt51Si7P4PPjX7P7QQJ7cphBA6DBa4xL7mvSa4-QgpwcNeOkqFsa9bX-uOnLpjUSmK',
+  imagenCultural: homunCenote,
   referenciaCultural: 'Cenote Tza Ujun Kat · Cenote Santa Rosa',
   paradas: [
     { nombre: 'Mérida (Parque San Juan)', descripcion: 'Calle 69 x 62 · Referencia de salida', tipo: 'origen', etiqueta: 'Origen' },

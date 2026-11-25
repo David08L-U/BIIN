@@ -1,3 +1,5 @@
+import valladolidConvento from '../../../assets/destinos/valladolid-convento.jpg'
+
 /** CU-03 / RF03. Datos demostrativos del detalle HTML de Valladolid de Melanie.
  * Sin fecha de validación. Recorrido, referencias y terminal no son datos operativos.
  * Tarifa y duración se reutilizan desde rutasPrototipo para evitar contradicciones.
@@ -9,7 +11,7 @@ export const detalleValladolidPrototipo = {
   referenciaTerminal: 'Mérida Centro Histórico · Conexión directa',
   carretera: 'Carretera Federal 180D',
   imagenRecorrido: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRKuF3o1LIjk5dlKJTYfrPFCjyYdKgacvMKTyhNN-wP91REmUuhXyjYmZnKA5nuhL4XXsXYzzEecn-RxgkDbBrRlaesWwZWmjx6YrUtTwtNbRZpfN0eqm9PwR2l1nIM7D_i5_VD34cs-wlhANhb7NXdjVFEKW_f4mB4TffDwqyQhuMJwiy89p_aaEPOomiGHrjF9f5YbbC9WoHi6XgxHEWag1g_a6Lvz8sY1Bet1HI',
-  imagenCultural: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAIZbLKH1SqzeGWgO8atrkXdyC4PiMyEoOIfv3C5USfiXyR0TZdxB_WLA-Jjyz9geyWlwhebCN8vxbf64zKawh5w-3-5J0qTSeyTuAUtJ2-6L6lQyXRnlRl0v5Lp7Dbij8L5jOwIz2o6-Js_wVW9lNCTQ8cCpGzZVXz6OWFrwxCfVAseocAHJeSwnV7ebj-APdmPzQAuY6tFIAVrM6zxTfoVr0gf0aOo_dazlYSH4GX',
+  imagenCultural: valladolidConvento,
   paradas: [
     { nombre: 'Mérida (Terminal Noreste)', descripcion: 'Calle 50 x 67 · Referencia de salida', tipo: 'origen', etiqueta: 'Origen' },
     { nombre: 'Kanasín / Entronque Cancún', descripcion: 'Parada rápida de ascenso vial', tipo: 'conexion' },

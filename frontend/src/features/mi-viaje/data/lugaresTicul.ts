@@ -1,3 +1,11 @@
+import ticulIglesiaSanAntonio from '../../../assets/destinos/ticul-iglesia-san-antonio.jpg'
+
+import ticulComidaMercado from '../../../assets/destinos/ticul-comida-mercado.jpg'
+
+import ticulCorredorCalzado from '../../../assets/destinos/ticul-corredor-calzado.jpg'
+
+import ticulTalleresAlfareros from '../../../assets/destinos/ticul-talleres-alfareros.jpg'
+
 import { duracionPlan } from '../plan/duracion'
 /** CU-09 / RF09. Referencias de biin_mi_itinerario_en_ticul/code.html, sin fecha de validación.
  * Tiempos demostrativos, no mediciones geográficas ni servicios confirmados.
@@ -24,7 +32,7 @@ export const lugaresTicul = [
       "supuesto": false
     },
     "imagen": {
-      "src": "https://lh3.googleusercontent.com/aida-public/AB6AXuAbXh8BR_HDvPYg-YJaMHXHWFwJFifKAw3es39uBNF5hVXVMbE4J7x47-s58FB-09XUle84Lo_rqbpZNjUzceoz-l9SGefgcjkkquvQyTts6lWdT_3u1XjpctJBRksaUeunqatQkVxyImes7fHld5UWS6t-lEmpP-NKB8obrFq4d2uom3zORl-E4YU6oyUSg67IvovhOmplixKeDYUr0njALlBjKrfbEGHIK3Qst0Y1",
+      "src": ticulTalleresAlfareros,
       "alt": "Alfarería de barro rojo, imagen del prototipo para Ticul"
     }
   },
@@ -43,7 +51,7 @@ export const lugaresTicul = [
       "supuesto": false
     },
     "imagen": {
-      "src": "https://lh3.googleusercontent.com/aida-public/AB6AXuDWrqDXqjjwOJJmS_RYSypzhrX0V3IXJ6PCH_Ms3dkJ7kl0vPHh406Y3k3XCBBgIaNHpbzslT5rI21kKAKcxGIBdfWnnR9ZO8rOKeJKbAkvF6Fn4z9ReMyQRJBEsMwBQWJk-UVM6gDuYbeZaagVElxLI93lDACxIQCFgJLla0eh1JyuBt2Gj2iTisjoRhD3-1axGCCW49ig9lenJZ_igunauRKyzpQIJIOi0zlxyRu7",
+      "src": ticulCorredorCalzado,
       "alt": "Sandalias y calzado artesanal, imagen del prototipo de Ticul"
     }
   },
@@ -62,7 +70,7 @@ export const lugaresTicul = [
       "supuesto": true
     },
     "imagen": {
-      "src": "https://lh3.googleusercontent.com/aida-public/AB6AXuDjod6eh5VqSfplSYttBEUVVoFjeHnA0xPW9j1BluLQa31vpxNrzjsAq8MsW9R4U1PTlILejH7tMlJhqXHctg_tWZN5VNoJ4RTXQWPf1S_uQ3rWCeHLXuwtZgvqN5sgXEz50bMtUAYlxlotq779MDPUiiCHsV41r44JHRjj2gpENK9aMJsWVzj0VilbXWDy6ruRLCjb6uuaAS1uTtO5BjgQtgpY1c9vo2F2SnP8xF2b",
+      "src": ticulComidaMercado,
       "alt": "Poc chuc y acompañamientos, referencia gastronómica del prototipo de Ticul"
     }
   },
@@ -81,7 +89,7 @@ export const lugaresTicul = [
       "supuesto": false
     },
     "imagen": {
-      "src": "https://lh3.googleusercontent.com/aida-public/AB6AXuDc6Oknxj_hoioA7wPZDy29itei25EBcm4yedBiqiFK2LhpS3mliEUYwwTb_5oUT-p9nlkxidp3SQ3vUvmUy9vv6vR9aoomifkGvj4o6tNC8DL4ohn9d0QCJGN-awOUbXaaRESsskXLv3cMbszZi-Z5g2IogOxNQBpf7dIbwzzSJBInuK03Xy__9CHLeZ4xOeaNjHk5zoO-sRAw2fGSuKMqRmiErJSRtz2QQILvd2gJ",
+      "src": ticulIglesiaSanAntonio,
       "alt": "Iglesia y convento, imagen de patrimonio del prototipo para Ticul"
     }
   }
