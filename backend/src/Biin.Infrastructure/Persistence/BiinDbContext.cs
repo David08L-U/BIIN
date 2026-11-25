@@ -1,5 +1,6 @@
 using Biin.Application.Interfaces;
 using Biin.Domain.Entities;
+using Biin.Domain.Vistas;
 using Microsoft.EntityFrameworkCore;
 
 namespace Biin.Infrastructure.Persistence;
@@ -49,6 +50,11 @@ public class BiinDbContext(DbContextOptions<BiinDbContext> options) : DbContext(
     public DbSet<RecorridoSugerido> RecorridosSugeridos => Set<RecorridoSugerido>();
     public DbSet<EtapaRecorrido> EtapasRecorrido => Set<EtapaRecorrido>();
     public DbSet<BitacoraAdmin> BitacoraAdmin => Set<BitacoraAdmin>();
+
+    // Vistas de solo lectura
+    public DbSet<VRecursoPublicado> VRecursosPublicados => Set<VRecursoPublicado>();
+    public DbSet<VParadaRuta> VParadasRuta => Set<VParadaRuta>();
+    public DbSet<VCupoVigente> VCupoVigente => Set<VCupoVigente>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

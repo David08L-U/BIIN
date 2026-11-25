@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Biin.Application.Interfaces;
 using Biin.Domain.Entities;
+using Biin.Domain.Vistas;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
@@ -52,6 +53,9 @@ public sealed class FakeAppDbContext : IAppDbContext
     public DbSet<RecorridoSugerido> RecorridosSugeridos { get; } = new FakeDbSet<RecorridoSugerido>();
     public DbSet<EtapaRecorrido> EtapasRecorrido { get; } = new FakeDbSet<EtapaRecorrido>();
     public DbSet<BitacoraAdmin> BitacoraAdmin => BitacoraAdminSet;
+    public DbSet<VRecursoPublicado> VRecursosPublicados { get; } = new FakeDbSet<VRecursoPublicado>();
+    public DbSet<VParadaRuta> VParadasRuta { get; } = new FakeDbSet<VParadaRuta>();
+    public DbSet<VCupoVigente> VCupoVigente { get; } = new FakeDbSet<VCupoVigente>();
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

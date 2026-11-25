@@ -1,4 +1,5 @@
 using Biin.Domain.Entities;
+using Biin.Domain.Vistas;
 using Microsoft.EntityFrameworkCore;
 
 namespace Biin.Application.Interfaces;
@@ -40,6 +41,11 @@ public interface IAppDbContext
     DbSet<RecorridoSugerido> RecorridosSugeridos { get; }
     DbSet<EtapaRecorrido> EtapasRecorrido { get; }
     DbSet<BitacoraAdmin> BitacoraAdmin { get; }
+
+    // Vistas de solo lectura (database/schema/004_vistas.sql)
+    DbSet<VRecursoPublicado> VRecursosPublicados { get; }
+    DbSet<VParadaRuta> VParadasRuta { get; }
+    DbSet<VCupoVigente> VCupoVigente { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
