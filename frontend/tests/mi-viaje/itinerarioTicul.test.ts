@@ -23,7 +23,7 @@ describe('Cálculo de Ticul CU-09 / RF09', () => {
   it('no fuerza las cuatro visitas en medio día: explica los dos minutos de exceso sin quitar ni recortar', () => {
     const b = visita(); b.configuracion.minutosDisponibles = '240'
     const antes = structuredClone(b)
-    expect(calcularPlanTicul(b)).toEqual({ plan: null, errores: [expect.stringContaining('excede el tiempo disponible por 2 minutos')] })
+    expect(calcularPlanTicul(b)).toEqual({ plan: null, errores: [expect.stringContaining('excede el tiempo disponible por 2 min')] })
     expect(b).toEqual(antes)
     expect(resumirSeleccionTicul(b.seleccion).totalMinutos).toBe(242)
   })

@@ -63,8 +63,8 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
     expect(screen.getByText('2 lugares seleccionados')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Alfarería & Zapaterías.*1/ })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Gastronomía.*1/ })).toBeInTheDocument()
-    expect(screen.getByRole('status', { name: 'Resumen de selección' })).toHaveTextContent('120 min de visitas + 10 min de traslados con regreso + 15 min de margen')
-    expect(screen.getByRole('status', { name: 'Resumen de selección' })).toHaveTextContent('Tiempo libre: 95 min')
+    expect(screen.getByRole('status', { name: 'Resumen de selección' })).toHaveTextContent('2 h de visitas + 10 min de traslados con regreso + 15 min de margen')
+    expect(screen.getByRole('status', { name: 'Resumen de selección' })).toHaveTextContent('Tiempo libre: 1 h 35 min')
     await userEvent.click(screen.getByRole('button', { name: /Alfarería & Zapaterías/ }))
     expect(screen.getByRole('checkbox', { name: 'Barrio de San Enrique y Talleres Alfareros' })).toBeChecked()
     await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
@@ -85,7 +85,7 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
   it('explica los 2 minutos de exceso sin recortar visitas, margen ni selección', async () => {
     const { router } = montar('/rutas/ticul/personalizar?' + config + '&modo=personalizado&lugares=' + todas)
     await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
-    expect(screen.getByRole('alert')).toHaveTextContent('excede el tiempo disponible por 2 minutos')
+    expect(screen.getByRole('alert')).toHaveTextContent('excede el tiempo disponible por 2 min')
     expect(screen.getByText('4 lugares seleccionados')).toBeInTheDocument()
     expect(new URLSearchParams(router.state.location.search).get('lugares')).toBe(todas)
     expect(localStorage.length).toBe(0)
@@ -93,7 +93,7 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
     fireEvent.change(screen.getByLabelText('Tiempo disponible (minutos)'), { target: { value: '242' } })
     await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
     expect(screen.getAllByText(/Visita estimada:/)).toHaveLength(4)
-    expect(screen.getByText(/4 h 02 min estimadas/)).toBeInTheDocument()
+    expect(screen.getByText(/4 h 2 min estimadas/)).toBeInTheDocument()
   })
   it.each(['dia-completo', 'tour-compras'])('%s solicita minutos sin duración inventada y limita el recomendado a Ticul', async modalidad => {
     montar('/rutas/ticul/itinerario?' + config)
@@ -137,7 +137,7 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Generar itinerario recomendado' }))
     expect(screen.getAllByText(/Visita estimada:/)).toHaveLength(3)
     expect(screen.getByText(/3 h 30 min estimadas/)).toBeInTheDocument()
-    expect(screen.getByText(/4 h 00 min disponibles/)).toBeInTheDocument()
+    expect(screen.getByText(/4 h disponibles/)).toBeInTheDocument()
     const url = primera.router.state.location.pathname + primera.router.state.location.search
     primera.unmount()
     montar(url)

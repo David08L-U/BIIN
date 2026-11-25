@@ -1,3 +1,4 @@
+import { duracionPlan } from './duracion'
 import type { BloquePlan, ModoItinerario } from './itinerarioIzamal'
 import { fechaLocal, inicioLocal, instanteLocal, siguienteFechaLocal } from './tiempoLocal'
 import { bloquesRecorrido, resumirRecorrido } from './recorridoSecuencial'
@@ -55,7 +56,7 @@ export function validarConfiguracionJornadas(config: ConfiguracionJornadas): str
     else if (fecha && !inicio) errores.push(prefijo + 'esa hora no existe en la zona local del navegador.')
     const minutos = Number(ventana.minutosDisponibles)
     if (!/^\d+$/.test(ventana.minutosDisponibles) || !Number.isSafeInteger(minutos) || minutos < 15 || minutos > 720) {
-      errores.push(prefijo + 'el tiempo disponible debe ser un número entero entre 15 y 720 minutos.')
+      errores.push(prefijo + 'el tiempo disponible debe ser un número entero entre 15 min y 12 h.')
     } else if (inicio) {
       const fin = instanteLocal(ventana, minutos)
       if (inicio.getHours() < 6 || fechaLocal(fin) !== ventana.fecha || fin.getHours() > 22 || (fin.getHours() === 22 && fin.getMinutes() > 0)) errores.push(prefijo + 'la ventana debe empezar y terminar entre las 06:00 y las 22:00 del mismo día, sin visitas nocturnas.')
@@ -104,7 +105,7 @@ export function calcularPlanJornadas(borrador: BorradorJornadas, datos: DatosJor
     if (!elegidos.length) errores.push(`Día ${ventana.dia}: selecciona al menos un lugar para generar el itinerario.`)
     const resumen = resumirJornada(elegidos, datos)
     const exceso = resumen.totalMinutos - Number(ventana.minutosDisponibles)
-    if (exceso > 0) errores.push(`Día ${ventana.dia}: la selección excede el tiempo disponible por ${exceso} minutos. Modifica esa jornada; no se ha eliminado ninguna visita.`)
+    if (exceso > 0) errores.push(`Día ${ventana.dia}: la selección excede el tiempo disponible por ${duracionPlan(exceso)}. Modifica esa jornada; no se ha eliminado ninguna visita.`)
   }
   if (errores.length) return { plan: null, errores }
   const jornadas = ventanas.map(ventana => {

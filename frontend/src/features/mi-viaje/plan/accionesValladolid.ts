@@ -1,3 +1,4 @@
+import { duracionPlan } from './duracion'
 import type { BorradorValladolid, PlanValladolid } from './itinerarioValladolid'
 import { horaLocal } from './tiempoLocal'
 import { compartirPlan, descargarTextoPlan } from './accionesPlan'
@@ -15,8 +16,8 @@ export function textoPlanValladolid(borrador: BorradorValladolid, plan: PlanVall
     ...plan.jornadas.flatMap(dia => [
       '', `Día ${dia.dia} · ${dia.fecha}`, `Inicio elegido: ${horaLocal(dia, 0)}`,
       `Hora objetivo de regreso: ${horaLocal(dia, Number(dia.minutosDisponibles))} (no es una salida confirmada)`,
-      ...dia.bloques.map(b => `${horaLocal(dia, b.inicio)} – ${horaLocal(dia, b.fin)} · ${b.titulo} · ${b.fin - b.inicio} min`),
-      `Total: ${dia.visitasMinutos} min de visitas + ${dia.trasladosMinutos} min de traslados (incluye traslado final) + ${dia.margenMinutos} min de margen = ${dia.totalMinutos} min. Libres: ${dia.libresMinutos} min.`,
+      ...dia.bloques.map(b => `${horaLocal(dia, b.inicio)} – ${horaLocal(dia, b.fin)} · ${b.titulo} · ${duracionPlan(b.fin - b.inicio)}`),
+      `Total: ${duracionPlan(dia.visitasMinutos)} de visitas + ${duracionPlan(dia.trasladosMinutos)} de traslados (incluye traslado final) + ${duracionPlan(dia.margenMinutos)} de margen = ${duracionPlan(dia.totalMinutos)}. Libres: ${duracionPlan(dia.libresMinutos)}.`,
     ]),
   ].join('\n')
 }

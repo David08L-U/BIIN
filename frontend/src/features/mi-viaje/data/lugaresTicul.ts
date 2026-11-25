@@ -1,3 +1,4 @@
+import { duracionPlan } from '../plan/duracion'
 /** CU-09 / RF09. Referencias de biin_mi_itinerario_en_ticul/code.html, sin fecha de validación.
  * Tiempos demostrativos, no mediciones geográficas ni servicios confirmados.
  * El traslado a la comida no tiene duración clara: se suponen 4 min a pie. */
@@ -94,5 +95,5 @@ export const REGRESO_TICUL = 3
 export const MARGEN_TICUL = 15
 export const avisoTrasladoComidaTicul = 'Traslado a la comida: 4 min a pie como supuesto demostrativo.'
 export function nombreTrasladoTicul(lugar: LugarTicul): string {
-  return `${lugar.traslado.nombre} · ${lugar.trasladoMinutos} min estimados${lugar.traslado.supuesto ? ' (supuesto)' : ''}`
+  return `${lugar.traslado.nombre} · ${duracionPlan(lugar.trasladoMinutos)} estimados${lugar.traslado.supuesto ? ' (supuesto)' : ''}`
 }

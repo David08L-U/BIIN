@@ -1,3 +1,4 @@
+import { duracionPlan } from '../plan/duracion'
 /** Referencias demostrativas de biin_mi_itinerario_en_hom_n/code.html, sin fecha de validación.
  * Duraciones y traslados son supuestos, no mediciones geográficas ni servicios confirmados. */
 export type CategoriaHomun = 'cenotes' | 'gastronomia' | 'patrimonio'
@@ -90,5 +91,5 @@ export const MARGEN_HOMUN = 15
 export const REGRESO_HOMUN = 5
 export const avisoRegresoHomun = 'Regreso final: supuesto de 5 min, con medio y trayecto por confirmar; el HTML no define ese traslado.'
 export function nombreTrasladoHomun(lugar: LugarHomun): string {
-  return `${lugar.traslado.nombre} · ${lugar.trasladoMinutos} min estimados`
+  return `${lugar.traslado.nombre} · ${duracionPlan(lugar.trasladoMinutos)} estimados`
 }

@@ -1,3 +1,4 @@
+import { duracionPlan } from '../plan/duracion'
 import ModosPlan from '../components/ModosPlan'
 import CabeceraPlan from '../components/CabeceraPlan'
 import { useState, type FormEvent } from 'react'
@@ -11,7 +12,7 @@ import { filtrosRecorridoIzamal, lugaresIzamal } from '../data/lugaresIzamal'
 import type { CategoriaIzamal } from '../data/lugaresIzamal'
 import { useBorradorIzamal } from '../hooks/useBorradorIzamal'
 import { urlBorrador } from '../plan/borradorIzamal'
-import { calcularPlan, duracionPlan, estanciasIzamal, horaPlan, instantePlan } from '../plan/itinerarioIzamal'
+import { calcularPlan, estanciasIzamal, horaPlan, instantePlan } from '../plan/itinerarioIzamal'
 import { guardarItinerarioLocal } from '../storage/itinerariosLocales'
 
 export default function ItinerarioIzamalPage() {
@@ -70,9 +71,9 @@ export default function ItinerarioIzamalPage() {
         <section className="iz-plan-conexion iz-plan-tarjeta" aria-labelledby="iz-plan-conexion-titulo">
           <div className="iz-plan-conexion-titulo"><h2 id="iz-plan-conexion-titulo">Conexión Van BIIN</h2><span>Ruta Mérida · Izamal</span></div>
           <div className="iz-plan-conexion-fila"><Icono nombre="directions_bus" tamano={14} /><div><p className="iz-plan-ceja">Inicio elegido</p><strong>{horaPlan(borrador.configuracion, 0)} · Izamal Centro</strong><p>Punto ilustrativo del prototipo. Llegada de la van sin confirmar.</p></div></div>
-          <p className="iz-plan-conexion-margen"><Icono nombre="swap_vert" tamano={14} />{duracionPlan(Number(borrador.configuracion.minutosDisponibles))} disponibles · {plan.libresMinutos} min libres</p>
+          <p className="iz-plan-conexion-margen"><Icono nombre="swap_vert" tamano={14} />{duracionPlan(Number(borrador.configuracion.minutosDisponibles))} disponibles · {duracionPlan(plan.libresMinutos)} libres</p>
           <div className="iz-plan-conexion-fila"><Icono nombre="departure_board" tamano={14} /><div><p className="iz-plan-ceja">Hora objetivo de regreso</p><strong>{horaPlan(borrador.configuracion, Number(borrador.configuracion.minutosDisponibles))}</strong><p>Objetivo del usuario; no es una salida confirmada de van.</p></div></div>
-          <p className="iz-plan-nota">Visitas {plan.visitasMinutos} min + desplazamientos estimados {plan.trasladosMinutos} min + margen final {plan.margenMinutos} min = {plan.totalMinutos} min.</p>
+          <p className="iz-plan-nota">Visitas {duracionPlan(plan.visitasMinutos)} + desplazamientos estimados {duracionPlan(plan.trasladosMinutos)} + margen final {duracionPlan(plan.margenMinutos)} = {duracionPlan(plan.totalMinutos)}.</p>
         </section>
         <div className="iz-plan-filtros" role="group" aria-label="Filtrar recorrido">
           <button type="button" aria-pressed={filtro === 'todas'} onClick={() => setFiltro('todas')}>Ruta Sugerida</button>
@@ -90,7 +91,7 @@ export default function ItinerarioIzamalPage() {
                 <span className="iz-plan-orden" aria-hidden="true">{indice + 1}</span>
                 <article className="iz-plan-paso iz-plan-tarjeta">
                   <div className="iz-plan-paso-hora"><span><time dateTime={instantePlan(borrador.configuracion, bloque.inicio).toISOString()}>{horaPlan(borrador.configuracion, bloque.inicio)}</time> – <time dateTime={instantePlan(borrador.configuracion, bloque.fin).toISOString()}>{horaPlan(borrador.configuracion, bloque.fin)}</time></span><span className="iz-plan-insignia">{lugar.etiqueta}</span></div>
-                  <p className="iz-plan-caminata"><Icono nombre="directions_walk" tamano={14} />{traslado.fin - traslado.inicio} min de desplazamiento estimado · {horaPlan(borrador.configuracion, traslado.inicio)} – {horaPlan(borrador.configuracion, traslado.fin)}</p>
+                  <p className="iz-plan-caminata"><Icono nombre="directions_walk" tamano={14} />{duracionPlan(traslado.fin - traslado.inicio)} de desplazamiento estimado · {horaPlan(borrador.configuracion, traslado.inicio)} – {horaPlan(borrador.configuracion, traslado.fin)}</p>
                   <h3>{lugar.nombre}</h3><p>{lugar.descripcion}</p>
                   {imagen && <ImagenItinerario {...imagen} />}
                   <p className="iz-plan-duracion"><Icono nombre={lugar.categoria === 'gastronomia' ? 'restaurant_menu' : 'timer'} tamano={16} />Visita estimada: {duracionPlan(lugar.visitaMinutos)}</p>
@@ -99,7 +100,7 @@ export default function ItinerarioIzamalPage() {
             })}
           </ol>
           {filtro !== 'todas' && !plan.seleccion.some(id => lugaresIzamal.some(lugar => lugar.id === id && lugar.categoria === filtro)) && <p role="status">No hay lugares de esta categoría en el plan. El filtro no modifica el recorrido.</p>}
-          <div className="iz-plan-cierre iz-plan-tarjeta"><h3>Cierre del recorrido</h3>{plan.bloques.slice(-2).map(bloque => <p key={bloque.titulo}>{horaPlan(borrador.configuracion, bloque.inicio)} – {horaPlan(borrador.configuracion, bloque.fin)} · {bloque.titulo}: {bloque.fin - bloque.inicio} min.</p>)}<p>Quedan {plan.libresMinutos} min libres antes de tu hora objetivo. Confirma el paradero y el transporte de regreso con la terminal.</p></div>
+          <div className="iz-plan-cierre iz-plan-tarjeta"><h3>Cierre del recorrido</h3>{plan.bloques.slice(-2).map(bloque => <p key={bloque.titulo}>{horaPlan(borrador.configuracion, bloque.inicio)} – {horaPlan(borrador.configuracion, bloque.fin)} · {bloque.titulo}: {duracionPlan(bloque.fin - bloque.inicio)}.</p>)}<p>Quedan {duracionPlan(plan.libresMinutos)} libres antes de tu hora objetivo. Confirma el paradero y el transporte de regreso con la terminal.</p></div>
         </section>
         <section className="iz-plan-mapa iz-plan-tarjeta" aria-label="Referencia visual del prototipo"><ImagenItinerario {...imagenesItinerarioIzamal.mapa} /><Link to={urlBorrador('detalle', borrador)}>Ver detalle de ruta<Icono nombre="arrow_forward" tamano={14} /></Link></section>
         <section className="iz-plan-consejos"><h2>Consejos de viaje BIIN</h2><div><article className="iz-plan-tarjeta"><Icono nombre="wb_sunny" tamano={20} /><h3>Protección solar</h3><p>Usa sombrero y mantén agua fresca en mano.</p></article><article className="iz-plan-tarjeta"><Icono nombre="payments" tamano={20} /><h3>Efectivo en mano</h3><p>Consulta los medios de pago, precios y horarios con cada lugar antes de visitarlo.</p></article></div></section>

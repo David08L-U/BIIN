@@ -1,3 +1,4 @@
+import { duracionPlan } from './duracion'
 import { lugaresTicul, MARGEN_TICUL, REGRESO_TICUL } from '../data/lugaresTicul'
 import { validarConfiguracion } from './itinerarioIzamal'
 import type { PlanIzamal } from './itinerarioIzamal'
@@ -22,7 +23,7 @@ export function esModalidadTicul(valor: string): valor is ModalidadTicul { retur
 export function validarConfiguracionTicul(c: ConfiguracionTicul): string[] {
   const errores = validarConfiguracion({ ...c, estancia: 'medio-dia' })
   if (!esModalidadTicul(c.estancia)) errores.unshift('Elige una modalidad válida: medio día, Día completo (Ruta Puuc) o Tour de Compras.')
-  if ((c.estancia === 'dia-completo' || c.estancia === 'tour-compras') && !c.minutosDisponibles) errores.push('Esta modalidad no tiene duración fija. Indica tus minutos disponibles.')
+  if ((c.estancia === 'dia-completo' || c.estancia === 'tour-compras') && !c.minutosDisponibles) errores.push('Esta modalidad no tiene duración fija. Indica cuánto tiempo tienes.')
   return errores
 }
 export function resumirSeleccionTicul(ids: string[]) { return resumirRecorrido(lugaresTicul, ids, REGRESO_TICUL, MARGEN_TICUL) }
@@ -37,7 +38,7 @@ export function calcularPlanTicul(b: BorradorTicul): { plan: PlanTicul | null; e
   const seleccion = b.modo === 'recomendado' ? recomendarRecorrido(lugaresTicul, orden, disponibles, REGRESO_TICUL, MARGEN_TICUL) : b.seleccion
   if (!seleccion.length) return { plan: null, errores: [b.modo === 'personalizado' ? 'Selecciona al menos un lugar para generar tu itinerario.' : 'No cabe una visita completa con traslados, regreso y margen. Amplía el tiempo disponible.'] }
   const resumen = resumirSeleccionTicul(seleccion)
-  if (resumen.totalMinutos > disponibles) return { plan: null, errores: [`La selección excede el tiempo disponible por ${resumen.totalMinutos - disponibles} minutos. Quita lugares o amplía el tiempo; no se ha eliminado ninguna visita.`] }
+  if (resumen.totalMinutos > disponibles) return { plan: null, errores: [`La selección excede el tiempo disponible por ${duracionPlan(resumen.totalMinutos - disponibles)}. Quita lugares o amplía el tiempo; no se ha eliminado ninguna visita.`] }
   const bloques = bloquesRecorrido(lugaresTicul, seleccion, REGRESO_TICUL, MARGEN_TICUL)
   for (const bloque of bloques) if (bloque.tipo === 'traslado' && bloque.lugarId) {
     const l = lugaresTicul.find(l => l.id === bloque.lugarId)!

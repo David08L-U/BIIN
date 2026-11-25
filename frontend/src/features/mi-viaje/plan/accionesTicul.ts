@@ -1,3 +1,4 @@
+import { duracionPlan } from './duracion'
 import { avisoTrasladoComidaTicul } from '../data/lugaresTicul'
 import { compartirPlan, descargarTextoPlan } from './accionesPlan'
 import { esModalidadTicul, modalidadesTicul } from './itinerarioTicul'
@@ -15,10 +16,10 @@ export function textoPlanTicul(b: BorradorTicul, plan: PlanTicul): string {
     'Datos e imágenes demostrativos sin fecha de validación. Tiempos estimados; precios, aperturas y acceso sin confirmar. Mototaxi sin disponibilidad confirmada, no contratado. No es un circuito geográfico verificado.',
     avisoTrasladoComidaTicul,
     'Horas en la zona local del navegador que genera este archivo. No incluye mapas offline ni reservas.',
-    `Inicio elegido: ${horaLocal(c, 0)} · ${c.minutosDisponibles} minutos disponibles`,
-    ...plan.bloques.map(p => `${horaLocal(c, p.inicio)} – ${horaLocal(c, p.fin)} · ${p.titulo} · ${p.fin - p.inicio} min`),
-    `Total: ${plan.visitasMinutos} min de visitas + ${plan.trasladosMinutos} min de traslados (incluye regreso final) + ${plan.margenMinutos} min de margen = ${plan.totalMinutos} min.`,
-    `Tiempo libre: ${plan.libresMinutos} min · ${horaLocal(c, plan.totalMinutos)} – ${horaLocal(c, Number(c.minutosDisponibles))}`,
+    `Inicio elegido: ${horaLocal(c, 0)} · ${duracionPlan(Number(c.minutosDisponibles))} disponibles`,
+    ...plan.bloques.map(p => `${horaLocal(c, p.inicio)} – ${horaLocal(c, p.fin)} · ${p.titulo} · ${duracionPlan(p.fin - p.inicio)}`),
+    `Total: ${duracionPlan(plan.visitasMinutos)} de visitas + ${duracionPlan(plan.trasladosMinutos)} de traslados (incluye regreso final) + ${duracionPlan(plan.margenMinutos)} de margen = ${duracionPlan(plan.totalMinutos)}.`,
+    `Tiempo libre: ${duracionPlan(plan.libresMinutos)} · ${horaLocal(c, plan.totalMinutos)} – ${horaLocal(c, Number(c.minutosDisponibles))}`,
     `Hora objetivo de regreso: ${horaLocal(c, Number(c.minutosDisponibles))} (objetivo del usuario, no es una salida confirmada).`,
   ].join('\n')
 }

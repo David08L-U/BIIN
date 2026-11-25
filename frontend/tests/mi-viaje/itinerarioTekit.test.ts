@@ -35,7 +35,7 @@ describe('Cálculo de Tekit CU-09 / RF09', () => {
   it('explica el exceso sin cambiar ni recortar la selección', () => {
     const b = base()
     b.configuracion.minutosDisponibles = '210'
-    expect(calcularPlanTekit(b)).toEqual({ plan: null, errores: [expect.stringContaining('excede el tiempo disponible por 9 minutos')] })
+    expect(calcularPlanTekit(b)).toEqual({ plan: null, errores: [expect.stringContaining('excede el tiempo disponible por 9 min')] })
     expect(b.seleccion).toHaveLength(4)
     expect(resumirSeleccionTekit(b.seleccion).totalMinutos).toBe(219)
   })

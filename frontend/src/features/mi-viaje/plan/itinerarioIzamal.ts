@@ -1,3 +1,4 @@
+import { duracionPlan } from './duracion'
 import { lugaresIzamal, MARGEN_FINAL_MINUTOS, ordenRecomendadoIzamal, TRASLADO_FINAL_MINUTOS } from '../data/lugaresIzamal'
 import { inicioLocal as construirInicioLocal, instanteLocal, horaLocal } from './tiempoLocal'
 import { bloquesRecorrido, recomendarRecorrido, resumirRecorrido } from './recorridoSecuencial'
@@ -52,7 +53,7 @@ export function validarConfiguracion(config: ConfiguracionViaje): string[] {
   if (!soloFecha) errores.push('Elige una fecha válida para la visita.')
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(config.horaInicio)) errores.push('Elige una hora de inicio válida.')
   else if (soloFecha && !inicioLocal(config)) errores.push('Esa hora no existe en la zona local del navegador. Elige otra hora.')
-  if (!/^\d+$/.test(config.minutosDisponibles) || !Number.isSafeInteger(Number(config.minutosDisponibles)) || Number(config.minutosDisponibles) < 15 || Number(config.minutosDisponibles) > 720) errores.push('El tiempo disponible debe ser un número entero entre 15 y 720 minutos.')
+  if (!/^\d+$/.test(config.minutosDisponibles) || !Number.isSafeInteger(Number(config.minutosDisponibles)) || Number(config.minutosDisponibles) < 15 || Number(config.minutosDisponibles) > 720) errores.push('El tiempo disponible debe ser un número entero entre 15 min y 12 h.')
   return errores
 }
 
@@ -72,7 +73,7 @@ export function calcularPlan(borrador: BorradorIzamal): ResultadoPlan {
   if (!seleccion.length) return { plan: null, errores: [borrador.modo === 'personalizado' ? 'Selecciona al menos un lugar para generar tu itinerario.' : 'No hay tiempo suficiente para una visita con traslados y margen final. Amplía el tiempo a por lo menos 52 minutos o consulta el detalle de Izamal.'] }
   if (new Set(seleccion).size !== seleccion.length || seleccion.some(id => !lugaresIzamal.some(lugar => lugar.id === id))) return { plan: null, errores: ['La selección contiene lugares no disponibles o repetidos. Restablece la selección.'] }
   const resumen = resumirSeleccion(seleccion)
-  if (resumen.totalMinutos > disponibles) return { plan: null, errores: [`La selección excede el tiempo disponible por ${resumen.totalMinutos - disponibles} minutos. Quita lugares o aumenta el tiempo; no se ha eliminado ninguna visita.`] }
+  if (resumen.totalMinutos > disponibles) return { plan: null, errores: [`La selección excede el tiempo disponible por ${duracionPlan(resumen.totalMinutos - disponibles)}. Quita lugares o aumenta el tiempo; no se ha eliminado ninguna visita.`] }
   const bloques = bloquesRecorrido(lugaresIzamal, seleccion, TRASLADO_FINAL_MINUTOS, MARGEN_FINAL_MINUTOS)
   return { plan: { seleccion: [...seleccion], bloques, ...resumen, libresMinutos: disponibles - resumen.totalMinutos }, errores: [] }
 }
@@ -85,6 +86,4 @@ export function horaPlan(config: ConfiguracionViaje, minutos: number): string {
   return horaLocal(config, minutos)
 }
 
-export function duracionPlan(minutos: number): string {
-  return `${Math.floor(minutos / 60)} h ${String(minutos % 60).padStart(2, '0')} min`
-}
+export { duracionPlan } from './duracion'

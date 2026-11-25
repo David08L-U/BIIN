@@ -43,7 +43,7 @@ describe('Acciones reales de Ticul', () => {
   it('descarga un archivo legible con horarios, tipos de traslado y supuesto de comida', () => {
     const b = visita(), plan = calcularPlanTicul(b).plan!
     const texto = textoPlanTicul(b, plan)
-    for (const s of ['Fecha de visita: 2026-12-31', 'Día completo (Ruta Puuc)', 'Mototaxi estimado', 'A pie estimado', '15 min de margen', '4 min a pie como supuesto demostrativo', 'Total: 210 min de visitas + 17 min de traslados', '= 242 min.', 'Tiempo libre: 58 min', 'no es una salida confirmada', 'No incluye mapas offline ni reservas']) expect(texto).toContain(s)
+    for (const s of ['Fecha de visita: 2026-12-31', 'Día completo (Ruta Puuc)', 'Mototaxi estimado', 'A pie estimado', '15 min de margen', '4 min a pie como supuesto demostrativo', 'Total: 3 h 30 min de visitas + 17 min de traslados', '= 4 h 2 min.', 'Tiempo libre: 58 min', 'no es una salida confirmada', 'No incluye mapas offline ni reservas']) expect(texto).toContain(s)
     for (const bloque of plan.bloques) expect(texto).toContain(bloque.titulo)
     const createObjectURL = vi.fn().mockReturnValue('blob:ticul'), revokeObjectURL = vi.fn()
     vi.stubGlobal('URL', { createObjectURL, revokeObjectURL })

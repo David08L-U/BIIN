@@ -9,7 +9,7 @@ import type { CategoriaHomun } from '../data/lugaresHomun'
 import { useBorradorHomun } from '../hooks/useBorradorHomun'
 import { parametrosBorradorHomun, urlBorradorHomun } from '../plan/borradorHomun'
 import { calcularPlanHomun, resumirJornadaHomun, ventanasHomun } from '../plan/itinerarioHomun'
-import { duracionPlan } from '../plan/itinerarioIzamal'
+import { duracionPlan } from '../plan/duracion'
 
 export default function PersonalizarHomunPage() {
   const { borrador, actualizar } = useBorradorHomun('personalizado')
@@ -46,8 +46,8 @@ export default function PersonalizarHomunPage() {
             return <div className="iz-plan-presupuesto iz-plan-tarjeta" key={v.dia} role="status" aria-label={`Resumen del Día ${v.dia}`}>
               <div><span>Día {v.dia} · Tiempo acumulado</span><strong>{duracionPlan(r.totalMinutos)} / {disponibles === null ? 'Sin configurar' : duracionPlan(disponibles)}</strong></div>
               <progress aria-label={`Tiempo utilizado del Día ${v.dia}`} value={Math.min(r.totalMinutos, disponibles ?? 1)} max={disponibles ?? 1} />
-              <p>{r.visitasMinutos} min de visitas + {r.trasladosMinutos} min de traslados con regreso + {r.margenMinutos} min de margen reservado.</p>
-              <p>{disponibles === null ? 'Configura el tiempo de esta jornada.' : r.totalMinutos > disponibles ? `Excede el tiempo disponible por ${r.totalMinutos - disponibles} minutos.` : `Tiempo libre: ${disponibles - r.totalMinutos} min`}</p>
+              <p>{duracionPlan(r.visitasMinutos)} de visitas + {duracionPlan(r.trasladosMinutos)} de traslados con regreso + {duracionPlan(r.margenMinutos)} de margen reservado.</p>
+              <p>{disponibles === null ? 'Configura el tiempo de esta jornada.' : r.totalMinutos > disponibles ? `Excede el tiempo disponible por ${duracionPlan(r.totalMinutos - disponibles)}.` : `Tiempo libre: ${duracionPlan(disponibles - r.totalMinutos)}`}</p>
             </div>
           })}
         </section>
@@ -60,7 +60,7 @@ export default function PersonalizarHomunPage() {
             const elegida = borrador.seleccion.find(s => s.lugarId === l.id)
             return <article key={l.id} className="iz-plan-lugar iz-plan-tarjeta">
               <label className="iz-plan-lugar-seleccion"><input type="checkbox" aria-label={l.nombre} checked={!!elegida} onChange={() => seleccionar(l.id)} /><span className="iz-plan-lugar-textos"><strong className="iz-plan-lugar-titulo">{l.nombre}</strong><span className="iz-plan-insignia">{l.etiqueta}</span></span></label>
-              <p>{l.descripcion}</p><div className="iz-plan-metadatos"><span><Icono nombre="timer" tamano={14} />Visita: {l.visitaMinutos} min</span><span><Icono nombre={l.traslado.icono} tamano={14} />{nombreTrasladoHomun(l)}</span></div>
+              <p>{l.descripcion}</p><div className="iz-plan-metadatos"><span><Icono nombre="timer" tamano={14} />Visita: {duracionPlan(l.visitaMinutos)}</span><span><Icono nombre={l.traslado.icono} tamano={14} />{nombreTrasladoHomun(l)}</span></div>
               {elegida && ventanas.length === 2 && <label>Jornada de {l.nombre}<select value={elegida.dia} onChange={e => actualizar({ seleccion: borrador.seleccion.map(s => s.lugarId === l.id ? { ...s, dia: Number(e.target.value) } : s) })}><option value="1">Día 1</option><option value="2">Día 2</option></select></label>}
             </article>
           })}

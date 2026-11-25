@@ -9,7 +9,7 @@ import type { CategoriaValladolid } from '../data/lugaresValladolid'
 import { useBorradorValladolid } from '../hooks/useBorradorValladolid'
 import { urlBorradorValladolid } from '../plan/borradorValladolid'
 import { calcularPlanValladolid, resumirJornadaValladolid, ventanasValladolid } from '../plan/itinerarioValladolid'
-import { duracionPlan } from '../plan/itinerarioIzamal'
+import { duracionPlan } from '../plan/duracion'
 
 /** Reutiliza la estructura aprobada del selector, sin cambiar la pantalla de Izamal. */
 export default function PersonalizarValladolidPage() {
@@ -48,8 +48,8 @@ export default function PersonalizarValladolidPage() {
           return <div className="iz-plan-presupuesto" role="status" aria-label={`Resumen del Día ${v.dia}`} key={v.dia}>
             <div><span><Icono nombre="schedule" />Día {v.dia} · Tiempo acumulado</span><strong>{duracionPlan(resumen.totalMinutos)} / {disponibles ? duracionPlan(disponibles) : 'Sin configurar'}</strong></div>
             <progress aria-label={`Tiempo utilizado del Día ${v.dia}`} value={Math.min(resumen.totalMinutos, disponibles || 1)} max={disponibles || 1} />
-            <p>{resumen.visitasMinutos} min de visitas + {resumen.trasladosMinutos} min de desplazamientos (incluye traslado final) + 15 min de margen final.</p>
-            <p>{!disponibles ? 'Configura el tiempo de esta jornada.' : restante >= 0 ? `Tiempo libre: ${restante} min` : `Excede el tiempo disponible por ${Math.abs(restante)} minutos.`}</p>
+            <p>{duracionPlan(resumen.visitasMinutos)} de visitas + {duracionPlan(resumen.trasladosMinutos)} de desplazamientos (incluye traslado final) + 15 min de margen final.</p>
+            <p>{!disponibles ? 'Configura el tiempo de esta jornada.' : restante >= 0 ? `Tiempo libre: ${duracionPlan(restante)}` : `Excede el tiempo disponible por ${duracionPlan(Math.abs(restante))}.`}</p>
           </div>
         })}
       </section>
@@ -65,7 +65,7 @@ export default function PersonalizarValladolidPage() {
           const elegida = borrador.seleccion.find(s => s.lugarId === lugar.id)
           return <article key={lugar.id} className="iz-plan-lugar iz-plan-tarjeta">
             <label className="iz-plan-lugar-seleccion"><input type="checkbox" aria-label={lugar.nombre} checked={!!elegida} onChange={() => seleccionar(lugar.id)} /><span className="iz-plan-lugar-textos"><span className="iz-plan-lugar-titulo">{lugar.nombre}</span><span className="iz-plan-insignia">{lugar.etiqueta}</span></span></label>
-            <div className="iz-plan-lugar-detalle"><p>{lugar.descripcion}</p><div className="iz-plan-metadatos"><span><Icono nombre="timer" tamano={14} />{duracionPlan(lugar.visitaMinutos)}</span><span><Icono nombre="directions_walk" tamano={14} />{lugar.trasladoMinutos} min estimados</span><span>Demostración</span></div>
+            <div className="iz-plan-lugar-detalle"><p>{lugar.descripcion}</p><div className="iz-plan-metadatos"><span><Icono nombre="timer" tamano={14} />{duracionPlan(lugar.visitaMinutos)}</span><span><Icono nombre="directions_walk" tamano={14} />{duracionPlan(lugar.trasladoMinutos)} estimados</span><span>Demostración</span></div>
               {elegida && ventanas.length === 2 && <label className="iz-plan-asignacion">Jornada de {lugar.nombre}<select value={elegida.dia} onChange={e => { actualizar({ seleccion: borrador.seleccion.map(s => s.lugarId === lugar.id ? { ...s, dia: Number(e.target.value) } : s) }); setErrores([]) }}><option value="1">Día 1</option><option value="2">Día 2</option></select></label>}
             </div>
           </article>

@@ -41,7 +41,7 @@ describe('Cálculo de Homún por jornadas CU-09 / RF09', () => {
     expect(calcularPlanHomun(b).plan!.jornadas[0].libresMinutos).toBe(0)
     b.configuracion.minutosDisponibles = '265'
     const antes = structuredClone(b)
-    expect(calcularPlanHomun(b)).toEqual({ plan: null, errores: [expect.stringContaining('Día 1: la selección excede el tiempo disponible por 4 minutos')] })
+    expect(calcularPlanHomun(b)).toEqual({ plan: null, errores: [expect.stringContaining('Día 1: la selección excede el tiempo disponible por 4 min')] })
     expect(b).toEqual(antes)
     expect(resumirJornadaHomun(b.seleccion.map(s => s.lugarId)).totalMinutos).toBe(269)
   })
@@ -79,7 +79,7 @@ describe('Cálculo de Homún por jornadas CU-09 / RF09', () => {
     const b = visita('fin-de-semana')
     b.configuracion.minutosDisponibles = '120'; b.configuracion.minutosDia2 = '540'
     b.seleccion[3].dia = 2
-    expect(calcularPlanHomun(b).errores).toEqual([expect.stringContaining('Día 1: la selección excede el tiempo disponible por 112 minutos')])
+    expect(calcularPlanHomun(b).errores).toEqual([expect.stringContaining('Día 1: la selección excede el tiempo disponible por 1 h 52 min')])
     expect(b.seleccion).toHaveLength(4)
   })
   it('encuentra combinaciones para ventanas asimétricas o pide ampliar la jornada insuficiente', () => {

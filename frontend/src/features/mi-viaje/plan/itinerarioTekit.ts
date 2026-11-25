@@ -1,3 +1,4 @@
+import { duracionPlan } from './duracion'
 import { lugaresTekit, MARGEN_TEKIT, REGRESO_TEKIT } from '../data/lugaresTekit'
 import type { PlanIzamal } from './itinerarioIzamal'
 import { validarConfiguracion } from './itinerarioIzamal'
@@ -25,7 +26,7 @@ export function validarConfiguracionTekit(config: ConfiguracionTekit): string[] 
   // Reutiliza las reglas de fecha local, hora y minutos sin ampliar el contrato de Izamal.
   const errores = validarConfiguracion({ ...config, estancia: 'medio-dia' })
   if (!esModalidadTekit(config.estancia)) errores.unshift('Elige una modalidad válida: medio día, día completo o Ruta Textil · Compras.')
-  if (config.estancia === 'ruta-textil' && !config.minutosDisponibles) errores.push('Ruta Textil · Compras no tiene duración fija. Indica tus minutos disponibles.')
+  if (config.estancia === 'ruta-textil' && !config.minutosDisponibles) errores.push('Ruta Textil · Compras no tiene duración fija. Indica cuánto tiempo tienes.')
   return errores
 }
 
@@ -44,6 +45,6 @@ export function calcularPlanTekit(borrador: BorradorTekit): { plan: PlanTekit | 
   const seleccion = borrador.modo === 'recomendado' ? recomendarRecorrido(lugaresTekit, candidatos.map(l => l.id), disponibles, REGRESO_TEKIT, MARGEN_TEKIT) : borrador.seleccion
   if (!seleccion.length) return { plan: null, errores: [borrador.modo === 'personalizado' ? 'Selecciona al menos un lugar para generar tu itinerario.' : 'No cabe una visita completa con traslados, regreso y margen. Amplía el tiempo disponible.'] }
   const resumen = resumirSeleccionTekit(seleccion)
-  if (resumen.totalMinutos > disponibles) return { plan: null, errores: [`La selección excede el tiempo disponible por ${resumen.totalMinutos - disponibles} minutos. Quita lugares o amplía el tiempo; no se ha eliminado ninguna visita.`] }
+  if (resumen.totalMinutos > disponibles) return { plan: null, errores: [`La selección excede el tiempo disponible por ${duracionPlan(resumen.totalMinutos - disponibles)}. Quita lugares o amplía el tiempo; no se ha eliminado ninguna visita.`] }
   return { plan: { seleccion: [...seleccion], bloques: bloquesRecorrido(lugaresTekit, seleccion, REGRESO_TEKIT, MARGEN_TEKIT), ...resumen, libresMinutos: disponibles - resumen.totalMinutos }, errores: [] }
 }

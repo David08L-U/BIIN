@@ -46,7 +46,7 @@ describe('Compartir y descargar Tekit', () => {
     const texto = textoPlanTekit(b, plan)
     expect(texto).toContain('Fecha de visita: 2026-11-30')
     expect(texto).toContain('Ruta Textil · Compras')
-    expect(texto).toContain('110 min de visitas + 8 min de traslados (incluye regreso final) + 15 min de margen = 133 min')
+    expect(texto).toContain('1 h 50 min de visitas + 8 min de traslados (incluye regreso final) + 15 min de margen = 2 h 13 min')
     expect(texto).toContain('Tiempo libre: 47 min')
     expect(texto).toContain('supuestos del prototipo')
     expect(texto).toContain('No incluye mapas offline ni reservas')

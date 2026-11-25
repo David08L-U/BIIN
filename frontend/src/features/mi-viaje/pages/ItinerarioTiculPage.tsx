@@ -10,7 +10,7 @@ import { avisoTrasladoComidaTicul, lugaresTicul, mapaTicul, nombreTrasladoTicul 
 import { useBorradorTicul } from '../hooks/useBorradorTicul'
 import { parametrosBorradorTicul, urlBorradorTicul } from '../plan/borradorTicul'
 import { calcularPlanTicul, esModalidadTicul, modalidadesTicul } from '../plan/itinerarioTicul'
-import { duracionPlan } from '../plan/itinerarioIzamal'
+import { duracionPlan } from '../plan/duracion'
 import { horaLocal, instanteLocal } from '../plan/tiempoLocal'
 import { compartirTicul, descargarTicul } from '../plan/accionesTicul'
 import type { AvisoCompartir } from '../plan/accionesPlan'
@@ -77,9 +77,9 @@ export default function ItinerarioTiculPage() {
         <section className="iz-plan-conexion iz-plan-tarjeta" aria-labelledby="ti-conexion-titulo">
           <header className="iz-plan-conexion-titulo"><h2 id="ti-conexion-titulo">Conexión Van BIIN</h2><span>Ruta Mérida · Ticul</span><Icono nombre="directions_bus" tamano={20} /></header>
           <div className="iz-plan-conexion-fila"><span className="iz-plan-punto" aria-hidden="true" /><div><p className="iz-plan-ceja">Inicio elegido · {horaLocal(c, 0)}</p><strong>Ticul Centro (Frente al Mercado Municipal)</strong><p>Referencia de inicio; llegada del transporte sin confirmar.</p></div></div>
-          <p className="iz-plan-conexion-margen"><Icono nombre="schedule" tamano={16} />{duracionPlan(Number(c.minutosDisponibles))} disponibles · {plan.libresMinutos} min libres</p>
+          <p className="iz-plan-conexion-margen"><Icono nombre="schedule" tamano={16} />{duracionPlan(Number(c.minutosDisponibles))} disponibles · {duracionPlan(plan.libresMinutos)} libres</p>
           <div className="iz-plan-conexion-fila"><span className="iz-plan-punto" aria-hidden="true" /><div><p className="iz-plan-ceja">Hora objetivo de regreso · {horaLocal(c, Number(c.minutosDisponibles))}</p><strong>Referencia del paradero en Ticul</strong><p>Objetivo del usuario; no es una salida confirmada. Consulta paradero y transporte con la terminal.</p></div></div>
-          <p className="iz-plan-nota">Visitas {plan.visitasMinutos} min + traslados {plan.trasladosMinutos} min (incluye regreso) + margen {plan.margenMinutos} min = {plan.totalMinutos} min.</p>
+          <p className="iz-plan-nota">Visitas {duracionPlan(plan.visitasMinutos)} + traslados {duracionPlan(plan.trasladosMinutos)} (incluye regreso) + margen {duracionPlan(plan.margenMinutos)} = {duracionPlan(plan.totalMinutos)}.</p>
         </section>
         <div className="iz-plan-filtros" role="group" aria-label="Filtrar recorrido">{([['todas', 'Ruta Sugerida'], ['artesanias', 'Alfarería & Zapaterías'], ['gastronomia', 'Gastronomía']] as const).map(([id, nombre]) => <button type="button" key={id} aria-pressed={filtro === id} onClick={() => setFiltro(id)}>{nombre}</button>)}</div>
         <section className="iz-plan-recorrido" aria-labelledby="ti-pasos-titulo">
@@ -92,10 +92,10 @@ export default function ItinerarioTiculPage() {
               return <li key={l.id} value={i + 1}><span className="iz-plan-orden" aria-hidden="true">{i + 1}</span><article className="iz-plan-paso iz-plan-tarjeta">
                 <div className="iz-plan-paso-hora"><span><time dateTime={instanteLocal(c, bloque.inicio).toISOString()}>{horaLocal(c, bloque.inicio)}</time> – <time dateTime={instanteLocal(c, bloque.fin).toISOString()}>{horaLocal(c, bloque.fin)}</time></span><span className="iz-plan-insignia">{l.etiqueta}</span></div>
                 <p className="iz-plan-caminata"><Icono nombre={l.traslado.icono} tamano={15} />{nombreTrasladoTicul(l)} · {horaLocal(c, traslado.inicio)} – {horaLocal(c, traslado.fin)}</p>
-                <h3>{l.nombre}</h3><p>{l.descripcion}</p><ImagenItinerario {...l.imagen} className="iz-plan-imagen" /><p className="iz-plan-duracion">Visita estimada: {l.visitaMinutos} min</p>
+                <h3>{l.nombre}</h3><p>{l.descripcion}</p><ImagenItinerario {...l.imagen} className="iz-plan-imagen" /><p className="iz-plan-duracion">Visita estimada: {duracionPlan(l.visitaMinutos)}</p>
               </article></li>
             })}
-            <li><span className="iz-plan-orden iz-plan-orden-cierre" aria-hidden="true"><Icono nombre="check" tamano={10} /></span><div className="iz-plan-cierre iz-plan-tarjeta"><h3>Cierre del recorrido</h3>{plan.bloques.slice(-2).map(b => <p key={b.titulo}>{horaLocal(c, b.inicio)} – {horaLocal(c, b.fin)} · {b.titulo}: {b.fin - b.inicio} min.</p>)}<p>Tiempo libre: {plan.libresMinutos} min · {horaLocal(c, plan.totalMinutos)} – {horaLocal(c, Number(c.minutosDisponibles))}. El regreso mostrado es tu objetivo, no una salida confirmada.</p></div></li>
+            <li><span className="iz-plan-orden iz-plan-orden-cierre" aria-hidden="true"><Icono nombre="check" tamano={10} /></span><div className="iz-plan-cierre iz-plan-tarjeta"><h3>Cierre del recorrido</h3>{plan.bloques.slice(-2).map(b => <p key={b.titulo}>{horaLocal(c, b.inicio)} – {horaLocal(c, b.fin)} · {b.titulo}: {duracionPlan(b.fin - b.inicio)}.</p>)}<p>Tiempo libre: {duracionPlan(plan.libresMinutos)} · {horaLocal(c, plan.totalMinutos)} – {horaLocal(c, Number(c.minutosDisponibles))}. El regreso mostrado es tu objetivo, no una salida confirmada.</p></div></li>
           </ol>
           {filtro !== 'todas' && !plan.seleccion.some(id => lugaresTicul.some(l => l.id === id && l.categoria === filtro)) && <p role="status">No hay visitas de esta categoría. El filtro conserva el plan y sus horarios.</p>}
         </section>

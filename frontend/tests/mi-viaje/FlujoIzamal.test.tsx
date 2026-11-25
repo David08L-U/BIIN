@@ -78,7 +78,7 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
 
   it.each([
     ['Hora de inicio', '', 'Elige una hora de inicio válida'],
-    ['Tiempo disponible (minutos)', '12.5', 'número entero entre 15 y 720'],
+    ['Tiempo disponible (minutos)', '12.5', 'número entero entre 15 min y 12 h'],
   ])('valida %s antes de generar una recomendación', async (campo, valor, mensaje) => {
     montar(`/rutas/izamal/itinerario?${configuracion}`)
     fireEvent.change(screen.getByLabelText(campo), { target: { value: valor } })
@@ -92,7 +92,7 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     montar(`/rutas/izamal/personalizar?${configuracion}&lugares=kinich,convento`)
     fireEvent.change(screen.getByLabelText('Tiempo disponible (minutos)'), { target: { value: '120' } })
     await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
-    expect(screen.getByRole('alert')).toHaveTextContent('excede el tiempo disponible por 27 minutos')
+    expect(screen.getByRole('alert')).toHaveTextContent('excede el tiempo disponible por 27 min')
     expect(screen.getByRole('checkbox', { name: 'Restaurante Kinich' })).toBeChecked()
     expect(screen.getByText('2 lugares seleccionados')).toBeInTheDocument()
     fireEvent.change(screen.getByLabelText('Tiempo disponible (minutos)'), { target: { value: '240' } })

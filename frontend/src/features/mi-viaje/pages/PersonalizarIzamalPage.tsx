@@ -1,3 +1,4 @@
+import { duracionPlan } from '../plan/duracion'
 import ModosPlan from '../components/ModosPlan'
 import CabeceraPlan from '../components/CabeceraPlan'
 import { useState, type FormEvent } from 'react'
@@ -8,7 +9,7 @@ import { categoriasIzamal, lugaresIzamal } from '../data/lugaresIzamal'
 import type { CategoriaIzamal } from '../data/lugaresIzamal'
 import { useBorradorIzamal } from '../hooks/useBorradorIzamal'
 import { urlBorrador } from '../plan/borradorIzamal'
-import { calcularPlan, duracionPlan, resumirSeleccion } from '../plan/itinerarioIzamal'
+import { calcularPlan, resumirSeleccion } from '../plan/itinerarioIzamal'
 
 export default function PersonalizarIzamalPage() {
   const { borrador, actualizar } = useBorradorIzamal('personalizado')
@@ -55,8 +56,8 @@ export default function PersonalizarIzamalPage() {
           <div className="iz-plan-presupuesto" role="status" aria-live="polite">
             <div><span><Icono nombre="schedule" />Tiempo acumulado</span><strong>{duracionPlan(resumen.totalMinutos)} / {disponibles > 0 && Number.isFinite(disponibles) ? duracionPlan(disponibles) : 'Sin configurar'}</strong></div>
             <progress aria-label="Tiempo utilizado" value={Math.min(resumen.totalMinutos, disponibles || 1)} max={disponibles || 1} />
-            <p>{resumen.visitasMinutos} min de visitas + {resumen.trasladosMinutos} min de desplazamientos estimados + 15 min de margen final.</p>
-            <p>{restante >= 0 ? `Tiempo libre: ${restante} min` : `Excede el tiempo disponible por ${Math.abs(restante)} minutos.`}</p>
+            <p>{duracionPlan(resumen.visitasMinutos)} de visitas + {duracionPlan(resumen.trasladosMinutos)} de desplazamientos estimados + 15 min de margen final.</p>
+            <p>{restante >= 0 ? `Tiempo libre: ${duracionPlan(restante)}` : `Excede el tiempo disponible por ${duracionPlan(Math.abs(restante))}.`}</p>
           </div>
         </section>
         <ConfiguracionViaje configuracion={borrador.configuracion} onChange={configuracion => { actualizar({ configuracion }); setErrores([]) }} />
@@ -78,7 +79,7 @@ export default function PersonalizarIzamalPage() {
                   <input type="checkbox" aria-label={lugar.nombre} checked={borrador.seleccion.includes(lugar.id)} onChange={() => seleccionar(lugar.id)} />
                   <span className="iz-plan-lugar-textos"><span className="iz-plan-lugar-titulo">{lugar.nombre}</span><span className="iz-plan-insignia">{lugar.etiqueta}</span></span>
                 </label>
-                <div className="iz-plan-lugar-detalle"><p>{lugar.descripcion}</p><div className="iz-plan-metadatos"><span><Icono nombre="timer" tamano={14} />{duracionPlan(lugar.visitaMinutos)}</span><span><Icono nombre="directions_walk" tamano={14} />{lugar.trasladoMinutos} min estimados</span><span>Demostración</span></div></div>
+                <div className="iz-plan-lugar-detalle"><p>{lugar.descripcion}</p><div className="iz-plan-metadatos"><span><Icono nombre="timer" tamano={14} />{duracionPlan(lugar.visitaMinutos)}</span><span><Icono nombre="directions_walk" tamano={14} />{duracionPlan(lugar.trasladoMinutos)} estimados</span><span>Demostración</span></div></div>
               </article>
             ))}
           </div>

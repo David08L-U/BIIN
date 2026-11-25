@@ -9,7 +9,7 @@ import { lugaresTekit } from '../data/lugaresTekit'
 import { useBorradorTekit } from '../hooks/useBorradorTekit'
 import { parametrosBorradorTekit, urlBorradorTekit } from '../plan/borradorTekit'
 import { calcularPlanTekit, esModalidadTekit, modalidadesTekit } from '../plan/itinerarioTekit'
-import { duracionPlan } from '../plan/itinerarioIzamal'
+import { duracionPlan } from '../plan/duracion'
 import { horaLocal, instanteLocal } from '../plan/tiempoLocal'
 import { compartirTekit, descargarTekit } from '../plan/accionesTekit'
 import type { AvisoCompartir } from '../plan/accionesPlan'
@@ -79,10 +79,10 @@ export default function ItinerarioTekitPage() {
           <header className="iz-plan-conexion-titulo"><h2 id="tk-conexion-titulo">Conexión Van BIIN</h2><span>Ruta Mérida · Tekit</span><Icono nombre="directions_bus" tamano={20} /></header>
           <div className="iz-plan-conexion-tramo">
             <div><p className="iz-plan-ceja">Inicio elegido · <strong>{horaLocal(c, 0)}</strong></p><p>Tekit Centro, frente a la Parroquia de San Antonio. Referencia del prototipo; llegada sin confirmar.</p></div>
-            <p className="iz-plan-conexion-margen"><Icono nombre="schedule" tamano={15} />{duracionPlan(Number(c.minutosDisponibles))} disponibles · {plan.libresMinutos} min libres</p>
+            <p className="iz-plan-conexion-margen"><Icono nombre="schedule" tamano={15} />{duracionPlan(Number(c.minutosDisponibles))} disponibles · {duracionPlan(plan.libresMinutos)} libres</p>
             <div><p className="iz-plan-ceja">Hora objetivo de regreso · <strong>{horaLocal(c, Number(c.minutosDisponibles))}</strong></p><p>Objetivo del usuario. Confirma paradero y transporte con la terminal.</p></div>
           </div>
-          <p className="iz-plan-nota">Visitas {plan.visitasMinutos} min + desplazamientos {plan.trasladosMinutos} min (incluye regreso) + margen {plan.margenMinutos} min = {plan.totalMinutos} min.</p>
+          <p className="iz-plan-nota">Visitas {duracionPlan(plan.visitasMinutos)} + desplazamientos {duracionPlan(plan.trasladosMinutos)} (incluye regreso) + margen {duracionPlan(plan.margenMinutos)} = {duracionPlan(plan.totalMinutos)}.</p>
         </section>
         <div className="iz-plan-filtros" role="group" aria-label="Filtrar recorrido">{([['todas', 'Ruta Sugerida'], ['textil', 'Ruta Textil & Talleres'], ['gastronomia', 'Gastronomía']] as const).map(([id, nombre]) => <button type="button" key={id} aria-pressed={filtro === id} onClick={() => setFiltro(id)}>{nombre}</button>)}</div>
         <section className="iz-plan-recorrido" aria-labelledby="tk-pasos-titulo">
@@ -93,15 +93,15 @@ export default function ItinerarioTekitPage() {
               if (filtro !== 'todas' && lugar.categoria !== filtro) return null
               const traslado = plan.bloques.find(b => b.tipo === 'traslado' && b.lugarId === lugar.id)!
               return <li key={lugar.id} value={indice + 1}><span className="iz-plan-orden" aria-hidden="true">{indice + 1}</span><article className="iz-plan-paso iz-plan-tarjeta">
-                <div className="iz-plan-paso-hora"><span ><time dateTime={instanteLocal(c, bloque.inicio).toISOString()}>{horaLocal(c, bloque.inicio)}</time> – <time dateTime={instanteLocal(c, bloque.fin).toISOString()}>{horaLocal(c, bloque.fin)}</time></span><span className="iz-plan-caminata"><Icono nombre="directions_walk" tamano={14} />{lugar.trasladoMinutos} min estimados</span></div>
+                <div className="iz-plan-paso-hora"><span ><time dateTime={instanteLocal(c, bloque.inicio).toISOString()}>{horaLocal(c, bloque.inicio)}</time> – <time dateTime={instanteLocal(c, bloque.fin).toISOString()}>{horaLocal(c, bloque.fin)}</time></span><span className="iz-plan-caminata"><Icono nombre="directions_walk" tamano={14} />{duracionPlan(lugar.trasladoMinutos)} estimados</span></div>
                 <h3>{lugar.nombre}</h3><p>{lugar.descripcion}</p>
                 <p className="iz-plan-nota">Traslado previo: {horaLocal(c, traslado.inicio)} – {horaLocal(c, traslado.fin)}</p>
-                <div className="iz-plan-metadatos"><span className="iz-plan-insignia"><Icono nombre={lugar.icono} tamano={13} />{lugar.etiqueta}</span><span className="iz-plan-insignia">Visita estimada: {lugar.visitaMinutos} min</span></div>
+                <div className="iz-plan-metadatos"><span className="iz-plan-insignia"><Icono nombre={lugar.icono} tamano={13} />{lugar.etiqueta}</span><span className="iz-plan-insignia">Visita estimada: {duracionPlan(lugar.visitaMinutos)}</span></div>
               </article></li>
             })}
           </ol>
           {filtro !== 'todas' && !plan.seleccion.some(id => lugaresTekit.some(l => l.id === id && l.categoria === filtro)) && <p role="status">No hay visitas de esta categoría. El filtro solo cambia las tarjetas visibles; conserva el plan y sus horarios.</p>}
-          <div className="iz-plan-cierre iz-plan-tarjeta"><Icono nombre="directions_bus" tamano={22} /><div><h3>Cierre de Ruta</h3>{plan.bloques.slice(-2).map(b => <p key={b.titulo}>{horaLocal(c, b.inicio)} – {horaLocal(c, b.fin)} · {b.titulo}: {b.fin - b.inicio} min.</p>)}<p>Tiempo libre: {plan.libresMinutos} min · {horaLocal(c, plan.totalMinutos)} – {horaLocal(c, Number(c.minutosDisponibles))}. El regreso mostrado es tu objetivo, no una salida confirmada.</p></div></div>
+          <div className="iz-plan-cierre iz-plan-tarjeta"><Icono nombre="directions_bus" tamano={22} /><div><h3>Cierre de Ruta</h3>{plan.bloques.slice(-2).map(b => <p key={b.titulo}>{horaLocal(c, b.inicio)} – {horaLocal(c, b.fin)} · {b.titulo}: {duracionPlan(b.fin - b.inicio)}.</p>)}<p>Tiempo libre: {duracionPlan(plan.libresMinutos)} · {horaLocal(c, plan.totalMinutos)} – {horaLocal(c, Number(c.minutosDisponibles))}. El regreso mostrado es tu objetivo, no una salida confirmada.</p></div></div>
         </section>
         <section className="iz-plan-mapa iz-plan-tarjeta" aria-labelledby="tk-circuito-titulo">
           <div className="iz-plan-categoria-titulo"><h2 id="tk-circuito-titulo"><Icono nombre="explore" tamano={18} />Circuito Artesanal Tekit</h2><Link to={urlBorradorTekit('detalle', vigente)}>Ver detalle de ruta<Icono nombre="open_in_new" tamano={14} /></Link></div>

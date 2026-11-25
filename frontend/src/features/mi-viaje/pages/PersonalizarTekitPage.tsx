@@ -9,7 +9,7 @@ import type { CategoriaTekit } from '../data/lugaresTekit'
 import { useBorradorTekit } from '../hooks/useBorradorTekit'
 import { parametrosBorradorTekit, urlBorradorTekit } from '../plan/borradorTekit'
 import { calcularPlanTekit, resumirSeleccionTekit } from '../plan/itinerarioTekit'
-import { duracionPlan } from '../plan/itinerarioIzamal'
+import { duracionPlan } from '../plan/duracion'
 
 export default function PersonalizarTekitPage() {
   const { borrador, actualizar } = useBorradorTekit('personalizado')
@@ -43,8 +43,8 @@ export default function PersonalizarTekitPage() {
           <div className="iz-plan-presupuesto iz-plan-tarjeta" role="status" aria-label="Resumen de selección" aria-live="polite">
             <div><span>Tiempo acumulado</span><strong>{duracionPlan(resumen.totalMinutos)} / {disponibles === null ? 'Sin configurar' : duracionPlan(disponibles)}</strong></div>
             <progress aria-label="Tiempo utilizado" value={Math.min(resumen.totalMinutos, disponibles ?? 1)} max={disponibles ?? 1} />
-            <p>{resumen.visitasMinutos} min de visitas + {resumen.trasladosMinutos} min de desplazamientos con regreso + {resumen.margenMinutos} min de margen reservado.</p>
-            {disponibles !== null && <p>{resumen.totalMinutos > disponibles ? `Excede el tiempo disponible por ${resumen.totalMinutos - disponibles} minutos.` : `Tiempo libre: ${disponibles - resumen.totalMinutos} min`}</p>}
+            <p>{duracionPlan(resumen.visitasMinutos)} de visitas + {duracionPlan(resumen.trasladosMinutos)} de desplazamientos con regreso + {duracionPlan(resumen.margenMinutos)} de margen reservado.</p>
+            {disponibles !== null && <p>{resumen.totalMinutos > disponibles ? `Excede el tiempo disponible por ${duracionPlan(resumen.totalMinutos - disponibles)}.` : `Tiempo libre: ${duracionPlan(disponibles - resumen.totalMinutos)}`}</p>}
           </div>
         </section>
         <ConfiguracionTekit borrador={borrador} onChange={actualizar} />
@@ -56,7 +56,7 @@ export default function PersonalizarTekitPage() {
           <div className="iz-plan-categoria-titulo"><h2 id="tk-categoria-titulo">{categoriasTekit.find(c => c.id === categoria)!.nombre}</h2><span>{contador(categoria)} seleccionados</span></div>
           {lugaresTekit.filter(l => l.categoria === categoria).map(lugar => <article className="iz-plan-lugar iz-plan-tarjeta" key={lugar.id}>
             <label className="iz-plan-lugar-seleccion"><input type="checkbox" aria-label={lugar.nombre} checked={borrador.seleccion.includes(lugar.id)} onChange={() => actualizar({ seleccion: borrador.seleccion.includes(lugar.id) ? borrador.seleccion.filter(id => id !== lugar.id) : [...borrador.seleccion, lugar.id] })} /><span className="iz-plan-lugar-textos"><strong className="iz-plan-lugar-titulo">{lugar.nombre}</strong><span className="iz-plan-insignia"><Icono nombre={lugar.icono} tamano={13} />{lugar.etiqueta}</span></span></label>
-            <p>{lugar.descripcion}</p><p className="iz-plan-nota">Visita: {lugar.visitaMinutos} min · Traslado previo: {lugar.trasladoMinutos} min estimados</p>
+            <p>{lugar.descripcion}</p><p className="iz-plan-nota">Visita: {duracionPlan(lugar.visitaMinutos)} · Traslado previo: {duracionPlan(lugar.trasladoMinutos)} estimados</p>
           </article>)}
         </section>
         <div className="iz-plan-resumen-final">

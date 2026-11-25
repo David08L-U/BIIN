@@ -11,7 +11,7 @@ import { useBorradorHomun } from '../hooks/useBorradorHomun'
 import { parametrosBorradorHomun, urlBorradorHomun } from '../plan/borradorHomun'
 import { calcularPlanHomun, esEstanciaHomun, estanciasHomun } from '../plan/itinerarioHomun'
 import type { JornadaHomun } from '../plan/itinerarioHomun'
-import { duracionPlan } from '../plan/itinerarioIzamal'
+import { duracionPlan } from '../plan/duracion'
 import { horaLocal, instanteLocal } from '../plan/tiempoLocal'
 import { compartirHomun, descargarHomun } from '../plan/accionesHomun'
 import type { AvisoCompartir } from '../plan/accionesPlan'
@@ -22,9 +22,9 @@ function ConexionHomun({ dia }: { dia: JornadaHomun }) {
     <header><h2>Conexión Van BIIN</h2><span>Ruta Mérida · Homún</span><Icono nombre="airport_shuttle" tamano={20} /></header>
     <p className="iz-plan-ceja">Día {dia.dia} · {dia.fecha}</p>
     <div className="iz-plan-conexion-fila"><Icono nombre="login" tamano={16} /><div><p className="iz-plan-ceja">Inicio elegido · {horaLocal(dia, 0)}</p><strong>Homún Centro (Frente al Palacio Municipal)</strong><p>Referencia del prototipo. Llegada del transporte sin confirmar.</p></div></div>
-    <p className="iz-plan-conexion-margen"><Icono nombre="timelapse" tamano={16} />{duracionPlan(Number(dia.minutosDisponibles))} disponibles · {dia.libresMinutos} min libres</p>
+    <p className="iz-plan-conexion-margen"><Icono nombre="timelapse" tamano={16} />{duracionPlan(Number(dia.minutosDisponibles))} disponibles · {duracionPlan(dia.libresMinutos)} libres</p>
     <div className="iz-plan-conexion-fila"><Icono nombre="logout" tamano={16} /><div><p className="iz-plan-ceja">Hora objetivo de regreso · {horaLocal(dia, Number(dia.minutosDisponibles))}</p><strong>Referencia de paradero en Homún</strong><p>Objetivo del usuario; no es una salida confirmada. Consulta paradero y transporte con la terminal.</p></div></div>
-    <p className="iz-plan-nota">Visitas {dia.visitasMinutos} min + traslados {dia.trasladosMinutos} min (incluye regreso) + margen {dia.margenMinutos} min = {dia.totalMinutos} min.</p>
+    <p className="iz-plan-nota">Visitas {duracionPlan(dia.visitasMinutos)} + traslados {duracionPlan(dia.trasladosMinutos)} (incluye regreso) + margen {duracionPlan(dia.margenMinutos)} = {duracionPlan(dia.totalMinutos)}.</p>
   </section>
 }
 
@@ -104,12 +104,12 @@ export default function ItinerarioHomunPage() {
                     <div className="iz-plan-paso-hora"><span><time dateTime={instanteLocal(d, bloque.inicio).toISOString()}>{horaLocal(d, bloque.inicio)}</time> – <time dateTime={instanteLocal(d, bloque.fin).toISOString()}>{horaLocal(d, bloque.fin)}</time></span><span className="iz-plan-insignia">{l.etiqueta}</span><Icono nombre={l.icono} tamano={18} /></div>
                     <p className="iz-plan-caminata"><Icono nombre={l.traslado.icono} tamano={16} />{nombreTrasladoHomun(l)} · {horaLocal(d, traslado.inicio)} – {horaLocal(d, traslado.fin)}</p>
                     {'imagen' in l && <ImagenItinerario {...l.imagen} className="iz-plan-imagen" />}
-                    <h4>{l.nombre}</h4><p>{l.descripcion}</p><p className="iz-plan-duracion">Visita estimada: {l.visitaMinutos} min</p>
+                    <h4>{l.nombre}</h4><p>{l.descripcion}</p><p className="iz-plan-duracion">Visita estimada: {duracionPlan(l.visitaMinutos)}</p>
                   </article></li>
                 })}
               </ol>
               {!visibles.length && <p role="status">No hay visitas de esta categoría en el Día {d.dia}. El filtro conserva el plan y sus horarios.</p>}
-              <div className="iz-plan-cierre iz-plan-tarjeta"><h4><Icono nombre="departure_board" tamano={20} />Cierre del recorrido · Día {d.dia}</h4>{d.bloques.slice(-2).map(b => <p key={b.titulo}>{horaLocal(d, b.inicio)} – {horaLocal(d, b.fin)} · {b.titulo}: {b.fin - b.inicio} min.</p>)}<p>Tiempo libre: {d.libresMinutos} min · {horaLocal(d, d.totalMinutos)} – {horaLocal(d, Number(d.minutosDisponibles))}. El regreso es tu objetivo, no una salida confirmada.</p></div>
+              <div className="iz-plan-cierre iz-plan-tarjeta"><h4><Icono nombre="departure_board" tamano={20} />Cierre del recorrido · Día {d.dia}</h4>{d.bloques.slice(-2).map(b => <p key={b.titulo}>{horaLocal(d, b.inicio)} – {horaLocal(d, b.fin)} · {b.titulo}: {duracionPlan(b.fin - b.inicio)}.</p>)}<p>Tiempo libre: {duracionPlan(d.libresMinutos)} · {horaLocal(d, d.totalMinutos)} – {horaLocal(d, Number(d.minutosDisponibles))}. El regreso es tu objetivo, no una salida confirmada.</p></div>
             </section>
           })}
         </section>

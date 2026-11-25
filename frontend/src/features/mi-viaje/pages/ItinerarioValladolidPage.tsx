@@ -13,7 +13,7 @@ import { parametrosBorradorValladolid, urlBorradorValladolid } from '../plan/bor
 import { calcularPlanValladolid, esEstanciaValladolid, estanciasValladolid } from '../plan/itinerarioValladolid'
 import type { JornadaValladolid } from '../plan/itinerarioValladolid'
 import { horaLocal, instanteLocal } from '../plan/tiempoLocal'
-import { duracionPlan } from '../plan/itinerarioIzamal'
+import { duracionPlan } from '../plan/duracion'
 import { compartirValladolid, descargarValladolid } from '../plan/accionesValladolid'
 import type { AvisoCompartir } from '../plan/accionesValladolid'
 import { guardarItinerarioLocal } from '../storage/itinerariosLocales'
@@ -26,7 +26,7 @@ function Conexion({ dia }: { dia: JornadaValladolid }) {
       <div className="iz-plan-conexion-fila"><span><Icono nombre="pin_drop" tamano={16} /></span><div><p className="iz-plan-ceja">Inicio elegido · {horaLocal(dia, 0)}</p><strong>Valladolid Centro</strong><p>Frente al Parque Principal Francisco Cantón. Referencia del prototipo; llegada del transporte sin confirmar.</p></div></div>
       <div className="iz-plan-conexion-margen"><span><Icono nombre="directions_walk" tamano={16} />Tiempo para la visita</span><strong>{duracionPlan(Number(dia.minutosDisponibles))}</strong></div>
       <div className="iz-plan-conexion-fila"><span ><Icono nombre="sync_alt" tamano={16} /></span><div><p className="iz-plan-ceja">Hora objetivo de regreso · {horaLocal(dia, Number(dia.minutosDisponibles))}</p><strong>Referencia de regreso del prototipo</strong><p>Objetivo del usuario; no es una salida confirmada. Confirma punto y transporte con la terminal.</p></div></div>
-      <p className="iz-plan-nota">Visitas {dia.visitasMinutos} min + traslados {dia.trasladosMinutos} min (incluye traslado final) + margen {dia.margenMinutos} min = {dia.totalMinutos} min. Libres: {dia.libresMinutos} min.</p>
+      <p className="iz-plan-nota">Visitas {duracionPlan(dia.visitasMinutos)} + traslados {duracionPlan(dia.trasladosMinutos)} (incluye traslado final) + margen {duracionPlan(dia.margenMinutos)} = {duracionPlan(dia.totalMinutos)}. Libres: {duracionPlan(dia.libresMinutos)}.</p>
     </div>
   </section>
 }
@@ -108,13 +108,13 @@ export default function ItinerarioValladolidPage() {
                   const traslado = dia.bloques.find(b => b.tipo === 'traslado' && b.lugarId === lugar.id)!
                   return <li key={lugar.id} value={indice + 1}><span className="iz-plan-orden" aria-hidden="true">{indice + 1}</span><article className="iz-plan-paso iz-plan-tarjeta">
                     <div className="iz-plan-paso-hora"><span><time dateTime={instanteLocal(dia, bloque.inicio).toISOString()}>{horaLocal(dia, bloque.inicio)}</time> – <time dateTime={instanteLocal(dia, bloque.fin).toISOString()}>{horaLocal(dia, bloque.fin)}</time></span><span>{lugar.etiqueta}</span></div>
-                    <p className="iz-plan-caminata"><Icono nombre="directions_walk" tamano={14} />Traslado estimado: {traslado.fin - traslado.inicio} min · {horaLocal(dia, traslado.inicio)} – {horaLocal(dia, traslado.fin)}</p>
+                    <p className="iz-plan-caminata"><Icono nombre="directions_walk" tamano={14} />Traslado estimado: {duracionPlan(traslado.fin - traslado.inicio)} · {horaLocal(dia, traslado.inicio)} – {horaLocal(dia, traslado.fin)}</p>
                     <h4>{lugar.nombre}</h4><p>{lugar.descripcion}</p>
                     {'imagen' in lugar && <ImagenItinerario {...lugar.imagen} className="iz-plan-imagen" />}
-                    <p className="iz-plan-duracion">Visita estimada: {lugar.visitaMinutos} min</p>
+                    <p className="iz-plan-duracion">Visita estimada: {duracionPlan(lugar.visitaMinutos)}</p>
                   </article></li>
                 })}
-                <li><span className="iz-plan-orden iz-plan-orden-cierre" aria-hidden="true"><Icono nombre="flag" tamano={18} /></span><div className="iz-plan-cierre iz-plan-tarjeta"><p className="iz-plan-ceja">Cierre del recorrido · Día {dia.dia}</p><h4>Regreso al punto de referencia</h4>{dia.bloques.slice(-2).map(b => <p key={b.titulo}>{horaLocal(dia, b.inicio)} – {horaLocal(dia, b.fin)} · {b.titulo}: {b.fin - b.inicio} min.</p>)}<p>Quedan {dia.libresMinutos} min libres. Hora objetivo: {horaLocal(dia, Number(dia.minutosDisponibles))}; no es una salida confirmada.</p></div></li>
+                <li><span className="iz-plan-orden iz-plan-orden-cierre" aria-hidden="true"><Icono nombre="flag" tamano={18} /></span><div className="iz-plan-cierre iz-plan-tarjeta"><p className="iz-plan-ceja">Cierre del recorrido · Día {dia.dia}</p><h4>Regreso al punto de referencia</h4>{dia.bloques.slice(-2).map(b => <p key={b.titulo}>{horaLocal(dia, b.inicio)} – {horaLocal(dia, b.fin)} · {b.titulo}: {duracionPlan(b.fin - b.inicio)}.</p>)}<p>Quedan {duracionPlan(dia.libresMinutos)} libres. Hora objetivo: {horaLocal(dia, Number(dia.minutosDisponibles))}; no es una salida confirmada.</p></div></li>
               </ol>
               {!visibles.length && <p role="status">No hay visitas de esta categoría en el Día {dia.dia}. El filtro solo cambia las tarjetas visibles, no el plan ni sus horarios.</p>}
             </section>

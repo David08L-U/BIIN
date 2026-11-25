@@ -29,7 +29,7 @@ describe('Cálculo de Valladolid CU-09 / RF09', () => {
   it('rechaza un exceso sin eliminar visitas', () => {
     const b = visita('medio-dia')
     const antes = structuredClone(b)
-    expect(calcularPlanValladolid(b)).toEqual({ plan: null, errores: ['Día 1: la selección excede el tiempo disponible por 5 minutos. Modifica esa jornada; no se ha eliminado ninguna visita.'] })
+    expect(calcularPlanValladolid(b)).toEqual({ plan: null, errores: ['Día 1: la selección excede el tiempo disponible por 5 min. Modifica esa jornada; no se ha eliminado ninguna visita.'] })
     expect(b).toEqual(antes)
   })
 
@@ -78,7 +78,7 @@ describe('Cálculo de Valladolid CU-09 / RF09', () => {
     b.configuracion.minutosDia2 = '540'
     b.seleccion[3].dia = 2
     expect(calcularPlanValladolid(b).plan).toBeNull()
-    expect(calcularPlanValladolid(b).errores).toEqual(['Día 1: la selección excede el tiempo disponible por 112 minutos. Modifica esa jornada; no se ha eliminado ninguna visita.'])
+    expect(calcularPlanValladolid(b).errores).toEqual(['Día 1: la selección excede el tiempo disponible por 1 h 52 min. Modifica esa jornada; no se ha eliminado ninguna visita.'])
   })
 
   it('encuentra una recomendación con ventanas asimétricas y explica cuándo no caben ambas jornadas', () => {

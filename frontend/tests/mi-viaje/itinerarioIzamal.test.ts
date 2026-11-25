@@ -26,7 +26,7 @@ describe('Cálculo de itinerarios de demostración CU-09 / RF09', () => {
 
   it('rechaza exceso sin quitar ni truncar lugares', () => {
     const borrador = { ...base, configuracion: { ...base.configuracion, minutosDisponibles: '120' } }
-    expect(calcularPlan(borrador)).toEqual({ plan: null, errores: [expect.stringContaining('excede el tiempo disponible por 27 minutos')] })
+    expect(calcularPlan(borrador)).toEqual({ plan: null, errores: [expect.stringContaining('excede el tiempo disponible por 27 min')] })
     expect(borrador.seleccion).toEqual(['convento', 'kinich'])
   })
 
@@ -35,7 +35,7 @@ describe('Cálculo de itinerarios de demostración CU-09 / RF09', () => {
   })
 
   it.each(['', '0', '-1', 'NaN', '12.5', '721', '1e2'])('rechaza duración inválida %s', minutosDisponibles => {
-    expect(validarConfiguracion({ ...base.configuracion, minutosDisponibles })).toContain('El tiempo disponible debe ser un número entero entre 15 y 720 minutos.')
+    expect(validarConfiguracion({ ...base.configuracion, minutosDisponibles })).toContain('El tiempo disponible debe ser un número entero entre 15 min y 12 h.')
   })
 
   it.each(['', '2026-02-30', '2026-13-01', '30/11/2026'])('rechaza fecha inválida %s', fecha => {
