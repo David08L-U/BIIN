@@ -1,3 +1,5 @@
+import ModosPlan from '../components/ModosPlan'
+import CabeceraPlan from '../components/CabeceraPlan'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../../auth/useAuth'
@@ -11,7 +13,6 @@ import { useBorradorIzamal } from '../hooks/useBorradorIzamal'
 import { urlBorrador } from '../plan/borradorIzamal'
 import { calcularPlan, duracionPlan, estanciasIzamal, horaPlan, instantePlan } from '../plan/itinerarioIzamal'
 import { guardarItinerarioLocal } from '../storage/itinerariosLocales'
-import '../../../styles/itinerario-izamal.css'
 
 export default function ItinerarioIzamalPage() {
   const { borrador, actualizar } = useBorradorIzamal()
@@ -47,15 +48,17 @@ export default function ItinerarioIzamalPage() {
 
   return (
     <article className="iz-plan iz-itinerario" aria-labelledby="iz-itinerario-titulo">
-      <header className="iz-plan-cabecera">
-        <Link className="iz-plan-icono-boton" to={urlBorrador('detalle', borrador)} aria-label="Volver a detalle de ruta"><Icono nombre="arrow_back" tamano={16} /></Link>
-        <div className="iz-plan-titulo"><p className="iz-plan-ceja">BIIN Escapadas</p><h1 id="iz-itinerario-titulo">Tu Itinerario en Izamal</h1></div>
-        <div className="iz-plan-utilidades">
+      <CabeceraPlan id="iz-itinerario-titulo" titulo="Tu Itinerario en Izamal" subtitulo="BIIN Escapadas" volver={urlBorrador('detalle', borrador)} acciones={<>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando} onClick={guardar} aria-label="Guardar itinerario"><Icono nombre="bookmark" tamano={16} /></button>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan} aria-label="Mostrar enlace del plan" onClick={() => setMostrarEnlace(valor => !valor)}><Icono nombre="share" tamano={16} /></button>
-        </div>
-      </header>
+
+        </>} />
       <div className="iz-plan-estancia"><span><Icono nombre="schedule" tamano={14} />{estanciasIzamal[borrador.configuracion.estancia].nombre} en la Ciudad Amarilla</span><span className="iz-plan-insignia">Plan estimado</span></div>
+      <ModosPlan
+        modo={borrador.modo}
+        recomendado={urlBorrador('itinerario', { ...borrador, modo: 'recomendado', generado: false })}
+        personalizado={urlBorrador('personalizar', { ...borrador, modo: 'personalizado', generado: false })}
+      />
       <form noValidate onSubmit={generar} className="iz-plan-formulario">
         <ConfiguracionViaje configuracion={borrador.configuracion} onChange={configuracion => { actualizar({ configuracion }); setErroresIntento([]) }} />
         <button type="submit" className="iz-plan-primario">{borrador.modo === 'personalizado' ? 'Generar itinerario personalizado' : 'Generar itinerario recomendado'}<Icono nombre="arrow_forward" tamano={20} /></button>

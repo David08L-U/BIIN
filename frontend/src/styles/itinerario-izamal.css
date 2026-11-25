@@ -21,7 +21,7 @@
 .iz-plan button { cursor: pointer; }
 .iz-plan button:disabled { opacity: 0.5; cursor: default; }
 .iz-plan a { color: #2b1810; }
-.iz-plan :is(button, a, input):focus-visible { outline: 3px solid #855400; outline-offset: 3px; }
+.iz-plan :is(button, a, input, select):focus-visible { outline: 3px solid #855400; outline-offset: 3px; }
 .iz-plan .biin-icon { flex-shrink: 0; }
 
 .iz-plan-tarjeta {
@@ -69,9 +69,24 @@
 .iz-plan-config legend .biin-icon { margin-right: 6px; vertical-align: middle; }
 .iz-plan-config > p { font-size: 12px; line-height: 16px; color: #4f4440; }
 .iz-plan-campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 12px 0; }
-.iz-plan-campos label:last-child { grid-column: 1 / -1; }
+.iz-plan-campos > :only-child, .iz-plan-campos > :nth-child(3) { grid-column: 1 / -1; }
 .iz-plan label { display: block; min-width: 0; font-size: 12px; line-height: 16px; font-weight: 600; }
-.iz-plan input:not([type='checkbox']) { display: block; width: 100%; min-width: 0; min-height: 44px; margin-top: 6px; border: 1px solid #d3c3be99; border-radius: 8px; background: #faf3eb; color: #1e1b17; padding: 8px; }
+.iz-plan :is(select, input:not([type='checkbox'])) { display: block; box-sizing: border-box; width: 100%; min-width: 0; min-height: 44px; margin-top: 6px; border: 1px solid #d3c3be99; border-radius: 8px; background: #faf3eb; color: #1e1b17; padding: 8px; font: inherit; }
+.iz-plan :is(.iz-plan-config, .iz-plan-ventana) { min-width: 0; border: 1px solid #d3c3be66; border-radius: 12px; padding: 12px; }
+.iz-plan-ventana { margin: 12px 0; }
+.iz-plan-ventana legend { font-size: 14px; }
+.iz-plan-modos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+.iz-plan-modos a { display: grid; place-items: center; min-height: 44px; border: 1px solid #d3c3be99; border-radius: 8px; padding: 6px; background: #faf3eb; text-align: center; text-decoration: none; }
+.iz-plan-modos a[aria-current='page'] { border-color: #070100; background: #070100; color: #fff; }
+.iz-plan-jornada { margin-block: 16px; }
+.iz-plan .iz-plan-selector > .iz-plan-lugar { margin-block: 8px; }
+.iz-plan-lugar > label + p, .iz-plan-lugar > .iz-plan-metadatos, .iz-plan-lugar > .iz-plan-asignacion { margin: 8px 0 0 28px; }
+.iz-plan-presupuesto + .iz-plan-presupuesto { margin-top: 8px; }
+.iz-plan .iz-plan-acciones-completas > :first-child { grid-column: 1 / -1; background: #070100; color: #fff; }
+.iz-plan-mapa > .iz-plan-categoria-titulo, .iz-plan-mapa > .iz-plan-nota, .iz-plan-esquema { padding-inline: 12px; }
+.iz-plan-esquema ol { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; list-style: none; }
+.iz-plan-esquema li { display: grid; gap: 4px; flex: 1 1 70px; padding: 8px; border-radius: 8px; background: #faf3eb; }
+.iz-plan-esquema > p { padding-bottom: 12px; }
 .iz-plan .iz-plan-nota { margin: 12px 0; font-size: 11px; line-height: 16px; color: #855400; }
 .iz-plan-error { margin: 12px 0; border: 1px solid #ba1a1a; border-radius: 8px; padding: 12px; color: #93000a; background: #fff0ed; font-size: 12px; line-height: 18px; }
 .iz-plan-error p + p { margin-top: 6px; }
