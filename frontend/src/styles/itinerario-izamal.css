@@ -83,6 +83,7 @@
 .iz-plan :is(.iz-plan-config, .iz-plan-ventana) { min-width: 0; border: 1px solid #d3c3be66; border-radius: 12px; padding: 12px; }
 .iz-plan-ventana { margin: 12px 0; }
 .iz-plan-ventana legend { font-size: 14px; }
+.iz-plan-fecha-consecutiva { font-size: 12px; line-height: 16px; font-weight: 600; }
 .iz-plan-modos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
 .iz-plan-modos a { display: grid; place-items: center; min-height: 44px; border: 1px solid #d3c3be99; border-radius: 8px; padding: 6px; background: #faf3eb; text-align: center; text-decoration: none; }
 .iz-plan-modos a[aria-current='page'] { border-color: #070100; background: #070100; color: #fff; }

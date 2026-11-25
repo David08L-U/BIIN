@@ -20,6 +20,7 @@ export default function ConfiguracionVisita({ estancia, opciones, etiqueta = 'Es
   children?: ReactNode
 }) {
   const ayudaId = useId()
+  const fechasId = useId()
   return <fieldset className="iz-plan-config">
     <legend><Icono nombre="edit_calendar" tamano={20} />Configura tu visita</legend>
     <p>Plan estimado · Fecha y hora en la zona local de este navegador.</p>
@@ -32,10 +33,13 @@ export default function ConfiguracionVisita({ estancia, opciones, etiqueta = 'Es
     </div>
     {jornadas.map(jornada => <fieldset className="iz-plan-ventana" key={jornada.dia}>
       <legend>Día {jornada.dia}{jornada.fecha && ` · ${jornada.fecha}`}</legend>
-      {jornada.dia > 1 && <label>Fecha del Día {jornada.dia}
-        <input type="date" value={jornada.fecha} readOnly aria-label={`Fecha del Día ${jornada.dia}`} />
-        <span>Fecha consecutiva calculada por calendario local.</span>
-      </label>}
+      {jornada.dia > 1 && <div>
+        <label htmlFor={`${fechasId}-${jornada.dia}`}>Fecha del Día {jornada.dia}
+          <input id={`${fechasId}-${jornada.dia}`} type="date" value={jornada.fecha} readOnly
+            aria-describedby={`${fechasId}-${jornada.dia}-ayuda`} />
+        </label>
+        <p id={`${fechasId}-${jornada.dia}-ayuda`} className="iz-plan-fecha-consecutiva">Fecha consecutiva calculada por calendario local.</p>
+      </div>}
       <div className="iz-plan-campos">
         <label>Hora de inicio{horario && ` del Día ${jornada.dia}`}
           <input type="time" required {...horario} value={jornada.horaInicio} onChange={e => cambiarHora(jornada.dia, e.target.value)} />
