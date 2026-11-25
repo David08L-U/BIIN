@@ -13,6 +13,7 @@ using Biin.Domain.Enums;
 namespace Biin.IntegrationTests.BaseDatos;
 
 /// <summary>CU-12 de punta a punta contra PostgreSQL: del alta como pendiente a la publicación y el retiro.</summary>
+[Collection(ColeccionBdReal.Nombre)]
 public class AdminContenidosBdRealTests(BdRealFactory factory) : IClassFixture<BdRealFactory>
 {
     private const string Contrasena = "AdminPrueba1234";

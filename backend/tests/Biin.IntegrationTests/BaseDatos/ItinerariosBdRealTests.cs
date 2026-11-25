@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 namespace Biin.IntegrationTests.BaseDatos;
 
 /// <summary>CU-09 de punta a punta contra PostgreSQL con la demo de Homún.</summary>
+[Collection(ColeccionBdReal.Nombre)]
 public class ItinerariosBdRealTests(BdRealFactory factory) : IClassFixture<BdRealFactory>
 {
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web)

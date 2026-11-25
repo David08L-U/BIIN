@@ -13,6 +13,7 @@ namespace Biin.IntegrationTests.BaseDatos;
 /// Endpoints públicos del módulo 12 contra la demo de Homún (crear_bd.ps1 -Demo).
 /// Validan que EF Core traduce a SQL los filtros, la búsqueda sin acentos y las vistas.
 /// </summary>
+[Collection(ColeccionBdReal.Nombre)]
 public class ContenidosPublicosBdRealTests(BdRealFactory factory) : IClassFixture<BdRealFactory>
 {
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web)

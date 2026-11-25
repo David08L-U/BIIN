@@ -6,6 +6,7 @@ using Biin.Application.DTOs.Usuarios;
 
 namespace Biin.IntegrationTests.BaseDatos;
 
+[Collection(ColeccionBdReal.Nombre)]
 /// <summary>CU-01 de punta a punta contra PostgreSQL: registro, login, perfil, contraseña y cierre.</summary>
 public class SesionBdRealTests(BdRealFactory factory) : IClassFixture<BdRealFactory>
 {

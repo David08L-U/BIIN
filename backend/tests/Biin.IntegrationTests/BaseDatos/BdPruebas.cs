@@ -92,6 +92,17 @@ public static class BdPruebas
     }
 }
 
+/// <summary>
+/// Las clases que escriben en la base comparten esta colección: xUnit las ejecuta una tras otra.
+/// Sin esto, la limpieza al terminar una clase borraba los usuarios de prueba que otra clase
+/// estaba usando en paralelo.
+/// </summary>
+[CollectionDefinition(Nombre, DisableParallelization = true)]
+public sealed class ColeccionBdReal
+{
+    public const string Nombre = "PostgreSQL real";
+}
+
 /// <summary>Prueba que necesita PostgreSQL real; se omite si no está definida BIIN_PRUEBAS_BD.</summary>
 public sealed class FactBdAttribute : FactAttribute
 {
