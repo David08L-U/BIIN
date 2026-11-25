@@ -1,4 +1,4 @@
-import { duracionPlan } from './duracion'
+import { duracionPlan, leerDuracion } from './duracion'
 import type { BloquePlan, ModoItinerario } from './itinerarioIzamal'
 import { fechaLocal, inicioLocal, instanteLocal, siguienteFechaLocal } from './tiempoLocal'
 import { bloquesRecorrido, resumirRecorrido } from './recorridoSecuencial'
@@ -54,8 +54,8 @@ export function validarConfiguracionJornadas(config: ConfiguracionJornadas): str
     if (!fecha) errores.push(prefijo + 'elige una fecha válida para la visita.')
     if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(ventana.horaInicio)) errores.push(prefijo + 'elige una hora de inicio válida.')
     else if (fecha && !inicio) errores.push(prefijo + 'esa hora no existe en la zona local del navegador.')
-    const minutos = Number(ventana.minutosDisponibles)
-    if (!/^\d+$/.test(ventana.minutosDisponibles) || !Number.isSafeInteger(minutos) || minutos < 15 || minutos > 720) {
+    const minutos = leerDuracion(ventana.minutosDisponibles)
+    if (minutos === null) {
       errores.push(prefijo + 'el tiempo disponible debe ser un número entero entre 15 min y 12 h.')
     } else if (inicio) {
       const fin = instanteLocal(ventana, minutos)

@@ -1,4 +1,4 @@
-import { duracionPlan } from './duracion'
+import { duracionPlan, leerDuracion } from './duracion'
 import { lugaresIzamal, MARGEN_FINAL_MINUTOS, ordenRecomendadoIzamal, TRASLADO_FINAL_MINUTOS } from '../data/lugaresIzamal'
 import { inicioLocal as construirInicioLocal, instanteLocal, horaLocal } from './tiempoLocal'
 import { bloquesRecorrido, recomendarRecorrido, resumirRecorrido } from './recorridoSecuencial'
@@ -53,7 +53,7 @@ export function validarConfiguracion(config: ConfiguracionViaje): string[] {
   if (!soloFecha) errores.push('Elige una fecha válida para la visita.')
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(config.horaInicio)) errores.push('Elige una hora de inicio válida.')
   else if (soloFecha && !inicioLocal(config)) errores.push('Esa hora no existe en la zona local del navegador. Elige otra hora.')
-  if (!/^\d+$/.test(config.minutosDisponibles) || !Number.isSafeInteger(Number(config.minutosDisponibles)) || Number(config.minutosDisponibles) < 15 || Number(config.minutosDisponibles) > 720) errores.push('El tiempo disponible debe ser un número entero entre 15 min y 12 h.')
+  if (leerDuracion(config.minutosDisponibles) === null) errores.push('El tiempo disponible debe ser un número entero entre 15 min y 12 h.')
   return errores
 }
 
