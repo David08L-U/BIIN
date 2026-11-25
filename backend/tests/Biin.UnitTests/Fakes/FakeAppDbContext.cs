@@ -57,6 +57,14 @@ public sealed class FakeAppDbContext : IAppDbContext
     public DbSet<VParadaRuta> VParadasRuta { get; } = new FakeDbSet<VParadaRuta>();
     public DbSet<VCupoVigente> VCupoVigente { get; } = new FakeDbSet<VCupoVigente>();
 
+    /// <summary>Devuelve el FakeDbSet del tipo indicado para sembrar o revisar datos en las pruebas.</summary>
+    public FakeDbSet<T> Set<T>() where T : class =>
+        GetType().GetProperties()
+            .Where(p => p.PropertyType == typeof(DbSet<T>) || p.PropertyType == typeof(FakeDbSet<T>))
+            .Select(p => p.GetValue(this))
+            .OfType<FakeDbSet<T>>()
+            .First();
+
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         foreach (var u in UsuariosSet.Items)
