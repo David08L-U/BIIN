@@ -84,7 +84,7 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
   it('pide minutos en Ruta Textil y nunca añade comida automáticamente', async () => {
     montar('/rutas/tekit')
     await userEvent.click(screen.getByRole('radio', { name: /Ruta Textil.*Compras/ }))
-    await userEvent.click(screen.getByRole('button', { name: 'Hacer mi itinerario en Tekit' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Tekit' }))
     expect(screen.getByLabelText('Tiempo disponible (minutos)')).toHaveValue(null)
     fireEvent.change(screen.getByLabelText('Fecha de visita'), { target: { value: '2026-11-30' } })
     await userEvent.click(screen.getByRole('button', { name: 'Generar itinerario recomendado' }))
@@ -147,7 +147,7 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
     expect(screen.queryByRole('heading', { name: 'Paso a paso a pie' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Guardar itinerario' })).toBeDisabled()
     await userEvent.click(screen.getByRole('link', { name: 'Volver a detalle de ruta' }))
-    await userEvent.click(screen.getByRole('button', { name: 'Hacer mi itinerario en Tekit' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Tekit' }))
     expect(screen.getByLabelText('Hora de inicio')).toHaveValue('11:00')
     expect(screen.getByLabelText('Fecha de visita')).toHaveValue('2026-11-30')
   })
