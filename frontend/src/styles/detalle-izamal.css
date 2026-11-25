@@ -11,8 +11,8 @@
   gap: 16px;
   min-width: 0;
   padding: calc(4px + env(safe-area-inset-top)) 20px 40px;
-  background: #fff8f1;
-  color: #1e1b17;
+  background: var(--color-fondo);
+  color: var(--color-texto);
   font-size: 14px;
   line-height: 20px;
   overflow-wrap: anywhere;
@@ -37,7 +37,7 @@
 }
 
 .izamal-detalle :is(button, a, input):focus-visible {
-  outline: 3px solid #855400;
+  outline: 3px solid var(--color-secundario);
   outline-offset: 3px;
 }
 
@@ -58,8 +58,8 @@
   padding: 0;
   border: 1px solid #d3c3be99;
   border-radius: 50%;
-  background: #fff;
-  color: #1e1b17;
+  background: var(--color-superficie);
+  color: var(--color-texto);
   text-decoration: none;
   box-shadow: 0 1px 2px #0000000d;
 }
@@ -69,11 +69,11 @@
 }
 
 .izamal-favorito {
-  color: #4f4440;
+  color: var(--color-texto-suave);
 }
 
 .izamal-favorito[aria-pressed='true'] {
-  color: #ba1a1a;
+  color: var(--color-error);
   font-variation-settings: 'FILL' 1;
 }
 
@@ -85,8 +85,8 @@
   padding: 6px 14px;
   border: 1px solid #d3c3be80;
   border-radius: 999px;
-  background: #faf3eb;
-  color: #855400;
+  background: var(--color-superficie-suave);
+  color: var(--color-acento-texto);
   font-size: 12px;
   font-weight: 600;
   line-height: 16px;
@@ -99,7 +99,7 @@
   height: 8px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: #fdae3f;
+  background: var(--color-acento);
 }
 
 .izamal-presentacion {
@@ -119,8 +119,8 @@
   padding: 2px 8px;
   border: 1px solid #d3c3be66;
   border-radius: 4px;
-  background: #e8e1da;
-  color: #2b1810;
+  background: var(--color-borde);
+  color: var(--color-primario);
   font-size: 11px;
   font-weight: 600;
   line-height: 14px;
@@ -132,7 +132,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #4f4440;
+  color: var(--color-texto-suave);
   font-size: 12px;
   font-weight: 500;
   line-height: 16px;
@@ -141,7 +141,7 @@
 
 .izamal-pueblo .biin-icon {
   font-size: 16px;
-  color: #fdae3f;
+  color: var(--color-acento);
   font-variation-settings: 'FILL' 1;
 }
 
@@ -153,14 +153,14 @@
 }
 
 .izamal-presentacion p {
-  color: #4f4440;
+  color: var(--color-texto-suave);
 }
 
 .izamal-tarjeta {
   min-width: 0;
   border: 1px solid #d3c3be99;
   border-radius: 12px;
-  background: #fff;
+  background: var(--color-superficie);
   box-shadow: 0 1px 2px #0000000d;
 }
 
@@ -205,7 +205,7 @@
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #4f4440;
+  color: var(--color-texto-suave);
 }
 
 .izamal-icono-metrica {
@@ -215,8 +215,8 @@
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: #f4ede5;
-  color: #855400;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-acento-texto);
 }
 
 .izamal-icono-metrica .biin-icon {
@@ -224,7 +224,7 @@
 }
 
 .izamal-metrica-precio .izamal-icono-metrica {
-  color: #2b1810;
+  color: var(--color-primario);
 }
 
 .izamal-metrica .izamal-valor {
@@ -243,14 +243,14 @@
 }
 
 .izamal-valor span {
-  color: #4f4440;
+  color: var(--color-texto-suave);
   font-size: 12px;
   font-weight: 600;
   line-height: 16px;
 }
 
 .izamal-valor-disponibilidad strong {
-  color: #2b1810;
+  color: var(--color-primario);
   font-size: 18px;
   line-height: 24px;
 }
@@ -258,14 +258,14 @@
 .izamal-metrica .izamal-metrica-nota {
   position: relative;
   margin-top: 2px;
-  color: #4f4440;
+  color: var(--color-texto-suave);
   font-size: 12px;
   line-height: 16px;
 }
 
 .izamal-detalle .izamal-nota-datos,
 .izamal-detalle .izamal-nota-favorito {
-  color: #855400;
+  color: var(--color-acento-texto);
   font-size: 11px;
   line-height: 16px;
 }
@@ -284,8 +284,8 @@
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background: #eee7df;
-  color: #2b1810;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-primario);
 }
 
 .izamal-icono-terminal .biin-icon {
@@ -297,7 +297,7 @@
 }
 
 .izamal-sobretitulo {
-  color: #4f4440;
+  color: var(--color-texto-suave);
   font-size: 11px;
   line-height: 14px;
   font-weight: 600;
@@ -312,7 +312,7 @@
 }
 
 .izamal-terminal p:last-child {
-  color: #4f4440;
+  color: var(--color-texto-suave);
   font-size: 12px;
   line-height: 16px;
 }
@@ -329,7 +329,7 @@
   gap: 8px;
   padding: 12px 16px;
   border-bottom: 1px solid #d3c3be66;
-  background: #faf3eb;
+  background: var(--color-superficie-suave);
 }
 
 .izamal-recorrido-cabecera h2 {
@@ -349,7 +349,7 @@
 .izamal-recorrido-cabecera > span {
   flex-shrink: 0;
   max-inline-size: 44%;
-  color: #855400;
+  color: var(--color-acento-texto);
   font-size: 12px;
   line-height: 16px;
   font-weight: 600;
@@ -366,7 +366,7 @@
 .izamal-foto-cultural {
   position: relative;
   isolation: isolate;
-  background: #f4ede5;
+  background: var(--color-superficie-acentuada);
 }
 
 .izamal-foto-recorrido {
@@ -396,8 +396,8 @@
   justify-content: center;
   gap: 4px;
   padding: 10px 16px 48px;
-  color: #4f4440;
-  background: #e8e1da;
+  color: var(--color-texto-suave);
+  background: var(--color-borde);
   font-size: 10px;
   line-height: 14px;
   text-align: center;
@@ -422,7 +422,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #fff;
+  color: var(--color-superficie);
   font-size: 12px;
   line-height: 16px;
   font-weight: 500;
@@ -431,12 +431,12 @@
 
 .izamal-pie-imagen .biin-icon {
   font-size: 18px;
-  color: #fdae3f;
+  color: var(--color-acento);
 }
 
 .izamal-detalle .izamal-nota-recorrido {
   padding: 12px 16px 0;
-  color: #4f4440;
+  color: var(--color-texto-suave);
   font-size: 11px;
   line-height: 16px;
 }
@@ -495,9 +495,9 @@
   width: 16px;
   height: 16px;
   margin: 0 auto;
-  border: 2px solid #2b1810;
+  border: 2px solid var(--color-primario);
   border-radius: 50%;
-  background: #eee7df;
+  background: var(--color-superficie-acentuada);
 }
 
 .izamal-parada-intermedia .izamal-marcador::after {
@@ -505,7 +505,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #2b1810;
+  background: var(--color-primario);
 }
 
 .izamal-parada-origen .izamal-marcador,
@@ -514,17 +514,17 @@
   height: 24px;
   margin-top: 0;
   border: 0;
-  box-shadow: 0 0 0 4px #f4ede5;
+  box-shadow: 0 0 0 4px var(--color-superficie-acentuada);
 }
 
 .izamal-parada-origen .izamal-marcador {
-  background: #2b1810;
-  color: #fff;
+  background: var(--color-primario);
+  color: var(--color-superficie);
 }
 
 .izamal-parada-destino .izamal-marcador {
-  background: #fdae3f;
-  color: #2b1810;
+  background: var(--color-acento);
+  color: var(--color-primario);
   font-variation-settings: 'FILL' 1;
 }
 
@@ -553,8 +553,8 @@
   border: 1px solid #d3c3be66;
   border-radius: 4px;
   padding: 2px 6px;
-  background: #eee7df;
-  color: #2b1810;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-primario);
   font-size: 11px;
   line-height: 14px;
   font-weight: 600;
@@ -563,13 +563,13 @@
 
 .izamal-parada-destino .izamal-parada-titulo > span {
   border-color: transparent;
-  background: #ffddb7;
-  color: #2a1700;
+  background: var(--color-acento-suave);
+  color: var(--color-primario);
   font-weight: 700;
 }
 
 .izamal-parada p {
-  color: #4f4440;
+  color: var(--color-texto-suave);
   font-size: 12px;
   line-height: 16px;
 }
@@ -600,7 +600,7 @@
   border: 1px solid #d3c3be4d;
   border-radius: 999px;
   background: #2b1810cc;
-  color: #fff;
+  color: var(--color-superficie);
   font-size: 11px;
   line-height: 14px;
   font-weight: 700;
@@ -609,7 +609,7 @@
 
 .izamal-top-destino .biin-icon {
   font-size: 14px;
-  color: #fdae3f;
+  color: var(--color-acento);
   font-variation-settings: 'FILL' 1;
 }
 
@@ -619,7 +619,7 @@
   min-width: 0;
   width: 100%;
   padding: 80px 16px 16px;
-  color: #fff;
+  color: var(--color-superficie);
 }
 
 .izamal-foto-textos .izamal-pueblo-amarillo {
@@ -627,7 +627,7 @@
   align-items: center;
   gap: 6px;
   margin-bottom: 2px;
-  color: #fdae3f;
+  color: var(--color-acento-suave);
   font-size: 11px;
   line-height: 14px;
   font-weight: 700;
@@ -646,7 +646,7 @@
 }
 
 .izamal-foto-textos > p:last-child {
-  color: #fff;
+  color: var(--color-superficie);
   font-size: 12px;
   line-height: 16px;
 }
@@ -681,7 +681,7 @@
 }
 
 .izamal-itinerario-titulo > span {
-  color: #855400;
+  color: var(--color-acento-texto);
   font-size: 11px;
   line-height: 14px;
   font-weight: 600;
@@ -689,7 +689,7 @@
 }
 
 .izamal-itinerario-intro > p {
-  color: #4f4440;
+  color: var(--color-texto-suave);
   font-size: 12px;
   line-height: 16px;
 }
@@ -704,7 +704,7 @@
 .izamal-estancia legend {
   margin-bottom: 6px;
   padding: 0;
-  color: #4f4440;
+  color: var(--color-texto-suave);
   font-size: 11px;
   line-height: 14px;
   font-weight: 600;
@@ -746,8 +746,8 @@
   padding: 8px 4px;
   border: 1px solid #d3c3be99;
   border-radius: 8px;
-  background: #fff;
-  color: #4f4440;
+  background: var(--color-superficie);
+  color: var(--color-texto-suave);
   text-align: center;
 }
 
@@ -759,17 +759,17 @@
 }
 
 .izamal-estancia-opcion small {
-  color: #855400;
+  color: var(--color-acento-texto);
   font-size: 10px;
   line-height: 15px;
   font-weight: 500;
 }
 
 .izamal-estancia-opciones input:checked + .izamal-estancia-opcion {
-  border: 2px solid #2b1810;
+  border: 2px solid var(--color-primario);
   padding: 7px 3px;
-  background: #f4ede5;
-  color: #2b1810;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-primario);
 }
 
 .izamal-estancia-opciones input:checked + .izamal-estancia-opcion strong {
@@ -777,11 +777,11 @@
 }
 
 .izamal-estancia-opciones input:checked + .izamal-estancia-opcion small {
-  color: #4f4440;
+  color: var(--color-texto-suave);
 }
 
 .izamal-estancia-opciones input:focus-visible + .izamal-estancia-opcion {
-  outline: 2px solid #ca7930;
+  outline: 2px solid var(--color-secundario);
   outline-offset: 2px;
 }
 
@@ -801,8 +801,8 @@
   border: 1px solid #d3c3be66;
   border-radius: 6px;
   padding: 4px 8px;
-  background: #faf3eb;
-  color: #4f4440;
+  background: var(--color-superficie-suave);
+  color: var(--color-texto-suave);
   font-size: 11px;
   line-height: 14px;
   font-weight: 500;
@@ -810,18 +810,18 @@
 
 .izamal-lugares li .biin-icon {
   font-size: 14px;
-  color: #855400;
+  color: var(--color-acento-texto);
 }
 
 .izamal-lugares li:first-child {
   border-color: #d3c3be80;
-  background: #f4ede5;
-  color: #2b1810;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-primario);
   font-weight: 600;
 }
 
 .izamal-lugares li:first-child .biin-icon {
-  color: #2b1810;
+  color: var(--color-primario);
 }
 
 .izamal-acciones-itinerario {
@@ -857,27 +857,27 @@
 }
 
 .izamal-accion-principal {
-  background: #2b1810;
-  color: #fff;
+  background: var(--color-primario);
+  color: var(--color-superficie);
 }
 
 .izamal-accion-principal .biin-icon:first-child {
-  color: #fdae3f;
+  color: var(--color-acento);
 }
 
 .izamal-acciones-itinerario .izamal-accion-secundaria {
   border-color: #d3c3be99;
   padding-block: 12px;
-  background: #faf3eb;
-  color: #1e1b17;
+  background: var(--color-superficie-suave);
+  color: var(--color-texto);
 }
 
 .izamal-accion-secundaria .biin-icon {
-  color: #855400;
+  color: var(--color-acento-texto);
 }
 
 .izamal-mensaje {
-  color: #4f4440;
+  color: var(--color-texto-suave);
   font-size: 12px;
   line-height: 18px;
 }

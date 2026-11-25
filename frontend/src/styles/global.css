@@ -6,18 +6,24 @@
   --fuente-titulos: 'Lora', Georgia, serif;
   --fuente-texto: 'Lato', sans-serif;
 
-  --color-primario: #2b1810;
-  --color-primario-oscuro: #1a0f09;
-  --color-fondo: #fff8f1;
+  --color-primario: #352219;
+  --color-primario-oscuro: #23150e;
+  --color-fondo: #fff8f0;
   --color-superficie: #ffffff;
-  --color-texto: #1e1b17;
-  --color-texto-suave: #4f4440;
-  --color-borde: #e8e1da;
+  --color-texto: var(--color-primario);
+  --color-texto-suave: #66554b;
+  --color-borde: #e8ddd2;
+  --color-secundario: #b94d32;
+  --color-secundario-texto: #983d26;
+  --color-secundario-suave: #f7e4da;
+  --color-acento: #d99520;
+  --color-acento-texto: #805010;
+  --color-acento-suave: #f9e3b8;
+  --color-superficie-suave: #faf2e9;
+  --color-superficie-acentuada: #f3e9de;
   --color-error: #ba1a1a;
-
-  --color-secundario: #855400;
-  --color-acento: #fdae3f;
-  --color-superficie-suave: #faf3eb;
+  --color-error-texto: #93000a;
+  --color-error-fondo: #fff0ed;
 
   --radio: 8px;
   --espacio: 16px;
@@ -58,7 +64,7 @@ a {
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-primario);
+  outline: 3px solid var(--color-secundario);
   outline-offset: 2px;
 }
 
@@ -82,12 +88,12 @@ a {
   gap: 8px 16px;
   padding: 12px var(--espacio);
   background: var(--color-primario);
-  color: #fff;
+  color: var(--color-superficie);
 }
 
 .encabezado a,
 .encabezado .enlace {
-  color: #fff;
+  color: var(--color-superficie);
 }
 
 .marca {
@@ -111,7 +117,7 @@ a {
 }
 
 .encabezado nav a.active {
-  border-bottom: 2px solid #fff;
+  border-bottom: 2px solid var(--color-superficie);
 }
 
 .sesion {
@@ -171,7 +177,7 @@ a {
 
 .boton--primario {
   background: var(--color-primario);
-  color: #fff;
+  color: var(--color-superficie);
 }
 
 .boton--primario:hover {

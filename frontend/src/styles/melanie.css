@@ -8,7 +8,7 @@
   max-width: 480px;
   min-height: 100dvh;
   margin: 0 auto;
-  background: #fff8f1;
+  background: var(--color-fondo);
   position: relative;
 }
 
@@ -45,16 +45,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #e8e1da;
+  border: 1px solid var(--color-borde);
   border-radius: 16px;
-  background: #fff;
-  color: #1e1b17;
+  background: var(--color-superficie);
+  color: var(--color-texto);
   cursor: pointer;
   box-shadow: 0 2px 7px #2b18100a;
 }
 
 .biin-icon-button:hover {
-  background: #faf3eb;
+  background: var(--color-superficie-suave);
 }
 
 .biin-cabecera-simple {
@@ -84,8 +84,8 @@
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   padding: 6px 5px calc(6px + env(safe-area-inset-bottom));
-  background: #fff9f0;
-  border-top: 1px solid #eadfd2;
+  background: var(--color-fondo);
+  border-top: 1px solid var(--color-borde);
 }
 
 .biin-nav a {
@@ -97,15 +97,15 @@
   gap: 3px;
   padding: 6px 2px;
   border-radius: 12px;
-  color: #80533c;
+  color: var(--color-texto-suave);
   text-decoration: none;
   font-size: 10px;
   font-weight: 600;
 }
 
 .biin-nav a.active {
-  background: #f2e2cf;
-  color: #713b20;
+  background: var(--color-secundario-suave);
+  color: var(--color-secundario-texto);
 }
 
 .biin-nav .biin-icon {
@@ -124,8 +124,8 @@
   max-height: 100dvh;
   padding: 22px;
   border: 0;
-  background: #fff8f1;
-  color: #2b1810;
+  background: var(--color-fondo);
+  color: var(--color-primario);
   border-radius: 0 20px 20px 0;
   box-shadow: 12px 0 40px #2b181025;
 }
@@ -143,7 +143,7 @@
 .biin-menu-saludo {
   margin: 22px 0;
   padding-bottom: 18px;
-  border-bottom: 1px solid #e8e1da;
+  border-bottom: 1px solid var(--color-borde);
   font-size: 14px;
 }
 
@@ -155,14 +155,14 @@
 
 .biin-menu nav a {
   padding: 12px 10px;
-  color: #2b1810;
+  color: var(--color-primario);
   text-decoration: none;
   border-radius: 9px;
   font-size: 14px;
 }
 
 .biin-menu nav a:hover {
-  background: #f2e2cf;
+  background: var(--color-secundario-suave);
 }
 
 .biin-menu-sesion {
@@ -204,26 +204,26 @@
 }
 
 .melanie-mapa .leaflet-tile-pane {
-  filter: grayscale(1) contrast(1.24);
+  filter: grayscale(1) brightness(0.9) contrast(1.38);
 }
 
 .melanie-mapa button:focus-visible {
-  outline: 3px solid #855400;
+  outline: 3px solid var(--color-secundario);
   outline-offset: -3px;
 }
 
 .melanie-mapa .melanie-ubicacion-marquesita {
-  border: 3px solid #2b1810;
+  border: 3px solid var(--color-primario);
   border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 0 3px #fff8f0, 0 0 0 8px #d9952040, 0 3px 8px #35221955;
+  background: var(--color-superficie);
+  box-shadow: 0 0 0 3px var(--color-fondo), 0 0 0 8px #d9952040, 0 3px 8px #35221955;
   object-fit: cover;
 }
 
 .melanie-mapa .melanie-ubicacion-etiqueta {
   border: 1px solid #fdae3f66;
   border-radius: 99px;
-  background: #2b1810;
+  background: var(--color-primario);
   color: #ffdbcd;
   padding: 3px 10px;
   font-size: 10px;
@@ -231,7 +231,7 @@
 }
 
 .melanie-mapa .melanie-ubicacion-etiqueta::before {
-  border-top-color: #2b1810;
+  border-top-color: var(--color-primario);
 }
 
 /* Buscador flotante */
@@ -260,13 +260,13 @@
   gap: 10px;
   padding: 0 14px;
   border-radius: 16px;
-  border: 1px solid #e8e1da;
+  border: 1px solid var(--color-borde);
   background: #fffffff2;
   box-shadow: 0 2px 7px #2b18100a;
 }
 
 .melanie-busqueda > .biin-icon {
-  color: #817470;
+  color: var(--color-texto-suave);
   font-size: 20px;
 }
 
@@ -276,16 +276,16 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: #1e1b17;
+  color: var(--color-texto);
   font-size: 14px;
 }
 
 .melanie-busqueda input::placeholder {
-  color: #817470;
+  color: var(--color-texto-suave);
 }
 
 .melanie-busqueda input:focus-visible {
-  outline: 2px solid #855400;
+  outline: 2px solid var(--color-secundario);
   outline-offset: 4px;
 }
 
@@ -298,7 +298,7 @@
   background: #fbf0e6;
   border: 1px solid #fdae3f33;
   border-radius: 30px;
-  color: #2b1810;
+  color: var(--color-primario);
   font-family: var(--fuente-texto);
   font-size: 10px !important;
   font-weight: 700 !important;
@@ -310,7 +310,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #fdae3f;
+  background: var(--color-acento);
 }
 
 /* Paradas */
@@ -331,9 +331,9 @@
 .melanie-zoom {
   display: flex;
   flex-direction: column;
-  border: 1px solid #e8e1da;
+  border: 1px solid var(--color-borde);
   border-radius: 16px;
-  background: #fff;
+  background: var(--color-superficie);
   overflow: hidden;
   box-shadow: 0 2px 7px #2b18100a;
 }
@@ -345,12 +345,12 @@
   display: grid;
   place-items: center;
   border: 0;
-  background: #fff;
+  background: var(--color-superficie);
   cursor: pointer;
 }
 
 .melanie-zoom button + button {
-  border-top: 1px solid #e8e1da;
+  border-top: 1px solid var(--color-borde);
 }
 
 .melanie-zoom button:disabled {
@@ -365,8 +365,8 @@
   max-width: calc(100% - 80px);
   z-index: 5;
   font-size: 12px;
-  color: #4f4440;
-  background: #fff8f1;
+  color: var(--color-texto-suave);
+  background: var(--color-fondo);
   padding: 1px 5px;
   border-radius: 4px;
   pointer-events: none;
@@ -379,7 +379,7 @@
   z-index: 25;
   margin-top: -1px;
   padding: 12px 20px 20px;
-  background: #fff;
+  background: var(--color-superficie);
   border-radius: 24px 24px 0 0;
   border-top: 1px solid #e8e1da55;
   box-shadow: 0 -4px 22px #2b181006;
@@ -404,7 +404,7 @@
 .melanie-panel > p {
   margin: 2px 0 0;
   font-size: 14px;
-  color: #4f4440;
+  color: var(--color-texto-suave);
   line-height: 20px;
 }
 
@@ -428,25 +428,25 @@
 }
 
 .melanie-accion-principal {
-  background: #2b1810;
-  color: #fff8f1;
+  background: var(--color-primario);
+  color: var(--color-fondo);
   box-shadow: 0 1px 3px #2b181015;
 }
 
 .melanie-accion-principal .biin-icon {
-  color: #fdae3f;
+  color: var(--color-acento);
   font-size: 20px;
 }
 
 .melanie-accion-secundaria {
-  background: #faf3eb;
-  color: #1e1b17;
+  background: var(--color-superficie-suave);
+  color: var(--color-texto);
   border: 1px solid #e8e1dab3;
   box-shadow: 0 1px 3px #2b181015;
 }
 
 .melanie-accion-secundaria .biin-icon {
-  color: #855400;
+  color: var(--color-acento-texto);
   font-size: 20px;
 }
 
@@ -454,8 +454,8 @@
 
 .melanie-rutas-inicio {
   padding: 22px 14px 28px;
-  background: #fff8f1;
-  color: #2b1810;
+  background: var(--color-fondo);
+  color: var(--color-primario);
 }
 
 .melanie-rutas-titulo {
@@ -474,7 +474,7 @@
 .melanie-rutas-titulo a {
   font-size: 12px;
   font-weight: 700;
-  color: #855400;
+  color: var(--color-acento-texto);
   text-decoration: none;
   white-space: nowrap;
 }
@@ -482,7 +482,7 @@
 .melanie-rutas-inicio > p {
   margin: 4px 0 15px;
   font-size: 12px;
-  color: #74655d;
+  color: var(--color-texto-suave);
 }
 
 .melanie-filtros {
@@ -493,7 +493,7 @@
 
 .melanie-filtros button {
   border-radius: 50px;
-  background: #fff;
+  background: var(--color-superficie);
   border: 1px solid #eae6df;
   color: #552818;
   font-size: 12px;
@@ -503,13 +503,13 @@
 }
 
 .melanie-filtros button.activo {
-  background: #2b1810;
-  color: #fff;
+  background: var(--color-secundario);
+  color: var(--color-superficie);
 }
 
 .melanie-rutas-inicio .melanie-datos-aviso {
   font-size: 10px;
-  color: #855400;
+  color: var(--color-acento-texto);
   margin: 0 0 10px;
 }
 
@@ -522,12 +522,12 @@
   display: flex;
   align-items: center;
   gap: 11px;
-  background: #fff;
+  background: var(--color-superficie);
   border: 1px solid #eae6df;
   border-radius: 12px;
   min-height: 100px;
   padding: 12px;
-  color: #2b1810;
+  color: var(--color-primario);
   text-decoration: none;
   box-shadow: 0 2px 8px #2b181009;
 }
@@ -539,7 +539,7 @@
   display: grid;
   place-items: center;
   border-radius: 10px;
-  background: #faf3eb;
+  background: var(--color-superficie-suave);
 }
 
 .melanie-ruta-icono .biin-icon {
@@ -561,7 +561,7 @@
 
 .melanie-ruta-info small {
   font-size: 11px;
-  color: #786a60;
+  color: var(--color-texto-suave);
   line-height: 1.35;
 }
 
@@ -570,18 +570,18 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  color: #855400;
+  color: var(--color-acento-texto);
   font-size: 11px;
   margin-top: 3px;
 }
 
 .melanie-ruta-meta b {
-  color: #2b1810;
+  color: var(--color-primario);
   font-size: 12px;
 }
 
 .melanie-ruta-ver {
-  background: #faf3eb;
+  background: var(--color-superficie-suave);
   border-radius: 50%;
   padding: 7px;
   font-size: 19px;
