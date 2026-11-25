@@ -16,6 +16,7 @@ public static class DependencyInjection
         services.AddScoped<IBitacoraAdmin, BitacoraAdminService>();
         services.AddScoped<CatalogosService>();
         services.AddScoped<NegociosService>();
+        services.AddScoped<EventosService>();
         return services;
     }
 }
