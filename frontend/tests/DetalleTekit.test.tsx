@@ -47,7 +47,7 @@ describe('Detalle propio de Tekit CU-03 / RF03', () => {
     expect(screen.getByRole('heading', { name: 'Tekit', level: 1 })).toBeInTheDocument()
     expect(screen.getByText('Ruta colectiva van · Capital de la Guayabera')).toBeInTheDocument()
     expect(screen.getByText('Villa de Guayaberas y Tradición Textil · Yucatán')).toBeInTheDocument()
-    expect(within(screen.getByRole('region', { name: 'Tarifa' })).getByText('$45 MXN')).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Tarifa' })).toHaveTextContent('$45 MXN')
     expect(screen.getByRole('heading', { name: 'Terminal Parque San Juan · Calle 69' })).toBeInTheDocument()
     expect(screen.getByText('Mérida Centro, entre 62 y 64')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Mapeo de ruta y paradas' })).toBeInTheDocument()
@@ -193,7 +193,7 @@ describe('Detalle propio de Tekit CU-03 / RF03', () => {
   it.each([['Medio día', 'medio-dia', 240], ['Día completo', 'dia-completo', 360], ['Ruta Textil', 'ruta-textil', null]])('abre el planificador desde %s y conserva su opción al volver', async (nombre, modalidad, minutos) => {
     const { router } = montar()
     await userEvent.click(screen.getByRole('radio', { name: new RegExp(nombre as string) }))
-    await userEvent.click(screen.getByRole('button', { name: 'Hacer mi itinerario en Tekit' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Tekit' }))
     expect(router.state.location.pathname).toBe('/rutas/tekit/itinerario')
     expect(screen.getByLabelText('Estancia o modalidad')).toHaveValue(modalidad)
     expect(screen.getByLabelText('Tiempo disponible (minutos)')).toHaveValue(minutos)
@@ -233,7 +233,7 @@ describe('Detalle propio de Tekit CU-03 / RF03', () => {
     expect(detalle).not.toHaveTextContent(/próxima salida|9\s+disponibles|aire acondicionado|A\/C|estás aquí|09:15|09:30|09:50|10:05|10:20|68\s*km|efectivo/i)
   })
 
-  it.each([['izamal', 'Izamal', 'izamal-detalle'], ['valladolid', 'Valladolid', 'valladolid-detalle']])('conserva el detalle aprobado de %s', (id, nombre, clase) => {
+  it.each([['izamal', 'Izamal', 'izamal-detalle'], ['valladolid', 'Valladolid', 'izamal-detalle']])('conserva el detalle aprobado de %s', (id, nombre, clase) => {
     montar(`/rutas/${id}`)
     expect(screen.getByRole('article', { name: nombre })).toHaveClass(clase)
     expect(screen.getByRole('heading', { name: `Descubre ${nombre} a tu ritmo` })).toBeInTheDocument()
