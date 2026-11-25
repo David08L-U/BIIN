@@ -147,7 +147,7 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
     expect(screen.getByRole('button', { name: 'Guardar itinerario' })).toBeDisabled()
     await userEvent.click(screen.getByRole('link', { name: 'Volver a detalle de ruta' }))
     expect(screen.getByRole('radio', { name: 'Medio día (3–4 horas)' })).toBeChecked()
-    await userEvent.click(screen.getByRole('button', { name: 'Hacer mi itinerario en Ticul' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Ticul' }))
     expect(screen.getByLabelText('Hora de inicio')).toHaveValue('10:00')
   })
   it('conserva selección y configuración al personalizar, alternar y navegar atrás/adelante', async () => {
@@ -251,7 +251,7 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
     expect(within(visitas).getByText(/A pie · 5 min estimados/)).toBeInTheDocument()
     expect(within(visitas).getByText(/A pie · 4 min estimados/)).toHaveTextContent('(supuesto)')
     expect(within(visitas).getByText(/A pie · 2 min estimados/)).toBeInTheDocument()
-    expect(container.querySelectorAll('.ti-marcador')).toHaveLength(5)
+    expect(container.querySelectorAll('.iz-plan-orden')).toHaveLength(5)
     expect(screen.getByRole('button', { name: 'Descargar plan' })).toBeEnabled()
     expect(screen.getByRole('link', { name: 'Personalizar' })).toBeInTheDocument()
     expect(container).not.toHaveTextContent(/GPS activo|2[.,]1 km|Salidas cada|Salida 15:30|Llegada 11:30|Abrir vista en vivo|HTML|Entrada gratis/)
