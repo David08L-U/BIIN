@@ -34,7 +34,8 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
     await userEvent.click(screen.getByRole('radio', { name: new RegExp(nombre) }))
     await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Valladolid' }))
     expect(router.state.location.pathname).toBe('/rutas/valladolid/itinerario')
-    expect(screen.getByLabelText('Tiempo disponible del Día 1 (minutos)')).toHaveValue(minutos)
+    expect(screen.getByLabelText('Horas del Día 1')).toHaveValue(minutos === null ? null : Math.floor(minutos / 60))
+    expect(screen.getByLabelText('Minutos del Día 1')).toHaveValue(minutos === null ? null : minutos % 60)
     expect(screen.getByLabelText('Estancia')).toHaveValue(estancia)
     expect(screen.queryByRole('heading', { name: 'Paso a paso a pie' })).not.toBeInTheDocument()
     await userEvent.click(screen.getByRole('link', { name: 'Personalizar' }))
@@ -50,7 +51,8 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
     expect(screen.getAllByRole('navigation', { name: 'Navegación principal' })).toHaveLength(1)
     expect(within(nav).getByRole('link', { name: 'Rutas' })).toHaveAttribute('aria-current', 'page')
     expect(container.querySelector('.biin-cabecera-simple')).not.toBeInTheDocument()
-    expect(screen.getByLabelText('Tiempo disponible del Día 1 (minutos)')).toHaveValue(270)
+    expect(screen.getByLabelText('Horas del Día 1')).toHaveValue(4)
+    expect(screen.getByLabelText('Minutos del Día 1')).toHaveValue(30)
     expect(screen.queryByRole('heading', { name: 'Paso a paso a pie' })).not.toBeInTheDocument()
   })
 
@@ -114,8 +116,10 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
 
   it('rechaza un exceso del primer día, aunque el segundo tenga tiempo, sin borrar la selección', async () => {
     montar(`/rutas/valladolid/personalizar?${finSemana}&dia1=zaci,mercado-donato,calzada-frailes&dia2=san-bernardino`)
-    fireEvent.change(screen.getByLabelText('Tiempo disponible del Día 1 (minutos)'), { target: { value: '120' } })
-    fireEvent.change(screen.getByLabelText('Tiempo disponible del Día 2 (minutos)'), { target: { value: '540' } })
+    fireEvent.change(screen.getByLabelText('Horas del Día 1'), { target: { value: '2' } })
+    fireEvent.change(screen.getByLabelText('Minutos del Día 1'), { target: { value: '0' } })
+    fireEvent.change(screen.getByLabelText('Horas del Día 2'), { target: { value: '9' } })
+    fireEvent.change(screen.getByLabelText('Minutos del Día 2'), { target: { value: '0' } })
     await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
     expect(screen.getByRole('alert')).toHaveTextContent('Día 1: la selección excede el tiempo disponible por 1 h 52 min')
     expect(screen.getByText('4 lugares seleccionados')).toBeInTheDocument()
@@ -140,7 +144,7 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
 
   it.each([
     ['Hora de inicio del Día 1', '', 'hora de inicio válida'],
-    ['Tiempo disponible del Día 1 (minutos)', '12.5', 'número entero'],
+    ['Horas del Día 1', '1.5', 'número entero'],
     ['Hora de inicio del Día 1', '23:00', 'sin visitas nocturnas'],
   ])('valida %s antes de generar y guardar', async (campo, valor, error) => {
     montar(`/rutas/valladolid/itinerario?${configuracion}`)

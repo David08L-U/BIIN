@@ -1,5 +1,11 @@
 # Itinerarios de Valladolid — CU-09 / RF09
 
+El detalle y el planificador usan la composición de Izamal con los datos de
+Valladolid. Cada jornada conserva sus propios campos de Horas y Minutos.
+
+El tiempo disponible se introduce en Horas y Minutos. El total válido va de
+15 min a 12 h. La URL y los planes guardados siguen utilizando minutos totales.
+
 Implementación de demostración en `frontend/src/features/mi-viaje`, con datos,
 cálculo puro, borrador de URL, interfaz y almacenamiento separados. No añade
 dependencias ni modifica backend, autenticación o permisos. `/mi-viaje` mantiene

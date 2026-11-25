@@ -1,3 +1,4 @@
+import CampoDuracion from './CampoDuracion'
 import { cambiarEstanciaValladolid } from '../plan/borradorValladolid'
 import { esEstanciaValladolid, estanciasValladolid, ventanasValladolid } from '../plan/itinerarioValladolid'
 import type { BorradorValladolid } from '../plan/itinerarioValladolid'
@@ -21,7 +22,7 @@ export default function ConfiguracionValladolid({ borrador, onChange }: { borrad
       {ventana.dia === 2 && <label>Fecha del Día 2<input type="date" value={ventana.fecha} readOnly /><span>Fecha consecutiva calculada por calendario local.</span></label>}
       <div className="iz-plan-campos">
         <label>Hora de inicio del Día {ventana.dia}<input type="time" required min="06:00" max="22:00" value={ventana.horaInicio} onChange={e => cambiar(ventana.dia === 1 ? 'horaInicio' : 'horaInicioDia2', e.target.value)} /></label>
-        <label>Tiempo disponible del Día {ventana.dia} (minutos)<input type="number" inputMode="numeric" min="15" max="720" step="1" required value={ventana.minutosDisponibles} onChange={e => cambiar(ventana.dia === 1 ? 'minutosDisponibles' : 'minutosDia2', e.target.value)} /></label>
+        <CampoDuracion key={config.estancia} dia={ventana.dia} valor={ventana.minutosDisponibles} onChange={valor => cambiar(ventana.dia === 1 ? 'minutosDisponibles' : 'minutosDia2', valor)} />
       </div>
     </fieldset>)}
     <p>Inicio y regreso son objetivos tuyos; transporte sin confirmar. Ventanas de 06:00 a 22:00 como límite del planificador, sin acreditar aperturas. Cada jornada incluye traslado final y 15 min de margen.</p>

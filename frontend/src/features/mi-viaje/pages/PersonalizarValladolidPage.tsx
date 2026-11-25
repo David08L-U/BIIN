@@ -9,7 +9,7 @@ import type { CategoriaValladolid } from '../data/lugaresValladolid'
 import { useBorradorValladolid } from '../hooks/useBorradorValladolid'
 import { urlBorradorValladolid } from '../plan/borradorValladolid'
 import { calcularPlanValladolid, resumirJornadaValladolid, ventanasValladolid } from '../plan/itinerarioValladolid'
-import { duracionPlan } from '../plan/duracion'
+import { duracionPlan, leerDuracion } from '../plan/duracion'
 
 /** Reutiliza la estructura aprobada del selector, sin cambiar la pantalla de Izamal. */
 export default function PersonalizarValladolidPage() {
@@ -43,13 +43,13 @@ export default function PersonalizarValladolidPage() {
         <p>Elige tus lugares por categoría. Para fin de semana, asigna cada visita a una jornada.</p>
         {ventanas.map(v => {
           const resumen = resumirJornadaValladolid(borrador.seleccion.filter(s => s.dia === v.dia).map(s => s.lugarId))
-          const disponibles = /^\d+$/.test(v.minutosDisponibles) && Number(v.minutosDisponibles) >= 15 && Number(v.minutosDisponibles) <= 720 ? Number(v.minutosDisponibles) : 0
-          const restante = disponibles - resumen.totalMinutos
+          const disponibles = leerDuracion(v.minutosDisponibles)
+          const restante = disponibles === null ? null : disponibles - resumen.totalMinutos
           return <div className="iz-plan-presupuesto" role="status" aria-label={`Resumen del Día ${v.dia}`} key={v.dia}>
             <div><span><Icono nombre="schedule" />Día {v.dia} · Tiempo acumulado</span><strong>{duracionPlan(resumen.totalMinutos)} / {disponibles ? duracionPlan(disponibles) : 'Sin configurar'}</strong></div>
-            <progress aria-label={`Tiempo utilizado del Día ${v.dia}`} value={Math.min(resumen.totalMinutos, disponibles || 1)} max={disponibles || 1} />
+            <progress aria-label={`Tiempo utilizado del Día ${v.dia}`} value={Math.min(resumen.totalMinutos, disponibles ?? 1)} max={disponibles ?? 1} />
             <p>{duracionPlan(resumen.visitasMinutos)} de visitas + {duracionPlan(resumen.trasladosMinutos)} de desplazamientos (incluye traslado final) + 15 min de margen final.</p>
-            <p>{!disponibles ? 'Configura el tiempo de esta jornada.' : restante >= 0 ? `Tiempo libre: ${duracionPlan(restante)}` : `Excede el tiempo disponible por ${duracionPlan(Math.abs(restante))}.`}</p>
+            <p>{restante === null ? 'Configura el tiempo de esta jornada.' : restante >= 0 ? `Tiempo libre: ${duracionPlan(restante)}` : `Excede el tiempo disponible por ${duracionPlan(Math.abs(restante))}.`}</p>
           </div>
         })}
       </section>
