@@ -21,6 +21,8 @@ public static class DependencyInjection
         services.AddScoped<ExplorarService>();
         services.AddScoped<ItinerariosService>();
         services.AddScoped<AdminContenidosService>();
+        services.AddScoped<AdminGeografiaService>();
+        services.AddScoped<BitacoraConsultaService>();
         return services;
     }
 }
