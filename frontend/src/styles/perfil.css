@@ -172,7 +172,7 @@
   color: #855400;
   display: grid;
   place-items: center;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--fuente-titulos);
   font-size: 24px;
   font-weight: 600;
 }
@@ -249,7 +249,7 @@
 
 .perfil-seccion-cabecera h2 {
   margin: 0;
-  font: 600 11px/16px 'Plus Jakarta Sans', sans-serif;
+  font: 600 11px/16px var(--fuente-texto);
   text-transform: uppercase;
   letter-spacing: .04em;
   color: #6a5b56;
@@ -302,7 +302,7 @@
 
 .perfil-metrica strong {
   margin-top: 8px;
-  font: 600 18px/24px 'Space Grotesk', sans-serif;
+  font: 600 18px/24px var(--fuente-titulos);
   letter-spacing: -.02em;
 }
 
@@ -444,7 +444,7 @@
 }
 
 .perfil-itinerario h3 {
-  font: 600 14px/18px 'Plus Jakarta Sans', sans-serif;
+  font: 600 14px/18px var(--fuente-texto);
   margin: 12px 0 0;
   overflow-wrap: anywhere;
 }

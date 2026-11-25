@@ -14,7 +14,7 @@
 }
 
 .iz-plan :is(h1, h2, h3, p) { margin: 0; }
-.iz-plan :is(h1, h2, h3) { font-family: 'Space Grotesk', sans-serif; font-weight: 600; }
+.iz-plan :is(h1, h2, h3) { font-family: var(--fuente-titulos); font-weight: 600; }
 .iz-plan h1 { font-size: 18px; line-height: 24px; letter-spacing: -0.025em; }
 .iz-plan h2, .iz-plan h3 { font-size: 18px; line-height: 24px; }
 .iz-plan :where(button, input) { font: inherit; }
@@ -69,7 +69,7 @@
 .iz-plan-insignia { display: inline-block; padding: 2px 8px; border: 1px solid #d3c3be4d; border-radius: 6px; background: #faf3eb; color: #653e00; font-size: 11px; line-height: 14px; font-weight: 600; }
 .iz-plan-formulario { display: grid; gap: 12px; }
 .iz-plan-config { margin: 16px 0 0; }
-.iz-plan-config legend { padding: 0 6px; font-family: 'Space Grotesk', sans-serif; font-size: 18px; line-height: 24px; font-weight: 600; }
+.iz-plan-config legend { padding: 0 6px; font-family: var(--fuente-titulos); font-size: 18px; line-height: 24px; font-weight: 600; }
 .iz-plan-config legend .biin-icon { margin-right: 6px; vertical-align: middle; }
 .iz-plan-config > p { font-size: 12px; line-height: 16px; color: #4f4440; }
 .iz-plan-campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 12px 0; }
@@ -123,11 +123,11 @@
 .iz-plan-conexion { position: relative; overflow: hidden; margin-top: 16px; }
 .iz-plan-conexion::before { content: ''; position: absolute; inset: 0 0 auto; height: 4px; background: linear-gradient(to right, #fdae3f, #73584e66, #fdae3f); }
 .iz-plan-conexion-titulo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin: 2px 0 14px; }
-.iz-plan-conexion-titulo h2 { padding: 4px 10px; border: 1px solid #d3c3be66; border-radius: 4px; background: #f4ede5; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; line-height: 14px; letter-spacing: 0.05em; text-transform: uppercase; }
+.iz-plan-conexion-titulo h2 { padding: 4px 10px; border: 1px solid #d3c3be66; border-radius: 4px; background: #f4ede5; font-family: var(--fuente-titulos); font-size: 11px; line-height: 14px; letter-spacing: 0.05em; text-transform: uppercase; }
 .iz-plan-conexion-titulo > span { font-size: 11px; line-height: 14px; color: #4f4440; }
 .iz-plan-conexion-fila { display: flex; align-items: flex-start; gap: 14px; }
 .iz-plan-conexion-fila > .biin-icon { display: grid; place-items: center; width: 28px; height: 28px; margin-top: 2px; border: 1px solid #d3c3be4d; border-radius: 8px; background: #faf3eb; color: #855400; }
-.iz-plan-conexion-fila strong { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 18px; line-height: 24px; font-weight: 600; }
+.iz-plan-conexion-fila strong { display: block; font-family: var(--fuente-titulos); font-size: 18px; line-height: 24px; font-weight: 600; }
 .iz-plan-conexion-fila p:last-child { color: #4f4440; font-size: 12px; line-height: 16px; }
 .iz-plan-conexion .iz-plan-conexion-margen { display: flex; gap: 8px; align-items: center; border-left: 1px dashed #d3c3be; padding: 2px 0 2px 16px; margin: 12px 0 12px 14px; font-size: 11px; line-height: 14px; color: #4f4440; }
 .iz-plan-filtros { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 20px; }
@@ -160,7 +160,7 @@
 .iz-plan-consejos > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
 .iz-plan-consejos article { display: flex; flex-direction: column; gap: 12px; padding: 14px; }
 .iz-plan-consejos article > .biin-icon { color: #855400; }
-.iz-plan-consejos h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; line-height: 16px; }
+.iz-plan-consejos h3 { font-family: var(--fuente-titulos); font-size: 12px; line-height: 16px; }
 .iz-plan-consejos p { color: #4f4440; font-size: 12px; line-height: 18px; }
 .iz-plan-resumen-final { display: grid; gap: 12px; margin: 24px -16px 0; padding: 16px; border-top: 1px solid #d3c3be4d; background: #ffffffed; font-size: 12px; line-height: 16px; }
 .iz-plan-acciones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
@@ -193,7 +193,7 @@
 .iz-plan .iz-plan-lugar-seleccion { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; }
 .iz-plan-lugar input { flex-shrink: 0; width: 20px; height: 20px; margin: 2px 0 0; accent-color: #070100; }
 .iz-plan-lugar-textos { display: flex; flex: 1; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 4px 8px; min-width: 0; }
-.iz-plan-lugar-titulo { font-family: 'Space Grotesk', sans-serif; font-size: 18px; line-height: 24px; font-weight: 500; }
+.iz-plan-lugar-titulo { font-family: var(--fuente-titulos); font-size: 18px; line-height: 24px; font-weight: 500; }
 .iz-plan-lugar-detalle { margin: 4px 0 0 28px; }
 .iz-plan-lugar-detalle > p { margin-bottom: 8px; color: #4f4440; font-size: 12px; line-height: 16px; }
 .iz-plan-metadatos { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }

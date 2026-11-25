@@ -199,7 +199,7 @@
 }
 
 .izamal-metrica-cabecera h2 {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--fuente-titulos);
   font-size: 12px;
   line-height: 16px;
   font-weight: 600;
@@ -236,7 +236,7 @@
 }
 
 .izamal-valor strong {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--fuente-titulos);
   font-size: 28px;
   line-height: 32px;
   font-weight: 700;

@@ -322,7 +322,7 @@
 
 .rutas-precio strong {
   letter-spacing: -0.025em;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--fuente-titulos);
   font-size: 18px;
   line-height: 24px;
   font-weight: 700;

@@ -195,6 +195,7 @@
 }
 
 .melanie-mapa .leaflet-container {
+  font-family: var(--fuente-texto);
   z-index: 0;
 }
 
@@ -298,7 +299,7 @@
   border: 1px solid #fdae3f33;
   border-radius: 30px;
   color: #2b1810;
-  font-family: 'Space Grotesk', sans-serif !important;
+  font-family: var(--fuente-texto);
   font-size: 10px !important;
   font-weight: 700 !important;
   cursor: pointer;
