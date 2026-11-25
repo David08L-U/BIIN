@@ -232,6 +232,90 @@ public class AdminContenidosService(IAppDbContext db, IBitacoraAdmin bitacora, I
         return ADto(recurso);
     }
 
+    // Horarios y fotografías
+
+    /// <summary>Reemplaza los horarios de visita de un negocio o lugar (el trigger de la BD rechaza otros tipos).</summary>
+    public async Task<ContenidoAdminDto> ReemplazarHorariosAsync(
+        int idAdmin, int idRecurso, ReemplazarHorariosRequest req, CancellationToken ct = default)
+    {
+        var horarios = req.Horarios ?? [];
+        if (horarios.Any(h => h.DiaSemana is < 0 or > 6))
+            throw new ReglaNegocioException("El día de la semana debe estar entre 0 (domingo) y 6 (sábado).");
+        if (horarios.Count > 28)
+            throw new ReglaNegocioException("Se permiten como máximo 28 horarios (4 turnos por día).");
+
+        var recurso = await CargarAsync(idRecurso, null, ct, seguimiento: true);
+        if (recurso.Tipo is not (TipoRecurso.Negocio or TipoRecurso.Lugar))
+            throw new ReglaNegocioException("Los horarios de visita solo aplican a negocios o lugares.");
+
+        foreach (var h in recurso.HorariosVisita.ToList())
+        {
+            recurso.HorariosVisita.Remove(h);
+            db.HorariosVisita.Remove(h);
+        }
+        foreach (var h in horarios.OrderBy(h => h.DiaSemana).ThenBy(h => h.HoraApertura))
+        {
+            var nuevo = new HorarioVisita
+            {
+                IdRecurso = recurso.IdRecurso, Recurso = recurso,
+                DiaSemana = h.DiaSemana, HoraApertura = h.HoraApertura, HoraCierre = h.HoraCierre
+            };
+            recurso.HorariosVisita.Add(nuevo);
+            db.HorariosVisita.Add(nuevo);
+        }
+        recurso.ActualizadoEn = reloj.AhoraUtc;
+
+        bitacora.Registrar(idAdmin, AccionesBitacora.Editar, "horarios_visita", idRecurso.ToString(),
+            new { total = horarios.Count });
+        await db.SaveChangesAsync(ct);
+        return ADto(recurso);
+    }
+
+    public async Task<ContenidoAdminDto> AgregarFotografiaAsync(
+        int idAdmin, int idRecurso, AgregarFotografiaRequest req, CancellationToken ct = default)
+    {
+        var url = ValidacionContenido.ValidarUrlFoto(req.UrlArchivo);
+        var alternativo = (req.TextoAlternativo ?? string.Empty).Trim();
+        if (alternativo.Length is < 3 or > 255)
+            throw new ReglaNegocioException("El texto alternativo debe tener entre 3 y 255 caracteres (RNF06).");
+
+        var recurso = await CargarAsync(idRecurso, null, ct, seguimiento: true);
+        if (recurso.Fotografias.Count >= 20)
+            throw new ReglaNegocioException("Un contenido puede tener como máximo 20 fotografías.");
+
+        var foto = new Fotografia
+        {
+            IdRecurso = recurso.IdRecurso, Recurso = recurso, UrlArchivo = url, TextoAlternativo = alternativo,
+            Orden = recurso.Fotografias.Count == 0 ? 1 : recurso.Fotografias.Max(f => f.Orden) + 1
+        };
+        recurso.Fotografias.Add(foto);
+        db.Fotografias.Add(foto);
+        recurso.ActualizadoEn = reloj.AhoraUtc;
+        await db.SaveChangesAsync(ct);
+
+        bitacora.Registrar(idAdmin, AccionesBitacora.Crear, "fotografias", foto.IdFotografia.ToString(),
+            new { idRecurso, url });
+        await db.SaveChangesAsync(ct);
+        return ADto(recurso);
+    }
+
+    public async Task<ContenidoAdminDto> QuitarFotografiaAsync(
+        int idAdmin, int idRecurso, int idFotografia, CancellationToken ct = default)
+    {
+        var recurso = await CargarAsync(idRecurso, null, ct, seguimiento: true);
+        var foto = recurso.Fotografias.SingleOrDefault(f => f.IdFotografia == idFotografia)
+            ?? throw new NoEncontradoException("Fotografía no encontrada en este contenido.");
+
+        recurso.Fotografias.Remove(foto);
+        db.Fotografias.Remove(foto);
+        recurso.ActualizadoEn = reloj.AhoraUtc;
+
+        bitacora.Registrar(idAdmin, AccionesBitacora.Eliminar, "fotografias", idFotografia.ToString(),
+            new { idRecurso, foto.UrlArchivo });
+        await db.SaveChangesAsync(ct);
+        return ADto(recurso);
+    }
+
     // Piezas comunes
 
     private IQueryable<Recurso> ConsultaCompleta() =>
