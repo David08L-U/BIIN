@@ -1,3 +1,4 @@
+using Biin.Application.Consultas;
 using Biin.Application.Interfaces;
 using Biin.Domain.Entities;
 using Biin.Domain.Vistas;
@@ -59,5 +60,9 @@ public class BiinDbContext(DbContextOptions<BiinDbContext> options) : DbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(BiinDbContext).Assembly);
+
+        // Búsqueda sin acentos: FuncionesBd.Normalizar(x) se traduce a f_normalizar(x)
+        modelBuilder.HasDbFunction(typeof(FuncionesBd).GetMethod(nameof(FuncionesBd.Normalizar))!)
+            .HasName("f_normalizar");
     }
 }
