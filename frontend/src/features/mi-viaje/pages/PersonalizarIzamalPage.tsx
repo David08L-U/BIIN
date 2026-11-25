@@ -1,5 +1,7 @@
+import ModosPlan from '../components/ModosPlan'
+import CabeceraPlan from '../components/CabeceraPlan'
 import { useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 import ConfiguracionViaje from '../components/ConfiguracionViaje'
 import Icono from '../components/IconoItinerario'
 import { categoriasIzamal, lugaresIzamal } from '../data/lugaresIzamal'
@@ -7,7 +9,6 @@ import type { CategoriaIzamal } from '../data/lugaresIzamal'
 import { useBorradorIzamal } from '../hooks/useBorradorIzamal'
 import { urlBorrador } from '../plan/borradorIzamal'
 import { calcularPlan, duracionPlan, resumirSeleccion } from '../plan/itinerarioIzamal'
-import '../../../styles/itinerario-izamal.css'
 
 export default function PersonalizarIzamalPage() {
   const { borrador, actualizar } = useBorradorIzamal('personalizado')
@@ -38,14 +39,15 @@ export default function PersonalizarIzamalPage() {
 
   return (
     <article className="iz-plan iz-personalizar" aria-labelledby="iz-personalizar-titulo">
-      <header className="iz-plan-cabecera iz-personalizar-cabecera">
-        <Link className="iz-plan-icono-boton" to={urlBorrador('detalle', borrador)} aria-label="Volver a detalle de ruta"><Icono nombre="arrow_back" tamano={24} /></Link>
-        <div><h1 id="iz-personalizar-titulo">Personalizar Itinerario</h1><p className="iz-plan-ceja">Izamal · Pueblo Mágico</p></div>
-        <div className="iz-personalizar-utilidades">
+      <CabeceraPlan id="iz-personalizar-titulo" titulo="Personalizar Itinerario" subtitulo="Izamal · Pueblo Mágico" volver={urlBorrador('detalle', borrador)} personalizar acciones={<>
           <button type="button" className="iz-plan-icono-boton" aria-label="Reiniciar selección" onClick={restablecer}><Icono nombre="restart_alt" tamano={22} /></button>
           <span className="iz-plan-avatar" aria-hidden="true"><Icono nombre="person" tamano={18} /></span>
-        </div>
-      </header>
+        </>} />
+      <ModosPlan
+        modo={borrador.modo}
+        recomendado={urlBorrador('itinerario', { ...borrador, modo: 'recomendado', generado: false })}
+        personalizado={urlBorrador('personalizar', { ...borrador, modo: 'personalizado', generado: false })}
+      />
       <form id="iz-personalizar-form" noValidate onSubmit={generar}>
         <section className="iz-plan-contexto">
           <div className="iz-plan-transito"><Icono nombre="directions_bus" /><strong>Van BIIN · Ruta Mérida-Izamal</strong><span>Sin confirmar</span></div>
