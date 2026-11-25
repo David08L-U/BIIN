@@ -9,7 +9,10 @@ vi.mock('react-leaflet', () => ({
   MapContainer: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   TileLayer: () => null,
   Circle: ({ radius }: { radius: number }) => <i data-testid="precision" data-radio={radius} />,
-  CircleMarker: ({ center }: { center: [number, number] }) => <i data-testid="ubicacion" data-punto={center.join(',')} />,
+  Marker: ({ position, icon, children }: { position: [number, number]; icon: { options: { iconUrl: string } }; children: ReactNode }) => <>
+    <img data-testid="ubicacion" data-punto={position.join(',')} src={icon.options.iconUrl} alt="" />{children}
+  </>,
+  Tooltip: ({ children }: { children: ReactNode }) => <span>{children}</span>,
 }))
 
 function simularAPI() {
@@ -57,8 +60,10 @@ describe('ubicación de Inicio con la API simulada', () => {
     expect(screen.queryByTestId('ubicacion')).not.toBeInTheDocument()
     api.recibir(1, 2, 75)
     expect(screen.getByTestId('ubicacion')).toHaveAttribute('data-punto', '1,2')
+    expect(screen.getByTestId('ubicacion')).toHaveAttribute('src', expect.stringContaining('marquesita-melanie.jpg'))
+    expect(screen.getByText('Tu ubicación')).toBeInTheDocument()
     expect(screen.getByTestId('precision')).toHaveAttribute('data-radio', '75')
-    expect(screen.getByText(/Ubicación aproximada.*75 m/)).toBeInTheDocument()
+    expect(screen.getByText(/Tu ubicación aproximada.*75 m/)).toBeInTheDocument()
     expect(mapa.panTo).toHaveBeenCalledExactlyOnceWith([1, 2], { animate: false })
 
     api.recibir(2, 3, 30)
@@ -75,7 +80,7 @@ describe('ubicación de Inicio con la API simulada', () => {
   })
 
   it.each([
-    [1, /Permiso de ubicación rechazado/],
+    [1, /Permiso de ubicación rechazado.*permisos del sitio.*permite Ubicación/],
     [2, /Ubicación no disponible/],
     [3, /Se agotó el tiempo de espera/],
   ] as const)('muestra el fallo %i y conserva la vista de referencia sin marcador', (codigo, mensaje) => {
@@ -98,7 +103,7 @@ describe('ubicación de Inicio con la API simulada', () => {
     api.recibir(1, 2, 40)
     api.fallar(2)
     expect(screen.getByText(/Última ubicación desactualizada.*40 m/)).toBeInTheDocument()
-    expect(screen.queryByText(/Ubicación aproximada/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Tu ubicación aproximada/)).not.toBeInTheDocument()
     expect(api.clearWatch).toHaveBeenCalledExactlyOnceWith(0)
   })
 

@@ -1,8 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
-import { DomEvent } from 'leaflet'
-import { Circle, CircleMarker, useMap } from 'react-leaflet'
+import { DomEvent, icon } from 'leaflet'
+import { Circle, Marker, Tooltip, useMap } from 'react-leaflet'
 import MapaBase from '../../../maps/MapaBase'
 import { useUbicacionInicio } from '../hooks/useUbicacionInicio'
+
+const marquesita = icon({
+  iconUrl: `${import.meta.env.BASE_URL}assets/marquesita-melanie.jpg`,
+  className: 'melanie-ubicacion-marquesita',
+  iconSize: [48, 48],
+  iconAnchor: [24, 24],
+  tooltipAnchor: [0, -30],
+})
 
 function ContenidoMapa({ fallo }: { fallo: boolean }) {
   const mapa = useMap()
@@ -19,7 +27,11 @@ function ContenidoMapa({ fallo }: { fallo: boolean }) {
   return <>
     {posicion && <>
       <Circle center={posicion.punto} radius={posicion.precision} pathOptions={{ color, fillOpacity: 0.15, weight: 2, interactive: false }} />
-      <CircleMarker center={posicion.punto} radius={6} pathOptions={{ color: '#fff', fillColor: color, fillOpacity: 1, weight: 2, interactive: false }} />
+      <Marker position={posicion.punto} icon={marquesita} alt="" keyboard={false} interactive={false} opacity={desactualizada ? 0.65 : 1}>
+        <Tooltip permanent direction="top" className="melanie-ubicacion-etiqueta">
+          {desactualizada ? 'Última ubicación' : 'Tu ubicación'}
+        </Tooltip>
+      </Marker>
     </>}
     <div ref={controles} className="melanie-controles">
       <button type="button" className="biin-icon-button" aria-label={estado.tipo === 'vigente' ? 'Centrar en mi ubicación' : 'Usar mi ubicación'} onClick={usarUbicacion}>
@@ -38,7 +50,7 @@ function ContenidoMapa({ fallo }: { fallo: boolean }) {
       {!posicion && <div>Vista general de Mérida · Referencia</div>}
       <div aria-live="polite" aria-atomic="true">
         {posicion && <div>
-          {desactualizada ? 'Última ubicación desactualizada' : 'Ubicación aproximada'} · Precisión estimada de {Math.ceil(posicion.precision)} m
+          {desactualizada ? 'Última ubicación desactualizada' : 'Tu ubicación aproximada'} · Precisión estimada de {Math.ceil(posicion.precision)} m
         </div>}
         {estado.tipo === 'solicitando' && <div>Solicitando ubicación…</div>}
         {estado.tipo === 'error' && <div>{estado.mensaje}</div>}

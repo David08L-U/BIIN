@@ -8,7 +8,7 @@ export interface Ubicacion {
 type Seguimiento = { api: Geolocation; id?: number }
 
 const mensajesError: Record<number, string> = {
-  1: 'Permiso de ubicación rechazado.',
+  1: 'Permiso de ubicación rechazado. Abre los permisos del sitio junto a la barra de direcciones, permite Ubicación y pulsa Usar mi ubicación otra vez.',
   2: 'Ubicación no disponible.',
   3: 'Se agotó el tiempo de espera para obtener la ubicación.',
 }
