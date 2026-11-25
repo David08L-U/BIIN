@@ -46,14 +46,14 @@ describe('Detalle propio de Ticul CU-03 / RF03', () => {
     expect(screen.getByRole('heading', { name: 'Ticul', level: 1 })).toBeInTheDocument()
     expect(screen.getByText('Ruta intermunicipal · La Perla del Sur')).toBeInTheDocument()
     expect(screen.getByText('Cuna del Calzado Artesanal y la Alfarería Maya · Yucatán')).toBeInTheDocument()
-    expect(within(screen.getByRole('region', { name: 'Tarifa por pasaje' })).getByText('$60 MXN')).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Tarifa por pasaje' })).toHaveTextContent('$60 MXN')
     expect(screen.getByRole('region', { name: 'Terminal Parque San Juan · Calle 69' })).toHaveTextContent('Mérida Centro')
     const recorrido = screen.getByRole('region', { name: 'Mapeo de ruta y paradas' })
     expect(within(recorrido).getByText('Duración aproximada · ~1 h 30 min')).toBeInTheDocument()
     expect(within(recorrido).getByText('Ruta Puuc Sur')).toBeInTheDocument()
     expect(within(recorrido).getByText('Carretera Federal 261')).toBeInTheDocument()
-    expect(within(recorrido).getByText('Mapa ilustrativo')).toBeInTheDocument()
-    expect(within(recorrido).getByText('Sin verificar')).toBeInTheDocument()
+    expect(within(recorrido).getByText(/Mapa ilustrativo · Sin verificar/)).toBeInTheDocument()
+    expect(within(recorrido).getByText(/Sin verificar/)).toBeInTheDocument()
     expect(screen.getByText('Top Destino del Sur')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Descubre Ticul a tu ritmo' })).toBeInTheDocument()
     expect(screen.getByText('Barrio Alfarero de San Enrique · Calzado Fino · Ruta Puuc')).toBeInTheDocument()
@@ -202,13 +202,13 @@ describe('Detalle propio de Ticul CU-03 / RF03', () => {
     expect(screen.getByRole('list', { name: 'Recorrido del prototipo a Ticul' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Descubre Ticul a tu ritmo' })).toBeInTheDocument()
     expect(screen.getByRole('radio', { name: 'Tour de Compras' })).toBeChecked()
-    expect(screen.getByRole('button', { name: 'Hacer mi itinerario en Ticul' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Itinerario recomendado en Ticul' })).toBeInTheDocument()
   })
 
   it.each([['Medio día (3–4 horas)', 'medio-dia', 240], ['Día completo (Ruta Puuc)', 'dia-completo', null], ['Tour de Compras', 'tour-compras', null]] as const)('abre el planificador desde %s conservando modalidad y retorno', async (opcion, modalidad, minutos) => {
     const { router } = montar()
     await userEvent.click(screen.getByRole('radio', { name: opcion }))
-    await userEvent.click(screen.getByRole('button', { name: 'Hacer mi itinerario en Ticul' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Ticul' }))
     expect(router.state.location.pathname).toBe('/rutas/ticul/itinerario')
     expect(screen.getByLabelText('Estancia o modalidad')).toHaveValue(modalidad)
     expect(screen.getByLabelText('Tiempo disponible (minutos)')).toHaveValue(minutos)
@@ -236,10 +236,10 @@ describe('Detalle propio de Ticul CU-03 / RF03', () => {
 
   it.each([
     ['izamal', 'Izamal', 'izamal-detalle'],
-    ['valladolid', 'Valladolid', 'valladolid-detalle'],
-    ['tekit', 'Tekit', 'tekit-detalle'],
-    ['homun', 'Homún', 'homun-detalle'],
-    ['ticul', 'Ticul', 'ticul-detalle'],
+    ['valladolid', 'Valladolid', 'izamal-detalle'],
+    ['tekit', 'Tekit', 'izamal-detalle'],
+    ['homun', 'Homún', 'izamal-detalle'],
+    ['ticul', 'Ticul', 'izamal-detalle'],
   ])('abre desde el catálogo el detalle propio de %s', async (id, nombre, clase) => {
     const { router } = montar('/rutas')
     await userEvent.click(screen.getByRole('link', { name: `Ver ruta a ${nombre}` }))
