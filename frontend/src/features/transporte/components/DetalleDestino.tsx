@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { Link } from 'react-router'
 import type { RutaPrototipo } from '../data/rutasPrototipo'
@@ -40,16 +41,24 @@ export type DatosDetalle<Id extends string> = {
   notaDatos?: string
   notaRecorrido?: string
   notaRegreso?: string
+  altCultural?: string
+  altMapa?: string
+  distintivo?: string
+  tituloPrecio?: string
+  notaPrecio?: string
+  notaMapa?: string
+  etiquetaLugares?: string
   leyenda?: string
   paradas: readonly { nombre: string; tipo: string; descripcion: string; etiqueta?: string }[]
   opciones: readonly { id: Id; nombre: string; duracion?: string }[]
   lugares: readonly (string | { nombre: string; icono: string })[]
 }
 
-export default function DetalleDestino<Id extends string>({ ruta, detalle, estancia, cambiarEstancia, abrirItinerario }: {
+export default function DetalleDestino<Id extends string>({ ruta, detalle, estancia, cambiarEstancia, abrirItinerario, referenciaSalida }: {
+  referenciaSalida?: ReactNode
   ruta: RutaPrototipo
   detalle: DatosDetalle<Id>
-  estancia: Id
+  estancia: string
   cambiarEstancia: (id: Id) => void
   abrirItinerario: (modo: 'recomendado' | 'personalizado') => void
 }) {
@@ -91,15 +100,16 @@ export default function DetalleDestino<Id extends string>({ ruta, detalle, estan
       <div className="izamal-metricas">
         <section className="izamal-tarjeta izamal-metrica izamal-metrica-precio" aria-labelledby="izamal-precio">
           <div className="izamal-metrica-cabecera">
-            <h2 id="izamal-precio">Precio</h2>
+            <h2 id="izamal-precio">{detalle.tituloPrecio ?? 'Precio'}</h2>
             <span className="izamal-icono-metrica"><Icono nombre="payments" /></span>
           </div>
-          <p className="izamal-valor"><strong>${ruta.precio}</strong><span>MXN</span></p>
+          <p className="izamal-valor"><strong>${ruta.precio}</strong>{' '}<span>MXN</span></p>
           <p className="izamal-metrica-nota">Tarifa por pasaje · Prototipo</p>
+          {detalle.notaPrecio && <p className="izamal-metrica-nota">{detalle.notaPrecio}</p>}
         </section>
         <section className="izamal-tarjeta izamal-metrica" aria-labelledby="izamal-asientos">
           <div className="izamal-metrica-cabecera">
-            <h2 id="izamal-asientos">Asientos</h2>
+            <h2 id="izamal-asientos">{esIzamal ? 'Asientos' : 'Disponibilidad'}</h2>
             <span className="izamal-icono-metrica"><Icono nombre="airline_seat_recline_normal" /></span>
           </div>
           <p className="izamal-valor izamal-valor-disponibilidad"><strong>Sin confirmar</strong></p>
@@ -117,6 +127,7 @@ export default function DetalleDestino<Id extends string>({ ruta, detalle, estan
           <p className="izamal-sobretitulo">Andén de salida</p>
           <h2 id="izamal-terminal">{detalle.terminal}</h2>
           <p>{detalle.referenciaTerminal}</p>
+          {referenciaSalida}
         </div>
       </section>
 
@@ -126,11 +137,12 @@ export default function DetalleDestino<Id extends string>({ ruta, detalle, estan
           <span>{detalle.tiempo ?? ruta.tiempo}<small>Prototipo</small></span>
         </header>
         <div className="izamal-foto-recorrido">
-          <ImagenPrototipo src={detalle.imagenRecorrido} alt={`Mapa ilustrativo del recorrido a ${nombre} del prototipo`} icono="map" />
+          <ImagenPrototipo src={detalle.imagenRecorrido} alt={detalle.altMapa ?? `Mapa ilustrativo del recorrido a ${nombre} del prototipo`} icono="map" />
           <p className="izamal-pie-imagen"><Icono nombre="explore" />{detalle.corredor}</p>
         </div>
+        {detalle.notaMapa && <p className="izamal-nota-recorrido">{detalle.notaMapa}</p>}
         {detalle.notaRecorrido && <p className="izamal-nota-recorrido">{detalle.notaRecorrido}</p>}
-        <ol className="izamal-paradas" aria-label="Recorrido del prototipo">
+        <ol className="izamal-paradas" aria-label={esIzamal ? 'Recorrido del prototipo' : `Recorrido del prototipo a ${nombre}`}>
           {detalle.paradas.map(parada => (
             <li key={parada.nombre} className={`izamal-parada izamal-parada-${parada.tipo}`}>
               <span className="izamal-marcador" aria-hidden="true">
@@ -152,8 +164,8 @@ export default function DetalleDestino<Id extends string>({ ruta, detalle, estan
 
       <section className="izamal-tarjeta izamal-cultura" aria-labelledby="izamal-cultura">
         <div className="izamal-foto-cultural">
-          <ImagenPrototipo src={detalle.imagenCultural} alt={`Imagen cultural de ${nombre} del prototipo`} icono="temple_buddhist" />
-          <span className="izamal-top-destino"><Icono nombre="auto_awesome" />Top Destino</span>
+          <ImagenPrototipo src={detalle.imagenCultural} alt={detalle.altCultural ?? `Imagen cultural de ${nombre} del prototipo`} icono="temple_buddhist" />
+          <span className="izamal-top-destino"><Icono nombre="auto_awesome" /> {detalle.distintivo ?? 'Top Destino'}</span>
           <div className="izamal-foto-textos">
             {detalle.etiquetaCultural && <p className="izamal-pueblo-amarillo"><Icono nombre="location_on" />{detalle.etiquetaCultural}</p>}
             <h2 id="izamal-cultura">Descubre {nombre} a tu ritmo</h2>
@@ -190,7 +202,7 @@ export default function DetalleDestino<Id extends string>({ ruta, detalle, estan
           </fieldset>
           <div className="izamal-lugares">
             <p className="izamal-sobretitulo">Paradas imperdibles del prototipo:</p>
-            <ul>
+            <ul aria-label={detalle.etiquetaLugares}>
               {detalle.lugares.map(lugar => {
                 const titulo = typeof lugar === 'string' ? lugar : lugar.nombre
                 return <li key={titulo}><Icono nombre={typeof lugar === 'string' ? 'place' : lugar.icono} />{titulo}</li>
