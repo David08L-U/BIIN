@@ -2,8 +2,9 @@
 .tk-plan { min-width: 0; padding-bottom: 32px; background: #fff8f1; color: #1e1b17; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; line-height: 20px; }
 .tk-plan * { box-sizing: border-box; min-width: 0; }
 .tk-plan h1, .tk-plan h2, .tk-plan h3, .tk-plan p { margin: 0; }
-.tk-plan h1, .tk-plan h2, .tk-plan h3 { font-family: 'Space Grotesk', sans-serif; }
-.tk-plan h1, .tk-plan h2 { font-size: 18px; line-height: 24px; font-weight: 500; }
+.tk-plan h1, .tk-plan h2, .tk-plan h3 { font-family: var(--fuente-titulos); }
+.tk-plan h1, .tk-plan h2 { font-size: 18px; line-height: 24px; font-weight: 600; }
+.tk-plan h1 { font-weight: 700; }
 .tk-plan h3 { font-size: 16px; line-height: 22px; font-weight: 600; }
 .tk-plan button, .tk-plan input, .tk-plan select { font: inherit; }
 .tk-plan button, .tk-plan a { touch-action: manipulation; }
@@ -41,7 +42,7 @@
 .tk-vacio { padding: 12px; border-radius: 8px; background: #f4ede5; }
 .tk-conexion { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
 .tk-conexion header { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; }
-.tk-conexion header h2 { padding: 2px 8px; border-radius: 4px; background: #070100; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; line-height: 16px; letter-spacing: .04em; text-transform: uppercase; font-weight: 700; }
+.tk-conexion header h2 { padding: 2px 8px; border-radius: 4px; background: #070100; color: #fff; font-family: var(--fuente-titulos); font-size: 11px; line-height: 16px; letter-spacing: .04em; text-transform: uppercase; font-weight: 700; }
 .tk-conexion header > span:not(.biin-icon) { font-size: 12px; line-height: 16px; color: #4f4440; font-weight: 600; }
 .tk-conexion header > .biin-icon { margin-left: auto; color: #855400; }
 .tk-conexion-tramo { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 4px 0 0 20px; }

@@ -15,6 +15,7 @@
 
 .iz-plan :is(h1, h2, h3, p) { margin: 0; }
 .iz-plan :is(h1, h2, h3) { font-family: var(--fuente-titulos); font-weight: 600; }
+.iz-plan h1 { font-weight: 700; }
 .iz-plan h1 { font-size: 18px; line-height: 24px; letter-spacing: -0.025em; }
 .iz-plan h2, .iz-plan h3 { font-size: 18px; line-height: 24px; }
 .iz-plan :where(button, input) { font: inherit; }

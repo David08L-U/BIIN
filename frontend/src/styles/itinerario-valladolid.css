@@ -4,7 +4,8 @@
  */
 .va-plan { width: 100%; min-width: 0; padding-bottom: 32px; background: #fff8f1; color: #1e1b17; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; line-height: 20px; overflow-wrap: anywhere; }
 .va-plan :is(h1, h2, h3, h4, p) { margin: 0; }
-.va-plan :is(h1, h2, h3, h4) { font-family: 'Space Grotesk', sans-serif; font-size: 18px; line-height: 24px; font-weight: 500; }
+.va-plan :is(h1, h2, h3, h4) { font-family: var(--fuente-titulos); font-size: 18px; line-height: 24px; font-weight: 600; }
+.va-plan h1 { font-weight: 700; }
 .va-plan :where(button, input, select) { font: inherit; }
 .va-plan button { cursor: pointer; }
 .va-plan button:disabled { opacity: 0.5; cursor: default; }
@@ -27,7 +28,7 @@
 .va-modos a[aria-current='page'] { background: #070100; color: #fff; }
 .va-formulario { display: grid; min-width: 0; gap: 12px; }
 .va-config { min-width: 0; margin: 0; border: 1px solid #d3c3be66; border-radius: 12px; padding: 16px; background: #fff; }
-.va-config > legend { padding: 0 6px; font-family: 'Space Grotesk', sans-serif; font-size: 18px; line-height: 24px; font-weight: 600; }
+.va-config > legend { padding: 0 6px; font-family: var(--fuente-titulos); font-size: 18px; line-height: 24px; font-weight: 600; }
 .va-config > legend .biin-icon { margin-right: 6px; vertical-align: middle; }
 .va-config p, .va-config label > span { color: #4f4440; font-size: 12px; line-height: 16px; }
 .va-config p + p { margin-top: 8px; }
@@ -45,7 +46,7 @@
 .va-vacio { padding: 16px 8px; color: #4f4440; text-align: center; }
 .va-conexion { overflow: hidden; }
 .va-conexion > header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 16px; background: #2b1810; color: #fff; }
-.va-conexion > header h2 { display: flex; align-items: center; gap: 4px; color: #ffddb7; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.va-conexion > header h2 { display: flex; align-items: center; gap: 4px; color: #ffddb7; font-family: var(--fuente-titulos); font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
 .va-conexion > header .biin-icon { color: #fdae3f; }
 .va-conexion > header > span { color: #eee7df; font-size: 12px; line-height: 16px; }
 .va-conexion-contenido { display: flex; flex-direction: column; gap: 8px; padding: 16px; }

@@ -55,6 +55,23 @@ h6,
   font-family: var(--fuente-titulos);
 }
 
+h1 {
+  font-weight: 700;
+}
+
+/* Encabezados de las pantallas de rutas mantienen Lora aunque sus hojas
+   específicas definan tamaños y composición propios. */
+:is(.izamal-detalle, .valladolid-detalle, .tekit-detalle, .homun-detalle, .ticul-detalle,
+  .iz-plan, .va-plan, .tk-plan, .hm-plan, .ti-plan) :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--fuente-titulos);
+  font-weight: 600;
+}
+
+:is(.izamal-detalle, .valladolid-detalle, .tekit-detalle, .homun-detalle, .ticul-detalle,
+  .iz-plan, .va-plan, .tk-plan, .hm-plan, .ti-plan) h1 {
+  font-weight: 700;
+}
+
 :where(button, input, select, textarea) {
   font-family: var(--fuente-texto);
 }

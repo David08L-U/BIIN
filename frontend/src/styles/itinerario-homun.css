@@ -2,7 +2,8 @@
 .hm-plan { min-width: 0; padding-bottom: 32px; background: #fff8f1; color: #1e1b17; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; line-height: 20px; }
 .hm-plan * { box-sizing: border-box; min-width: 0; }
 .hm-plan :is(h1, h2, h3, h4, p) { margin: 0; }
-.hm-plan :is(h1, h2, h3, h4) { font-family: 'Space Grotesk', sans-serif; font-weight: 500; }
+.hm-plan :is(h1, h2, h3, h4) { font-family: var(--fuente-titulos); font-weight: 600; }
+.hm-plan h1 { font-weight: 700; }
 .hm-plan :is(h1, h2) { font-size: 18px; line-height: 24px; }
 .hm-plan :is(button, input, select) { font: inherit; }
 .hm-plan :is(button, a) { touch-action: manipulation; }
@@ -43,7 +44,7 @@
 .hm-vacio { padding: 12px; border-radius: 8px; background: #f4ede5; }
 .hm-conexion { display: flex; flex-direction: column; gap: 8px; padding: 16px; }
 .hm-conexion header { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding-bottom: 8px; }
-.hm-conexion header h2 { padding: 2px 8px; border-radius: 4px; background: #070100; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; line-height: 16px; font-weight: 700; text-transform: uppercase; }
+.hm-conexion header h2 { padding: 2px 8px; border-radius: 4px; background: #070100; color: #fff; font-family: var(--fuente-titulos); font-size: 11px; line-height: 16px; font-weight: 700; text-transform: uppercase; }
 .hm-conexion header > span:not(.biin-icon) { color: #070100; font-size: 12px; line-height: 16px; font-weight: 700; }
 .hm-conexion header > .biin-icon { margin-left: auto; color: #855400; }
 .hm-conexion > .hm-ceja { color: #4f4440; font-size: 11px; font-weight: 600; }
@@ -59,7 +60,7 @@
 .hm-filtros button[aria-pressed=true] { background: #070100; color: #fff; box-shadow: 0 1px 2px #0000000d; }
 .hm-seccion-titulo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .hm-seccion-titulo h2 { display: flex; align-items: center; gap: 6px; }
-.hm-recorrido > .hm-seccion-titulo h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; line-height: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+.hm-recorrido > .hm-seccion-titulo h2 { font-family: var(--fuente-titulos); font-size: 11px; line-height: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
 .hm-seccion-titulo > span { font-size: 11px; line-height: 16px; color: #855400; font-weight: 700; }
 .hm-seccion-titulo .biin-icon { color: #855400; }
 .hm-jornada { margin-top: 12px; }
@@ -82,10 +83,10 @@
 .hm-cierre h4 { display: flex; align-items: center; gap: 8px; color: #070100; font-size: 18px; line-height: 24px; }
 .hm-cierre p { color: #4f4440; font-size: 12px; line-height: 18px; }
 .hm-mapa { display: flex; flex-direction: column; gap: 8px; padding: 16px; }
-.hm-mapa h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; line-height: 20px; font-weight: 700; }
+.hm-mapa h2 { font-family: var(--fuente-titulos); font-size: 14px; line-height: 20px; font-weight: 700; }
 .hm-mapa a { display: inline-flex; align-items: center; gap: 4px; min-height: 38px; font-size: 11px; line-height: 16px; font-weight: 700; }
 .hm-consejos { display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 12px; background: #faf3eb; }
-.hm-consejos h2 { display: flex; align-items: center; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; line-height: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.hm-consejos h2 { display: flex; align-items: center; gap: 8px; font-family: var(--fuente-titulos); font-size: 12px; line-height: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
 .hm-consejos h2 .biin-icon { color: #855400; }
 .hm-consejos > div { display: flex; align-items: flex-start; gap: 10px; color: #4f4440; font-size: 12px; line-height: 18px; }
 .hm-consejos strong { color: #070100; font-weight: 500; }
