@@ -89,6 +89,18 @@ public sealed class FakeAppDbContext : IAppDbContext
             }
         }
 
+        var itinerarios = Set<Itinerario>().Items;
+        foreach (var i in itinerarios.Where(i => i.IdItinerario == 0))
+            i.IdItinerario = itinerarios.Max(x => x.IdItinerario) + 1;
+
+        var actividades = Set<ActividadItinerario>().Items;
+        foreach (var a in actividades.Where(a => a.IdActividad == 0))
+        {
+            a.IdActividad = actividades.Max(x => x.IdActividad) + 1;
+            if (a.Itinerario is not null)
+                a.IdItinerario = a.Itinerario.IdItinerario;
+        }
+
         foreach (var b in BitacoraAdminSet.Items)
         {
             if (b.IdBitacora == 0)
