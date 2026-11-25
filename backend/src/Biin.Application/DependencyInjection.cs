@@ -14,6 +14,7 @@ public static class DependencyInjection
         services.AddScoped<AdminUsuariosService>();
         services.AddScoped<IAutorizacionOperador, AutorizacionOperadorService>();
         services.AddScoped<IBitacoraAdmin, BitacoraAdminService>();
+        services.AddScoped<CatalogosService>();
         return services;
     }
 }
