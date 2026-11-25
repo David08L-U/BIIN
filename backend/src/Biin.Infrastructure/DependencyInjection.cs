@@ -1,6 +1,7 @@
 using Biin.Application.Interfaces;
 using Biin.Infrastructure.Persistence;
 using Biin.Infrastructure.Security;
+using Biin.Infrastructure.Tiempo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,7 @@ public static class DependencyInjection
         services.AddSingleton<IHashContrasena, BcryptHashContrasena>();
         services.AddSingleton<IGeneradorToken, JwtGeneradorToken>();
         services.AddSingleton<IRevocacionToken, MemoriaRevocacionToken>();
+        services.AddSingleton<IReloj, RelojSistema>();
 
         return services;
     }

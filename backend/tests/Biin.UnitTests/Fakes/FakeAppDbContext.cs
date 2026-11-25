@@ -178,6 +178,12 @@ public sealed class HashFalso : IHashContrasena
     public bool Verificar(string contrasena, string hash) => hash == $"hash::{contrasena}";
 }
 
+/// <summary>Reloj fijo para pruebas; por defecto lunes 7 dic 2026, 12:00 en Yucatán (18:00 UTC).</summary>
+public sealed class RelojFijo(DateTime? ahoraUtc = null) : IReloj
+{
+    public DateTime AhoraUtc { get; set; } = ahoraUtc ?? new DateTime(2026, 12, 7, 18, 0, 0, DateTimeKind.Utc);
+}
+
 public sealed class RevocacionFalsa : IRevocacionToken
 {
     public HashSet<string> Revocados { get; } = [];
