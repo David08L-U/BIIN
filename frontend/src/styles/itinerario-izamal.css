@@ -23,6 +23,10 @@
 .iz-plan a { color: #2b1810; }
 .iz-plan :is(button, a, input, select):focus-visible { outline: 3px solid #855400; outline-offset: 3px; }
 .iz-plan .biin-icon { flex-shrink: 0; }
+.iz-plan:is(.iz-itinerario, .iz-personalizar) .biin-icon {
+  inline-size: 1em;
+  overflow: hidden;
+}
 
 .iz-plan-tarjeta {
   min-width: 0;

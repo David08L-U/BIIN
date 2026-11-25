@@ -32,6 +32,8 @@
 
 .izamal-detalle .biin-icon {
   flex-shrink: 0;
+  inline-size: 1em;
+  overflow: hidden;
 }
 
 .izamal-detalle :is(button, a, input):focus-visible {
@@ -346,6 +348,7 @@
 
 .izamal-recorrido-cabecera > span {
   flex-shrink: 0;
+  max-inline-size: 44%;
   color: #855400;
   font-size: 12px;
   line-height: 16px;
