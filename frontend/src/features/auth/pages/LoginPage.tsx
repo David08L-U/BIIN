@@ -141,7 +141,9 @@ export default function LoginPage() {
 
       <p>
         ¿No tienes cuenta?{' '}
-        <Link to="/registro">Regístrate</Link>
+        <Link to="/registro" state={{ desde }}>
+          Regístrate
+        </Link>
       </p>
     </section>
   )

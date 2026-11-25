@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router'
 import Boton from '../../../components/ui/Boton'
 import Campo from '../../../components/ui/Campo'
 import { useAuth } from '../useAuth'
@@ -9,6 +9,10 @@ type CampoRegistro = 'nombre' | 'correo' | 'contrasena'
 export default function RegistroPage() {
   const { registrarse } = useAuth()
   const navegar = useNavigate()
+  const ubicacion = useLocation()
+
+  const desde =
+    (ubicacion.state as { desde?: string } | null)?.desde ?? '/'
 
   const [nombre, setNombre] = useState('')
   const [correo, setCorreo] = useState('')
@@ -83,7 +87,7 @@ export default function RegistroPage() {
         contrasena,
       })
 
-      navegar('/', { replace: true })
+      navegar(desde, { replace: true })
     } catch (err) {
       setError(
         err instanceof Error
@@ -172,7 +176,9 @@ export default function RegistroPage() {
 
       <p>
         ¿Ya tienes cuenta?{' '}
-        <Link to="/login">Inicia sesión</Link>
+        <Link to="/login" state={{ desde }}>
+          Inicia sesión
+        </Link>
       </p>
     </section>
   )
