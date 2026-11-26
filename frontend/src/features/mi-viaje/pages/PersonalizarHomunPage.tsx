@@ -12,6 +12,7 @@ import { parametrosBorradorHomun, urlBorradorHomun } from '../plan/borradorHomun
 import { calcularPlanHomun, resumirJornadaHomun, ventanasHomun } from '../plan/itinerarioHomun'
 import { duracionPlan, leerDuracion } from '../plan/duracion'
 import LugaresSeleccionados from '../components/LugaresSeleccionados'
+import CancelarEdicion from '../components/CancelarEdicion'
 
 export default function PersonalizarHomunPage() {
   const { borrador, actualizar } = useBorradorHomun('personalizado')
@@ -68,7 +69,7 @@ export default function PersonalizarHomunPage() {
         <LugaresSeleccionados jornadas={ventanas.length} lugares={borrador.seleccion.map(s => ({ id: s.lugarId, nombre: lugaresHomun.find(l => l.id === s.lugarId)?.nombre ?? s.lugarId, dia: s.dia }))} onQuitar={id => actualizar({ seleccion: borrador.seleccion.filter(s => s.lugarId !== id) })} onCambiarDia={(id, dia) => actualizar({ seleccion: borrador.seleccion.map(s => s.lugarId === id ? { ...s, dia } : s) })} />
         <div className="iz-plan-resumen-final"><p role="status">{borrador.seleccion.length} lugares seleccionados</p><p>Los filtros conservan tu selección. Genera después de editar; aún no se ha guardado un plan.</p>
           {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}
-          <button type="submit" className="iz-plan-primario">Generar mi itinerario<Icono nombre="arrow_forward" tamano={20} /></button>
+          <CancelarEdicion editarId={borrador.editarId} /><button type="submit" className="iz-plan-primario">Generar mi itinerario<Icono nombre="arrow_forward" tamano={20} /></button>
           <button type="button" className="iz-plan-restablecer" onClick={restablecer}><Icono nombre="restart_alt" tamano={16} />Restablecer selección</button>
         </div>
       </form>

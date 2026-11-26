@@ -64,6 +64,18 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Selecciona al menos un lugar')
   })
 
+  it('conserva lugares añadidos si no caben y no muestra un recorrido anterior vigente', async () => {
+    const { router } = montar('/rutas/tekit/personalizar?estancia=ruta-textil&fecha=2026-11-30&inicio=10%3A20&minutos=80&modo=personalizado&lugares=taller-bordado')
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Corredor Textil y Tiendas de Fabricantes' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
+    expect(screen.getByRole('alert')).toHaveTextContent(/excede el tiempo disponible/)
+    const params = new URLSearchParams(router.state.location.search)
+    expect(params.get('lugares')).toContain('taller-bordado')
+    expect(params.get('lugares')).toContain('corredor-textil')
+    expect(params.get('generado')).toBeNull()
+    expect(screen.queryByRole('heading', { name: 'Paso a paso a pie' })).not.toBeInTheDocument()
+  })
+
   it('selecciona con teclado, conserva otras categorías y actualiza tiempos y contadores', async () => {
     montar(`/rutas/tekit/personalizar?${config}`)
     const corredor = screen.getByRole('checkbox', { name: 'Corredor Textil y Tiendas de Fabricantes' })

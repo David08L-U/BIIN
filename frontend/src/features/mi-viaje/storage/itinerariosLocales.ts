@@ -188,3 +188,33 @@ export function eliminarItinerarioLocal(idUsuario: number, id: string): { elimin
     return { eliminado: false, error: 'No se pudo eliminar el itinerario en este navegador. Comprueba que el almacenamiento esté permitido.' }
   }
 }
+
+/** Actualiza un guardado existente, dentro de su cuenta, tras confirmación explícita desde la pantalla. */
+export function actualizarItinerarioLocal(idUsuario: number, id: string, borrador: BorradorIzamal | BorradorValladolid | BorradorTekit | BorradorHomun | BorradorTicul): Guardado<ItinerarioGuardado> {
+  const lectura = leerItinerariosLocales(idUsuario)
+  if (lectura.error) return { guardado: null, error: lectura.error }
+  const original = lectura.itinerarios.find(item => item.id === id)
+  if (!original) return { guardado: null, error: 'No se encontró ese itinerario en esta cuenta.' }
+  const sinMeta = { ...borrador, editarId: undefined }
+  let destino: ItinerarioGuardado['destino']
+  if (esBorradorValladolid(sinMeta)) destino = 'valladolid'
+  else if (esBorradorTekit(sinMeta)) destino = 'tekit'
+  else if (esBorradorHomun(sinMeta)) destino = 'homun'
+  else if (esBorradorTicul(sinMeta)) destino = 'ticul'
+  else if (esBorrador(sinMeta) && calcularPlan(sinMeta).plan) destino = 'izamal'
+  else return { guardado: null, error: 'Genera un plan válido antes de guardar los cambios.' }
+  const destinoOriginal = original.destino ?? 'izamal'
+  if (destino !== destinoOriginal) return { guardado: null, error: 'El destino del itinerario no puede cambiarse al editarlo.' }
+  try {
+    const actualizado = { ...original, guardadoEn: new Date().toISOString(), borrador: sinMeta } as ItinerarioGuardado
+    const claveActualizada = identidad(actualizado)
+    if (lectura.itinerarios.some(item => item.id !== id && identidad(item) === claveActualizada)) {
+      return { guardado: null, error: 'Ya existe otro viaje guardado con la misma configuración. No se creó un duplicado.' }
+    }
+    const itinerarios = lectura.itinerarios.map(item => item.id === id ? actualizado : item)
+    localStorage.setItem(claveCuenta(idUsuario), JSON.stringify({ version: 1, itinerarios }))
+    return { guardado: actualizado, error: null }
+  } catch {
+    return { guardado: null, error: 'No se pudieron guardar los cambios en este navegador. Comprueba que el almacenamiento esté permitido y tenga espacio.' }
+  }
+}

@@ -26,3 +26,6 @@
 .explorar-acciones { display: grid; gap: 10px; }
 .explorar-acciones > a:not(.iz-plan-primario) { display: grid; place-items: center; min-height: 44px; border: 1px solid var(--color-borde-tarjeta); border-radius: 8px; text-align: center; }
 @media (min-width: 560px) { .explorar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.explorar-candidato { display: grid; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--borde-tarjeta); }
+.explorar-candidato label { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.explorar-candidato button { min-height: 44px; }

@@ -17,6 +17,7 @@ export interface BorradorTicul {
   modo: string
   seleccion: string[]
   generado: boolean
+  editarId?: string
 }
 export type PlanTicul = PlanIzamal
 export function esModalidadTicul(valor: string): valor is ModalidadTicul { return Object.hasOwn(modalidadesTicul, valor) }

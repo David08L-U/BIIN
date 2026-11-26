@@ -19,6 +19,7 @@ export function leerBorradorIzamal(parametros: URLSearchParams): BorradorIzamal 
     modo: parametros.get('modo') === 'personalizado' ? 'personalizado' : 'recomendado',
     seleccion: [...new Set((parametros.get('lugares') ?? '').split(',').filter(Boolean))],
     generado: parametros.get('generado') === '1',
+    editarId: parametros.get('editar') ?? undefined,
   }
 }
 
@@ -27,6 +28,7 @@ export function parametrosBorrador(borrador: BorradorIzamal): URLSearchParams {
   const parametros = new URLSearchParams({ estancia: config.estancia, fecha: config.fecha, inicio: config.horaInicio, minutos: config.minutosDisponibles, modo: borrador.modo })
   if (borrador.seleccion.length) parametros.set('lugares', borrador.seleccion.join(','))
   if (borrador.generado) parametros.set('generado', '1')
+  if (borrador.editarId) parametros.set('editar', borrador.editarId)
   return parametros
 }
 

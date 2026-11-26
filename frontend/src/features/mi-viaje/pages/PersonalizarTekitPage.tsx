@@ -12,6 +12,7 @@ import { parametrosBorradorTekit, urlBorradorTekit } from '../plan/borradorTekit
 import { calcularPlanTekit, resumirSeleccionTekit } from '../plan/itinerarioTekit'
 import { duracionPlan, leerDuracion } from '../plan/duracion'
 import LugaresSeleccionados from '../components/LugaresSeleccionados'
+import CancelarEdicion from '../components/CancelarEdicion'
 
 export default function PersonalizarTekitPage() {
   const { borrador, actualizar } = useBorradorTekit('personalizado')
@@ -62,7 +63,7 @@ export default function PersonalizarTekitPage() {
         <div className="iz-plan-resumen-final">
           <p role="status">{borrador.seleccion.length} lugares seleccionados</p>
           {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}
-          <button type="submit" className="iz-plan-primario">Generar mi itinerario<Icono nombre="arrow_forward" tamano={20} /></button>
+          <CancelarEdicion editarId={borrador.editarId} /><button type="submit" className="iz-plan-primario">Generar mi itinerario<Icono nombre="arrow_forward" tamano={20} /></button>
           <button type="button" className="iz-plan-restablecer" onClick={restablecer}><Icono nombre="restart_alt" tamano={16} />Restablecer selección</button>
         </div>
       </form>

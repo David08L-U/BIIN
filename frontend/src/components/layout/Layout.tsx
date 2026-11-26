@@ -8,7 +8,10 @@ export default function Layout() {
   useScrollAlNavegar()
 
   const { usuario, cerrarSesion, tieneRol } = useAuth()
-  const { pathname } = useLocation()
+  const location = useLocation()
+  const { pathname } = location
+  const borradorFuente = /^\/rutas\/(izamal|valladolid|tekit|homun|ticul)(?:\/(?:itinerario|personalizar))?$/.test(pathname)
+    ? `${pathname}${location.search}` : undefined
   const menu = useRef<HTMLDialogElement>(null)
 
   const abrirMenu = () => menu.current?.showModal()
@@ -99,7 +102,7 @@ export default function Layout() {
           <span>Rutas</span>
         </Link>
 
-        <NavLink to="/explorar">
+        <NavLink to="/explorar" state={borradorFuente ? { borradorFuente } : undefined}>
           <span aria-hidden="true" className="biin-icon">
             explore
           </span>

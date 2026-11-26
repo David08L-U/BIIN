@@ -206,7 +206,7 @@
 .iz-plan-mis-viajes > p { margin-top: 12px; }
 .iz-plan-mis-viajes ul { display: grid; gap: 12px; padding: 0; margin: 24px 0; list-style: none; }
 .iz-plan-mis-viajes li { display: grid; gap: 12px; }
-.iz-lugares-seleccionados { margin-top: 16px; padding: 12px; border: 1px solid var(--borde-tarjeta); border-radius: 12px; background: var(--color-superficie); }
+.iz-lugares-seleccionados { margin-top: 16px; padding: 12px; border: 1px solid var(--color-borde-tarjeta); border-radius: 12px; background: var(--color-superficie); }
 .iz-lugares-seleccionados h2 { margin-bottom: 8px; }
 .iz-lugares-seleccionados ul { display: grid; gap: 8px; padding: 0; margin: 0; list-style: none; }
 .iz-lugares-seleccionados li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }

@@ -16,6 +16,7 @@ export interface BorradorIzamal {
   modo: ModoItinerario
   seleccion: string[]
   generado: boolean
+  editarId?: string
 }
 export interface BloquePlan {
   tipo: 'traslado' | 'visita' | 'margen'

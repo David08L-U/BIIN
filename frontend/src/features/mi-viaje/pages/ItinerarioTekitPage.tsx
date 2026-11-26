@@ -14,7 +14,7 @@ import { duracionPlan } from '../plan/duracion'
 import { horaLocal, instanteLocal } from '../plan/tiempoLocal'
 import { compartirTekit, descargarTekit } from '../plan/accionesTekit'
 import type { AvisoCompartir } from '../plan/accionesPlan'
-import { guardarItinerarioLocal } from '../storage/itinerariosLocales'
+import { actualizarItinerarioLocal, guardarItinerarioLocal } from '../storage/itinerariosLocales'
 
 export default function ItinerarioTekitPage() {
   const { borrador, actualizar } = useBorradorTekit()
@@ -45,8 +45,9 @@ export default function ItinerarioTekitPage() {
   function guardar() {
     if (!plan || cargando) return
     if (!usuario) { navegar('/login', { state: { desde: urlActual } }); return }
-    const r = guardarItinerarioLocal(usuario.idUsuario, vigente)
-    setAviso({ clave: cuenta, error: !r.guardado, mensaje: r.guardado ? 'Guardado en este navegador' : r.error ?? 'No se pudo guardar el itinerario.' })
+    if (borrador.editarId && !window.confirm(`¿Guardar cambios en el itinerario de Tekit del ${c.fecha || 'fecha sin confirmar'}?`)) return
+    const r = borrador.editarId ? actualizarItinerarioLocal(usuario.idUsuario, borrador.editarId, { ...vigente, generado: true }) : guardarItinerarioLocal(usuario.idUsuario, vigente)
+    setAviso({ clave: cuenta, error: !r.guardado, mensaje: r.guardado ? (borrador.editarId ? 'Cambios guardados en este navegador' : 'Guardado en este navegador') : r.error ?? 'No se pudo guardar el itinerario.' })
   }
   async function compartir() {
     if (!plan || compartiendo) return
@@ -63,7 +64,7 @@ export default function ItinerarioTekitPage() {
   }
   return <article className="iz-plan iz-itinerario" aria-labelledby="tk-itinerario-titulo">
     <CabeceraPlan id="tk-itinerario-titulo" titulo="Tu Itinerario en Tekit" subtitulo="BIIN Escapadas" volver={urlBorradorTekit('detalle', vigente)} acciones={<>
-          <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando} onClick={guardar} aria-label="Guardar itinerario"><Icono nombre="bookmark" tamano={20} /></button>
+          <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando} onClick={guardar} aria-label={borrador.editarId ? 'Guardar cambios' : 'Guardar itinerario'}><Icono nombre="bookmark" tamano={20} /></button>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan || compartiendo} onClick={compartir} aria-label="Compartir"><Icono nombre="share" tamano={20} /></button>
 
         </>} />

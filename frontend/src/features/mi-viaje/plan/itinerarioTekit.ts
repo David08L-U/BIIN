@@ -17,6 +17,7 @@ export interface BorradorTekit {
   modo: string
   seleccion: string[]
   generado: boolean
+  editarId?: string
 }
 export type PlanTekit = PlanIzamal
 

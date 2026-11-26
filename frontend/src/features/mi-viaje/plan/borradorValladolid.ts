@@ -28,6 +28,7 @@ export function leerBorradorValladolid(parametros: URLSearchParams, modoInicial:
     modo: parametros.getAll('modo').length > 1 || (parametros.has('generado') && !['0', '1'].includes(parametros.get('generado')!)) || parametros.getAll('generado').length > 1 ? '' : parametros.get('modo') ?? modoInicial,
     seleccion: [...seleccionDia(1), ...seleccionDia(2)],
     generado: parametros.get('generado') === '1',
+    editarId: parametros.get('editar') ?? undefined,
   }
 }
 
@@ -39,6 +40,7 @@ export function parametrosBorradorValladolid(borrador: BorradorValladolid): URLS
     if (ids.length) parametros.set(`dia${dia}`, ids.join(','))
   }
   if (borrador.generado) parametros.set('generado', '1')
+  if (borrador.editarId) parametros.set('editar', borrador.editarId)
   return parametros
 }
 

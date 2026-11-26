@@ -12,6 +12,7 @@ import { urlBorradorValladolid } from '../plan/borradorValladolid'
 import { calcularPlanValladolid, resumirJornadaValladolid, ventanasValladolid } from '../plan/itinerarioValladolid'
 import { duracionPlan, leerDuracion } from '../plan/duracion'
 import LugaresSeleccionados from '../components/LugaresSeleccionados'
+import CancelarEdicion from '../components/CancelarEdicion'
 
 /** Reutiliza la estructura aprobada del selector, sin cambiar la pantalla de Izamal. */
 export default function PersonalizarValladolidPage() {
@@ -74,7 +75,7 @@ export default function PersonalizarValladolidPage() {
       <div className="iz-plan-resumen-final">
         <p role="status">{borrador.seleccion.length} lugares seleccionados</p><p>El orden sigue tu selección dentro de cada día, sin optimización geográfica. Aún no hay un plan vigente; genera después de elegir.</p>
         {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}
-        <button type="submit" className="iz-plan-primario">Generar mi itinerario<Icono nombre="arrow_forward" tamano={20} /></button>
+        <CancelarEdicion editarId={borrador.editarId} /><button type="submit" className="iz-plan-primario">Generar mi itinerario<Icono nombre="arrow_forward" tamano={20} /></button>
         <button type="button" className="iz-plan-restablecer" onClick={restablecer}><Icono nombre="restart_alt" tamano={14} />Restablecer selección</button>
       </div>
     </form>

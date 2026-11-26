@@ -12,6 +12,7 @@ import { useBorradorIzamal } from '../hooks/useBorradorIzamal'
 import { urlBorrador } from '../plan/borradorIzamal'
 import { calcularPlan, resumirSeleccion } from '../plan/itinerarioIzamal'
 import LugaresSeleccionados from '../components/LugaresSeleccionados'
+import CancelarEdicion from '../components/CancelarEdicion'
 
 export default function PersonalizarIzamalPage() {
   const { borrador, actualizar } = useBorradorIzamal('personalizado')
@@ -84,7 +85,7 @@ export default function PersonalizarIzamalPage() {
           <p role="status">{borrador.seleccion.length} lugares seleccionados</p>
           <p>El orden seguirá tu selección, sin optimización geográfica.</p>
           {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}
-          <button type="submit" className="iz-plan-primario">Generar mi itinerario<Icono nombre="arrow_forward" tamano={20} /></button>
+          <CancelarEdicion editarId={borrador.editarId} /><button type="submit" className="iz-plan-primario">Generar mi itinerario<Icono nombre="arrow_forward" tamano={20} /></button>
           <button type="button" className="iz-plan-restablecer" onClick={restablecer}><Icono nombre="restart_alt" tamano={14} />Restablecer selección</button>
         </div>
       </form>

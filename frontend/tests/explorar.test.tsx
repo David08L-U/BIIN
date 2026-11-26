@@ -1,10 +1,12 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { createMemoryRouter, Outlet, RouterProvider } from 'react-router'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import ExplorarPage, { ExplorarDetallePage } from '../src/features/explorar/pages/ExplorarPage'
 import ElegirItinerarioPage from '../src/features/explorar/pages/ElegirItinerarioPage'
 import { buscarLugares, lugaresExplorar } from '../src/features/explorar/data/lugaresExplorar'
 import InicioPage from '../src/features/transporte/pages/InicioPage'
+
+vi.mock('../src/features/auth/useAuth', () => ({ useAuth: () => ({ usuario: null, cargando: false, tieneRol: () => false, cerrarSesion: vi.fn() }) }))
 
 describe('Explorar', () => {
   it('usa datos propios con identificadores compuestos para los cinco destinos', () => {
@@ -92,6 +94,17 @@ describe('Explorar', () => {
     fireEvent.click(screen.getByRole('link', { name: /Ver detalle de Poc Chuc Ticule/ }))
     fireEvent.click(screen.getByRole('button', { name: '← Volver a resultados' }))
     expect(router.state.location.pathname + router.state.location.search).toBe('/explorar?q=mercado&destino=ticul')
+  })
+
+  it('conserva el lugar como intención de retorno cuando agregar requiere acceso', async () => {
+    const router = createMemoryRouter([
+      { path: '/explorar/lugares/:destino/:id', element: <ExplorarDetallePage /> },
+      { path: '/login', element: <p>Acceso</p> },
+    ], { initialEntries: ['/explorar/lugares/tekit/corredor-textil'] })
+    render(<RouterProvider router={router} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Agregar a itinerario' }))
+    expect(router.state.location.pathname).toBe('/login')
+    expect((router.state.location.state as { desde: string }).desde).toContain('agregarLugar=corredor-textil')
   })
 })
 

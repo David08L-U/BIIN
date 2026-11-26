@@ -17,7 +17,7 @@ import { horaLocal, instanteLocal } from '../plan/tiempoLocal'
 import { duracionPlan } from '../plan/duracion'
 import { compartirValladolid, descargarValladolid } from '../plan/accionesValladolid'
 import type { AvisoCompartir } from '../plan/accionesValladolid'
-import { guardarItinerarioLocal } from '../storage/itinerariosLocales'
+import { actualizarItinerarioLocal, guardarItinerarioLocal } from '../storage/itinerariosLocales'
 
 function Conexion({ dia }: { dia: JornadaValladolid }) {
   return <section className="iz-plan-conexion iz-plan-tarjeta" aria-label={`Conexión BIIN del Día ${dia.dia}`}>
@@ -62,8 +62,9 @@ export default function ItinerarioValladolidPage() {
   function guardar() {
     if (!plan || cargando) return
     if (!usuario) { navegar('/login', { state: { desde: urlActual } }); return }
-    const respuesta = guardarItinerarioLocal(usuario.idUsuario, borradorVigente)
-    setAviso({ clave: claveCuenta, error: !respuesta.guardado, mensaje: respuesta.guardado ? 'Guardado en este navegador' : respuesta.error ?? 'No se pudo guardar el itinerario.' })
+    if (borrador.editarId && !window.confirm(`¿Guardar cambios en el itinerario de Valladolid del ${borrador.configuracion.fecha || 'fecha sin confirmar'}?`)) return
+    const respuesta = borrador.editarId ? actualizarItinerarioLocal(usuario.idUsuario, borrador.editarId, { ...borradorVigente, generado: true }) : guardarItinerarioLocal(usuario.idUsuario, borradorVigente)
+    setAviso({ clave: claveCuenta, error: !respuesta.guardado, mensaje: respuesta.guardado ? (borrador.editarId ? 'Cambios guardados en este navegador' : 'Guardado en este navegador') : respuesta.error ?? 'No se pudo guardar el itinerario.' })
   }
   async function compartir() {
     if (!plan || compartiendo) return
@@ -81,7 +82,7 @@ export default function ItinerarioValladolidPage() {
 
   return <article className="iz-plan iz-itinerario" aria-labelledby="va-itinerario-titulo">
     <CabeceraPlan id="va-itinerario-titulo" titulo="Tu Itinerario en Valladolid" subtitulo="BIIN Escapadas" volver={urlBorradorValladolid('detalle', borradorVigente)} acciones={<>
-          <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando} onClick={guardar} aria-label="Guardar itinerario"><Icono nombre="bookmark" tamano={20} /></button>
+          <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando} onClick={guardar} aria-label={borrador.editarId ? 'Guardar cambios' : 'Guardar itinerario'}><Icono nombre="bookmark" tamano={20} /></button>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan || compartiendo} onClick={compartir} aria-label="Compartir"><Icono nombre="share" tamano={20} /></button>
 
         </>} />

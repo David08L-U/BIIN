@@ -1,11 +1,11 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Usuario } from '../../src/types/auth'
 import { router as routerAplicacion } from '../../src/app/router'
-import { guardarItinerarioLocal } from '../../src/features/mi-viaje/storage/itinerariosLocales'
+import { guardarItinerarioLocal, leerItinerariosLocales } from '../../src/features/mi-viaje/storage/itinerariosLocales'
 import { leerBorradorIzamal } from '../../src/features/mi-viaje/plan/borradorIzamal'
 
 const sesion = vi.hoisted(() => ({ usuario: null as Usuario | null, cargando: false }))
@@ -218,6 +218,46 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(/bloqueado o dañado/)
     expect(screen.queryByRole('link', { name: 'Abrir itinerario de Izamal' })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Preparar otro itinerario en Izamal' })).toBeInTheDocument()
+  })
+
+  it('edita un guardado sin alterarlo hasta confirmar y conserva el original al cancelar', async () => {
+    sesion.usuario = { idUsuario: 7, nombre: 'Ana', correo: 'ana@biin.test', roles: ['viajero'] }
+    const borrador = leerBorradorIzamal(new URLSearchParams(`${configuracion}&modo=personalizado&lugares=convento,kinich&generado=1`))
+    const original = guardarItinerarioLocal(7, borrador).guardado!
+    const { router } = montar('/mi-viaje')
+    await userEvent.click(screen.getByRole('link', { name: 'Editar itinerario' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Quitar Restaurante Kinich del itinerario' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
+    expect(await screen.findByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
+    const confirmar = vi.spyOn(window, 'confirm').mockReturnValue(false)
+    await userEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+    expect(leerItinerariosLocales(7).itinerarios[0]).toEqual(original)
+    confirmar.mockReturnValue(true)
+    await userEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+    expect(leerItinerariosLocales(7).itinerarios).toHaveLength(1)
+    expect(leerItinerariosLocales(7).itinerarios[0].id).toBe(original.id)
+    expect(leerItinerariosLocales(7).itinerarios[0].borrador.seleccion).toEqual(['convento'])
+    expect(router.state.location.search).toContain('editar=')
+  })
+
+  it('confirma antes de eliminar un viaje y conserva el registro al cancelar', async () => {
+    sesion.usuario = { idUsuario: 7, nombre: 'Ana', correo: 'ana@biin.test', roles: ['viajero'] }
+    const borrador = leerBorradorIzamal(new URLSearchParams(`${configuracion}&modo=personalizado&lugares=convento,kinich&generado=1`))
+    const original = guardarItinerarioLocal(7, borrador).guardado!
+    guardarItinerarioLocal(8, { ...borrador, configuracion: { ...borrador.configuracion, fecha: '2026-12-01' } })
+    montar('/mi-viaje')
+    const boton = screen.getByRole('button', { name: 'Eliminar viaje' })
+    await userEvent.click(boton)
+    expect(screen.getByRole('dialog')).toHaveTextContent('Izamal')
+    expect(screen.getByRole('dialog')).toHaveTextContent('2026-11-30')
+    await userEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
+    expect(leerItinerariosLocales(7).itinerarios[0].id).toBe(original.id)
+    await waitFor(() => expect(boton).toHaveFocus())
+    await userEvent.click(boton)
+    await userEvent.click(screen.getByRole('button', { name: 'Confirmar eliminación' }))
+    expect(await screen.findByText('Todavía no hay itinerarios guardados para esta cuenta en este navegador.')).toBeInTheDocument()
+    expect(leerItinerariosLocales(7).itinerarios).toEqual([])
+    expect(leerItinerariosLocales(8).itinerarios).toHaveLength(1)
   })
 
   it('mantiene las acciones disponibles cuando fallan las imágenes y no simula servicios', () => {
