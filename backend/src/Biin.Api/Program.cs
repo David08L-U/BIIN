@@ -29,6 +29,7 @@ builder.Services.AddCors(o => o.AddPolicy(PoliticaFrontend, p => p
 var app = builder.Build();
 
 app.UseMiddleware<ManejoErroresMiddleware>();
+app.UseMiddleware<HeadersSeguridadCacheMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
