@@ -44,9 +44,13 @@ function usarUbicacion() {
 
 beforeEach(() => {
   vi.stubGlobal('isSecureContext', true)
+  sessionStorage.removeItem('biin:ubicacion:permiso-rechazado')
   mapa.fitBounds.mockClear()
 })
-afterEach(() => vi.unstubAllGlobals())
+afterEach(() => {
+  sessionStorage.removeItem('biin:ubicacion:permiso-rechazado')
+  vi.unstubAllGlobals()
+})
 
 describe('ubicación de Inicio con la API simulada', () => {
   it.each([0, 21, 60])('cubre unos 2 km hacia el norte y el este a latitud %i', latitud => {
@@ -138,6 +142,21 @@ describe('ubicación de Inicio con la API simulada', () => {
     expect(screen.queryByText(/Quieres usar tu ubicaci/)).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /Usar ubicaci/ }))
     expect(api.watchPosition).not.toHaveBeenCalled()
+  })
+
+  it('recuerda el rechazo durante la pestaña si el navegador no expone Permissions API', () => {
+    const api = simularAPI()
+    const primeraPantalla = render(<MapaInicio />)
+    fireEvent.click(screen.getByRole('button', { name: /Usar mi ubicaci/ }))
+    api.fallar(1)
+    expect(api.watchPosition).toHaveBeenCalledTimes(1)
+    primeraPantalla.unmount()
+
+    render(<MapaInicio />)
+    expect(screen.queryByText(/Quieres usar tu ubicaci/)).not.toBeInTheDocument()
+    expect(screen.getByText(/Permiso de ubicaci/)).toBeInTheDocument()
+    usarUbicacion()
+    expect(api.watchPosition).toHaveBeenCalledTimes(1)
   })
 
   it.each([

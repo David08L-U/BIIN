@@ -7,6 +7,7 @@ export interface Ubicacion {
 
 type Seguimiento = { api: Geolocation; id?: number }
 type PermisoUbicacion = 'consultando' | 'prompt' | 'granted' | 'denied' | 'unavailable'
+const rechazoUbicacionKey = 'biin:ubicacion:permiso-rechazado'
 
 const mensajesError: Record<number, string> = {
   1: 'Permiso de ubicación rechazado. Abre los permisos del sitio junto a la barra de direcciones y permite Ubicación.',
@@ -14,11 +15,29 @@ const mensajesError: Record<number, string> = {
   3: 'Se agotó el tiempo de espera para obtener la ubicación.',
 }
 
+function rechazoGuardadoEnPestana(): boolean {
+  try { return sessionStorage.getItem(rechazoUbicacionKey) === '1' } catch { return false }
+}
+
+function guardarRechazoEnPestana(rechazado: boolean) {
+  try {
+    if (rechazado) sessionStorage.setItem(rechazoUbicacionKey, '1')
+    else sessionStorage.removeItem(rechazoUbicacionKey)
+  } catch { /* El permiso del navegador sigue siendo la fuente principal. */ }
+}
+
+function permisoInicial(): PermisoUbicacion {
+  if (typeof navigator !== 'undefined' && 'permissions' in navigator) return 'consultando'
+  return rechazoGuardadoEnPestana() ? 'denied' : 'prompt'
+}
+
 export function useUbicacionInicio(centrar: (posicion: Ubicacion) => void) {
   const [posicion, setPosicion] = useState<Ubicacion | null>(null)
-  const [permiso, setPermiso] = useState<PermisoUbicacion>(() => typeof navigator !== 'undefined' && 'permissions' in navigator ? 'consultando' : 'prompt')
+  const [permiso, setPermiso] = useState<PermisoUbicacion>(permisoInicial)
   const [invitacionOmitida, setInvitacionOmitida] = useState(false)
-  const [estado, setEstado] = useState<{ tipo: 'inicial' | 'solicitando' | 'vigente' } | { tipo: 'error'; mensaje: string }>({ tipo: 'inicial' })
+  const [estado, setEstado] = useState<{ tipo: 'inicial' | 'solicitando' | 'vigente' } | { tipo: 'error'; mensaje: string }>(() => rechazoGuardadoEnPestana()
+    ? { tipo: 'error', mensaje: mensajesError[1] }
+    : { tipo: 'inicial' })
   const activo = useRef<Seguimiento | null>(null)
   const centrarRef = useRef(centrar)
   const cleanupPermiso = useRef<(() => void) | null>(null)
@@ -64,7 +83,10 @@ export function useUbicacionInicio(centrar: (posicion: Ubicacion) => void) {
           centrarRef.current(nueva)
         }
       }, error => {
-        if (error.code === 1) setPermiso('denied')
+        if (error.code === 1) {
+          setPermiso('denied')
+          guardarRechazoEnPestana(true)
+        }
         informarError(mensajesError[error.code] ?? mensajesError[2], seguimiento)
       }, { maximumAge: 0, timeout: 10_000 })
       if (activo.current === seguimiento) seguimiento.id = id
@@ -85,8 +107,12 @@ export function useUbicacionInicio(centrar: (posicion: Ubicacion) => void) {
       const actualizar = () => {
         if (!vigente) return
         setPermiso(status.state)
-        if (status.state === 'granted') iniciarSeguimiento()
+        if (status.state === 'granted') {
+          guardarRechazoEnPestana(false)
+          iniciarSeguimiento()
+        }
         if (status.state === 'denied') {
+          guardarRechazoEnPestana(true)
           detener()
           setEstado({ tipo: 'error', mensaje: mensajesError[1] })
         }
