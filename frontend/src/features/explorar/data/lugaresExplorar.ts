@@ -1,8 +1,6 @@
 import { lugaresIzamal } from '../../mi-viaje/data/lugaresIzamal'
-import { imagenesItinerarioIzamal } from '../../mi-viaje/data/imagenesItinerarioIzamal'
 import { lugaresValladolid } from '../../mi-viaje/data/lugaresValladolid'
 import { lugaresTekit } from '../../mi-viaje/data/lugaresTekit'
-import { detalleTekitPrototipo } from '../../transporte/data/detalleTekitPrototipo'
 import { lugaresHomun } from '../../mi-viaje/data/lugaresHomun'
 import { lugaresTicul } from '../../mi-viaje/data/lugaresTicul'
 
@@ -23,7 +21,7 @@ export interface LugarExplorar {
   categoria: string
   categoriaNombre: string
   descripcion: string
-  imagen?: { src: string; alt: string }
+  imagen?: { src: string; alt: string; credito: string; fuente: string }
 }
 
 const nombresCategoria: Record<string, string> = {
@@ -31,23 +29,47 @@ const nombresCategoria: Record<string, string> = {
   cenotes: 'Cenotes', textil: 'Artesanías y textiles', patrimonio: 'Patrimonio',
   artesanias: 'Artesanías',
 }
-type LugarFuente = { id: string; nombre: string; categoria: string; descripcion: string; imagen?: { src: string; alt: string } }
+type LugarFuente = { id: string; nombre: string; categoria: string; descripcion: string }
 function adaptar(destino: DestinoExplorar, elementos: readonly LugarFuente[]): LugarExplorar[] {
   const destinoNombre = destinosExplorar.find(opcion => opcion.id === destino)!.nombre
   return elementos.map(lugar => ({
     id: lugar.id, destino, destinoNombre, nombre: lugar.nombre,
     categoria: lugar.categoria, categoriaNombre: nombresCategoria[lugar.categoria] ?? lugar.categoria,
-    descripcion: lugar.descripcion, imagen: lugar.imagen,
+    descripcion: lugar.descripcion,
   }))
 }
 
+interface FotografiaCommons { archivo: string; autor: string; licencia: string; fuente: string; alt: string }
+const fotografiasVerificadas: Record<string, FotografiaCommons> = {
+  'izamal:mercado': { archivo: 'Mercado Municipal De Izamal 02.jpg', autor: 'Codas', licencia: 'CC BY-SA 4.0', fuente: 'https://commons.wikimedia.org/wiki/File:Mercado_Municipal_De_Izamal_02.jpg', alt: 'Interior del Mercado Municipal de Izamal' },
+  'izamal:kinich': { archivo: 'Restaurante Kinich, Izamal, Yucatan, Mexico - Abril 2021.jpg', autor: 'Sharon Hahn Darlin', licencia: 'CC BY 2.0', fuente: 'https://commons.wikimedia.org/wiki/File:Restaurante_Kinich,_Izamal,_Yucatan,_Mexico_-_Abril_2021.jpg', alt: 'Fachada del restaurante Kinich en Izamal' },
+  'izamal:convento': { archivo: 'Corredores del Convento de San Antonio de Padua en Izamal.jpg', autor: 'Lorena Allende', licencia: 'CC BY-SA 4.0', fuente: 'https://commons.wikimedia.org/wiki/File:Corredores_del_Convento_de_San_Antonio_de_Padua_en_Izamal.jpg', alt: 'Arcadas del convento de San Antonio de Padua en Izamal' },
+  'izamal:piramide': { archivo: 'Piramide Kinich Izamal.jpg', autor: 'Patrickrichaud', licencia: 'CC BY-SA 4.0', fuente: 'https://commons.wikimedia.org/wiki/File:Piramide_Kinich_Izamal.jpg', alt: 'Pirámide Kinich Kakmó en Izamal' },
+  'valladolid:zaci': { archivo: 'Cenote Zací 01.jpg', autor: 'Haakon S. Krohn', licencia: 'CC BY 4.0', fuente: 'https://commons.wikimedia.org/wiki/File:Cenote_Zac%C3%AD_01.jpg', alt: 'Cenote Zací en Valladolid' },
+  'valladolid:mercado-donato': { archivo: 'Mercado Municipal de Valladolid, Yucatán.jpg', autor: 'Jars.b', licencia: 'CC BY-SA 4.0', fuente: 'https://commons.wikimedia.org/wiki/File:Mercado_Municipal_de_Valladolid,_Yucat%C3%A1n.jpg', alt: 'Mercado Municipal General Donato Bates de Valladolid' },
+  'valladolid:calzada-frailes': { archivo: 'Calzada frailes.jpg', autor: 'Alcocermr', licencia: 'Dominio público', fuente: 'https://commons.wikimedia.org/wiki/File:Calzada_frailes.jpg', alt: 'Calzada de los Frailes en Valladolid' },
+  'valladolid:san-bernardino': { archivo: 'Convento de San Bernardino de Siena.jpg', autor: 'Haakon S. Krohn', licencia: 'CC BY 4.0', fuente: 'https://commons.wikimedia.org/wiki/File:Convento_de_San_Bernardino_de_Siena.jpg', alt: 'Convento de San Bernardino de Siena en Valladolid' },
+  'ticul:iglesia-san-antonio': { archivo: 'Parroquia San Antonio de Padua - Ticul, Yucatán México.jpg', autor: 'Joanygg90', licencia: 'CC BY-SA 4.0', fuente: 'https://commons.wikimedia.org/wiki/File:Parroquia_San_Antonio_de_Padua_-_Ticul,_Yucat%C3%A1n_M%C3%A9xico.jpg', alt: 'Parroquia de San Antonio de Padua en Ticul' },
+}
+
+function fotografia(lugar: LugarExplorar): LugarExplorar['imagen'] {
+  const recurso = fotografiasVerificadas[`${lugar.destino}:${lugar.id}`]
+  if (!recurso) return undefined
+  return {
+    src: `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(recurso.archivo)}?width=960`,
+    alt: recurso.alt,
+    credito: `${recurso.autor} · ${recurso.licencia} · Wikimedia Commons`,
+    fuente: recurso.fuente,
+  }
+}
+
 export const lugaresExplorar: LugarExplorar[] = [
-  ...adaptar('izamal', lugaresIzamal.map(lugar => ({ ...lugar, imagen: imagenesItinerarioIzamal[lugar.id]?.src ? { src: imagenesItinerarioIzamal[lugar.id].src!, alt: imagenesItinerarioIzamal[lugar.id].alt } : undefined }))),
+  ...adaptar('izamal', lugaresIzamal),
   ...adaptar('valladolid', lugaresValladolid),
-  ...adaptar('tekit', lugaresTekit.map(lugar => lugar.id === 'corredor-textil' ? { ...lugar, imagen: { src: detalleTekitPrototipo.imagenCultural, alt: 'Guayaberas textiles de Tekit, imagen de referencia del prototipo' } } : lugar)),
+  ...adaptar('tekit', lugaresTekit),
   ...adaptar('homun', lugaresHomun),
   ...adaptar('ticul', lugaresTicul),
-]
+].map(lugar => ({ ...lugar, imagen: fotografia(lugar) }))
 
 export const categoriasExplorar = [...new Set(lugaresExplorar.map(lugar => lugar.categoria))]
   .map(id => ({ id, nombre: nombresCategoria[id] ?? id }))

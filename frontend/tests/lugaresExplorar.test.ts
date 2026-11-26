@@ -6,8 +6,9 @@ describe('Catálogo compartido de lugares para Explorar', () => {
   it('reutiliza los lugares de los cinco planificadores con identidad destino/lugar', () => {
     expect(new Set(lugaresExplorar.map(l => l.destino))).toEqual(new Set(['izamal', 'valladolid', 'tekit', 'homun', 'ticul']))
     expect(lugaresExplorar.some(l => l.destino === 'izamal' && l.nombre === 'Convento San Antonio de Padua')).toBe(true)
-    expect(lugaresExplorar.some(l => l.destino === 'homun' && l.imagen)).toBe(true)
-    expect(lugaresExplorar.find(l => l.destino === 'tekit' && l.id === 'corredor-textil')?.imagen?.src).toBeTruthy()
+    expect(lugaresExplorar.find(l => l.destino === 'valladolid' && l.id === 'zaci')?.imagen?.fuente).toContain('Cenote_Zac%C3%AD_01')
+    expect(lugaresExplorar.find(l => l.destino === 'ticul' && l.id === 'talleres-alfareros')?.imagen).toBeUndefined()
+    expect(lugaresExplorar.find(l => l.destino === 'homun' && l.id === 'santa-rosa')?.imagen).toBeUndefined()
     expect(new Set(lugaresExplorar.map(l => `${l.destino}:${l.id}`)).size).toBe(lugaresExplorar.length)
   })
 

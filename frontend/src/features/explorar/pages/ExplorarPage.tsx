@@ -8,7 +8,7 @@ import '../../../styles/explorar.css'
 function Foto({ lugar }: { lugar: LugarExplorar }) {
   const [fallo, setFallo] = useState(false)
   return lugar.imagen && !fallo
-    ? <img className="explorar-foto" src={lugar.imagen.src} alt={lugar.imagen.alt} onError={() => setFallo(true)} />
+    ? <figure className="explorar-figura"><img className="explorar-foto" src={lugar.imagen.src} alt={lugar.imagen.alt} loading="lazy" decoding="async" onError={() => setFallo(true)} /><figcaption><a href={lugar.imagen.fuente} target="_blank" rel="noreferrer">Foto: {lugar.imagen.credito}</a></figcaption></figure>
     : <div className="explorar-foto explorar-foto-vacia" role="img" aria-label={`Fotografía no disponible: ${lugar.nombre}`}>Fotografía no disponible</div>
 }
 

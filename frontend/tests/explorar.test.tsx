@@ -10,7 +10,7 @@ describe('Explorar', () => {
   it('usa datos propios con identificadores compuestos para los cinco destinos', () => {
     expect(new Set(lugaresExplorar.map(l => l.destino))).toEqual(new Set(['izamal', 'valladolid', 'tekit', 'homun', 'ticul']))
     expect(lugaresExplorar.some(l => l.destino === 'izamal' && l.nombre === 'Convento San Antonio de Padua')).toBe(true)
-    expect(lugaresExplorar.some(l => l.destino === 'homun' && l.imagen)).toBe(true)
+    expect(lugaresExplorar.some(l => l.destino === 'homun' && l.imagen)).toBe(false)
   })
 
   it('busca sin acentos/mayúsculas y combina destino y categoría', () => {
@@ -28,6 +28,46 @@ describe('Explorar', () => {
     expect(screen.getByText(/No encontramos lugares/)).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Limpiar filtros' }))
     expect(screen.getByRole('heading', { name: 'Corredor Textil y Tiendas de Fabricantes' })).toBeInTheDocument()
+  })
+
+  it('combina los botones de destino con búsqueda y categoría', () => {
+    const router = createMemoryRouter([{ path: '/explorar', element: <ExplorarPage /> }], { initialEntries: ['/explorar'] })
+    render(<RouterProvider router={router} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Valladolid' }))
+    fireEvent.change(screen.getByLabelText('Categoría'), { target: { value: 'cenotes' } })
+    fireEvent.change(screen.getByLabelText('Buscar lugares'), { target: { value: 'ZACI' } })
+    expect(screen.getByRole('heading', { name: 'Cenote Zací y Parque Principal' })).toBeInTheDocument()
+    expect(screen.getByRole('status')).toHaveTextContent('1 lugar')
+  })
+
+  it('atribución visible, carga diferida y alternativa si la foto no carga', () => {
+    render(<RouterProvider router={createMemoryRouter([{ path: '/explorar', element: <ExplorarPage /> }], { initialEntries: ['/explorar?q=zaci'] })} />)
+    const foto = screen.getByRole('img', { name: 'Cenote Zací en Valladolid' })
+    expect(foto).toHaveAttribute('loading', 'lazy')
+    expect(foto).toHaveAttribute('src', expect.stringContaining('commons.wikimedia.org'))
+    expect(screen.getByRole('link', { name: /Haakon S. Krohn · CC BY 4.0/ })).toHaveAttribute('href', 'https://commons.wikimedia.org/wiki/File:Cenote_Zac%C3%AD_01.jpg')
+    fireEvent.error(foto)
+    expect(screen.getByRole('img', { name: 'Fotografía no disponible: Cenote Zací y Parque Principal' })).toBeInTheDocument()
+  })
+
+  it('combina destino, categoría y búsqueda', () => {
+    const router = createMemoryRouter([{ path: '/explorar', element: <ExplorarPage /> }], { initialEntries: ['/explorar'] })
+    render(<RouterProvider router={router} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Homún' }))
+    fireEvent.change(screen.getByLabelText('Categoría'), { target: { value: 'cenotes' } })
+    fireEvent.change(screen.getByLabelText('Buscar lugares'), { target: { value: 'SANTA ROSA' } })
+    expect(screen.getByRole('heading', { name: 'Cenote Santa Rosa' })).toBeInTheDocument()
+    expect(screen.getByRole('status')).toHaveTextContent('1 lugar')
+  })
+
+  it('solo muestra foto verificada con atribución y ofrece alternativa accesible al fallar', () => {
+    render(<RouterProvider router={createMemoryRouter([{ path: '/explorar', element: <ExplorarPage /> }], { initialEntries: ['/explorar?q=zaci'] })} />)
+    const foto = screen.getByRole('img', { name: 'Cenote Zací en Valladolid' })
+    expect(foto).toHaveAttribute('loading', 'lazy')
+    expect(foto).toHaveAttribute('src', expect.stringContaining('commons.wikimedia.org'))
+    expect(screen.getByRole('link', { name: /Haakon S. Krohn · CC BY 4.0/ })).toHaveAttribute('href', 'https://commons.wikimedia.org/wiki/File:Cenote_Zac%C3%AD_01.jpg')
+    fireEvent.error(foto)
+    expect(screen.getByRole('img', { name: 'Fotografía no disponible: Cenote Zací y Parque Principal' })).toBeInTheDocument()
   })
 
   it('abre un lugar y conserva filtros al volver; el planear enlaza al destino', () => {
