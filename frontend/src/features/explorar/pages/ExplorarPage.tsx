@@ -6,6 +6,7 @@ import { useAuth } from '../../auth/useAuth'
 import { leerItinerariosLocales, type ItinerarioGuardado } from '../../mi-viaje/storage/itinerariosLocales'
 import { urlAgregarLugar, urlAgregarLugarGuardado } from '../../mi-viaje/plan/agregarLugarAItinerario'
 import { urlPlanificador } from '../../mi-viaje/plan/urlsPlanificador'
+import { regresarEnBIIN } from '../../../utils/navegacion'
 import '../../../styles/explorar.css'
 
 function Foto({ lugar }: { lugar: LugarExplorar }) {
@@ -97,7 +98,7 @@ export function ExplorarDetallePage() {
   const origen = (state as { desde?: string } | null)?.desde
   const desde = origen ?? `/explorar${search}`
   return <section className="explorar iz-plan" aria-labelledby="explorar-detalle-titulo">
-    <button className="explorar-volver" type="button" onClick={() => origen ? navigate(-1) : navigate(desde)}>← Volver a resultados</button>
+    <button className="explorar-volver" type="button" onClick={() => regresarEnBIIN(navigate, origen, desde)}>← Volver a resultados</button>
     <article className="iz-plan-tarjeta explorar-detalle">
       <Foto lugar={lugar} />
       <p className="explorar-meta">{lugar.destinoNombre} · {lugar.categoriaNombre}</p>
