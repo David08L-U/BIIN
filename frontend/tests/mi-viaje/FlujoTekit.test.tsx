@@ -234,7 +234,7 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
     expect(router.state.location.pathname).toBe('/login')
     expect(router.state.location.state.desde).toContain('/rutas/tekit/itinerario?')
     expect(localStorage.length).toBe(0)
-    await userEvent.type(screen.getByLabelText('Correo'), 'ana@biin.test')
+    await userEvent.type(screen.getByLabelText('Correo electrónico'), 'ana@biin.test')
     await userEvent.type(screen.getByLabelText('Contraseña'), 'ejemplo')
     await userEvent.click(screen.getByRole('button', { name: 'Entrar' }))
     expect(await screen.findByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
@@ -317,7 +317,7 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
 
   it('mantiene Mi viaje protegido', async () => {
     const { router } = montar('/mi-viaje')
-    expect(await screen.findByRole('heading', { name: 'Iniciar sesión' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Ingresa a tu cuenta' })).toBeInTheDocument()
     expect(router.state.location.state).toEqual({ desde: '/mi-viaje' })
   })
 })

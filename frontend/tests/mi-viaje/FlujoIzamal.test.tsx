@@ -184,7 +184,7 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     expect(router.state.location.pathname).toBe('/login')
     expect(router.state.location.state.desde).toContain('/rutas/izamal/itinerario?')
     expect(localStorage.length).toBe(0)
-    await user.type(screen.getByLabelText('Correo'), 'ana@biin.test')
+    await user.type(screen.getByLabelText('Correo electrónico'), 'ana@biin.test')
     await user.type(screen.getByLabelText('Contraseña'), 'ejemplo')
     await user.click(screen.getByRole('button', { name: 'Entrar' }))
     expect(await screen.findByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
@@ -270,7 +270,7 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
 
   it('conserva la protección real de /mi-viaje y su retorno de acceso', async () => {
     const { router } = montar('/mi-viaje')
-    expect(await screen.findByRole('heading', { name: 'Iniciar sesión' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Ingresa a tu cuenta' })).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/login')
     expect(router.state.location.state).toEqual({ desde: '/mi-viaje' })
     expect(screen.queryByRole('heading', { name: 'Mis itinerarios' })).not.toBeInTheDocument()
