@@ -15,6 +15,12 @@ describe('Explorar', () => {
     expect(lugaresExplorar.some(l => l.destino === 'homun' && l.imagen)).toBe(false)
   })
 
+  it('empaqueta localmente solo las fotografías identificadas y atribuidas', () => {
+    const fotografiados = lugaresExplorar.filter(lugar => lugar.imagen)
+    expect(fotografiados).toHaveLength(9)
+    expect(fotografiados.every(lugar => !lugar.imagen!.src.startsWith('http'))).toBe(true)
+  })
+
   it('busca sin acentos/mayúsculas y combina destino y categoría', () => {
     expect(buscarLugares('cenote tza', 'homun', 'cenotes').map(l => l.id)).toEqual(['tza-ujun-kat'])
     expect(buscarLugares('ZACI', 'valladolid', 'cenotes')).toHaveLength(1)
@@ -46,7 +52,7 @@ describe('Explorar', () => {
     render(<RouterProvider router={createMemoryRouter([{ path: '/explorar', element: <ExplorarPage /> }], { initialEntries: ['/explorar?q=zaci'] })} />)
     const foto = screen.getByRole('img', { name: 'Cenote Zací en Valladolid' })
     expect(foto).toHaveAttribute('loading', 'lazy')
-    expect(foto).toHaveAttribute('src', expect.stringContaining('commons.wikimedia.org'))
+    expect(foto.getAttribute('src')).toContain('valladolid-zaci')
     expect(screen.getByRole('link', { name: /Haakon S. Krohn · CC BY 4.0/ })).toHaveAttribute('href', 'https://commons.wikimedia.org/wiki/File:Cenote_Zac%C3%AD_01.jpg')
     fireEvent.error(foto)
     expect(screen.getByRole('img', { name: 'Fotografía no disponible: Cenote Zací y Parque Principal' })).toBeInTheDocument()
@@ -66,7 +72,7 @@ describe('Explorar', () => {
     render(<RouterProvider router={createMemoryRouter([{ path: '/explorar', element: <ExplorarPage /> }], { initialEntries: ['/explorar?q=zaci'] })} />)
     const foto = screen.getByRole('img', { name: 'Cenote Zací en Valladolid' })
     expect(foto).toHaveAttribute('loading', 'lazy')
-    expect(foto).toHaveAttribute('src', expect.stringContaining('commons.wikimedia.org'))
+    expect(foto.getAttribute('src')).toContain('valladolid-zaci')
     expect(screen.getByRole('link', { name: /Haakon S. Krohn · CC BY 4.0/ })).toHaveAttribute('href', 'https://commons.wikimedia.org/wiki/File:Cenote_Zac%C3%AD_01.jpg')
     fireEvent.error(foto)
     expect(screen.getByRole('img', { name: 'Fotografía no disponible: Cenote Zací y Parque Principal' })).toBeInTheDocument()

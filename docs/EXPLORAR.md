@@ -10,7 +10,7 @@ Al elegir un borrador o viaje guardado, el lugar se suma a la selección persona
 
 ## Fotografías con procedencia
 
-Las tarjetas solo muestran una foto cuando el archivo de Commons identifica el sitio concreto. La tarjeta enlaza su atribución/licencia. Se usa `Special:FilePath` con ancho de 960 px y carga diferida; si el proveedor no sirve el archivo se muestra la alternativa accesible. Las imágenes decorativas/genéricas del prototipo no se usan como fotos de lugares.
+Las nueve fotografías con correspondencia identificable y licencia están empaquetadas en `frontend/src/assets/explorar`; las tarjetas no dependen de una petición de imagen externa en tiempo de ejecución. La tabla conserva procedencia, autor y licencia. Las imágenes cargan de forma diferida, tienen texto alternativo y muestran una alternativa accesible si falla la carga local. Los registros restantes no reutilizan fotos genéricas como si fueran lugares concretos.
 
 | Destino · registro | Fuente / autor | Licencia |
 |---|---|---|
