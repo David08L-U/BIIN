@@ -50,9 +50,11 @@ export default function ExplorarPage() {
   }
   return <section className="explorar iz-plan" aria-labelledby="explorar-titulo">
     <header className="explorar-cabecera"><h1 id="explorar-titulo">Explorar lugares</h1><p>Descubre referencias de los cinco destinos.</p></header>
+    <nav className="explorar-destinos" aria-label="Filtrar por destino">
+      {[{ id: '', nombre: 'Todos' }, ...destinosExplorar].map(item => <button key={item.id || 'todos'} type="button" aria-pressed={destino === item.id} className={destino === item.id ? 'activo' : ''} onClick={() => { setDestino(item.id); actualizar(busqueda, item.id) }}>{item.nombre}</button>)}
+    </nav>
     <div className="explorar-filtros">
       <label>Buscar lugares<input type="search" value={busqueda} onChange={e => { setBusqueda(e.target.value); actualizar(e.target.value) }} placeholder="Nombre o descripción" /></label>
-      <label>Destino<select value={destino} onChange={e => { setDestino(e.target.value); actualizar(busqueda, e.target.value) }}><option value="">Todos los destinos</option>{destinosExplorar.map(item => <option key={item.id} value={item.id}>{item.nombre}</option>)}</select></label>
       <label>Categoría<select value={categoria} onChange={e => { setCategoria(e.target.value); actualizar(busqueda, destino, e.target.value) }}><option value="">Todas las categorías</option>{categoriasExplorar.map(item => <option key={item.id} value={item.id}>{item.nombre}</option>)}</select></label>
       <button type="button" className="explorar-limpiar" onClick={() => { setBusqueda(''); setDestino(''); setCategoria(''); actualizar('', '', '') }}>Limpiar filtros</button>
     </div>

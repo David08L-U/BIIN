@@ -22,7 +22,8 @@ describe('Explorar', () => {
   it('filtra, limpia y comunica estado vacío', () => {
     const router = createMemoryRouter([{ path: '/explorar', element: <ExplorarPage /> }], { initialEntries: ['/explorar'] })
     render(<RouterProvider router={router} />)
-    fireEvent.change(screen.getByLabelText('Destino'), { target: { value: 'tekit' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Tekit' }))
+    expect(screen.getByRole('button', { name: 'Tekit' })).toHaveAttribute('aria-pressed', 'true')
     fireEvent.change(screen.getByLabelText('Buscar lugares'), { target: { value: 'sin coincidencia' } })
     expect(screen.getByText(/No encontramos lugares/)).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Limpiar filtros' }))
