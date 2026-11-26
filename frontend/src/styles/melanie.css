@@ -1,0 +1,603 @@
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block');
+
+/* Estructura y proporciones del prototipo de Melanie. */
+
+.biin-shell,
+.biin-acceso {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: var(--color-fondo);
+  position: relative;
+}
+
+.biin-shell {
+  padding-bottom: calc(76px + env(safe-area-inset-bottom));
+}
+
+.biin-contenido {
+  min-width: 0;
+}
+
+.biin-icon {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+.biin-icon-button {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-borde);
+  border-radius: 16px;
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  cursor: pointer;
+  box-shadow: 0 2px 7px #2b18100a;
+}
+
+.biin-icon-button:hover {
+  background: var(--color-superficie-suave);
+}
+
+.biin-cabecera-simple {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+}
+
+.biin-cabecera-simple a:last-child {
+  margin-left: auto;
+  font-size: 14px;
+  max-width: 50%;
+  overflow-wrap: anywhere;
+}
+
+/* Navegación inferior */
+
+.biin-nav {
+  position: fixed;
+  z-index: 1000;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(480px, 100%);
+  min-height: 68px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: 6px 5px calc(6px + env(safe-area-inset-bottom));
+  background: var(--color-fondo);
+  border-top: 1px solid var(--color-borde);
+}
+
+.biin-nav a {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 6px 2px;
+  border-radius: 12px;
+  color: var(--color-texto-suave);
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.biin-nav a.active {
+  background: var(--color-secundario-suave);
+  color: var(--color-secundario-texto);
+}
+
+.biin-nav .biin-icon {
+  font-size: 22px;
+}
+
+/* Menú lateral */
+
+.biin-menu {
+  position: fixed;
+  inset: 0 auto 0 0;
+  margin: 0;
+  width: min(325px, 87vw);
+  max-width: none;
+  height: 100dvh;
+  max-height: 100dvh;
+  padding: 22px;
+  border: 0;
+  background: var(--color-fondo);
+  color: var(--color-primario);
+  border-radius: 0 20px 20px 0;
+  box-shadow: 12px 0 40px #2b181025;
+}
+
+.biin-menu::backdrop {
+  background: #2b181055;
+}
+
+.biin-menu-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.biin-menu-saludo {
+  margin: 22px 0;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--color-borde);
+  font-size: 14px;
+}
+
+.biin-menu nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.biin-menu nav a {
+  padding: 12px 10px;
+  color: var(--color-primario);
+  text-decoration: none;
+  border-radius: 9px;
+  font-size: 14px;
+}
+
+.biin-menu nav a:hover {
+  background: var(--color-secundario-suave);
+}
+
+.biin-menu-sesion {
+  display: block;
+  margin-top: 26px;
+  border: 0;
+  padding: 12px 10px;
+  background: #f4e5d2;
+  color: #552818;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Mapa original */
+
+.melanie-inicio button,
+.melanie-inicio input {
+  font: inherit;
+}
+
+.melanie-mapa {
+  position: relative;
+  height: min(64dvh, 580px);
+  min-height: 390px;
+  overflow: hidden;
+  background: #fbf8f3;
+}
+
+.melanie-mapa .leaflet-container {
+  font-family: var(--fuente-aplicacion);
+  z-index: 0;
+}
+
+.melanie-mapa .leaflet-map-pane {
+  z-index: 0;
+}
+
+.melanie-mapa button:focus-visible {
+  outline: 3px solid var(--color-secundario);
+  outline-offset: -3px;
+}
+
+.melanie-mapa .melanie-ubicacion-marquesita {
+  border: 3px solid var(--color-primario);
+  border-radius: 50%;
+  background: var(--color-superficie);
+  box-shadow: 0 0 0 3px var(--color-fondo), 0 0 0 8px #d9952040, 0 3px 8px #35221955;
+  object-fit: cover;
+}
+
+.melanie-mapa .melanie-ubicacion-etiqueta {
+  border: 1px solid #fdae3f66;
+  border-radius: 99px;
+  background: var(--color-primario);
+  color: #ffdbcd;
+  padding: 3px 10px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.melanie-mapa .melanie-ubicacion-etiqueta::before {
+  border-top-color: var(--color-primario);
+}
+
+/* Buscador flotante */
+
+.melanie-buscador {
+  position: absolute;
+  z-index: 20;
+  top: 14px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  gap: 10px;
+}
+
+.melanie-buscador > .biin-icon-button {
+  width: 48px;
+  height: 48px;
+}
+
+.melanie-busqueda {
+  min-width: 0;
+  flex: 1;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border-radius: 16px;
+  border: 1px solid var(--color-borde);
+  background: #fffffff2;
+  box-shadow: 0 2px 7px #2b18100a;
+}
+
+.melanie-busqueda > .biin-icon {
+  color: var(--color-texto-suave);
+  font-size: 20px;
+}
+
+.melanie-busqueda input {
+  min-width: 0;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-texto);
+  font-size: 14px;
+}
+
+.melanie-busqueda input::placeholder {
+  color: var(--color-texto-suave);
+}
+
+.melanie-busqueda input:focus-visible {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 4px;
+}
+
+.melanie-marca-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 5px 10px;
+  background: #fbf0e6;
+  border: 1px solid #fdae3f33;
+  border-radius: 30px;
+  color: var(--color-primario);
+  font-family: var(--fuente-aplicacion);
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+}
+
+.melanie-marca-badge i,
+.melanie-origen-badge i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-acento);
+}
+
+/* Paradas */
+
+/* Controles del mapa */
+
+.melanie-controles {
+  position: absolute;
+  right: 16px;
+  bottom: 26px;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.melanie-zoom {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-borde);
+  border-radius: 16px;
+  background: var(--color-superficie);
+  overflow: hidden;
+  box-shadow: 0 2px 7px #2b18100a;
+}
+
+.melanie-zoom button {
+  width: 44px;
+  height: 40px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: var(--color-superficie);
+  cursor: pointer;
+}
+
+.melanie-zoom button + button {
+  border-top: 1px solid var(--color-borde);
+}
+
+.melanie-zoom button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.melanie-mapa-nota {
+  position: absolute;
+  bottom: 22px;
+  left: 8px;
+  max-width: calc(100% - 80px);
+  z-index: 5;
+  font-size: 12px;
+  color: var(--color-texto-suave);
+  background: var(--color-fondo);
+  padding: 1px 5px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* Panel inferior del mapa */
+
+.melanie-panel {
+  position: relative;
+  z-index: 25;
+  margin-top: -1px;
+  padding: 12px 20px 20px;
+  background: var(--color-superficie);
+  border-radius: 24px 24px 0 0;
+  border-top: 1px solid #e8e1da55;
+  box-shadow: 0 -4px 22px #2b181006;
+}
+
+.melanie-tirador {
+  width: 40px;
+  height: 4px;
+  margin: 0 auto 10px;
+  border-radius: 4px;
+  background: #e8e1da99;
+}
+
+.melanie-panel h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+}
+
+.melanie-panel > p {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: var(--color-texto-suave);
+  line-height: 20px;
+}
+
+.melanie-acciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.melanie-acciones a {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.melanie-accion-principal {
+  background: var(--color-primario);
+  color: var(--color-fondo);
+  box-shadow: 0 1px 3px #2b181015;
+}
+
+.melanie-accion-principal .biin-icon {
+  color: var(--color-acento);
+  font-size: 20px;
+}
+
+.melanie-accion-secundaria {
+  background: var(--color-superficie-suave);
+  color: var(--color-texto);
+  border: 1px solid #e8e1dab3;
+  box-shadow: 0 1px 3px #2b181015;
+}
+
+.melanie-accion-secundaria .biin-icon {
+  color: var(--color-acento-texto);
+  font-size: 20px;
+}
+
+/* Rutas desde Mérida */
+
+.melanie-rutas-inicio {
+  padding: 22px 14px 28px;
+  background: var(--color-fondo);
+  color: var(--color-primario);
+}
+
+.melanie-rutas-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.melanie-rutas-titulo h2 {
+  margin: 0;
+  font-size: 21px;
+  line-height: 28px;
+}
+
+.melanie-rutas-titulo a {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-acento-texto);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.melanie-rutas-inicio > p {
+  margin: 4px 0 15px;
+  font-size: 12px;
+  color: var(--color-texto-suave);
+}
+
+.melanie-filtros {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.melanie-filtros button {
+  border-radius: 50px;
+  background: var(--color-superficie);
+  border: 1px solid #eae6df;
+  color: #552818;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 13px;
+  cursor: pointer;
+}
+
+.melanie-filtros button.activo {
+  background: var(--color-secundario);
+  color: var(--color-superficie);
+}
+
+.melanie-rutas-inicio .melanie-datos-aviso {
+  font-size: 10px;
+  color: var(--color-acento-texto);
+  margin: 0 0 10px;
+}
+
+.melanie-lista-rutas {
+  display: grid;
+  gap: 9px;
+}
+
+.melanie-ruta-card {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde-tarjeta);
+  border-radius: 12px;
+  min-height: 100px;
+  padding: 12px;
+  color: var(--color-primario);
+  text-decoration: none;
+  box-shadow: var(--sombra-tarjeta);
+}
+
+.melanie-ruta-icono {
+  height: 40px;
+  width: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--color-superficie-suave);
+}
+
+.melanie-ruta-icono .biin-icon {
+  font-size: 23px;
+}
+
+.melanie-ruta-info {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.melanie-ruta-info strong {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.melanie-ruta-info small {
+  font-size: 11px;
+  color: var(--color-texto-suave);
+  line-height: 1.35;
+}
+
+.melanie-ruta-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  color: var(--color-acento-texto);
+  font-size: 11px;
+  margin-top: 3px;
+}
+
+.melanie-ruta-meta b {
+  color: var(--color-primario);
+  font-size: 12px;
+}
+
+.melanie-ruta-ver {
+  background: var(--color-superficie-suave);
+  border-radius: 50%;
+  padding: 7px;
+  font-size: 19px;
+}
+
+.melanie-sin-rutas {
+  padding: 20px;
+  text-align: center;
+}
+
+@media (min-width: 650px) {
+  .biin-shell,
+  .biin-acceso {
+    box-shadow: 0 0 60px #3f2b1d20;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .biin-shell * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

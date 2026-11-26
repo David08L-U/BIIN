@@ -1,0 +1,15 @@
+export const minimoDuracion = 15
+export const maximoDuracion = 720
+
+export function leerDuracion(valor: string): number | null {
+  const total = Number(valor)
+  return /^\d+$/.test(valor) && total >= minimoDuracion && total <= maximoDuracion ? total : null
+}
+
+/** Formato de duraciones, separado de las horas de reloj. */
+export function duracionPlan(minutos: number): string {
+  const horas = Math.floor(minutos / 60)
+  const resto = minutos % 60
+  if (!horas) return `${resto} min`
+  return resto ? `${horas} h ${resto} min` : `${horas} h`
+}

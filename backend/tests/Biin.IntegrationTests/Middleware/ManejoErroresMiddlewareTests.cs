@@ -18,6 +18,7 @@ public class ManejoErroresMiddlewareTests
     [InlineData(typeof(AccesoDenegadoException), StatusCodes.Status403Forbidden, "Acceso denegado")]
     [InlineData(typeof(NoEncontradoException), StatusCodes.Status404NotFound, "No encontrado")]
     [InlineData(typeof(ConflictoException), StatusCodes.Status409Conflict, "Conflicto")]
+    [InlineData(typeof(ServicioNoDisponibleException), StatusCodes.Status503ServiceUnavailable, "Servicio no disponible")]
     public async Task Mapea_excepciones_de_dominio_al_codigo_http_correcto(Type tipoExcepcion, int estadoEsperado, string tituloEsperado)
     {
         var excepcion = (Exception)Activator.CreateInstance(tipoExcepcion, "Detalle de prueba")!;

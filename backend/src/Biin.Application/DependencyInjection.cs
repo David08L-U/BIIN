@@ -14,6 +14,15 @@ public static class DependencyInjection
         services.AddScoped<AdminUsuariosService>();
         services.AddScoped<IAutorizacionOperador, AutorizacionOperadorService>();
         services.AddScoped<IBitacoraAdmin, BitacoraAdminService>();
+        services.AddScoped<CatalogosService>();
+        services.AddScoped<NegociosService>();
+        services.AddScoped<EventosService>();
+        services.AddScoped<LugaresService>();
+        services.AddScoped<ExplorarService>();
+        services.AddScoped<ItinerariosService>();
+        services.AddScoped<AdminContenidosService>();
+        services.AddScoped<AdminGeografiaService>();
+        services.AddScoped<BitacoraConsultaService>();
         return services;
     }
 }

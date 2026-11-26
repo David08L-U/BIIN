@@ -14,3 +14,6 @@ public class AccesoDenegadoException(string mensaje) : Exception(mensaje);
 
 /// <summary>Credenciales incorrectas o cuenta inactiva (responde 401).</summary>
 public class NoAutenticadoException(string mensaje) : Exception(mensaje);
+
+/// <summary>Un servicio externo necesario (por ejemplo, el correo) no respondió (responde 503).</summary>
+public class ServicioNoDisponibleException(string mensaje) : Exception(mensaje);

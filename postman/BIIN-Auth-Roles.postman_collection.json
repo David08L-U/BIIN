@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "b11a0002-0000-4000-8000-000000000002",
     "name": "BIIN — Auth, Perfil y Roles (CU-01 / CU-12 / RNF04)",
-    "description": "Colección de pruebas del módulo Backend de Usuarios, Autenticación y Roles de BIIN.\n\nInstrucciones:\n1. Importa esta colección y el entorno `BIIN-Local.example.postman_environment.json`.\n2. Duplica el entorno como `BIIN-Local.local.postman_environment.json` (ignorado por Git) y pon las contraseñas reales de `admin@biin.test` y `operador@biin.test` creados con `database/crear_usuario.ps1`.\n3. Ejecuta las carpetas en orden o con Collection Runner.",
+    "description": "Colección de pruebas del módulo Backend de Usuarios, Autenticación y Roles de BIIN.\n\nInstrucciones:\n1. Importa esta colección y el entorno `BIIN-Local.example.postman_environment.json`.\n2. Duplica el entorno como `BIIN-Local.local.postman_environment.json` (ignorado por Git) y pon las contraseñas reales de `admin@biin.test` y `operador@biin.test` creados con `database/crear_usuario.ps1`.\n3. El registro de viajeros manda un código de 6 dígitos al correo (RF01). Para probar en local con correos `@biin.test`, pon `\"VerificacionCorreo\": { \"ValidarDominio\": false }` en `appsettings.Development.json` (el dominio .test no existe en DNS) y deja `Correo:Servidor` vacío: el código aparece en la consola de la API. Cópialo en la variable `codigoVerificacion` antes de \"Confirmar correo\".\n4. Ejecuta las carpetas en orden o con Collection Runner.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -40,15 +40,51 @@
       "name": "1. Auth y Sesión (CU-01 / RF01 / RNF04)",
       "item": [
         {
-          "name": "Registro de viajero (201)",
+          "name": "Registro de viajero (202, manda código al correo)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Crea cuenta (201) o ya existe (409 en re-ejecución)', () => {",
-                  "  pm.expect(pm.response.code).to.be.oneOf([201, 409]);",
+                  "pm.test('Deja el registro pendiente (202) o la cuenta ya existe (409 en re-ejecución)', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([202, 409]);",
+                  "});",
+                  "if (pm.response.code === 202) {",
+                  "  const body = pm.response.json();",
+                  "  pm.test('No devuelve token: la cuenta se crea al confirmar', () => pm.expect(body.token).to.be.undefined);",
+                  "  pm.test('Indica vencimiento y espera para reenviar', () => {",
+                  "    pm.expect(body.correo).to.eql(pm.environment.get('viajeroCorreo').toLowerCase());",
+                  "    pm.expect(body.expiraEn).to.be.a('string');",
+                  "    pm.expect(body.reenviarDesde).to.be.a('string');",
+                  "  });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Viajero Postman\",\n  \"correo\": \"{{viajeroCorreo}}\",\n  \"contrasena\": \"{{viajeroContrasena}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/registro"
+          }
+        },
+        {
+          "name": "Confirmar correo con el código (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Crea la cuenta (201) o no hay pendiente porque ya existe (404 en re-ejecución)', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([201, 404]);",
                   "});",
                   "if (pm.response.code === 201) {",
                   "  const body = pm.response.json();",
@@ -68,9 +104,59 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Viajero Postman\",\n  \"correo\": \"{{viajeroCorreo}}\",\n  \"contrasena\": \"{{viajeroContrasena}}\"\n}"
+              "raw": "{\n  \"correo\": \"{{viajeroCorreo}}\",\n  \"codigo\": \"{{codigoVerificacion}}\"\n}"
             },
-            "url": "{{baseUrl}}/api/auth/registro"
+            "url": "{{baseUrl}}/api/auth/registro/verificar"
+          }
+        },
+        {
+          "name": "Confirmar con código mal formado (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rechaza un código que no tiene 6 dígitos', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{viajeroCorreo}}\",\n  \"codigo\": \"12ab\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/registro/verificar"
+          }
+        },
+        {
+          "name": "Reenviar código sin registro pendiente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Sin registro pendiente no hay a quién reenviar', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"sin.pendiente@biin.test\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/registro/reenviar"
           }
         },
         {

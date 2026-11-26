@@ -1,4 +1,5 @@
 using Biin.Application.DTOs.Admin;
+using Biin.Application.DTOs.Comun;
 using Biin.Application.DTOs.Usuarios;
 using Biin.Application.Interfaces;
 using Biin.Application.Validators;
@@ -23,8 +24,7 @@ public class AdminUsuariosService(IAppDbContext db, IHashContrasena hash, IBitac
         FiltroUsuariosRequest filtro,
         CancellationToken ct = default)
     {
-        var pagina = Math.Max(1, filtro.Pagina);
-        var tamano = Math.Clamp(filtro.Tamano, 1, 100);
+        var (pagina, tamano) = Paginacion.Normalizar(filtro.Pagina, filtro.Tamano);
 
         var consulta = db.Usuarios
             .AsNoTracking()
@@ -52,7 +52,7 @@ public class AdminUsuariosService(IAppDbContext db, IHashContrasena hash, IBitac
         var total = await consulta.CountAsync(ct);
         var usuarios = await consulta
             .OrderBy(u => u.IdUsuario)
-            .Skip((pagina - 1) * tamano)
+            .Skip(Paginacion.Saltar(pagina, tamano))
             .Take(tamano)
             .ToListAsync(ct);
 

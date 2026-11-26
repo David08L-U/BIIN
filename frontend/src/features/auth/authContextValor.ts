@@ -1,11 +1,22 @@
 import { createContext } from 'react'
-import type { LoginRequest, RegistroRequest, Rol, Usuario } from '../../types/auth'
+import type {
+  LoginRequest,
+  RegistroPendiente,
+  RegistroRequest,
+  Rol,
+  Usuario,
+  VerificarRegistroRequest,
+} from '../../types/auth'
 
 export interface AuthContextValor {
   usuario: Usuario | null
   cargando: boolean
   iniciarSesion: (datos: LoginRequest) => Promise<void>
-  registrarse: (datos: RegistroRequest) => Promise<void>
+  /** Paso 1 del registro de viajero: manda el código al correo, todavía no inicia sesión. */
+  registrarse: (datos: RegistroRequest) => Promise<RegistroPendiente>
+  /** Paso 2: confirma el código, crea la cuenta e inicia sesión. */
+  verificarRegistro: (datos: VerificarRegistroRequest) => Promise<void>
+  reenviarCodigo: (correo: string) => Promise<RegistroPendiente>
   cerrarSesion: () => void
   tieneRol: (rol: Rol) => boolean
 }

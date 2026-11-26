@@ -1,6 +1,7 @@
 using Biin.Api.Configuration;
 using Biin.Api.Extensions;
 using Biin.Application.DTOs.Admin;
+using Biin.Application.DTOs.Comun;
 using Biin.Application.DTOs.Usuarios;
 using Biin.Application.Services;
 using Microsoft.AspNetCore.Authorization;

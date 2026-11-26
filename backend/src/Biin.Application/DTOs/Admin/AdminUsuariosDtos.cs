@@ -13,12 +13,6 @@ public record UsuarioResumenDto(
     IReadOnlyList<string> Roles,
     int TotalRutasOperadas);
 
-public record PaginaResultado<T>(
-    IReadOnlyList<T> Items,
-    int Total,
-    int Pagina,
-    int Tamano);
-
 public record FiltroUsuariosRequest(
     string? Busqueda = null,
     string? Rol = null,

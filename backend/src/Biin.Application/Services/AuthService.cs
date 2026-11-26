@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Biin.Application.DTOs.Auth;
 using Biin.Application.DTOs.Usuarios;
 using Biin.Application.Interfaces;
@@ -6,41 +7,143 @@ using Biin.Domain.Entities;
 using Biin.Domain.Enums;
 using Biin.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Biin.Application.Services;
 
-/// <summary>Registro, inicio/cierre de sesión y datos del usuario actual (CU-01, RF01).</summary>
+/// <summary>Registro con confirmación de correo, inicio/cierre de sesión y datos del usuario actual (CU-01, RF01).</summary>
 public class AuthService(
     IAppDbContext db,
     IHashContrasena hash,
     IGeneradorToken tokens,
-    IRevocacionToken revocacion)
+    IRevocacionToken revocacion,
+    IReloj reloj,
+    IEnvioCorreo envioCorreo,
+    IValidadorDominioCorreo validadorDominio,
+    IOptions<VerificacionCorreoOptions> opcionesVerificacion)
 {
-    public async Task<AuthResponse> RegistrarAsync(RegistroRequest req, CancellationToken ct = default)
+    private readonly VerificacionCorreoOptions _verificacion = opcionesVerificacion.Value;
+
+    /// <summary>
+    /// Primer paso del registro de un viajero: guarda los datos como pendientes y manda un código al correo.
+    /// La cuenta se crea hasta que el viajero confirma el código; si el correo no existe, nunca llega.
+    /// Volver a registrarse con el mismo correo reemplaza nombre y contraseña; el código solo se reenvía
+    /// si ya pasó la espera entre envíos (así el viajero puede regresar a corregir sus datos).
+    /// </summary>
+    public async Task<RegistroPendienteResponse> RegistrarAsync(RegistroRequest req, CancellationToken ct = default)
     {
         var nombre = ValidacionUsuario.NormalizarNombre(req.Nombre);
         var correo = ValidacionUsuario.NormalizarCorreo(req.Correo);
         ValidacionUsuario.ValidarContrasena(req.Contrasena);
+        await ValidarDominioAsync(correo, ct);
 
         if (await db.Usuarios.AnyAsync(u => u.Correo.ToLower() == correo, ct))
             throw new ConflictoException("Ya existe una cuenta con ese correo.");
+
+        var ahora = reloj.AhoraUtc;
+        await BorrarVencidosAsync(ahora, correo, ct);
+
+        var pendiente = await BuscarPendienteAsync(correo, ct);
+        var enviar = pendiente is null || ahora >= ReenviarDesde(pendiente);
+        if (pendiente is null)
+        {
+            pendiente = new RegistroPendiente { Correo = correo };
+            db.RegistrosPendientes.Add(pendiente);
+        }
+
+        pendiente.Nombre = nombre;
+        pendiente.HashContrasena = hash.Generar(req.Contrasena);
+        var codigo = enviar ? RenovarCodigo(pendiente, ahora) : null;
+        await db.SaveChangesAsync(ct);
+
+        if (codigo is not null)
+            await EnviarCodigoAsync(pendiente, codigo, ct);
+
+        return RespuestaPendiente(pendiente);
+    }
+
+    /// <summary>
+    /// Segundo paso del registro: si el código es correcto crea la cuenta como viajero e inicia sesión.
+    /// Tras <see cref="VerificacionCorreoOptions.IntentosMaximos"/> códigos incorrectos o al vencer,
+    /// el registro pendiente se anula y hay que registrarse de nuevo.
+    /// </summary>
+    public async Task<AuthResponse> VerificarRegistroAsync(VerificarRegistroRequest req, CancellationToken ct = default)
+    {
+        var correo = ValidacionUsuario.NormalizarCorreo(req.Correo);
+        var codigo = (req.Codigo ?? string.Empty).Trim();
+        var ahora = reloj.AhoraUtc;
+
+        var pendiente = await BuscarPendienteAsync(correo, ct)
+            ?? throw new NoEncontradoException("No hay un registro pendiente para ese correo. Regístrate de nuevo.");
+
+        if (pendiente.Vencido(ahora))
+        {
+            db.RegistrosPendientes.Remove(pendiente);
+            await db.SaveChangesAsync(ct);
+            throw new ReglaNegocioException("El código venció. Regístrate de nuevo para recibir otro.");
+        }
+
+        if (!hash.Verificar(codigo, pendiente.HashCodigo))
+        {
+            pendiente.Intentos++;
+            var restantes = _verificacion.IntentosMaximos - pendiente.Intentos;
+            if (restantes <= 0)
+                db.RegistrosPendientes.Remove(pendiente);
+            await db.SaveChangesAsync(ct);
+
+            throw new ReglaNegocioException(restantes <= 0
+                ? "Escribiste un código incorrecto demasiadas veces. Regístrate de nuevo para recibir otro."
+                : $"El código no es correcto. Te quedan {restantes} {(restantes == 1 ? "intento" : "intentos")}.");
+        }
+
+        if (await db.Usuarios.AnyAsync(u => u.Correo.ToLower() == correo, ct))
+        {
+            db.RegistrosPendientes.Remove(pendiente);
+            await db.SaveChangesAsync(ct);
+            throw new ConflictoException("Ya existe una cuenta con ese correo.");
+        }
 
         var rolViajero = await db.Roles.SingleOrDefaultAsync(r => r.Nombre == Roles.Viajero, ct)
             ?? throw new ReglaNegocioException("Falta el rol 'viajero'. Ejecuta database/seed/001_catalogos.sql.");
 
         var usuario = new Usuario
         {
-            Nombre = nombre,
-            Correo = correo,
-            HashContrasena = hash.Generar(req.Contrasena),
-            FechaRegistro = DateTime.UtcNow
+            Nombre = pendiente.Nombre,
+            Correo = pendiente.Correo,
+            HashContrasena = pendiente.HashContrasena,
+            FechaRegistro = ahora
         };
         usuario.Roles.Add(new UsuarioRol { Usuario = usuario, Rol = rolViajero, IdRol = rolViajero.IdRol });
 
         db.Usuarios.Add(usuario);
+        db.RegistrosPendientes.Remove(pendiente);
         await db.SaveChangesAsync(ct);
 
         return CrearRespuesta(usuario, [Roles.Viajero]);
+    }
+
+    /// <summary>Manda un código nuevo (el anterior deja de servir) si ya pasó la espera entre envíos.</summary>
+    public async Task<RegistroPendienteResponse> ReenviarCodigoAsync(ReenviarCodigoRequest req, CancellationToken ct = default)
+    {
+        var correo = ValidacionUsuario.NormalizarCorreo(req.Correo);
+        var ahora = reloj.AhoraUtc;
+
+        var pendiente = await BuscarPendienteAsync(correo, ct)
+            ?? throw new NoEncontradoException("No hay un registro pendiente para ese correo. Regístrate de nuevo.");
+
+        var desde = ReenviarDesde(pendiente);
+        if (ahora < desde)
+        {
+            var segundos = (int)Math.Ceiling((desde - ahora).TotalSeconds);
+            throw new ReglaNegocioException(
+                $"Espera {segundos} {(segundos == 1 ? "segundo" : "segundos")} para pedir otro código.");
+        }
+
+        var codigo = RenovarCodigo(pendiente, ahora);
+        await db.SaveChangesAsync(ct);
+        await EnviarCodigoAsync(pendiente, codigo, ct);
+
+        return RespuestaPendiente(pendiente);
     }
 
     public async Task<AuthResponse> IniciarSesionAsync(LoginRequest req, CancellationToken ct = default)
@@ -50,6 +153,12 @@ public class AuthService(
         var usuario = await db.Usuarios
             .Include(u => u.Roles).ThenInclude(ur => ur.Rol)
             .SingleOrDefaultAsync(u => u.Correo.ToLower() == correo, ct);
+
+        // Solo quien conoce la contraseña del registro pendiente se entera de que falta confirmar
+        if (usuario is null && await BuscarPendienteAsync(correo, ct) is { } pendiente &&
+            !pendiente.Vencido(reloj.AhoraUtc) && hash.Verificar(req.Contrasena, pendiente.HashContrasena))
+            throw new NoAutenticadoException(
+                "Aún no confirmas tu correo. Escribe el código que te enviamos o regístrate de nuevo para recibir otro.");
 
         // Mismo mensaje para correo o contraseña incorrectos: no revela qué cuentas existen
         if (usuario is null || !hash.Verificar(req.Contrasena, usuario.HashContrasena))
@@ -117,4 +226,66 @@ public class AuthService(
         return new AuthResponse(token, expira,
             new UsuarioDto(usuario.IdUsuario, usuario.Nombre, usuario.Correo, roles));
     }
+
+    // ---- Confirmación de correo (registro de viajeros) ----
+
+    private async Task ValidarDominioAsync(string correo, CancellationToken ct)
+    {
+        if (!_verificacion.ValidarDominio) return;
+
+        var dominio = correo[(correo.LastIndexOf('@') + 1)..];
+        if (!await validadorDominio.PuedeRecibirCorreoAsync(dominio, ct))
+            throw new ReglaNegocioException(
+                $"El dominio «{dominio}» no recibe correos. Revisa que tu correo esté bien escrito.");
+    }
+
+    private Task<RegistroPendiente?> BuscarPendienteAsync(string correo, CancellationToken ct) =>
+        db.RegistrosPendientes.SingleOrDefaultAsync(r => r.Correo.ToLower() == correo, ct);
+
+    /// <summary>
+    /// Borra los registros cuyo código ya venció: esos correos nunca se confirmaron.
+    /// El del correo que se está registrando se conserva para reutilizar su fila.
+    /// </summary>
+    private async Task BorrarVencidosAsync(DateTime ahora, string correoActual, CancellationToken ct)
+    {
+        var vencidos = await db.RegistrosPendientes
+            .Where(r => r.ExpiraEn <= ahora && r.Correo.ToLower() != correoActual)
+            .Take(100)
+            .ToListAsync(ct);
+        foreach (var vencido in vencidos)
+            db.RegistrosPendientes.Remove(vencido);
+    }
+
+    /// <summary>Genera un código nuevo de 6 dígitos, guarda solo su hash y reinicia los intentos.</summary>
+    private string RenovarCodigo(RegistroPendiente pendiente, DateTime ahora)
+    {
+        var codigo = RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
+        pendiente.HashCodigo = hash.Generar(codigo);
+        pendiente.Intentos = 0;
+        pendiente.EnviadoEn = ahora;
+        pendiente.ExpiraEn = ahora.AddMinutes(_verificacion.MinutosVigencia);
+        return codigo;
+    }
+
+    private async Task EnviarCodigoAsync(RegistroPendiente pendiente, string codigo, CancellationToken ct)
+    {
+        try
+        {
+            await envioCorreo.EnviarCodigoVerificacionAsync(pendiente.Correo, pendiente.Nombre, codigo, pendiente.ExpiraEn, ct);
+        }
+        catch (InvalidOperationException)
+        {
+            // Sin correo enviado no debe quedar un pendiente que obligue a esperar para reintentar
+            db.RegistrosPendientes.Remove(pendiente);
+            await db.SaveChangesAsync(ct);
+            throw new ServicioNoDisponibleException(
+                "No pudimos enviar el código a tu correo en este momento. Inténtalo de nuevo en unos minutos.");
+        }
+    }
+
+    private DateTime ReenviarDesde(RegistroPendiente pendiente) =>
+        pendiente.EnviadoEn.AddSeconds(_verificacion.SegundosEntreEnvios);
+
+    private RegistroPendienteResponse RespuestaPendiente(RegistroPendiente pendiente) =>
+        new(pendiente.Correo, pendiente.ExpiraEn, ReenviarDesde(pendiente));
 }

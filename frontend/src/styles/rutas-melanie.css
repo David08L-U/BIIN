@@ -1,0 +1,426 @@
+/* Catálogo basado en biin_seleccionar_destino/code.html de Melanie. */
+
+.rutas-melanie {
+  padding-bottom: 32px;
+  color: var(--color-primario);
+}
+
+.rutas-barra {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 12px;
+}
+
+.rutas-menu {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border: 1px solid #eae6df;
+  border-radius: 12px;
+  background: var(--color-superficie-suave);
+  color: var(--color-primario);
+  cursor: pointer;
+}
+
+.rutas-menu .biin-icon {
+  font-size: 22px;
+}
+
+.rutas-buscador {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+}
+
+.rutas-buscador > .biin-icon {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  color: #4f4440cc;
+  font-size: 20px;
+  pointer-events: none;
+}
+
+.rutas-buscador input {
+  display: block;
+  width: 100%;
+  height: 44px;
+  min-width: 0;
+  padding: 0 38px 0 40px;
+  border: 1px solid #eae6df;
+  border-radius: 12px;
+  background: var(--color-superficie-suave);
+  color: var(--color-texto);
+  font: inherit;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.rutas-buscador input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.rutas-buscador input::placeholder {
+  color: #4f444099;
+}
+
+.rutas-buscador input:focus-visible {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 2px;
+  background: var(--color-superficie);
+}
+
+.rutas-limpiar {
+  position: absolute;
+  top: 0;
+  right: 3px;
+  width: 34px;
+  height: 44px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--color-texto-suave);
+  cursor: pointer;
+}
+
+.rutas-limpiar .biin-icon {
+  font-size: 18px;
+}
+
+.rutas-saludo {
+  padding: 8px 16px 16px;
+}
+
+.rutas-saludo h1 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.rutas-saludo p {
+  margin: 2px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-texto-suave);
+}
+
+.rutas-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 16px 8px;
+}
+
+.rutas-chips button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 6px 14px;
+  min-height: 36px;
+  border: 1px solid #eae6df;
+  border-radius: 999px;
+  background: var(--color-superficie);
+  color: var(--color-texto-suave);
+  font: inherit;
+  font-size: 16px;
+  line-height: 24px;
+  cursor: pointer;
+}
+
+.rutas-chips .biin-icon {
+  font-size: 16px;
+  inline-size: 1em;
+  overflow: hidden;
+}
+
+.rutas-chips button.activo {
+  background: var(--color-secundario);
+  border-color: var(--color-secundario);
+  color: var(--color-superficie);
+  box-shadow: 0 1px 3px #2b181010;
+}
+
+.rutas-nota {
+  margin: 8px 16px 0;
+  color: var(--color-acento-texto);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.rutas-conteo {
+  margin: 4px 16px 10px;
+  font-size: 11px;
+  color: var(--color-texto-suave);
+}
+
+.rutas-catalogo {
+  display: grid;
+  gap: 12px;
+  padding: 0 16px;
+}
+
+.rutas-tarjeta {
+  display: block;
+  overflow: hidden;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde-tarjeta);
+  border-radius: 12px;
+  color: var(--color-primario);
+  text-decoration: none;
+  box-shadow: var(--sombra-tarjeta);
+  transition: border-color 0.15s ease;
+}
+
+.rutas-tarjeta:hover {
+  border-color: #cdbda9;
+}
+
+.rutas-tarjeta-cuerpo {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 16px 12px;
+  min-width: 0;
+}
+
+.rutas-icono-destino {
+  align-self: center;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border: 1px solid #eae6df;
+  border-radius: 8px;
+  background: var(--color-superficie-suave);
+  color: var(--color-primario);
+}
+
+.rutas-icono-destino .biin-icon {
+  font-size: 24px;
+}
+
+.rutas-icono-destino.relleno .biin-icon {
+  font-variation-settings: 'FILL' 1;
+}
+
+.rutas-destino-textos {
+  flex: 1;
+  min-width: 0;
+}
+
+.rutas-destino-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+}
+
+.rutas-destino-titulo h2 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+}
+
+.rutas-etiqueta {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #eae6df;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-texto-suave);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.rutas-etiqueta.popular {
+  letter-spacing: 0.025em;
+  background: #fdf3e2;
+  color: var(--color-acento-texto);
+  border-color: var(--color-acento-suave);
+}
+
+.rutas-destino-textos p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-texto-suave);
+}
+
+.rutas-ver {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid #eae6df;
+  background: var(--color-superficie-suave);
+}
+
+.rutas-ver .biin-icon {
+  font-size: 18px;
+}
+
+.rutas-tarjeta:hover .rutas-ver {
+  background: var(--color-primario);
+  color: var(--color-superficie);
+}
+
+.rutas-tarjeta-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid #eae6dfb3;
+  background: #faf3eb80;
+  padding: 10px 16px;
+}
+
+.rutas-metadata {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--color-texto-suave);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.rutas-metadata > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.rutas-metadata .biin-icon {
+  font-size: 14px;
+  color: var(--color-acento-texto);
+}
+
+.rutas-precio {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  white-space: nowrap;
+  color: var(--color-texto-suave);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+
+.rutas-precio strong {
+  letter-spacing: -0.025em;
+  font-family: var(--fuente-aplicacion);
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+  color: var(--color-primario);
+}
+
+.rutas-terminales {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 16px 0;
+  padding: 16px;
+  border: 1px solid #eae6df;
+  border-radius: 12px;
+  background: var(--color-superficie);
+  box-shadow: 0 2px 8px -2px #2b18100a;
+}
+
+.rutas-terminal-icono {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid #eae6df;
+  background: var(--color-superficie-suave);
+}
+
+.rutas-terminal-icono .biin-icon {
+  font-size: 20px;
+}
+
+.rutas-terminales strong {
+  display: block;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+}
+
+.rutas-terminales p {
+  margin: 3px 0 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-texto-suave);
+}
+
+.rutas-vacio {
+  padding: 35px 24px;
+  text-align: center;
+}
+
+.rutas-vacio > .biin-icon {
+  color: var(--color-acento-texto);
+  font-size: 32px;
+}
+
+.rutas-vacio h2 {
+  margin: 12px 0 8px;
+  font-size: 20px;
+}
+
+.rutas-vacio p {
+  font-size: 14px;
+  color: var(--color-texto-suave);
+}
+
+.rutas-vacio button {
+  margin-top: 8px;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--color-primario);
+  color: var(--color-superficie);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+@media (max-width: 420px) {
+  .rutas-chips button {
+    padding-inline: 8px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 370px) {
+  .rutas-metadata {
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .rutas-precio {
+    font-size: 12px;
+  }
+
+  .rutas-tarjeta-pie {
+    padding-inline: 12px;
+  }
+}

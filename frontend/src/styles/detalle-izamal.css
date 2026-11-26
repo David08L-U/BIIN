@@ -1,0 +1,887 @@
+/* CU-03: biin_detalle_de_ruta_izamal/code.html + biin-compatible.css.
+ * Medidas del diseño original: margen 20 px; espacio principal 16 px;
+ * imágenes de recorrido 144 px y cultural 176 px como altura mínima.
+ * Los tamaños de icono se declaran por contexto para prevalecer sobre
+ * los 24 px de .biin-icon, sin cambiar otras pantallas.
+ * El shell conserva la única navegación inferior y su área segura.
+ */
+.izamal-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding: calc(4px + env(safe-area-inset-top)) 20px 40px;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-size: 14px;
+  line-height: 20px;
+  overflow-wrap: anywhere;
+}
+
+.izamal-detalle h1,
+.izamal-detalle h2,
+.izamal-detalle h3,
+.izamal-detalle p {
+  margin: 0;
+}
+
+.izamal-detalle button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.izamal-detalle .biin-icon {
+  flex-shrink: 0;
+  inline-size: 1em;
+  overflow: hidden;
+}
+
+.izamal-detalle :is(button, a, input):focus-visible {
+  outline: 3px solid var(--color-secundario);
+  outline-offset: 3px;
+}
+
+.izamal-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.izamal-boton-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid #d3c3be99;
+  border-radius: 50%;
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  text-decoration: none;
+  box-shadow: 0 1px 2px #0000000d;
+}
+
+.izamal-boton-icono .biin-icon {
+  font-size: 22px;
+}
+
+.izamal-favorito {
+  color: var(--color-texto-suave);
+}
+
+.izamal-favorito[aria-pressed='true'] {
+  color: var(--color-error);
+  font-variation-settings: 'FILL' 1;
+}
+
+.izamal-estado-salida {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid #d3c3be80;
+  border-radius: 999px;
+  background: var(--color-superficie-suave);
+  color: var(--color-acento-texto);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: 0.02em;
+  box-shadow: 0 1px 2px #0000000d;
+}
+
+.izamal-punto {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--color-acento);
+}
+
+.izamal-presentacion {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.izamal-etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.izamal-ruta-directa {
+  padding: 2px 8px;
+  border: 1px solid #d3c3be66;
+  border-radius: 4px;
+  background: var(--color-borde);
+  color: var(--color-primario);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.izamal-pueblo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-texto-suave);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: 0.02em;
+}
+
+.izamal-pueblo .biin-icon {
+  font-size: 16px;
+  color: var(--color-acento);
+  font-variation-settings: 'FILL' 1;
+}
+
+.izamal-presentacion h1 {
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.izamal-presentacion p {
+  color: var(--color-texto-suave);
+}
+
+.izamal-tarjeta {
+  min-width: 0;
+  border: 1px solid var(--color-borde-tarjeta);
+  border-radius: 12px;
+  background: var(--color-superficie);
+  box-shadow: var(--sombra-tarjeta);
+}
+
+.izamal-metricas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.izamal-metrica {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.izamal-metrica-precio::after {
+  content: '';
+  position: absolute;
+  right: -12px;
+  bottom: -12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #eee7df80;
+  pointer-events: none;
+}
+
+.izamal-metrica-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.izamal-metrica-cabecera h2 {
+  font-family: var(--fuente-aplicacion);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-texto-suave);
+}
+
+.izamal-icono-metrica {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-acento-texto);
+}
+
+.izamal-icono-metrica .biin-icon {
+  font-size: 18px;
+}
+
+.izamal-metrica-precio .izamal-icono-metrica {
+  color: var(--color-primario);
+}
+
+.izamal-metrica .izamal-valor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.izamal-valor strong {
+  font-family: var(--fuente-aplicacion);
+  font-size: 28px;
+  line-height: 32px;
+  font-weight: 700;
+}
+
+.izamal-valor span {
+  color: var(--color-texto-suave);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.izamal-valor-disponibilidad strong {
+  color: var(--color-primario);
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.izamal-metrica .izamal-metrica-nota {
+  position: relative;
+  margin-top: 2px;
+  color: var(--color-texto-suave);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.izamal-detalle .izamal-nota-datos,
+.izamal-detalle .izamal-nota-favorito {
+  color: var(--color-acento-texto);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.izamal-terminal {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+}
+
+.izamal-icono-terminal {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-primario);
+}
+
+.izamal-icono-terminal .biin-icon {
+  font-size: 22px;
+}
+
+.izamal-terminal > div {
+  min-width: 0;
+}
+
+.izamal-sobretitulo {
+  color: var(--color-texto-suave);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.izamal-terminal h2 {
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+}
+
+.izamal-terminal p:last-child {
+  color: var(--color-texto-suave);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.izamal-recorrido,
+.izamal-cultura {
+  overflow: hidden;
+}
+
+.izamal-recorrido-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #d3c3be66;
+  background: var(--color-superficie-suave);
+}
+
+.izamal-recorrido-cabecera h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+}
+
+.izamal-recorrido-cabecera .biin-icon {
+  font-size: 20px;
+}
+
+.izamal-recorrido-cabecera > span {
+  flex-shrink: 0;
+  max-inline-size: 44%;
+  color: var(--color-acento-texto);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.izamal-recorrido-cabecera small {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.izamal-foto-recorrido,
+.izamal-foto-cultural {
+  position: relative;
+  isolation: isolate;
+  background: var(--color-superficie-acentuada);
+}
+
+.izamal-foto-recorrido {
+  display: flex;
+  align-items: flex-end;
+  min-height: 144px;
+  padding: 16px;
+}
+
+.izamal-imagen,
+.izamal-imagen-alternativa {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.izamal-imagen {
+  display: block;
+  object-fit: cover;
+}
+
+.izamal-imagen-alternativa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 16px 48px;
+  color: var(--color-texto-suave);
+  background: var(--color-borde);
+  font-size: 10px;
+  line-height: 14px;
+  text-align: center;
+}
+
+.izamal-imagen-alternativa .biin-icon {
+  font-size: 24px;
+}
+
+.izamal-foto-recorrido::after,
+.izamal-foto-cultural::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, #2b1810d9, #2b18104d, transparent);
+  pointer-events: none;
+}
+
+.izamal-pie-imagen {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-superficie);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  letter-spacing: 0.025em;
+}
+
+.izamal-pie-imagen .biin-icon {
+  font-size: 18px;
+  color: var(--color-acento);
+}
+
+.izamal-detalle .izamal-nota-recorrido {
+  padding: 12px 16px 0;
+  color: var(--color-texto-suave);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.izamal-detalle .izamal-nota-regreso {
+  padding: 0 16px 16px;
+}
+
+.izamal-paradas {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 16px;
+  list-style: none;
+}
+
+.izamal-parada {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+  min-height: 64px;
+}
+
+.izamal-parada::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  bottom: 4px;
+  left: 11px;
+  width: 2px;
+  background: #d3c3becc;
+}
+
+.izamal-parada-origen {
+  min-height: 80px;
+}
+
+.izamal-parada-origen::after {
+  top: 28px;
+}
+
+.izamal-parada:last-child {
+  min-height: 0;
+}
+
+.izamal-parada:last-child::after {
+  content: none;
+}
+
+.izamal-marcador {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin: 0 auto;
+  border: 2px solid var(--color-primario);
+  border-radius: 50%;
+  background: var(--color-superficie-acentuada);
+}
+
+.izamal-parada-intermedia .izamal-marcador::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-primario);
+}
+
+.izamal-parada-origen .izamal-marcador,
+.izamal-parada-destino .izamal-marcador {
+  width: 24px;
+  height: 24px;
+  margin-top: 0;
+  border: 0;
+  box-shadow: 0 0 0 4px var(--color-superficie-acentuada);
+}
+
+.izamal-parada-origen .izamal-marcador {
+  background: var(--color-primario);
+  color: var(--color-superficie);
+}
+
+.izamal-parada-destino .izamal-marcador {
+  background: var(--color-acento);
+  color: var(--color-primario);
+  font-variation-settings: 'FILL' 1;
+}
+
+.izamal-parada-origen .izamal-marcador .biin-icon {
+  font-size: 13px;
+}
+
+.izamal-parada-destino .izamal-marcador .biin-icon {
+  font-size: 16px;
+}
+
+.izamal-parada-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.izamal-parada-titulo strong {
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 700;
+}
+
+.izamal-parada-titulo > span {
+  border: 1px solid #d3c3be66;
+  border-radius: 4px;
+  padding: 2px 6px;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-primario);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.izamal-parada-destino .izamal-parada-titulo > span {
+  border-color: transparent;
+  background: var(--color-acento-suave);
+  color: var(--color-primario);
+  font-weight: 700;
+}
+
+.izamal-parada p {
+  color: var(--color-texto-suave);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.izamal-foto-cultural {
+  display: flex;
+  align-items: flex-end;
+  min-height: 176px;
+}
+
+.izamal-foto-cultural::after {
+  background: linear-gradient(to top, #2b1810e6, #2b181059 51%, transparent 74%);
+}
+
+.izamal-foto-cultural .izamal-imagen-alternativa {
+  padding-bottom: 96px;
+}
+
+.izamal-top-destino {
+  position: absolute;
+  z-index: 1;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid #d3c3be4d;
+  border-radius: 999px;
+  background: #2b1810cc;
+  color: var(--color-superficie);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.izamal-top-destino .biin-icon {
+  font-size: 14px;
+  color: var(--color-acento);
+  font-variation-settings: 'FILL' 1;
+}
+
+.izamal-foto-textos {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  width: 100%;
+  padding: 80px 16px 16px;
+  color: var(--color-superficie);
+}
+
+.izamal-foto-textos .izamal-pueblo-amarillo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+  color: var(--color-acento-suave);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.izamal-pueblo-amarillo .biin-icon {
+  font-size: 16px;
+}
+
+.izamal-foto-textos h2 {
+  font-size: 18px;
+  line-height: 22.5px;
+  font-weight: 700;
+}
+
+.izamal-foto-textos > p:last-child {
+  color: var(--color-superficie);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.izamal-planificador {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.izamal-itinerario-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 8px;
+  margin-bottom: 4px;
+}
+
+.izamal-itinerario-titulo h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+}
+
+.izamal-itinerario-titulo .biin-icon {
+  font-size: 20px;
+}
+
+.izamal-itinerario-titulo > span {
+  color: var(--color-acento-texto);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.izamal-itinerario-intro > p {
+  color: var(--color-texto-suave);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.izamal-estancia {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.izamal-estancia legend {
+  margin-bottom: 6px;
+  padding: 0;
+  color: var(--color-texto-suave);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.izamal-estancia-opciones {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.izamal-estancia-opciones label {
+  position: relative;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.izamal-estancia-opciones input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.izamal-estancia-opcion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  height: 100%;
+  min-height: 52px;
+  padding: 8px 4px;
+  border: 1px solid #d3c3be99;
+  border-radius: 8px;
+  background: var(--color-superficie);
+  color: var(--color-texto-suave);
+  text-align: center;
+}
+
+.izamal-estancia-opcion strong {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.izamal-estancia-opcion small {
+  color: var(--color-acento-texto);
+  font-size: 10px;
+  line-height: 15px;
+  font-weight: 400;
+}
+
+.izamal-estancia-opciones input:checked + .izamal-estancia-opcion {
+  border: 2px solid var(--color-primario);
+  padding: 7px 3px;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-primario);
+}
+
+.izamal-estancia-opciones input:checked + .izamal-estancia-opcion strong {
+  font-weight: 700;
+}
+
+.izamal-estancia-opciones input:checked + .izamal-estancia-opcion small {
+  color: var(--color-texto-suave);
+}
+
+.izamal-estancia-opciones input:focus-visible + .izamal-estancia-opcion {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 2px;
+}
+
+.izamal-lugares ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+}
+
+.izamal-lugares li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #d3c3be66;
+  border-radius: 6px;
+  padding: 4px 8px;
+  background: var(--color-superficie-suave);
+  color: var(--color-texto-suave);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+}
+
+.izamal-lugares li .biin-icon {
+  font-size: 14px;
+  color: var(--color-acento-texto);
+}
+
+.izamal-lugares li:first-child {
+  border-color: #d3c3be80;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-primario);
+  font-weight: 700;
+}
+
+.izamal-lugares li:first-child .biin-icon {
+  color: var(--color-primario);
+}
+
+.izamal-acciones-itinerario {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.izamal-acciones-itinerario button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 2px #0000000d;
+}
+
+.izamal-acciones-itinerario .biin-icon {
+  font-size: 20px;
+}
+
+.izamal-accion-principal .biin-icon:last-child {
+  font-size: 18px;
+}
+
+.izamal-accion-principal {
+  background: var(--color-primario);
+  color: var(--color-superficie);
+}
+
+.izamal-accion-principal .biin-icon:first-child {
+  color: var(--color-acento);
+}
+
+.izamal-acciones-itinerario .izamal-accion-secundaria {
+  border-color: #d3c3be99;
+  padding-block: 12px;
+  background: var(--color-superficie-suave);
+  color: var(--color-texto);
+}
+
+.izamal-accion-secundaria .biin-icon {
+  color: var(--color-acento-texto);
+}
+
+.izamal-mensaje {
+  color: var(--color-texto-suave);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.izamal-mensaje:empty {
+  margin-top: -16px;
+}

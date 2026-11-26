@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Crea la base de datos de BIIN y ejecuta todos los scripts en orden.
 
@@ -39,6 +39,7 @@ $scripts = @(
     'database/schema/002_ampliaciones_mvp.sql',
     'database/schema/003_busqueda.sql',
     'database/schema/004_vistas.sql',
+    'database/schema/005_verificacion_correo.sql',
     'database/triggers/001_reglas.sql',
     'database/seed/001_catalogos.sql'
 )

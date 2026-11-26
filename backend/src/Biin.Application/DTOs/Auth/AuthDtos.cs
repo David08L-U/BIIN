@@ -32,6 +32,26 @@ public record CambiarContrasenaRequest(
     [StringLength(72, MinimumLength = 8, ErrorMessage = "La nueva contraseña debe tener entre 8 y 72 caracteres.")]
     string ContrasenaNueva);
 
+public record VerificarRegistroRequest(
+    [Required(ErrorMessage = "El correo es obligatorio.")]
+    [EmailAddress(ErrorMessage = "El correo no tiene un formato válido.")]
+    string Correo,
+
+    [Required(ErrorMessage = "El código es obligatorio.")]
+    [RegularExpression(@"^\s*\d{6}\s*$", ErrorMessage = "El código tiene 6 dígitos.")]
+    string Codigo);
+
+public record ReenviarCodigoRequest(
+    [Required(ErrorMessage = "El correo es obligatorio.")]
+    [EmailAddress(ErrorMessage = "El correo no tiene un formato válido.")]
+    string Correo);
+
+/// <summary>
+/// Respuesta del registro de un viajero: la cuenta aún no existe. Llegó un código a <paramref name="Correo"/>
+/// que vale hasta <paramref name="ExpiraEn"/>; se puede pedir otro a partir de <paramref name="ReenviarDesde"/>.
+/// </summary>
+public record RegistroPendienteResponse(string Correo, DateTime ExpiraEn, DateTime ReenviarDesde);
+
 public record UsuarioDto(int IdUsuario, string Nombre, string Correo, IReadOnlyList<string> Roles);
 
 public record AuthResponse(string Token, DateTime ExpiraEn, UsuarioDto Usuario);

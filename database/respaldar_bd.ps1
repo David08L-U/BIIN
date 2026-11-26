@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Respalda la base de BIIN en database/backups/ (paquete 8.2.4).
 

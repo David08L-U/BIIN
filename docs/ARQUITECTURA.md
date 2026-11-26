@@ -72,12 +72,14 @@ BIIN/
 │   │   │   └── Configuration/
 │   │   ├── Biin.Application/      Reglas de negocio
 │   │   │   ├── Services/
-│   │   │   ├── DTOs/
-│   │   │   ├── Interfaces/
+│   │   │   ├── DTOs/              Comun/ (paginación), Catalogos/, Contenidos/, Itinerarios/, Admin/…
+│   │   │   ├── Interfaces/        IAppDbContext, IReloj, IBitacoraAdmin…
+│   │   │   ├── Consultas/         FuncionesBd: f_normalizar() usable en LINQ
 │   │   │   ├── Validators/
 │   │   │   └── Mappings/
 │   │   ├── Biin.Domain/           Modelo sin dependencias externas
 │   │   │   ├── Entities/
+│   │   │   ├── Vistas/            Filas de las vistas v_* (solo lectura)
 │   │   │   ├── Enums/
 │   │   │   └── Exceptions/
 │   │   └── Biin.Infrastructure/   Datos y servicios externos
@@ -86,6 +88,7 @@ BIIN/
 │   │       │   └── Migrations/
 │   │       ├── Repositories/
 │   │       ├── ExternalServices/
+│   │       ├── Tiempo/            RelojSistema (IReloj)
 │   │       └── Security/
 │   └── tests/
 │       ├── Biin.UnitTests/
@@ -123,6 +126,10 @@ BIIN/
 - Los servicios (`Application/Services`) consultan con `IAppDbContext`, que expone los `DbSet` de EF Core. `Repositories/` queda para consultas complejas que convenga aislar.
 - Las reglas de negocio lanzan las excepciones de `Domain/Exceptions`; `ManejoErroresMiddleware` las convierte en el código HTTP correcto (400, 401, 403, 404, 409) con `ProblemDetails`.
 - Cada servicio nuevo se registra en `Application/DependencyInjection.cs`.
+- Las vistas de `004_vistas.sql` se leen como entidades sin llave (`VRecursosPublicados`, `VParadasRuta`, `VCupoVigente`). Lo que ve el público o el asistente de IA debe salir de contenido **publicado** (RF08).
+- Para buscar sin acentos dentro de una consulta: `FuncionesBd.Normalizar(columna).Contains(FuncionesBd.NormalizarTexto(texto))`; EF Core lo traduce a `f_normalizar()` y usa los índices trigram.
+- Las reglas que dependen de la hora usan `IReloj` (no `DateTime.UtcNow`) y `ZonaYucatan` para convertir a la hora local (UTC−6). Las columnas `timestamptz` se guardan en UTC; una hora sin zona se rechaza con 400.
+- Los enums viajan en JSON como texto snake_case (`"cancelado"`, `"en_curso"`), igual que en la base.
 
 ### Versiones
 
@@ -142,13 +149,66 @@ BIIN/
 | Cuenta y sesión | CU-01 | `features/auth` | Auth, Usuarios |
 | Transporte | CU-02, CU-03, CU-13 | `features/transporte` | Rutas, Tarifas, Horarios |
 | Operador | CU-04 | `features/cupo` | Salidas, ReportesCupo |
-| Exploración | CU-05, CU-06, CU-07, CU-14 | `features/exploracion` | Recursos, Negocios, Eventos, Lugares, Categorias |
+| Exploración | CU-05, CU-06, CU-07, CU-14 | `features/exploracion` | Catalogos, Negocios, Eventos, Lugares, Explorar |
 | Mi Viaje | CU-09, CU-10 | `features/mi-viaje` | Itinerarios, Favoritos |
 | Asistente de IA | CU-08 | `features/asistente` | Asistente |
 | Consulta sin conexión | CU-11 | `src/offline` | (usa los endpoints de consulta) |
 | Administración | CU-12 | `features/admin` | Admin* |
 
+### Endpoints del backend ya implementados
+
+| Ruta | Acceso | Qué hace |
+|---|---|---|
+| `POST /api/auth/registro` | Público | RF01, paso 1: valida datos y dominio del correo, guarda el registro pendiente y manda un código de 6 dígitos (202). **No crea la cuenta** |
+| `POST /api/auth/registro/verificar` | Público | RF01, paso 2: con el código correcto crea la cuenta como viajero e inicia sesión (201) |
+| `POST /api/auth/registro/reenviar` | Público | Manda otro código si ya pasaron 60 s; el anterior deja de servir (202) |
+| `POST /api/auth/login`, `GET /api/auth/yo`, `POST /api/auth/logout`, `PUT /api/auth/contrasena` | Público / Sesión | CU-01: sesión JWT con revocación |
+| `GET /api/catalogos/{categorias,municipios,localidades}` | Público | Filtros; localidades buscan sin acentos |
+| `GET /api/negocios`, `/api/negocios/{id}` | Público | RF05: localidad, municipio, categoría, presupuesto, texto; horarios y «abierto ahora» |
+| `GET /api/eventos`, `/api/eventos/{id}` | Público | RF06: próximos por defecto, rango de días en hora de Yucatán, estado (incluye cancelados) |
+| `GET /api/lugares`, `/api/lugares/{id}` | Público | RF07: categoría, costo máximo, condiciones de acceso |
+| `GET /api/explorar` | Público | CU-14: todo lo publicado de una categoría, sin rutas ni eventos terminados |
+| `/api/itinerarios[/{id}[/actividades…]]` | Viajero | RF09: CRUD, actividades, reordenar, traslados estimados y advertencias |
+| `/api/admin/contenidos…` | Administrador | RF12: crear/editar negocios, lugares y eventos, publicar, archivar, cancelar evento, horarios, fotos |
+| `/api/admin/{localidades,ubicaciones,bitacora}` | Administrador | Geografía para contenidos y bitácora 17.1.5 |
+
+**Confirmación de correo al registrarse (solo viajeros, RF01, RNF04):**
+
+- El viajero llena el formulario y recibe un código de 6 dígitos que vale 15 minutos. Solo se guarda el hash del código (BCrypt). Si el correo no existe, el código nunca llega y la cuenta nunca se crea.
+- Antes de enviar, `DnsValidadorDominioCorreo` revisa que el dominio tenga MX (o A/AAAA) y rechaza dominios inexistentes o con MX nulo. Si el DNS no responde, deja pasar: el código sigue siendo obligatorio. Se apaga con `VerificacionCorreo:ValidarDominio = false`.
+- **Regresar a corregir:** volver a registrarse con el mismo correo reemplaza nombre y contraseña. Si no han pasado 60 s no reenvía y el código que ya llegó sigue sirviendo. Con otro correo se crea otro pendiente. Un registro sin confirmar nunca bloquea el correo.
+- Cinco códigos incorrectos o el vencimiento anulan el pendiente. El login con un pendiente vigente avisa que falta confirmar, solo si la contraseña coincide.
+- El envío lo hace `SmtpEnvioCorreo` con la sección `Correo` (servidor, puerto, usuario, contraseña, SSL, remitente). Sin `Correo:Servidor`, en Development el código se escribe en la consola de la API (`RegistroEnvioCorreo`); en cualquier otro ambiente el registro responde 503.
+- Administradores, operadores y colaboradores no pasan por aquí: se crean con `crear_usuario.ps1` o desde `/api/admin/usuarios`.
+- En el frontend, `RegistroPage` muestra `features/auth/components/VerificacionCorreo.tsx` después del formulario, con «Reenviar código» (cuenta regresiva) y «Volver y corregir mis datos», que conserva lo escrito.
+
+**Advertencias de un itinerario** (no bloquean, se devuelven en el detalle): `conflicto_horario`, `traslado_insuficiente`, `fuera_de_fechas`, `fuera_de_horario`, `evento_cancelado`, `contenido_no_disponible`. El traslado es una estimación (haversine × 1.3 a 40 km/h) y no sustituye horarios ni recorridos reales.
+
 Dentro de cada `features/<modulo>/` se usan las subcarpetas que hagan falta: `components/`, `pages/`, `hooks/` y `api/`. Se crean conforme se programe el módulo.
+
+**Implementación provisional de itinerarios de Izamal, Valladolid, Tekit, Homún y Ticul (CU-09 / RF09):**
+`features/mi-viaje` separa datos demostrativos (`data/`), cálculo puro (`plan/`),
+interfaz y almacenamiento (`storage/`). Mientras no exista un servicio HTTP de
+itinerarios, guarda en `localStorage` por `idUsuario`, sin sincronización con el
+servidor. `/mi-viaje` conserva la protección de sesión. El borrador se conserva en
+la URL para recarga y retorno desde login. Ver [ITINERARIOS_IZAMAL.md](ITINERARIOS_IZAMAL.md)
+para límites y supuestos de Izamal. Valladolid añade dos jornadas de calendario local
+independientes para fin de semana y registros con destino explícito, conservando la
+lectura de los registros antiguos de Izamal en la misma clave v1. Ver
+[ITINERARIOS_VALLADOLID.md](ITINERARIOS_VALLADOLID.md) para cálculo, acciones y
+compatibilidad de persistencia. Tekit añade una jornada con modalidad textil,
+borrador en URL y guardado compatible en la misma clave. El resumen y los bloques
+secuenciales se comparten con Izamal; las acciones de compartir y descarga de texto
+se comparten con Valladolid, conservando sus contratos. Ver
+[ITINERARIOS_TEKIT.md](ITINERARIOS_TEKIT.md). Homún reutiliza las jornadas de
+Valladolid mediante un cálculo parametrizado que conserva sus contratos y usa
+`recorridoSecuencial.ts` para sumas y bloques. Conserva tipos de traslado, imágenes
+del prototipo y guardado compatible en la misma clave. Ver
+[ITINERARIOS_HOMUN.md](ITINERARIOS_HOMUN.md). Ticul añade una jornada con modalidades
+de alfarería y calzado, duración solicitada para Ruta Puuc y Tour de Compras,
+cronología propia y las mismas acciones y clave v1. Reutiliza el motor secuencial,
+sin modificar los cálculos anteriores. Ver [ITINERARIOS_TICUL.md](ITINERARIOS_TICUL.md).
+No cambia el modelo de BD.
 
 ## 4. Modelo de base de datos (27 tablas, 3FN)
 
@@ -262,6 +322,8 @@ Reglas adicionales:
 - **3 tablas agregadas al MVP** (en `database/schema/002_ampliaciones_mvp.sql`), con lo que el total queda en **30**:
   - `recorridos_sugeridos` y `etapas_recorrido` → CU-13 Recorridos sugeridos.
   - `bitacora_admin` → paquete 17.1.5 Bitácora de cambios administrativos.
+- **1 tabla para confirmar correos** (en `database/schema/005_verificacion_correo.sql`), con lo que el total queda en **31**:
+  - `registros_pendientes` → RF01: nombre, correo, hash de la contraseña, hash del código, intentos, `enviado_en` y `expira_en`. La cuenta en `usuarios` se crea solo al confirmar el código; si el correo no existe, el código nunca llega y la fila caduca. Índice único sobre `lower(correo)`.
 - Quién y cuándo reportó cupo (11.1.6) ya queda en `reportes_cupo.id_autor` y `registrado_en`.
 - Los estados (`tipo`, `estado_publicacion`, `estado_evento`, `salidas.estado`) son `varchar` con `CHECK`, guardados en minúsculas y snake_case (`en_curso`).
 - **El esquema vive en SQL**, no en migraciones de EF Core: `database/schema` → `database/triggers` → `database/seed`. EF Core solo mapea.
@@ -274,9 +336,10 @@ Reglas adicionales:
 2. `database/schema/002_ampliaciones_mvp.sql` — 3 tablas del MVP.
 3. `database/schema/003_busqueda.sql` — extensiones `unaccent`, `pg_trgm` y `pgcrypto`; función `f_normalizar()` e índices de búsqueda.
 4. `database/schema/004_vistas.sql` — vistas de consulta.
-5. `database/triggers/001_reglas.sql` — tipo de detalle, horarios de visita, cupo ≤ capacidad, operador autorizado, `actualizado_en`.
-6. `database/seed/001_catalogos.sql` — roles y categorías.
-7. `database/seguridad/001_usuario_app.sql` — crea `biin_app` y le da permisos.
+5. `database/schema/005_verificacion_correo.sql` — registros de viajeros que esperan confirmar su correo.
+6. `database/triggers/001_reglas.sql` — tipo de detalle, horarios de visita, cupo ≤ capacidad, operador autorizado, `actualizado_en`.
+7. `database/seed/001_catalogos.sql` — roles y categorías.
+8. `database/seguridad/001_usuario_app.sql` — crea `biin_app` y le da permisos.
 
 ### 4.9 Búsqueda sin acentos
 
@@ -304,7 +367,7 @@ SELECT nombre FROM localidades ORDER BY similarity(f_normalizar(nombre), f_norma
 | `postgres` (`ConnectionStrings:BiinAdmin`) | Solo los scripts de `database/` | Todo |
 | `biin_app` (`ConnectionStrings:Biin`) | La API | Leer, insertar, actualizar y borrar datos. **No** puede crear, alterar ni borrar tablas, ni crear bases |
 
-Los usuarios de la aplicación se crean desde la API (registro, siempre como viajero) o con `database/crear_usuario.ps1` para administradores, operadores y colaboradores. Las contraseñas se guardan con BCrypt en ambos casos.
+Los usuarios de la aplicación se crean desde la API (registro, siempre como viajero y **solo después de confirmar el código que llega al correo**) o con `database/crear_usuario.ps1` para administradores, operadores y colaboradores. Las contraseñas se guardan con BCrypt en ambos casos.
 
 ### 4.12 Scripts de `database/`
 
@@ -313,12 +376,15 @@ Los usuarios de la aplicación se crean desde la API (registro, siempre como via
 | `crear_bd.ps1 [-Recrear] [-Demo]` | Crea la base completa; con `-Demo` carga también la demo |
 | `cargar_demo.ps1 [-Borrar]` | Carga o borra los datos de demostración de Homún |
 | `crear_usuario.ps1 -Correo -Nombre -Rol [-Rutas]` | Crea un usuario con rol; pide la contraseña en pantalla |
+| `actualizar_bd.ps1` | Aplica a una base existente los scripts nuevos (hoy `005_verificacion_correo.sql`) y renueva los permisos de `biin_app`, sin borrar datos |
+| `verificar_bd.ps1` | Comprueba 31 tablas, 3 vistas, `f_normalizar`, roles y permisos de `biin_app`, y ejecuta `pruebas/*.sql` |
 | `respaldar_bd.ps1` | Respaldo `.dump` en `database/backups/` (paquete 8.2.4) |
 | `restaurar_bd.ps1 [-Archivo]` | Restaura un respaldo; pide confirmación |
 | `pruebas/001_reglas.sql` | 15 pruebas de restricciones y triggers |
 | `pruebas/002_busqueda_vistas.sql` | 9 pruebas de búsqueda y vistas |
+| `pruebas/003_registros_pendientes.sql` | 6 pruebas de la confirmación de correo |
 
-Todos leen las conexiones de `appsettings.Development.json`; ninguna contraseña va en el repositorio ni en la línea de comandos.
+Todos leen las conexiones de `appsettings.Development.json`; ninguna contraseña va en el repositorio ni en la línea de comandos. Se guardan en UTF-8 con BOM y mandan el SQL con acentos por la entrada estándar, para que funcionen igual en PowerShell 7 y en Windows PowerShell 5.1. `psql` se busca en `BIIN_PG_BIN`, en las carpetas de PostgreSQL 18, 17 o 16 y en el `PATH`.
 
 ### 4.13 Datos de demostración
 
@@ -348,7 +414,8 @@ Tres áreas del dominio (ver FigJam → Zona 2 → Versión 2 → Diagramas de c
 
 | Nivel | Herramienta | Qué se verifica |
 |---|---|---|
-| Unitarias backend | **xUnit** | Servicios y reglas: búsqueda por orden de paradas, vigencia del cupo |
+| Unitarias backend | **xUnit** | Servicios y reglas: búsqueda por orden de paradas, vigencia del cupo, horarios de visita, traslados, advertencias de itinerario |
+| Integración con BD | **xUnit + PostgreSQL real** (`[FactBd]`, variable `BIIN_PRUEBAS_BD`) | Que cada DbSet coincida con el esquema SQL, que EF Core traduzca filtros y `f_normalizar`, y los flujos CU-01, CU-09 y CU-12 de punta a punta |
 | Unitarias frontend | **Vitest + React Testing Library** | Componentes y validación de formularios |
 | API / integración | **Postman** | Endpoints, códigos de respuesta, JWT y permisos por rol |
 | PWA, rendimiento, accesibilidad | **Lighthouse** | Instalación, offline, tiempos de carga, contraste (RNF01, 03, 06, 07) |

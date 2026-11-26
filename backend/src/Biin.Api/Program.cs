@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Biin.Api.Extensions;
 using Biin.Api.Middleware;
 using Biin.Application;
@@ -13,7 +15,10 @@ builder.Services.AddAutenticacionJwt(builder.Configuration);
 builder.Services.AddAutorizacionPorRoles();
 builder.Services.AddRateLimitingBiin(builder.Configuration);
 
-builder.Services.AddControllers();
+// Los enums viajan como texto en snake_case, igual que en la base: "cancelado", "en_curso"
+builder.Services.AddControllers()
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(
+        new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower)));
 builder.Services.AddOpenApi();
 
 builder.Services.AddCors(o => o.AddPolicy(PoliticaFrontend, p => p

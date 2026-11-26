@@ -1,0 +1,871 @@
+{
+  "info": {
+    "_postman_id": "b11a0003-0000-4000-8000-000000000003",
+    "name": "BIIN — Contenidos, Itinerarios y Administración (CU-05/06/07/09/12/14)",
+    "description": "Pruebas de los módulos 12 (gastronomía, eventos y lugares), 13 (itinerarios) y 17.1 (administración de contenidos).\n\nRequisitos:\n1. Base creada con `database/crear_bd.ps1 -Demo` (datos ficticios de Homún).\n2. Usa el mismo entorno que la colección de Auth y Roles (`BIIN-Local.local.postman_environment.json`) con la contraseña real de `admin@biin.test`.\n3. Ejecuta las carpetas en orden con Collection Runner: cada petición guarda en el entorno los ids que usa la siguiente.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "0. Sesiones de prueba",
+      "item": [
+        {
+          "name": "Registrar viajero (201 o 409 si ya existe)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Cuenta creada o ya existente', () => pm.expect(pm.response.code).to.be.oneOf([201, 409]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/registro",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Viajero Postman\",\n  \"correo\": \"{{viajeroCorreo}}\",\n  \"contrasena\": \"{{viajeroContrasena}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login viajero (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.environment.set('tokenViajero', pm.response.json().token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{viajeroCorreo}}\",\n  \"contrasena\": \"{{viajeroContrasena}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login administrador (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.environment.set('tokenAdmin', pm.response.json().token);",
+                  "pm.test('Tiene rol administrador', () => pm.expect(pm.response.json().usuario.roles).to.include('administrador'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{adminCorreo}}\",\n  \"contrasena\": \"{{adminContrasena}}\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Consulta pública (RF01, RF05, RF06, RF07, CU-14)",
+      "item": [
+        {
+          "name": "Categorías con conteo de publicados (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "const cenote = pm.response.json().find(c => c.nombre === 'Cenote');",
+                  "pm.test('Existe la categoría Cenote', () => pm.expect(cenote).to.be.an('object'));",
+                  "pm.environment.set('idCategoriaCenote', cenote.idCategoria);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/catalogos/categorias"
+          }
+        },
+        {
+          "name": "Localidades sin acentos: homun (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "const homun = pm.response.json().find(l => l.nombre === 'Homún');",
+                  "pm.test('Encuentra Homún con acento', () => pm.expect(homun).to.be.an('object'));",
+                  "pm.environment.set('idLocalidadHomun', homun.idLocalidad);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/catalogos/localidades?busqueda=homun"
+          }
+        },
+        {
+          "name": "Negocios con búsqueda y presupuesto (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Página con negocios', () => pm.expect(body.items.length).to.be.above(0));",
+                  "pm.environment.set('idNegocioDemo', body.items[0].idRecurso);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/negocios?busqueda=cocina&precioMaximo=150"
+          }
+        },
+        {
+          "name": "Ficha de negocio con horarios (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Incluye ubicación y horarios', () => { const b = pm.response.json(); pm.expect(b.ubicacion.localidad).to.be.a('string'); pm.expect(b.horarios).to.be.an('array'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/negocios/{{idNegocioDemo}}"
+          }
+        },
+        {
+          "name": "Negocio inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Formato ProblemDetails', () => pm.expect(pm.response.json()).to.have.property('title'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/negocios/999999"
+          }
+        },
+        {
+          "name": "Eventos próximos incluyen cancelados (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Estados como texto', () => pm.response.json().items.forEach(e => pm.expect(['programado','cancelado','finalizado']).to.include(e.estadoEvento)));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/eventos"
+          }
+        },
+        {
+          "name": "Solo eventos cancelados (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Todos cancelados', () => pm.response.json().items.forEach(e => pm.expect(e.estadoEvento).to.eql('cancelado')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/eventos?estado=cancelado"
+          }
+        },
+        {
+          "name": "Rango de fechas invertido (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Formato ProblemDetails', () => pm.expect(pm.response.json()).to.have.property('title'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/eventos?desde=2026-12-10&hasta=2026-12-01"
+          }
+        },
+        {
+          "name": "Lugares sin contenido pendiente (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('No aparece el cenote pendiente', () => pm.response.json().items.forEach(l => pm.expect(l.titulo).to.not.include('pendiente')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/lugares?tamano=100"
+          }
+        },
+        {
+          "name": "Explorar por categoría Cenote (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Todos tienen la categoría', () => pm.response.json().items.forEach(r => pm.expect(r.categorias).to.include('Cenote')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/explorar?idCategoria={{idCategoriaCenote}}"
+          }
+        },
+        {
+          "name": "Explorar rutas (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Formato ProblemDetails', () => pm.expect(pm.response.json()).to.have.property('title'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/explorar?tipo=ruta"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Itinerarios del viajero (CU-09, RF09, RNF04)",
+      "item": [
+        {
+          "name": "Mis itinerarios sin token (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Formato ProblemDetails', () => pm.expect(pm.response.json()).to.have.property('title'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/itinerarios"
+          }
+        },
+        {
+          "name": "Crear itinerario (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "pm.environment.set('idItinerario', pm.response.json().idItinerario);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenViajero}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/itinerarios",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Fin de semana en Homún (Postman)\",\n  \"inicio\": \"2026-12-12\",\n  \"fin\": \"2026-12-13\",\n  \"presupuestoEstimado\": 1500\n}"
+            }
+          }
+        },
+        {
+          "name": "Crear con fechas invertidas (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Formato ProblemDetails', () => pm.expect(pm.response.json()).to.have.property('title'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenViajero}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/itinerarios",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Mal\",\n  \"inicio\": \"2026-12-13\",\n  \"fin\": \"2026-12-12\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Agregar negocio demo como actividad (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test('Una actividad en orden 1', () => { pm.expect(b.actividades.length).to.eql(1); pm.expect(b.actividades[0].orden).to.eql(1); });",
+                  "pm.environment.set('idActividad', b.actividades[0].idActividad);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenViajero}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/itinerarios/{{idItinerario}}/actividades",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idRecurso\": \"{{idNegocioDemo}}\",\n  \"inicioPrevisto\": \"2026-12-12T13:00:00-06:00\",\n  \"finPrevisto\": \"2026-12-12T14:00:00-06:00\",\n  \"notas\": \"Comida\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Detalle con advertencias (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Incluye lista de advertencias', () => pm.expect(pm.response.json().advertencias).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenViajero}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/itinerarios/{{idItinerario}}"
+          }
+        },
+        {
+          "name": "Reordenar con lista incompleta (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Formato ProblemDetails', () => pm.expect(pm.response.json()).to.have.property('title'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenViajero}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/itinerarios/{{idItinerario}}/actividades/orden",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idActividades\": []\n}"
+            }
+          }
+        },
+        {
+          "name": "Itinerario inexistente o ajeno (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Formato ProblemDetails', () => pm.expect(pm.response.json()).to.have.property('title'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenViajero}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/itinerarios/999999"
+          }
+        },
+        {
+          "name": "Eliminar itinerario (204)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 204', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenViajero}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/itinerarios/{{idItinerario}}"
+          }
+        },
+        {
+          "name": "Itinerario eliminado (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Formato ProblemDetails', () => pm.expect(pm.response.json()).to.have.property('title'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenViajero}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/itinerarios/{{idItinerario}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Administración de contenidos (CU-12, RF12, 17.1)",
+      "item": [
+        {
+          "name": "Viajero en administración (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 403', () => pm.response.to.have.status(403));",
+                  "pm.test('Formato ProblemDetails', () => pm.expect(pm.response.json()).to.have.property('title'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenViajero}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/contenidos"
+          }
+        },
+        {
+          "name": "Contenidos pendientes (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Todos pendientes', () => pm.response.json().items.forEach(c => pm.expect(c.estadoPublicacion).to.eql('pendiente')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/contenidos?estado=pendiente"
+          }
+        },
+        {
+          "name": "Ubicaciones de Homún (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.environment.set('idUbicacion', pm.response.json()[0].idUbicacion);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/localidades/{{idLocalidadHomun}}/ubicaciones"
+          }
+        },
+        {
+          "name": "Crear negocio (201, nace pendiente)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "const b = pm.response.json();",
+                  "pm.test('Nace pendiente', () => pm.expect(b.estadoPublicacion).to.eql('pendiente'));",
+                  "pm.environment.set('idNegocioCreado', b.idRecurso);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/contenidos/negocios",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Lonchería Postman\",\n  \"descripcion\": \"Creado desde Postman\",\n  \"idUbicacion\": \"{{idUbicacion}}\",\n  \"precioMinimoAprox\": 40,\n  \"precioMaximoAprox\": 120\n}"
+            }
+          }
+        },
+        {
+          "name": "Negocio pendiente no es público (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/negocios/{{idNegocioCreado}}"
+          }
+        },
+        {
+          "name": "Foto sin texto alternativo (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/contenidos/{{idNegocioCreado}}/fotografias",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"urlArchivo\": \"/fotos/postman.jpg\",\n  \"textoAlternativo\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Publicar (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Publicado con revisor', () => { const b = pm.response.json(); pm.expect(b.estadoPublicacion).to.eql('publicado'); pm.expect(b.revisor).to.be.a('string'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/contenidos/{{idNegocioCreado}}/publicar"
+          }
+        },
+        {
+          "name": "Negocio publicado ya es público (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/negocios/{{idNegocioCreado}}"
+          }
+        },
+        {
+          "name": "Archivar (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Archivado', () => pm.expect(pm.response.json().estadoPublicacion).to.eql('archivado'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/contenidos/{{idNegocioCreado}}/archivar"
+          }
+        },
+        {
+          "name": "Negocio archivado deja de ser público (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/negocios/{{idNegocioCreado}}"
+          }
+        },
+        {
+          "name": "Bitácora del negocio (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "const ids = pm.response.json().items.filter(b => b.idRegistro === String(pm.environment.get('idNegocioCreado'))).map(b => b.accion);",
+                  "pm.test('Registra crear, publicar y archivar', () => ['crear','publicar','archivar'].forEach(a => pm.expect(ids).to.include(a)));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAdmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/bitacora?tamano=100"
+          }
+        }
+      ]
+    }
+  ]
+}

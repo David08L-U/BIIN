@@ -1,8 +1,20 @@
 import { api } from '../../services/api'
-import type { AuthResponse, LoginRequest, RegistroRequest, Usuario } from '../../types/auth'
+import type {
+  AuthResponse,
+  LoginRequest,
+  RegistroPendiente,
+  RegistroRequest,
+  Usuario,
+  VerificarRegistroRequest,
+} from '../../types/auth'
 
 export const authApi = {
   login: (datos: LoginRequest) => api.post<AuthResponse>('/auth/login', datos),
-  registro: (datos: RegistroRequest) => api.post<AuthResponse>('/auth/registro', datos),
+  /** Paso 1: manda el código al correo; la cuenta se crea al verificarlo. */
+  registro: (datos: RegistroRequest) => api.post<RegistroPendiente>('/auth/registro', datos),
+  /** Paso 2: confirma el código, crea la cuenta de viajero e inicia sesión. */
+  verificarRegistro: (datos: VerificarRegistroRequest) =>
+    api.post<AuthResponse>('/auth/registro/verificar', datos),
+  reenviarCodigo: (correo: string) => api.post<RegistroPendiente>('/auth/registro/reenviar', { correo }),
   yo: () => api.get<Usuario>('/auth/yo'),
 }

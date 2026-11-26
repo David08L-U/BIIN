@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Biin.Application.Interfaces;
 using Biin.Domain.Entities;
+using Biin.Domain.Vistas;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
@@ -25,6 +26,8 @@ public sealed class FakeAppDbContext : IAppDbContext
     public DbSet<Usuario> Usuarios => UsuariosSet;
     public DbSet<Rol> Roles => RolesSet;
     public DbSet<UsuarioRol> UsuarioRoles => UsuarioRolesSet;
+    public FakeDbSet<RegistroPendiente> RegistrosPendientesSet { get; } = new();
+    public DbSet<RegistroPendiente> RegistrosPendientes => RegistrosPendientesSet;
     public DbSet<Municipio> Municipios { get; } = new FakeDbSet<Municipio>();
     public DbSet<Localidad> Localidades { get; } = new FakeDbSet<Localidad>();
     public DbSet<Ubicacion> Ubicaciones { get; } = new FakeDbSet<Ubicacion>();
@@ -52,6 +55,17 @@ public sealed class FakeAppDbContext : IAppDbContext
     public DbSet<RecorridoSugerido> RecorridosSugeridos { get; } = new FakeDbSet<RecorridoSugerido>();
     public DbSet<EtapaRecorrido> EtapasRecorrido { get; } = new FakeDbSet<EtapaRecorrido>();
     public DbSet<BitacoraAdmin> BitacoraAdmin => BitacoraAdminSet;
+    public DbSet<VRecursoPublicado> VRecursosPublicados { get; } = new FakeDbSet<VRecursoPublicado>();
+    public DbSet<VParadaRuta> VParadasRuta { get; } = new FakeDbSet<VParadaRuta>();
+    public DbSet<VCupoVigente> VCupoVigente { get; } = new FakeDbSet<VCupoVigente>();
+
+    /// <summary>Devuelve el FakeDbSet del tipo indicado para sembrar o revisar datos en las pruebas.</summary>
+    public FakeDbSet<T> Set<T>() where T : class =>
+        GetType().GetProperties()
+            .Where(p => p.PropertyType == typeof(DbSet<T>) || p.PropertyType == typeof(FakeDbSet<T>))
+            .Select(p => p.GetValue(this))
+            .OfType<FakeDbSet<T>>()
+            .First();
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -76,6 +90,44 @@ public sealed class FakeAppDbContext : IAppDbContext
                     OperadorRutasSet.Items.Add(or);
             }
         }
+
+        var recursos = Set<Recurso>().Items;
+        foreach (var r in recursos.Where(r => r.IdRecurso == 0))
+        {
+            r.IdRecurso = recursos.Max(x => x.IdRecurso) + 1;
+            if (r.Negocio is not null) r.Negocio.IdRecurso = r.IdRecurso;
+            if (r.Lugar is not null) r.Lugar.IdRecurso = r.IdRecurso;
+            if (r.Evento is not null) r.Evento.IdRecurso = r.IdRecurso;
+            foreach (var rc in r.Categorias) rc.IdRecurso = r.IdRecurso;
+        }
+
+        var fotos = Set<Fotografia>().Items;
+        foreach (var f in fotos.Where(f => f.IdFotografia == 0))
+            f.IdFotografia = fotos.Max(x => x.IdFotografia) + 1;
+
+        var localidades = Set<Localidad>().Items;
+        foreach (var l in localidades.Where(l => l.IdLocalidad == 0))
+            l.IdLocalidad = localidades.Max(x => x.IdLocalidad) + 1;
+
+        var ubicaciones = Set<Ubicacion>().Items;
+        foreach (var u in ubicaciones.Where(u => u.IdUbicacion == 0))
+            u.IdUbicacion = ubicaciones.Max(x => x.IdUbicacion) + 1;
+
+        var itinerarios = Set<Itinerario>().Items;
+        foreach (var i in itinerarios.Where(i => i.IdItinerario == 0))
+            i.IdItinerario = itinerarios.Max(x => x.IdItinerario) + 1;
+
+        var actividades = Set<ActividadItinerario>().Items;
+        foreach (var a in actividades.Where(a => a.IdActividad == 0))
+        {
+            a.IdActividad = actividades.Max(x => x.IdActividad) + 1;
+            if (a.Itinerario is not null)
+                a.IdItinerario = a.Itinerario.IdItinerario;
+        }
+
+        var pendientes = RegistrosPendientesSet.Items;
+        foreach (var p in pendientes.Where(p => p.IdRegistro == 0))
+            p.IdRegistro = pendientes.Max(x => x.IdRegistro) + 1;
 
         foreach (var b in BitacoraAdminSet.Items)
         {
@@ -174,9 +226,41 @@ public sealed class HashFalso : IHashContrasena
     public bool Verificar(string contrasena, string hash) => hash == $"hash::{contrasena}";
 }
 
+/// <summary>Reloj fijo para pruebas; por defecto lunes 7 dic 2026, 12:00 en Yucatán (18:00 UTC).</summary>
+public sealed class RelojFijo(DateTime? ahoraUtc = null) : IReloj
+{
+    public DateTime AhoraUtc { get; set; } = ahoraUtc ?? new DateTime(2026, 12, 7, 18, 0, 0, DateTimeKind.Utc);
+}
+
 public sealed class RevocacionFalsa : IRevocacionToken
 {
     public HashSet<string> Revocados { get; } = [];
     public void Revocar(string jti, DateTime expiraEnUtc) => Revocados.Add(jti);
     public bool EstaRevocado(string jti) => Revocados.Contains(jti);
+}
+
+/// <summary>Guarda los códigos "enviados" para que la prueba los lea como si abriera el correo.</summary>
+public sealed class CorreoFalso : IEnvioCorreo
+{
+    public List<(string Correo, string Nombre, string Codigo, DateTime ExpiraEn)> Enviados { get; } = [];
+    public bool Fallar { get; set; }
+
+    public string UltimoCodigo(string correo) => Enviados.Last(e => e.Correo == correo).Codigo;
+
+    public Task EnviarCodigoVerificacionAsync(
+        string correo, string nombre, string codigo, DateTime expiraEnUtc, CancellationToken ct = default)
+    {
+        if (Fallar) throw new InvalidOperationException("SMTP caído (prueba)");
+        Enviados.Add((correo, nombre, codigo, expiraEnUtc));
+        return Task.CompletedTask;
+    }
+}
+
+/// <summary>Acepta cualquier dominio salvo los marcados como inexistentes.</summary>
+public sealed class ValidadorDominioFalso : IValidadorDominioCorreo
+{
+    public HashSet<string> SinCorreo { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+    public Task<bool> PuedeRecibirCorreoAsync(string dominio, CancellationToken ct = default) =>
+        Task.FromResult(!SinCorreo.Contains(dominio));
 }

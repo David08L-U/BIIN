@@ -30,10 +30,10 @@ Una **aplicación web progresiva (PWA)** para planear viajes entre municipios de
 | | |
 |---|---|
 | **Etapa** | Programación del MVP completo — **entrega funcionando el 3 dic 2026** (las fechas de sprints de Notion son de Estructura de Datos) |
-| **Hecho** | Esquema SQL (30 tablas, triggers, catálogos) · backend por capas con registro/login JWT · frontend con rutas, sesión y mapa |
+| **Hecho** | Esquema SQL (31 tablas, triggers, catálogos) · backend por capas con registro de viajeros **confirmado por código al correo**, login JWT, roles y administración de usuarios · **backend de catálogos, negocios, eventos, lugares y explorar (12), itinerarios (13) y administración de contenidos con bitácora (17.1)**, probado contra PostgreSQL · frontend con rutas, sesión y mapa |
 | **Hitos cerrados** | H1 Planeación · H2 Investigación de usuario · H3 Diagramas UML · H4 Prototipo de alta fidelidad |
 | **Próximos** | H5 Validación con stakeholders (20 nov 2026) · H6 Modelo de BD aprobado (9 dic 2026) · **H7 Arquitectura y repositorio (16 dic 2026), al cierre del Sprint 1** |
-| **Última actualización** | 11 nov 2026 |
+| **Última actualización** | 25 nov 2026 |
 
 ## Cómo ejecutar
 
@@ -46,6 +46,7 @@ Una **aplicación web progresiva (PWA)** para planear viajes entre municipios de
 | `ConnectionStrings:BiinAdmin` | La contraseña de `postgres`. Solo la usan los scripts de `database/` |
 | `ConnectionStrings:Biin` | Una contraseña inventada para `biin_app`, el usuario con el que se conecta la API. El script lo crea con esa contraseña |
 | `Jwt:Clave` | Una clave aleatoria de 32 caracteres o más |
+| `Correo:Servidor`, `Correo:Usuario`, `Correo:Contrasena` | El SMTP que manda el código de registro a los viajeros (por ejemplo `smtp.gmail.com`, puerto 587, con una contraseña de aplicación). **Opcional en local:** si lo dejas vacío, el código aparece en la consola de la API |
 
 Ese archivo no se sube a Git. **La plantilla `.example` nunca lleva datos reales.**
 
@@ -53,6 +54,24 @@ Ese archivo no se sube a Git. **La plantilla `.example` nunca lleva datos reales
 
 ```bash
 pwsh ./database/crear_bd.ps1
+```
+
+Los scripts funcionan con PowerShell 7 (`pwsh`) y con Windows PowerShell 5.1 (`powershell -File`). Buscan `psql` en `BIIN_PG_BIN`, en `C:Program FilesPostgreSQL8|17|16in` o en el `PATH`; si usas una instalación portable, define la variable antes de correrlos:
+
+```powershell
+$env:BIIN_PG_BIN = "C:utaapgsqlin"
+```
+
+Para comprobar que la base quedó completa (31 tablas, 3 vistas, `f_normalizar`, roles, permisos de `biin_app` y las pruebas SQL):
+
+```bash
+pwsh ./database/verificar_bd.ps1
+```
+
+**¿Ya tenías la base creada?** Agrégale la tabla de registros pendientes (confirmación de correo) sin perder datos:
+
+```bash
+pwsh ./database/actualizar_bd.ps1
 ```
 
 Con `-Recrear` borra la base y la crea de nuevo. Después crea el primer administrador; la contraseña se pide en pantalla:
@@ -80,7 +99,7 @@ pwsh ./database/crear_usuario.ps1 -Correo operador@biin.test -Nombre "Operador D
 **Pruebas de la base** (no dejan datos):
 
 ```bash
-psql -U postgres -d biin -f database/pruebas/001_reglas.sql -f database/pruebas/002_busqueda_vistas.sql
+psql -U postgres -d biin -f database/pruebas/001_reglas.sql -f database/pruebas/002_busqueda_vistas.sql -f database/pruebas/003_registros_pendientes.sql
 ```
 
 **3. Backend.**
@@ -90,6 +109,10 @@ dotnet run --project backend/src/Biin.Api --urls http://localhost:5080
 ```
 
 Comprobar en http://localhost:5080/api/salud que diga `"baseDeDatos": "ok"`. La especificación OpenAPI está en `/openapi/v1.json`.
+
+**Registro de viajeros con correo real.** Crear cuenta tiene dos pasos: el formulario manda un código de 6 dígitos al correo y la cuenta se crea solo al escribirlo (vale 15 minutos, 5 intentos). Si el correo no existe, no llega nada y no se crea la cuenta. Los dominios que no reciben correo se rechazan desde el formulario. Desde la pantalla del código se puede volver a corregir los datos o pedir otro código después de 60 segundos. Los administradores, operadores y colaboradores no pasan por esto: se crean con `crear_usuario.ps1`.
+
+En local, sin `Correo:Servidor`, busca en la consola de la API la línea `[DESARROLLO] ... Código para ...`. Para probar con correos inventados `@biin.test`, agrega `"VerificacionCorreo": { "ValidarDominio": false }` a tu `appsettings.Development.json`, porque el dominio `.test` no existe.
 
 **4. Frontend.** En otra terminal:
 
@@ -104,6 +127,15 @@ npm run dev --prefix frontend
 Abrir http://localhost:5173. Las llamadas a `/api` se reenvían al backend.
 
 **Pruebas:** `dotnet test backend/Biin.slnx` y `npm test --prefix frontend`.
+
+Las pruebas marcadas con `[FactBd]` corren contra un PostgreSQL real con la demo cargada (`crear_bd.ps1 -Demo`); sin la variable `BIIN_PRUEBAS_BD` se omiten. Crean datos con correos `@pruebas.biin.test` y los borran al terminar:
+
+```powershell
+$env:BIIN_PRUEBAS_BD = "Host=localhost;Port=5432;Database=biin;Username=biin_app;Password=LA_DE_TU_APPSETTINGS"
+dotnet test backend/Biin.slnx
+```
+
+Ejemplos de cada endpoint en `backend/src/Biin.Api/Biin.Api.http` y colecciones en `postman/` (Auth y Roles; Contenidos, Itinerarios y Administración).
 
 ## Documentación
 
