@@ -16,6 +16,15 @@ interface ItinerarioApiDto {
   borrador: BorradorGuardable
 }
 
+export interface ItinerarioAnteriorApiDto {
+  idItinerario: number
+  nombre: string
+  inicio: string
+  fin: string
+  guardadoEn: string
+  actividadesRegistradas: number
+}
+
 interface GuardarRequest {
   destino: Destino
   borrador: BorradorGuardable
@@ -58,6 +67,13 @@ export const itinerariosApi = {
     const datos = await api.get<ItinerarioApiDto[]>('/itinerarios')
     if (!Array.isArray(datos)) throw new Error('El servidor devolvió una lista inválida de itinerarios.')
     return datos.map(convertir)
+  },
+  async listarAnteriores(): Promise<ItinerarioAnteriorApiDto[]> {
+    const datos = await api.get<ItinerarioAnteriorApiDto[]>('/itinerarios/anteriores')
+    if (!Array.isArray(datos) || datos.some(item => !Number.isSafeInteger(item.idItinerario) || item.idItinerario <= 0)) {
+      throw new Error('El servidor devolvió una lista inválida de itinerarios anteriores.')
+    }
+    return datos
   },
   async obtener(id: string): Promise<ItinerarioGuardado> {
     const idServidor = idServidorItinerario(id)

@@ -29,6 +29,7 @@ beforeEach(() => {
     const cuerpo = init?.body ? JSON.parse(String(init.body)) as { destino: string; borrador: Record<string, unknown> } : null
     const respuesta = (status: number, data?: unknown) => new Response(data === undefined ? null : JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } })
     const dto = (registro: RegistroItinerario) => ({ ...registro })
+    if (metodo === 'GET' && url === '/api/itinerarios/anteriores') return respuesta(200, [])
     if (metodo === 'GET' && !id) return respuesta(200, registros.map(dto))
     if (metodo === 'GET') {
       const item = registros.find(r => r.idItinerario === id)

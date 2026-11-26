@@ -24,6 +24,8 @@ public sealed class ItinerariosPostgresFactAttribute : FactAttribute
     {
         if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("BIIN_TEST_CONNECTION_STRING")))
             Skip = "Configura BIIN_TEST_CONNECTION_STRING para ejecutar las pruebas de persistencia PostgreSQL.";
+        else if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("BIIN_TEST_FIXTURE_CONNECTION_STRING")))
+            Skip = "Configura BIIN_TEST_FIXTURE_CONNECTION_STRING con acceso de preparación solo a la base aislada.";
     }
 }
 
@@ -35,16 +37,29 @@ public sealed class ItinerariosPostgresTests
     public async Task CrudQuedaAisladoPorCuentaYSobreviveAlReinicioDeLaApi()
     {
         var connectionString = Environment.GetEnvironmentVariable("BIIN_TEST_CONNECTION_STRING")!;
+        var fixtureConnectionString = Environment.GetEnvironmentVariable("BIIN_TEST_FIXTURE_CONNECTION_STRING")!;
         var options = new DbContextOptionsBuilder<BiinDbContext>()
             .UseNpgsql(connectionString)
+            .UseSnakeCaseNamingConvention()
+            .Options;
+        var fixtureOptions = new DbContextOptionsBuilder<BiinDbContext>()
+            .UseNpgsql(fixtureConnectionString)
             .UseSnakeCaseNamingConvention()
             .Options;
         var usuarioA = NuevoUsuario("a");
         var usuarioB = NuevoUsuario("b");
 
-        await using (var db = new BiinDbContext(options))
+        await using (var db = new BiinDbContext(fixtureOptions))
         {
             db.Usuarios.AddRange(usuarioA, usuarioB);
+            await db.SaveChangesAsync();
+            db.Itinerarios.Add(new Itinerario
+            {
+                IdUsuario = usuarioA.IdUsuario,
+                Nombre = "Registro histórico sin borrador",
+                Inicio = new DateOnly(2024, 3, 15),
+                Fin = new DateOnly(2024, 3, 15)
+            });
             await db.SaveChangesAsync();
         }
 
@@ -52,6 +67,18 @@ public sealed class ItinerariosPostgresTests
         {
             var cuerpo = Request("ticul", ["taller-alfareria", "corredor-calzado"]);
             int idItinerario;
+            await using (var db = new BiinDbContext(options))
+            {
+                await db.Database.OpenConnectionAsync();
+                await using var command = db.Database.GetDbConnection().CreateCommand();
+                command.CommandText = "SELECT current_user, r.rolsuper, r.rolcreatedb, r.rolcreaterole FROM pg_roles r WHERE r.rolname = current_user";
+                await using var reader = await command.ExecuteReaderAsync();
+                Assert.True(await reader.ReadAsync());
+                Assert.Equal("biin_app", reader.GetString(0));
+                Assert.False(reader.GetBoolean(1));
+                Assert.False(reader.GetBoolean(2));
+                Assert.False(reader.GetBoolean(3));
+            }
             await using (var api = CrearApi(connectionString))
             using (var client = api.CreateClient())
             {
@@ -69,6 +96,14 @@ public sealed class ItinerariosPostgresTests
                 Assert.NotNull(listaInicial);
                 Assert.Single(listaInicial);
                 Assert.Equal(idItinerario, listaInicial[0].GetProperty("idItinerario").GetInt32());
+
+                var anteriores = await client.GetFromJsonAsync<JsonElement[]>("/api/itinerarios/anteriores");
+                Assert.NotNull(anteriores);
+                var anterior = Assert.Single(anteriores);
+                Assert.Equal("Registro histórico sin borrador", anterior.GetProperty("nombre").GetString());
+                Assert.Equal("2024-03-15", anterior.GetProperty("inicio").GetString());
+                Assert.Equal(0, anterior.GetProperty("actividadesRegistradas").GetInt32());
+                Assert.False(anterior.TryGetProperty("borrador", out _));
 
                 var duplicado = await client.PostAsJsonAsync("/api/itinerarios", cuerpo);
                 Assert.Equal(HttpStatusCode.OK, duplicado.StatusCode);
@@ -96,6 +131,7 @@ public sealed class ItinerariosPostgresTests
 
                 var listaAjena = await otraCuenta.GetFromJsonAsync<JsonElement[]>("/api/itinerarios");
                 Assert.Empty(listaAjena!);
+                Assert.Empty((await otraCuenta.GetFromJsonAsync<JsonElement[]>("/api/itinerarios/anteriores"))!);
                 Assert.Equal(HttpStatusCode.NotFound, (await otraCuenta.GetAsync($"/api/itinerarios/{idItinerario}")).StatusCode);
                 Assert.Equal(HttpStatusCode.NotFound, (await otraCuenta.PutAsJsonAsync($"/api/itinerarios/{idItinerario}", cuerpo)).StatusCode);
                 Assert.Equal(HttpStatusCode.NotFound, (await otraCuenta.DeleteAsync($"/api/itinerarios/{idItinerario}")).StatusCode);
@@ -106,11 +142,13 @@ public sealed class ItinerariosPostgresTests
                 Assert.Equal(new[] { "taller-alfareria" }, actualizadoJson.RootElement.GetProperty("borrador").GetProperty("seleccion").EnumerateArray().Select(x => x.GetString()).ToArray());
                 Assert.Equal(HttpStatusCode.NoContent, (await propietario.DeleteAsync($"/api/itinerarios/{idItinerario}")).StatusCode);
                 Assert.Empty((await propietario.GetFromJsonAsync<JsonElement[]>("/api/itinerarios"))!);
+                var anteriorConservado = await propietario.GetFromJsonAsync<JsonElement[]>("/api/itinerarios/anteriores");
+                Assert.Single(anteriorConservado!);
             }
         }
         finally
         {
-            await using var cleanup = new BiinDbContext(options);
+            await using var cleanup = new BiinDbContext(fixtureOptions);
             await cleanup.Usuarios.Where(x => x.IdUsuario == usuarioA.IdUsuario || x.IdUsuario == usuarioB.IdUsuario)
                 .ExecuteDeleteAsync();
         }

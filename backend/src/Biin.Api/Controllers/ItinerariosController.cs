@@ -12,6 +12,10 @@ namespace Biin.Api.Controllers;
 [Route("api/itinerarios")]
 public sealed class ItinerariosController(ItinerarioService itinerarios) : ControllerBase
 {
+    [HttpGet("anteriores")]
+    public Task<IReadOnlyList<ItinerarioAnteriorDto>> ListarAnteriores(CancellationToken ct) =>
+        itinerarios.ListarAnterioresAsync(User.IdUsuario(), ct);
+
     [HttpGet]
     public Task<IReadOnlyList<ItinerarioDto>> Listar(CancellationToken ct) =>
         itinerarios.ListarAsync(User.IdUsuario(), ct);

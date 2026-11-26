@@ -24,6 +24,14 @@ public sealed class ItinerarioService(IAppDbContext db)
         return registros.Select(Mapear).ToArray();
     }
 
+    public async Task<IReadOnlyList<ItinerarioAnteriorDto>> ListarAnterioresAsync(int idUsuario, CancellationToken ct) =>
+        await db.Itinerarios.AsNoTracking()
+            .Where(x => x.IdUsuario == idUsuario && x.Borrador == null)
+            .OrderByDescending(x => x.FechaCreacion)
+            .Select(x => new ItinerarioAnteriorDto(
+                x.IdItinerario, x.Nombre, x.Inicio, x.Fin, x.FechaCreacion, x.Actividades.Count))
+            .ToArrayAsync(ct);
+
     public async Task<ItinerarioDto> ObtenerAsync(int idUsuario, int id, CancellationToken ct)
     {
         var registro = await db.Itinerarios.AsNoTracking()

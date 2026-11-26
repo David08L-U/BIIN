@@ -12,3 +12,12 @@ public sealed record ItinerarioDto(
     DateTime GuardadoEn,
     string Destino,
     JsonElement Borrador);
+
+/// <summary>Metadata no destructiva para filas históricas que no tienen borrador JSONB.</summary>
+public sealed record ItinerarioAnteriorDto(
+    int IdItinerario,
+    string Nombre,
+    DateOnly Inicio,
+    DateOnly Fin,
+    DateTime GuardadoEn,
+    int ActividadesRegistradas);

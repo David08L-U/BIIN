@@ -5,6 +5,7 @@ Los itinerarios guardados por sesión autenticada usan la tabla `itinerarios` ex
 ## Rutas
 
 - `GET /api/itinerarios`: lista los itinerarios de la cuenta autenticada.
+- `GET /api/itinerarios/anteriores`: identifica registros históricos propios sin `borrador` JSONB mediante nombre, fechas y cantidad de actividades. No los convierte ni permite editarlos.
 - `POST /api/itinerarios`: crea un itinerario; una repetición exacta del mismo borrador devuelve el existente.
 - `GET /api/itinerarios/{id}`: consulta un itinerario propio.
 - `PUT /api/itinerarios/{id}`: actualiza el borrador propio sin cambiar su destino.
@@ -14,13 +15,13 @@ Las lecturas o cambios de un registro de otra cuenta responden como no encontrad
 
 ## Actualización incremental
 
-Para una base ya existente, aplicar `database/schema/005_itinerarios_jsonb.sql` con un rol de migración autorizado. El script solo agrega columnas e índice; no recrea tablas ni elimina registros. `database/crear_bd.ps1` también lo incorpora al flujo de creación inicial. Los registros históricos que no tengan `borrador` permanecen intactos y no aparecen en estos endpoints hasta que se migren explícitamente desde los datos históricos.
+Para una base ya existente, aplicar `database/schema/005_itinerarios_jsonb.sql` con un rol de migración autorizado. El script solo agrega columnas e índice; no recrea tablas ni elimina registros. `database/crear_bd.ps1` también lo incorpora al flujo de creación inicial. Los registros históricos que no tengan `borrador` permanecen intactos y se identifican en `GET /api/itinerarios/anteriores`; no se inventa un borrador para abrirlos.
 
 ## Datos locales
 
 Los borradores y guardados locales anteriores permanecen en el navegador. Mi viaje ofrece importarlos a la cuenta activa; cada importación se confirma de forma independiente, el servidor evita duplicados y los originales locales no se eliminan si falla la petición. El almacenamiento local está separado por el identificador de cuenta de la sesión.
 
-La prueba PostgreSQL de persistencia y aislamiento requiere una base de pruebas configurada y `BIIN_TEST_CONNECTION_STRING`; crea cuentas con correos `example.test` únicos y las elimina al terminar. No usar una cadena de producción para ejecutarla.
+La prueba PostgreSQL de persistencia y aislamiento requiere una base de pruebas configurada y dos variables locales: `BIIN_TEST_CONNECTION_STRING` para la API como `biin_app` y `BIIN_TEST_FIXTURE_CONNECTION_STRING` para sembrar y limpiar sus propios usuarios en esa misma base aislada. Crea cuentas con correos `example.test` únicos y las elimina al terminar. No usar una cadena de producción ni la base normal para ejecutarla. `database/seguridad/002_permisos_itinerarios_app.sql` concede solo permisos de ejecución sobre la tabla de itinerarios en la base a la que se conecte; no cambia roles globales ni contraseñas.
 
 ## Estado de validación del avance
 

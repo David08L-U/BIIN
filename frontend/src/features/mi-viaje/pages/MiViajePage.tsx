@@ -18,7 +18,7 @@ import { calcularPlanHomun } from '../plan/itinerarioHomun'
 import { urlBorradorTicul } from '../plan/borradorTicul'
 import type { BorradorTicul } from '../plan/itinerarioTicul'
 import { calcularPlanTicul } from '../plan/itinerarioTicul'
-import { itinerariosApi, claveBorradorItinerario, type BorradorGuardable } from '../api/itinerariosApi'
+import { itinerariosApi, claveBorradorItinerario, type BorradorGuardable, type ItinerarioAnteriorApiDto } from '../api/itinerariosApi'
 import { eliminarItinerarioLocal, leerItinerariosLocales, type ItinerarioGuardado } from '../storage/itinerariosLocales'
 import '../../../styles/itinerario-izamal.css'
 
@@ -111,6 +111,7 @@ export default function MiViajePage() {
 function MiViajeContenido({ idUsuario, cerrarSesion }: { idUsuario: number; cerrarSesion: () => void }) {
   const [locales, setLocales] = useState(() => leerItinerariosLocales(idUsuario))
   const [servidor, setServidor] = useState<ItinerarioGuardado[]>([])
+  const [anteriores, setAnteriores] = useState<ItinerarioAnteriorApiDto[]>([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [mensajeImportacion, setMensajeImportacion] = useState('')
@@ -120,7 +121,9 @@ function MiViajeContenido({ idUsuario, cerrarSesion }: { idUsuario: number; cerr
   const cargarServidor = useCallback(async () => {
     setCargando(true)
     try {
-      setServidor(await itinerariosApi.listar())
+      const [actuales, historicos] = await Promise.all([itinerariosApi.listar(), itinerariosApi.listarAnteriores()])
+      setServidor(actuales)
+      setAnteriores(historicos)
       setError(null)
     } catch (e) {
       if (e instanceof ApiError && e.estado === 401) cerrarSesion()
@@ -188,7 +191,7 @@ function MiViajeContenido({ idUsuario, cerrarSesion }: { idUsuario: number; cerr
       <button type="button" className="iz-plan-primario" disabled={importando} onClick={() => void importarLocales()}>{importando ? 'Importando…' : `Importar ${localesPendientes.length} a mi cuenta`}</button>
       {mensajeImportacion && <p role="status" aria-live="polite">{mensajeImportacion}</p>}
     </section>}
-    {!cargando && !error && elementos.length === 0 && <p role="status">Todavía no hay itinerarios guardados para esta cuenta.</p>}
+    {!cargando && !error && elementos.length === 0 && anteriores.length === 0 && <p role="status">Todavía no hay itinerarios guardados para esta cuenta.</p>}
     {!cargando && elementos.length > 0 && <ul>{elementos.map(item => {
       const destino = nombreDestino(item)
       const local = !item.id.startsWith('servidor:')
@@ -201,6 +204,14 @@ function MiViajeContenido({ idUsuario, cerrarSesion }: { idUsuario: number; cerr
         <EliminarViaje item={item} alEliminar={eliminar} />
       </li>
     })}</ul>}
+    {!cargando && !error && anteriores.length > 0 && <section className="iz-plan-tarjeta" aria-labelledby="itinerarios-anteriores-titulo">
+      <h2 id="itinerarios-anteriores-titulo">Itinerarios anteriores</h2>
+      <p>Estos registros se conservaron en su formato original. Esta versión no contiene el borrador necesario para reabrirlos o editarlos; no se modificaron ni se completaron con datos supuestos.</p>
+      <ul>{anteriores.map(item => <li key={item.idItinerario}>
+        <h3>{item.nombre}</h3>
+        <p>{item.inicio}{item.fin !== item.inicio ? ` – ${item.fin}` : ''} · {item.actividadesRegistradas} actividades registradas</p>
+      </li>)}</ul>
+    </section>}
     <Link className="iz-plan-primario" to="/rutas/izamal">Preparar otro itinerario en Izamal</Link>
     <Link className="iz-plan-primario" to="/rutas/valladolid">Preparar otro itinerario en Valladolid</Link>
     <Link className="iz-plan-primario" to="/rutas/tekit">Preparar otro itinerario en Tekit</Link>
