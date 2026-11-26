@@ -1,6 +1,7 @@
 import { duracionPlan } from './duracion'
 import { lugaresTicul, MARGEN_TICUL, REGRESO_TICUL } from '../data/lugaresTicul'
 import { validarConfiguracion } from './itinerarioIzamal'
+import { hoyLocal } from './tiempoLocal'
 import type { PlanIzamal } from './itinerarioIzamal'
 import { bloquesRecorrido, recomendarRecorrido, resumirRecorrido } from './recorridoSecuencial'
 
@@ -21,15 +22,15 @@ export interface BorradorTicul {
 }
 export type PlanTicul = PlanIzamal
 export function esModalidadTicul(valor: string): valor is ModalidadTicul { return Object.hasOwn(modalidadesTicul, valor) }
-export function validarConfiguracionTicul(c: ConfiguracionTicul): string[] {
-  const errores = validarConfiguracion({ ...c, estancia: 'medio-dia' })
+export function validarConfiguracionTicul(c: ConfiguracionTicul, hoy = hoyLocal()): string[] {
+  const errores = validarConfiguracion({ ...c, estancia: 'medio-dia' }, hoy)
   if (!esModalidadTicul(c.estancia)) errores.unshift('Elige una modalidad válida: medio día, Día completo (Ruta Puuc) o Tour de Compras.')
   if ((c.estancia === 'dia-completo' || c.estancia === 'tour-compras') && !c.minutosDisponibles) errores.push('Esta modalidad no tiene duración fija. Indica cuánto tiempo tienes.')
   return errores
 }
 export function resumirSeleccionTicul(ids: string[]) { return resumirRecorrido(lugaresTicul, ids, REGRESO_TICUL, MARGEN_TICUL) }
-export function calcularPlanTicul(b: BorradorTicul): { plan: PlanTicul | null; errores: string[] } {
-  const errores = validarConfiguracionTicul(b.configuracion)
+export function calcularPlanTicul(b: BorradorTicul, hoy = hoyLocal()): { plan: PlanTicul | null; errores: string[] } {
+  const errores = validarConfiguracionTicul(b.configuracion, hoy)
   if (b.modo !== 'recomendado' && b.modo !== 'personalizado') errores.push('Elige un modo válido: recomendado o personalizado. Revisa los parámetros repetidos o inválidos del enlace.')
   if (new Set(b.seleccion).size !== b.seleccion.length || b.seleccion.some(id => !lugaresTicul.some(l => l.id === id))) errores.push('La selección contiene lugares desconocidos o repetidos. Corrige la selección o restablécela.')
   if (errores.length) return { plan: null, errores }

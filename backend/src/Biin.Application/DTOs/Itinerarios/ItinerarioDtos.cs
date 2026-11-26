@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace Biin.Application.DTOs.Itinerarios;
 
-public sealed record GuardarItinerarioRequest(string Destino, JsonElement Borrador);
+public sealed record GuardarItinerarioRequest(string Destino, JsonElement Borrador, string? ZonaHoraria = null);
 
 public sealed record ItinerarioDto(
     int IdItinerario,

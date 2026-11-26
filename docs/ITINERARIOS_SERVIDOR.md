@@ -13,6 +13,8 @@ Los itinerarios guardados por sesión autenticada usan la tabla `itinerarios` ex
 
 Las lecturas o cambios de un registro de otra cuenta responden como no encontrado.
 
+Las operaciones de guardar y editar reciben `zonaHoraria` como identificador IANA informado por el navegador (por ejemplo, `America/Merida`). La API compara la fecha inicial del plan con la fecha actual en esa zona; rechaza nuevas generaciones o reprogramaciones anteriores a hoy. Consultar o eliminar un guardado histórico no aplica esta restricción.
+
 ## Actualización incremental
 
 Para una base ya existente, aplicar `database/schema/005_itinerarios_jsonb.sql` con un rol de migración autorizado. El script solo agrega columnas e índice; no recrea tablas ni elimina registros. `database/crear_bd.ps1` también lo incorpora al flujo de creación inicial. Los registros históricos que no tengan `borrador` permanecen intactos y se identifican en `GET /api/itinerarios/anteriores`; no se inventa un borrador para abrirlos.

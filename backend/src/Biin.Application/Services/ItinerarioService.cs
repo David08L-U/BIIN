@@ -127,6 +127,8 @@ public sealed class ItinerarioService(IAppDbContext db)
             !borrador.TryGetProperty("seleccion", out var seleccion) || seleccion.ValueKind != JsonValueKind.Array)
             throw new ReglaNegocioException("Genera un itinerario válido con fecha y selección antes de guardarlo.");
 
+        FechaItinerario.ValidarNoPasada(inicio, request.ZonaHoraria);
+
         var modo = modoJson.GetString()!;
         if (modo is not ("recomendado" or "personalizado"))
             throw new ReglaNegocioException("La modalidad del itinerario no es válida.");

@@ -28,6 +28,7 @@ export interface ItinerarioAnteriorApiDto {
 interface GuardarRequest {
   destino: Destino
   borrador: BorradorGuardable
+  zonaHoraria: string
 }
 
 function destinoDe(borrador: BorradorGuardable): Destino {
@@ -39,6 +40,7 @@ function preparar(borrador: BorradorGuardable): GuardarRequest {
   const destino = destinoDe(borrador)
   return {
     destino,
+    zonaHoraria: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
     borrador: { ...datos, destino, generado: true } as BorradorGuardable,
   }
 }

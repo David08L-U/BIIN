@@ -1,6 +1,6 @@
 import { duracionPlan, leerDuracion } from './duracion'
 import { lugaresIzamal, MARGEN_FINAL_MINUTOS, ordenRecomendadoIzamal, TRASLADO_FINAL_MINUTOS } from '../data/lugaresIzamal'
-import { inicioLocal as construirInicioLocal, instanteLocal, horaLocal } from './tiempoLocal'
+import { fechaHoyOFutura, inicioLocal as construirInicioLocal, instanteLocal, horaLocal, hoyLocal } from './tiempoLocal'
 import { bloquesRecorrido, recomendarRecorrido, resumirRecorrido } from './recorridoSecuencial'
 
 export type EstanciaIzamal = 'medio-dia' | 'dia-completo' | 'tarde-magica'
@@ -48,10 +48,11 @@ export function inicioLocal(config: ConfiguracionViaje): Date | null {
   return construirInicioLocal(config)
 }
 
-export function validarConfiguracion(config: ConfiguracionViaje): string[] {
+export function validarConfiguracion(config: ConfiguracionViaje, hoy = hoyLocal()): string[] {
   const errores: string[] = []
   const soloFecha = inicioLocal({ ...config, horaInicio: '12:00' })
   if (!soloFecha) errores.push('Elige una fecha válida para la visita.')
+  else if (!fechaHoyOFutura(config.fecha, hoy)) errores.push('La fecha de visita ya pasó. Elige hoy o un día futuro.')
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(config.horaInicio)) errores.push('Elige una hora de inicio válida.')
   else if (soloFecha && !inicioLocal(config)) errores.push('Esa hora no existe en la zona local del navegador. Elige otra hora.')
   if (leerDuracion(config.minutosDisponibles) === null) errores.push('El tiempo disponible debe ser un número entero entre 15 min y 12 h.')
@@ -66,8 +67,8 @@ export function recomendarLugares(minutos: number): string[] {
   return recomendarRecorrido(lugaresIzamal, ordenRecomendadoIzamal, minutos, TRASLADO_FINAL_MINUTOS, MARGEN_FINAL_MINUTOS)
 }
 
-export function calcularPlan(borrador: BorradorIzamal): ResultadoPlan {
-  const errores = validarConfiguracion(borrador.configuracion)
+export function calcularPlan(borrador: BorradorIzamal, hoy = hoyLocal()): ResultadoPlan {
+  const errores = validarConfiguracion(borrador.configuracion, hoy)
   if (errores.length) return { plan: null, errores }
   const disponibles = Number(borrador.configuracion.minutosDisponibles)
   const seleccion = borrador.modo === 'recomendado' ? recomendarLugares(disponibles) : borrador.seleccion

@@ -1,6 +1,6 @@
 import { duracionPlan, leerDuracion } from './duracion'
 import type { BloquePlan, ModoItinerario } from './itinerarioIzamal'
-import { fechaLocal, inicioLocal, instanteLocal, siguienteFechaLocal } from './tiempoLocal'
+import { fechaHoyOFutura, fechaLocal, inicioLocal, instanteLocal, hoyLocal, siguienteFechaLocal } from './tiempoLocal'
 import { bloquesRecorrido, resumirRecorrido } from './recorridoSecuencial'
 import type { ParadaEstimada } from './recorridoSecuencial'
 
@@ -45,7 +45,7 @@ export function ventanasJornadas(config: ConfiguracionJornadas): VentanaJornada[
   if (config.estancia === 'fin-de-semana') ventanas.push({ dia: 2, fecha: siguienteFechaLocal(config.fecha), horaInicio: config.horaInicioDia2, minutosDisponibles: config.minutosDia2 })
   return ventanas
 }
-export function validarConfiguracionJornadas(config: ConfiguracionJornadas): string[] {
+export function validarConfiguracionJornadas(config: ConfiguracionJornadas, hoy = hoyLocal()): string[] {
   const errores: string[] = []
   if (!esEstanciaJornadas(config.estancia)) errores.push('Selecciona una estancia válida: medio día, día completo o fin de semana.')
   for (const ventana of ventanasJornadas(config)) {
@@ -53,6 +53,7 @@ export function validarConfiguracionJornadas(config: ConfiguracionJornadas): str
     const fecha = inicioLocal({ ...ventana, horaInicio: '12:00' })
     const inicio = inicioLocal(ventana)
     if (!fecha) errores.push(prefijo + 'elige una fecha válida para la visita.')
+    else if (!fechaHoyOFutura(ventana.fecha, hoy)) errores.push(prefijo + 'la fecha ya pasó. Elige hoy o un día futuro.')
     if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(ventana.horaInicio)) errores.push(prefijo + 'elige una hora de inicio válida.')
     else if (fecha && !inicio) errores.push(prefijo + 'esa hora no existe en la zona local del navegador.')
     const minutos = leerDuracion(ventana.minutosDisponibles)
@@ -92,8 +93,8 @@ export function recomendarJornadas(ventanas: VentanaJornada[], datos: DatosJorna
   return mejor
 }
 
-export function calcularPlanJornadas(borrador: BorradorJornadas, datos: DatosJornadas): ResultadoJornadas {
-  const errores = validarConfiguracionJornadas(borrador.configuracion)
+export function calcularPlanJornadas(borrador: BorradorJornadas, datos: DatosJornadas, hoy = hoyLocal()): ResultadoJornadas {
+  const errores = validarConfiguracionJornadas(borrador.configuracion, hoy)
   if (!esModoItinerario(borrador.modo)) errores.push('Selecciona un modo válido: recomendado o personalizado.')
   const ventanas = ventanasJornadas(borrador.configuracion)
   const ids = borrador.seleccion.map(s => s.lugarId)

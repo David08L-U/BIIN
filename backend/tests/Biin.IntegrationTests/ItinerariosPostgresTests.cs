@@ -66,6 +66,7 @@ public sealed class ItinerariosPostgresTests
         try
         {
             var cuerpo = Request("ticul", ["taller-alfareria", "corredor-calzado"]);
+            var fechaEsperada = FechaLocalMerida().AddDays(7);
             int idItinerario;
             await using (var db = new BiinDbContext(options))
             {
@@ -97,6 +98,9 @@ public sealed class ItinerariosPostgresTests
                 Assert.Single(listaInicial);
                 Assert.Equal(idItinerario, listaInicial[0].GetProperty("idItinerario").GetInt32());
 
+                var fechaPasada = Request("ticul", ["taller-alfareria"], FechaLocalMerida().AddDays(-1));
+                Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsJsonAsync("/api/itinerarios", fechaPasada)).StatusCode);
+
                 var anteriores = await client.GetFromJsonAsync<JsonElement[]>("/api/itinerarios/anteriores");
                 Assert.NotNull(anteriores);
                 var anterior = Assert.Single(anteriores);
@@ -125,7 +129,7 @@ public sealed class ItinerariosPostgresTests
                 var reapertura = await propietario.GetAsync($"/api/itinerarios/{idItinerario}");
                 Assert.Equal(HttpStatusCode.OK, reapertura.StatusCode);
                 using var reaperturaJson = JsonDocument.Parse(await reapertura.Content.ReadAsStringAsync());
-                Assert.Equal("2026-12-02", reaperturaJson.RootElement.GetProperty("borrador").GetProperty("configuracion").GetProperty("fecha").GetString());
+                Assert.Equal(fechaEsperada.ToString("yyyy-MM-dd"), reaperturaJson.RootElement.GetProperty("borrador").GetProperty("configuracion").GetProperty("fecha").GetString());
                 Assert.Equal(new[] { "taller-alfareria", "corredor-calzado" },
                     reaperturaJson.RootElement.GetProperty("borrador").GetProperty("seleccion").EnumerateArray().Select(x => x.GetString()).ToArray());
 
@@ -154,18 +158,21 @@ public sealed class ItinerariosPostgresTests
         }
     }
 
-    private static object Request(string destino, string[] seleccion) => new
+    private static object Request(string destino, string[] seleccion, DateOnly? fecha = null) => new
     {
         destino,
+        zonaHoraria = "America/Merida",
         borrador = new
         {
             destino,
             modo = "personalizado",
             generado = true,
-            configuracion = new { estancia = "tour-compras", fecha = "2026-12-02", horaInicio = "09:00", minutosDisponibles = "240" },
+            configuracion = new { estancia = "tour-compras", fecha = (fecha ?? FechaLocalMerida().AddDays(7)).ToString("yyyy-MM-dd"), horaInicio = "09:00", minutosDisponibles = "240" },
             seleccion
         }
     };
+
+    private static DateOnly FechaLocalMerida() => DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("America/Merida")).DateTime);
 
     private static Usuario NuevoUsuario(string sufijo) => new()
     {

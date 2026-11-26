@@ -14,6 +14,19 @@ export function fechaLocal(fecha: Date): string {
   return `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`
 }
 
+/** Fecha de hoy según el calendario local, sin convertirla primero a UTC. */
+export function hoyLocal(ahora = new Date()): string {
+  return fechaLocal(ahora)
+}
+
+export function fechaHoyOFutura(fecha: string, hoy = hoyLocal()): boolean {
+  return Boolean(inicioLocal({ fecha, horaInicio: '12:00' })) && fecha >= hoy
+}
+
+export function fechaPasadaLocal(fecha: string, hoy = hoyLocal()): boolean {
+  return Boolean(inicioLocal({ fecha, horaInicio: '12:00' })) && fecha < hoy
+}
+
 export function siguienteFechaLocal(fecha: string): string {
   const actual = inicioLocal({ fecha, horaInicio: '12:00' })
   if (!actual) return ''
