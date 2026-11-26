@@ -28,7 +28,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       usuario,
       cargando,
       iniciarSesion: async (datos) => aplicar(await authApi.login(datos)),
-      registrarse: async (datos) => aplicar(await authApi.registro(datos)),
+      registrarse: (datos) => authApi.registro(datos),
+      verificarRegistro: async (datos) => aplicar(await authApi.verificarRegistro(datos)),
+      reenviarCodigo: (correo) => authApi.reenviarCodigo(correo),
       cerrarSesion: () => {
         tokenAlmacenado.borrar()
         setUsuario(null)
