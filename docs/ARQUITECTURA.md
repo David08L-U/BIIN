@@ -159,6 +159,10 @@ BIIN/
 
 | Ruta | Acceso | Qué hace |
 |---|---|---|
+| `POST /api/auth/registro` | Público | RF01, paso 1: valida datos y dominio del correo, guarda el registro pendiente y manda un código de 6 dígitos (202). **No crea la cuenta** |
+| `POST /api/auth/registro/verificar` | Público | RF01, paso 2: con el código correcto crea la cuenta como viajero e inicia sesión (201) |
+| `POST /api/auth/registro/reenviar` | Público | Manda otro código si ya pasaron 60 s; el anterior deja de servir (202) |
+| `POST /api/auth/login`, `GET /api/auth/yo`, `POST /api/auth/logout`, `PUT /api/auth/contrasena` | Público / Sesión | CU-01: sesión JWT con revocación |
 | `GET /api/catalogos/{categorias,municipios,localidades}` | Público | Filtros; localidades buscan sin acentos |
 | `GET /api/negocios`, `/api/negocios/{id}` | Público | RF05: localidad, municipio, categoría, presupuesto, texto; horarios y «abierto ahora» |
 | `GET /api/eventos`, `/api/eventos/{id}` | Público | RF06: próximos por defecto, rango de días en hora de Yucatán, estado (incluye cancelados) |
@@ -167,6 +171,16 @@ BIIN/
 | `/api/itinerarios[/{id}[/actividades…]]` | Viajero | RF09: CRUD, actividades, reordenar, traslados estimados y advertencias |
 | `/api/admin/contenidos…` | Administrador | RF12: crear/editar negocios, lugares y eventos, publicar, archivar, cancelar evento, horarios, fotos |
 | `/api/admin/{localidades,ubicaciones,bitacora}` | Administrador | Geografía para contenidos y bitácora 17.1.5 |
+
+**Confirmación de correo al registrarse (solo viajeros, RF01, RNF04):**
+
+- El viajero llena el formulario y recibe un código de 6 dígitos que vale 15 minutos. Solo se guarda el hash del código (BCrypt). Si el correo no existe, el código nunca llega y la cuenta nunca se crea.
+- Antes de enviar, `DnsValidadorDominioCorreo` revisa que el dominio tenga MX (o A/AAAA) y rechaza dominios inexistentes o con MX nulo. Si el DNS no responde, deja pasar: el código sigue siendo obligatorio. Se apaga con `VerificacionCorreo:ValidarDominio = false`.
+- **Regresar a corregir:** volver a registrarse con el mismo correo reemplaza nombre y contraseña. Si no han pasado 60 s no reenvía y el código que ya llegó sigue sirviendo. Con otro correo se crea otro pendiente. Un registro sin confirmar nunca bloquea el correo.
+- Cinco códigos incorrectos o el vencimiento anulan el pendiente. El login con un pendiente vigente avisa que falta confirmar, solo si la contraseña coincide.
+- El envío lo hace `SmtpEnvioCorreo` con la sección `Correo` (servidor, puerto, usuario, contraseña, SSL, remitente). Sin `Correo:Servidor`, en Development el código se escribe en la consola de la API (`RegistroEnvioCorreo`); en cualquier otro ambiente el registro responde 503.
+- Administradores, operadores y colaboradores no pasan por aquí: se crean con `crear_usuario.ps1` o desde `/api/admin/usuarios`.
+- En el frontend, `RegistroPage` muestra `features/auth/components/VerificacionCorreo.tsx` después del formulario, con «Reenviar código» (cuenta regresiva) y «Volver y corregir mis datos», que conserva lo escrito.
 
 **Advertencias de un itinerario** (no bloquean, se devuelven en el detalle): `conflicto_horario`, `traslado_insuficiente`, `fuera_de_fechas`, `fuera_de_horario`, `evento_cancelado`, `contenido_no_disponible`. El traslado es una estimación (haversine × 1.3 a 40 km/h) y no sustituye horarios ni recorridos reales.
 
@@ -308,6 +322,8 @@ Reglas adicionales:
 - **3 tablas agregadas al MVP** (en `database/schema/002_ampliaciones_mvp.sql`), con lo que el total queda en **30**:
   - `recorridos_sugeridos` y `etapas_recorrido` → CU-13 Recorridos sugeridos.
   - `bitacora_admin` → paquete 17.1.5 Bitácora de cambios administrativos.
+- **1 tabla para confirmar correos** (en `database/schema/005_verificacion_correo.sql`), con lo que el total queda en **31**:
+  - `registros_pendientes` → RF01: nombre, correo, hash de la contraseña, hash del código, intentos, `enviado_en` y `expira_en`. La cuenta en `usuarios` se crea solo al confirmar el código; si el correo no existe, el código nunca llega y la fila caduca. Índice único sobre `lower(correo)`.
 - Quién y cuándo reportó cupo (11.1.6) ya queda en `reportes_cupo.id_autor` y `registrado_en`.
 - Los estados (`tipo`, `estado_publicacion`, `estado_evento`, `salidas.estado`) son `varchar` con `CHECK`, guardados en minúsculas y snake_case (`en_curso`).
 - **El esquema vive en SQL**, no en migraciones de EF Core: `database/schema` → `database/triggers` → `database/seed`. EF Core solo mapea.
@@ -320,9 +336,10 @@ Reglas adicionales:
 2. `database/schema/002_ampliaciones_mvp.sql` — 3 tablas del MVP.
 3. `database/schema/003_busqueda.sql` — extensiones `unaccent`, `pg_trgm` y `pgcrypto`; función `f_normalizar()` e índices de búsqueda.
 4. `database/schema/004_vistas.sql` — vistas de consulta.
-5. `database/triggers/001_reglas.sql` — tipo de detalle, horarios de visita, cupo ≤ capacidad, operador autorizado, `actualizado_en`.
-6. `database/seed/001_catalogos.sql` — roles y categorías.
-7. `database/seguridad/001_usuario_app.sql` — crea `biin_app` y le da permisos.
+5. `database/schema/005_verificacion_correo.sql` — registros de viajeros que esperan confirmar su correo.
+6. `database/triggers/001_reglas.sql` — tipo de detalle, horarios de visita, cupo ≤ capacidad, operador autorizado, `actualizado_en`.
+7. `database/seed/001_catalogos.sql` — roles y categorías.
+8. `database/seguridad/001_usuario_app.sql` — crea `biin_app` y le da permisos.
 
 ### 4.9 Búsqueda sin acentos
 
@@ -350,7 +367,7 @@ SELECT nombre FROM localidades ORDER BY similarity(f_normalizar(nombre), f_norma
 | `postgres` (`ConnectionStrings:BiinAdmin`) | Solo los scripts de `database/` | Todo |
 | `biin_app` (`ConnectionStrings:Biin`) | La API | Leer, insertar, actualizar y borrar datos. **No** puede crear, alterar ni borrar tablas, ni crear bases |
 
-Los usuarios de la aplicación se crean desde la API (registro, siempre como viajero) o con `database/crear_usuario.ps1` para administradores, operadores y colaboradores. Las contraseñas se guardan con BCrypt en ambos casos.
+Los usuarios de la aplicación se crean desde la API (registro, siempre como viajero y **solo después de confirmar el código que llega al correo**) o con `database/crear_usuario.ps1` para administradores, operadores y colaboradores. Las contraseñas se guardan con BCrypt en ambos casos.
 
 ### 4.12 Scripts de `database/`
 
@@ -359,11 +376,13 @@ Los usuarios de la aplicación se crean desde la API (registro, siempre como via
 | `crear_bd.ps1 [-Recrear] [-Demo]` | Crea la base completa; con `-Demo` carga también la demo |
 | `cargar_demo.ps1 [-Borrar]` | Carga o borra los datos de demostración de Homún |
 | `crear_usuario.ps1 -Correo -Nombre -Rol [-Rutas]` | Crea un usuario con rol; pide la contraseña en pantalla |
-| `verificar_bd.ps1` | Comprueba 30 tablas, 3 vistas, `f_normalizar`, roles y permisos de `biin_app`, y ejecuta `pruebas/*.sql` |
+| `actualizar_bd.ps1` | Aplica a una base existente los scripts nuevos (hoy `005_verificacion_correo.sql`) y renueva los permisos de `biin_app`, sin borrar datos |
+| `verificar_bd.ps1` | Comprueba 31 tablas, 3 vistas, `f_normalizar`, roles y permisos de `biin_app`, y ejecuta `pruebas/*.sql` |
 | `respaldar_bd.ps1` | Respaldo `.dump` en `database/backups/` (paquete 8.2.4) |
 | `restaurar_bd.ps1 [-Archivo]` | Restaura un respaldo; pide confirmación |
 | `pruebas/001_reglas.sql` | 15 pruebas de restricciones y triggers |
 | `pruebas/002_busqueda_vistas.sql` | 9 pruebas de búsqueda y vistas |
+| `pruebas/003_registros_pendientes.sql` | 6 pruebas de la confirmación de correo |
 
 Todos leen las conexiones de `appsettings.Development.json`; ninguna contraseña va en el repositorio ni en la línea de comandos. Se guardan en UTF-8 con BOM y mandan el SQL con acentos por la entrada estándar, para que funcionen igual en PowerShell 7 y en Windows PowerShell 5.1. `psql` se busca en `BIIN_PG_BIN`, en las carpetas de PostgreSQL 18, 17 o 16 y en el `PATH`.
 
