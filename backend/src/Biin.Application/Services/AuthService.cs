@@ -62,6 +62,66 @@ public class AuthService(
         return RespuestaPendiente(pendiente);
     }
 
+    /// <summary>
+    /// Segundo paso del registro: si el código es correcto crea la cuenta como viajero e inicia sesión.
+    /// Tras <see cref="VerificacionCorreoOptions.IntentosMaximos"/> códigos incorrectos o al vencer,
+    /// el registro pendiente se anula y hay que registrarse de nuevo.
+    /// </summary>
+    public async Task<AuthResponse> VerificarRegistroAsync(VerificarRegistroRequest req, CancellationToken ct = default)
+    {
+        var correo = ValidacionUsuario.NormalizarCorreo(req.Correo);
+        var codigo = (req.Codigo ?? string.Empty).Trim();
+        var ahora = reloj.AhoraUtc;
+
+        var pendiente = await BuscarPendienteAsync(correo, ct)
+            ?? throw new NoEncontradoException("No hay un registro pendiente para ese correo. Regístrate de nuevo.");
+
+        if (pendiente.Vencido(ahora))
+        {
+            db.RegistrosPendientes.Remove(pendiente);
+            await db.SaveChangesAsync(ct);
+            throw new ReglaNegocioException("El código venció. Regístrate de nuevo para recibir otro.");
+        }
+
+        if (!hash.Verificar(codigo, pendiente.HashCodigo))
+        {
+            pendiente.Intentos++;
+            var restantes = _verificacion.IntentosMaximos - pendiente.Intentos;
+            if (restantes <= 0)
+                db.RegistrosPendientes.Remove(pendiente);
+            await db.SaveChangesAsync(ct);
+
+            throw new ReglaNegocioException(restantes <= 0
+                ? "Escribiste un código incorrecto demasiadas veces. Regístrate de nuevo para recibir otro."
+                : $"El código no es correcto. Te quedan {restantes} {(restantes == 1 ? "intento" : "intentos")}.");
+        }
+
+        if (await db.Usuarios.AnyAsync(u => u.Correo.ToLower() == correo, ct))
+        {
+            db.RegistrosPendientes.Remove(pendiente);
+            await db.SaveChangesAsync(ct);
+            throw new ConflictoException("Ya existe una cuenta con ese correo.");
+        }
+
+        var rolViajero = await db.Roles.SingleOrDefaultAsync(r => r.Nombre == Roles.Viajero, ct)
+            ?? throw new ReglaNegocioException("Falta el rol 'viajero'. Ejecuta database/seed/001_catalogos.sql.");
+
+        var usuario = new Usuario
+        {
+            Nombre = pendiente.Nombre,
+            Correo = pendiente.Correo,
+            HashContrasena = pendiente.HashContrasena,
+            FechaRegistro = ahora
+        };
+        usuario.Roles.Add(new UsuarioRol { Usuario = usuario, Rol = rolViajero, IdRol = rolViajero.IdRol });
+
+        db.Usuarios.Add(usuario);
+        db.RegistrosPendientes.Remove(pendiente);
+        await db.SaveChangesAsync(ct);
+
+        return CrearRespuesta(usuario, [Roles.Viajero]);
+    }
+
     public async Task<AuthResponse> IniciarSesionAsync(LoginRequest req, CancellationToken ct = default)
     {
         var correo = req.Correo.Trim().ToLowerInvariant();

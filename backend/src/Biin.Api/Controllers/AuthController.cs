@@ -29,6 +29,21 @@ public class AuthController(AuthService auth) : ControllerBase
     public async Task<ActionResult<RegistroPendienteResponse>> Registrar(RegistroRequest req, CancellationToken ct) =>
         Accepted(await auth.RegistrarAsync(req, ct));
 
+    /// <summary>Registro de viajero, paso 2: confirma el código, crea la cuenta e inicia sesión.</summary>
+    [AllowAnonymous]
+    [HttpPost("registro/verificar")]
+    [EnableRateLimiting(PoliticasRateLimit.Autenticacion)]
+    [ProducesResponseType<AuthResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+    public async Task<ActionResult<AuthResponse>> VerificarRegistro(VerificarRegistroRequest req, CancellationToken ct)
+    {
+        var respuesta = await auth.VerificarRegistroAsync(req, ct);
+        return CreatedAtAction(nameof(Yo), respuesta);
+    }
+
     [AllowAnonymous]
     [HttpPost("login")]
     [EnableRateLimiting(PoliticasRateLimit.Autenticacion)]

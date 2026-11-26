@@ -84,6 +84,80 @@ public class AuthServiceTests
     }
 
     [Fact]
+    public async Task Verificar_con_codigo_correcto_crea_solo_viajero_inicia_sesion_y_borra_el_pendiente()
+    {
+        var codigo = await RegistrarYLeerCodigoAsync("María Uc", "maria@biin.test", "Secreto123");
+
+        var resp = await _servicio.VerificarRegistroAsync(new VerificarRegistroRequest("MARIA@biin.test", $" {codigo} "));
+
+        Assert.Equal("María Uc", resp.Usuario.Nombre);
+        Assert.Equal("maria@biin.test", resp.Usuario.Correo);
+        Assert.Equal([Roles.Viajero], resp.Usuario.Roles);
+        Assert.False(string.IsNullOrWhiteSpace(resp.Token));
+
+        var guardado = Assert.Single(_db.UsuariosSet.Items);
+        Assert.True(_hash.Verificar("Secreto123", guardado.HashContrasena));
+        Assert.Equal(_reloj.AhoraUtc, guardado.FechaRegistro);
+        Assert.Empty(_db.RegistrosPendientesSet.Items);
+    }
+
+    [Fact]
+    public async Task Verificar_con_codigo_incorrecto_descuenta_intentos_y_al_agotarlos_anula_el_registro()
+    {
+        var codigo = await RegistrarYLeerCodigoAsync("Ana", "ana@biin.test", "Clave1234");
+        var malo = codigo == "000000" ? "111111" : "000000";
+
+        var primero = await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.VerificarRegistroAsync(new VerificarRegistroRequest("ana@biin.test", malo)));
+        Assert.Contains("Te quedan 4 intentos", primero.Message);
+
+        for (var i = 0; i < 3; i++)
+            await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+                _servicio.VerificarRegistroAsync(new VerificarRegistroRequest("ana@biin.test", malo)));
+        var ultimo = await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.VerificarRegistroAsync(new VerificarRegistroRequest("ana@biin.test", malo)));
+
+        Assert.Contains("demasiadas veces", ultimo.Message);
+        Assert.Empty(_db.RegistrosPendientesSet.Items);
+        Assert.Empty(_db.UsuariosSet.Items);
+        // Ya no sirve ni el código bueno: hay que registrarse otra vez
+        await Assert.ThrowsAsync<NoEncontradoException>(() =>
+            _servicio.VerificarRegistroAsync(new VerificarRegistroRequest("ana@biin.test", codigo)));
+    }
+
+    [Fact]
+    public async Task Verificar_rechaza_codigo_vencido_y_anula_el_registro()
+    {
+        var codigo = await RegistrarYLeerCodigoAsync("Ana", "ana@biin.test", "Clave1234");
+        _reloj.AhoraUtc = _reloj.AhoraUtc.AddMinutes(16);
+
+        var ex = await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.VerificarRegistroAsync(new VerificarRegistroRequest("ana@biin.test", codigo)));
+
+        Assert.Contains("venció", ex.Message);
+        Assert.Empty(_db.RegistrosPendientesSet.Items);
+        Assert.Empty(_db.UsuariosSet.Items);
+    }
+
+    [Fact]
+    public async Task Verificar_sin_registro_pendiente_responde_no_encontrado()
+    {
+        await Assert.ThrowsAsync<NoEncontradoException>(() =>
+            _servicio.VerificarRegistroAsync(new VerificarRegistroRequest("nadie@biin.test", "123456")));
+    }
+
+    [Fact]
+    public async Task Verificar_falla_si_falta_rol_viajero_en_catalogo()
+    {
+        var codigo = await RegistrarYLeerCodigoAsync("Usuario", "nuevo@biin.test", "Clave1234");
+        _db.RolesSet.Items.Clear();
+
+        await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.VerificarRegistroAsync(new VerificarRegistroRequest("nuevo@biin.test", codigo)));
+        Assert.Empty(_db.UsuariosSet.Items);
+    }
+
+    [Fact]
     public async Task IniciarSesion_devuelve_token_y_todos_los_roles_ordenados()
     {
         AgregarUsuario(1, "Operador", "op@biin.test", "Clave1234", true, Roles.Viajero, Roles.Operador);
@@ -190,6 +264,12 @@ public class AuthServiceTests
 
         Assert.True(_hash.Verificar("ClaveActual1", usuario.HashContrasena));
         Assert.Empty(_revocacion.Revocados);
+    }
+
+    private async Task<string> RegistrarYLeerCodigoAsync(string nombre, string correo, string contrasena)
+    {
+        await _servicio.RegistrarAsync(new RegistroRequest(nombre, correo, contrasena));
+        return _correo.UltimoCodigo(correo);
     }
 
     private Usuario AgregarUsuario(int id, string nombre, string correo, string contrasena, bool activo, params string[] roles)
