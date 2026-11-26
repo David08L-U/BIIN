@@ -30,9 +30,10 @@ function renderizarRegistro() {
 }
 
 async function completarFormulario(
-  nombre = 'Ana López',
+  nombre = 'Ana',
   correo = 'ana@ejemplo.com',
   contrasena = 'clave12345',
+  apellido = 'López',
 ) {
   const usuario = userEvent.setup()
 
@@ -41,8 +42,10 @@ async function completarFormulario(
   }
 
   if (correo) {
-    await usuario.type(screen.getByLabelText('Correo'), correo)
+    await usuario.type(screen.getByLabelText('Correo electrónico'), correo)
   }
+
+  if (apellido) await usuario.type(screen.getByLabelText('Apellido'), apellido)
 
   if (contrasena) {
     await usuario.type(screen.getByLabelText('Contraseña'), contrasena)
@@ -66,7 +69,8 @@ describe('RegistroPage', () => {
     renderizarRegistro()
 
     expect(screen.getByLabelText('Nombre')).toBeInTheDocument()
-    expect(screen.getByLabelText('Correo')).toBeInTheDocument()
+    expect(screen.getByLabelText('Apellido')).toBeInTheDocument()
+    expect(screen.getByLabelText('Correo electrónico')).toBeInTheDocument()
     expect(screen.getByLabelText('Contraseña')).toHaveAccessibleDescription(
       'Mínimo 8 caracteres.',
     )
@@ -90,6 +94,16 @@ describe('RegistroPage', () => {
     },
   )
 
+  it('pide el apellido por separado y lo asocia al campo', async () => {
+    renderizarRegistro()
+    const usuario = await completarFormulario('Ana', 'ana@ejemplo.com', 'clave12345', '')
+    await usuario.click(screen.getByRole('button', { name: 'Crear cuenta' }))
+    expect(screen.getByRole('alert')).toHaveTextContent('Escribe tu apellido.')
+    expect(screen.getByLabelText('Apellido')).toHaveFocus()
+    expect(screen.getByLabelText('Apellido')).toHaveAttribute('aria-invalid', 'true')
+    expect(fetch).not.toHaveBeenCalled()
+  })
+
   it('pide el correo cuando está vacío', async () => {
     renderizarRegistro()
     const usuario = await completarFormulario('Ana López', '')
@@ -101,7 +115,7 @@ describe('RegistroPage', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(
       'Escribe tu correo electrónico.',
     )
-    expect(screen.getByLabelText('Correo')).toHaveFocus()
+    expect(screen.getByLabelText('Correo electrónico')).toHaveFocus()
     expect(fetch).not.toHaveBeenCalled()
   })
 
@@ -119,7 +133,7 @@ describe('RegistroPage', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(
       'Escribe un correo electrónico válido.',
     )
-    expect(screen.getByLabelText('Correo')).toHaveFocus()
+    expect(screen.getByLabelText('Correo electrónico')).toHaveFocus()
     expect(fetch).not.toHaveBeenCalled()
   })
 
@@ -186,7 +200,7 @@ describe('RegistroPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Este correo ya está registrado.',
     )
-    expect(screen.getByLabelText('Correo')).toHaveValue(
+    expect(screen.getByLabelText('Correo electrónico')).toHaveValue(
       'ana@ejemplo.com',
     )
     expect(
@@ -218,9 +232,10 @@ describe('RegistroPage', () => {
 
     renderizarRegistro()
     const usuario = await completarFormulario(
-      '  Ana López  ',
+      '  Ana  ',
       '  ana@ejemplo.com  ',
       ' clave de prueba ',
+      '  López  ',
     )
 
     await usuario.click(

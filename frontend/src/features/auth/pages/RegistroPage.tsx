@@ -2,21 +2,26 @@ import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
 import Boton from '../../../components/ui/Boton'
 import Campo from '../../../components/ui/Campo'
+import { destinoTrasAcceso } from '../../../utils/navegacion'
 import { useAuth } from '../useAuth'
+import '../../../styles/auth.css'
 
-type CampoRegistro = 'nombre' | 'correo' | 'contrasena'
+type CampoRegistro = 'nombre' | 'apellido' | 'correo' | 'contrasena'
 
 export default function RegistroPage() {
   const { registrarse } = useAuth()
   const navegar = useNavigate()
   const ubicacion = useLocation()
 
-  const desde =
-    (ubicacion.state as { desde?: string } | null)?.desde ?? '/'
+  const desde = destinoTrasAcceso(
+    (ubicacion.state as { desde?: string } | null)?.desde,
+  )
 
   const [nombre, setNombre] = useState('')
+  const [apellido, setApellido] = useState('')
   const [correo, setCorreo] = useState('')
   const [contrasena, setContrasena] = useState('')
+  const [mostrarContrasena, setMostrarContrasena] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [campoConError, setCampoConError] =
     useState<CampoRegistro | null>(null)
@@ -29,6 +34,7 @@ export default function RegistroPage() {
 
     const formulario = e.currentTarget
     const nombreLimpio = nombre.trim()
+    const apellidoLimpio = apellido.trim()
     const correoLimpio = correo.trim()
 
     setError(null)
@@ -47,6 +53,11 @@ export default function RegistroPage() {
 
     if (!nombreLimpio) {
       mostrarError('nombre', 'Escribe tu nombre.')
+      return
+    }
+
+    if (!apellidoLimpio) {
+      mostrarError('apellido', 'Escribe tu apellido.')
       return
     }
 
@@ -82,7 +93,7 @@ export default function RegistroPage() {
 
     try {
       await registrarse({
-        nombre: nombreLimpio,
+        nombre: `${nombreLimpio} ${apellidoLimpio}`,
         correo: correoLimpio,
         contrasena,
       })
@@ -100,8 +111,11 @@ export default function RegistroPage() {
   }
 
   return (
-    <section className="pagina pagina--angosta">
-      <h1>Crear cuenta</h1>
+    <section className="pagina pagina--angosta auth-page" aria-labelledby="registro-titulo">
+      <header className="auth-cabecera">
+        <span className="marca" aria-label="Marca BIIN">BIIN</span>
+        <h1 id="registro-titulo">Crear cuenta</h1>
+      </header>
 
       <form
         onSubmit={enviar}
@@ -124,8 +138,21 @@ export default function RegistroPage() {
         />
 
         <Campo
+          id="registro-apellido"
+          etiqueta="Apellido"
+          name="apellido"
+          autoComplete="family-name"
+          required
+          disabled={enviando}
+          value={apellido}
+          onChange={e => setApellido(e.target.value)}
+          aria-invalid={campoConError === 'apellido' || undefined}
+          aria-describedby={campoConError === 'apellido' ? 'registro-error' : undefined}
+        />
+
+        <Campo
           id="registro-correo"
-          etiqueta="Correo"
+          etiqueta="Correo electrónico"
           name="correo"
           type="email"
           autoComplete="email"
@@ -143,7 +170,7 @@ export default function RegistroPage() {
           id="registro-contrasena"
           etiqueta="Contraseña"
           name="contrasena"
-          type="password"
+          type={mostrarContrasena ? 'text' : 'password'}
           autoComplete="new-password"
           required
           minLength={8}
@@ -151,6 +178,12 @@ export default function RegistroPage() {
           disabled={enviando}
           value={contrasena}
           onChange={e => setContrasena(e.target.value)}
+          accion={{
+            etiqueta: mostrarContrasena ? 'Ocultar contraseña' : 'Mostrar contraseña',
+            activa: mostrarContrasena,
+            alActivar: () => setMostrarContrasena(actual => !actual),
+            icono: mostrarContrasena ? 'visibility_off' : 'visibility',
+          }}
           aria-invalid={campoConError === 'contrasena' || undefined}
           aria-describedby={
             campoConError === 'contrasena'
