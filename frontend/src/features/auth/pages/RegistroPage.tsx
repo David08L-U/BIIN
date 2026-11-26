@@ -2,6 +2,8 @@ import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
 import Boton from '../../../components/ui/Boton'
 import Campo from '../../../components/ui/Campo'
+import type { RegistroPendiente } from '../../../types/auth'
+import VerificacionCorreo from '../components/VerificacionCorreo'
 import { useAuth } from '../useAuth'
 
 type CampoRegistro = 'nombre' | 'correo' | 'contrasena'
@@ -21,6 +23,8 @@ export default function RegistroPage() {
   const [campoConError, setCampoConError] =
     useState<CampoRegistro | null>(null)
   const [enviando, setEnviando] = useState(false)
+  // Con un registro pendiente se muestra el paso del código; al volver, el formulario conserva lo escrito
+  const [pendiente, setPendiente] = useState<RegistroPendiente | null>(null)
 
   async function enviar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -81,13 +85,13 @@ export default function RegistroPage() {
     setEnviando(true)
 
     try {
-      await registrarse({
-        nombre: nombreLimpio,
-        correo: correoLimpio,
-        contrasena,
-      })
-
-      navegar(desde, { replace: true })
+      setPendiente(
+        await registrarse({
+          nombre: nombreLimpio,
+          correo: correoLimpio,
+          contrasena,
+        }),
+      )
     } catch (err) {
       setError(
         err instanceof Error
@@ -97,6 +101,17 @@ export default function RegistroPage() {
     } finally {
       setEnviando(false)
     }
+  }
+
+  if (pendiente) {
+    return (
+      <VerificacionCorreo
+        pendiente={pendiente}
+        alVolver={() => setPendiente(null)}
+        alVerificar={() => navegar(desde, { replace: true })}
+        alReenviar={setPendiente}
+      />
+    )
   }
 
   return (
@@ -130,12 +145,15 @@ export default function RegistroPage() {
           type="email"
           autoComplete="email"
           required
+          ayuda="Te enviaremos un código para confirmarlo."
           disabled={enviando}
           value={correo}
           onChange={e => setCorreo(e.target.value)}
           aria-invalid={campoConError === 'correo' || undefined}
           aria-describedby={
-            campoConError === 'correo' ? 'registro-error' : undefined
+            campoConError === 'correo'
+              ? 'registro-correo-ayuda registro-error'
+              : 'registro-correo-ayuda'
           }
         />
 
