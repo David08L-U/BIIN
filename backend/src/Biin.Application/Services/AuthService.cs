@@ -122,6 +122,30 @@ public class AuthService(
         return CrearRespuesta(usuario, [Roles.Viajero]);
     }
 
+    /// <summary>Manda un código nuevo (el anterior deja de servir) si ya pasó la espera entre envíos.</summary>
+    public async Task<RegistroPendienteResponse> ReenviarCodigoAsync(ReenviarCodigoRequest req, CancellationToken ct = default)
+    {
+        var correo = ValidacionUsuario.NormalizarCorreo(req.Correo);
+        var ahora = reloj.AhoraUtc;
+
+        var pendiente = await BuscarPendienteAsync(correo, ct)
+            ?? throw new NoEncontradoException("No hay un registro pendiente para ese correo. Regístrate de nuevo.");
+
+        var desde = ReenviarDesde(pendiente);
+        if (ahora < desde)
+        {
+            var segundos = (int)Math.Ceiling((desde - ahora).TotalSeconds);
+            throw new ReglaNegocioException(
+                $"Espera {segundos} {(segundos == 1 ? "segundo" : "segundos")} para pedir otro código.");
+        }
+
+        var codigo = RenovarCodigo(pendiente, ahora);
+        await db.SaveChangesAsync(ct);
+        await EnviarCodigoAsync(pendiente, codigo, ct);
+
+        return RespuestaPendiente(pendiente);
+    }
+
     public async Task<AuthResponse> IniciarSesionAsync(LoginRequest req, CancellationToken ct = default)
     {
         var correo = req.Correo.Trim().ToLowerInvariant();

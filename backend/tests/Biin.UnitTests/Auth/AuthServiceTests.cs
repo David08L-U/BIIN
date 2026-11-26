@@ -158,6 +158,46 @@ public class AuthServiceTests
     }
 
     [Fact]
+    public async Task Reenviar_antes_de_la_espera_se_rechaza_y_despues_manda_un_codigo_nuevo()
+    {
+        var primero = await RegistrarYLeerCodigoAsync("Ana", "ana@biin.test", "Clave1234");
+
+        _reloj.AhoraUtc = _reloj.AhoraUtc.AddSeconds(20);
+        var ex = await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.ReenviarCodigoAsync(new ReenviarCodigoRequest("ana@biin.test")));
+        Assert.Contains("Espera 40 segundos", ex.Message);
+
+        _reloj.AhoraUtc = _reloj.AhoraUtc.AddSeconds(40);
+        var resp = await _servicio.ReenviarCodigoAsync(new ReenviarCodigoRequest("ANA@biin.test"));
+
+        Assert.Equal(2, _correo.Enviados.Count);
+        Assert.Equal(_reloj.AhoraUtc.AddMinutes(15), resp.ExpiraEn);
+        var pendiente = Assert.Single(_db.RegistrosPendientesSet.Items);
+        Assert.True(_hash.Verificar(_correo.UltimoCodigo("ana@biin.test"), pendiente.HashCodigo));
+        if (primero != _correo.UltimoCodigo("ana@biin.test"))
+            Assert.False(_hash.Verificar(primero, pendiente.HashCodigo));
+    }
+
+    [Fact]
+    public async Task Reenviar_reinicia_los_intentos()
+    {
+        await RegistrarYLeerCodigoAsync("Ana", "ana@biin.test", "Clave1234");
+        _db.RegistrosPendientesSet.Items[0].Intentos = 4;
+        _reloj.AhoraUtc = _reloj.AhoraUtc.AddMinutes(2);
+
+        await _servicio.ReenviarCodigoAsync(new ReenviarCodigoRequest("ana@biin.test"));
+
+        Assert.Equal(0, _db.RegistrosPendientesSet.Items[0].Intentos);
+    }
+
+    [Fact]
+    public async Task Reenviar_sin_registro_pendiente_responde_no_encontrado()
+    {
+        await Assert.ThrowsAsync<NoEncontradoException>(() =>
+            _servicio.ReenviarCodigoAsync(new ReenviarCodigoRequest("nadie@biin.test")));
+    }
+
+    [Fact]
     public async Task IniciarSesion_devuelve_token_y_todos_los_roles_ordenados()
     {
         AgregarUsuario(1, "Operador", "op@biin.test", "Clave1234", true, Roles.Viajero, Roles.Operador);

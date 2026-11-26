@@ -44,6 +44,18 @@ public class AuthController(AuthService auth) : ControllerBase
         return CreatedAtAction(nameof(Yo), respuesta);
     }
 
+    /// <summary>Manda otro código al correo de un registro pendiente; el anterior deja de servir.</summary>
+    [AllowAnonymous]
+    [HttpPost("registro/reenviar")]
+    [EnableRateLimiting(PoliticasRateLimit.Autenticacion)]
+    [ProducesResponseType<RegistroPendienteResponse>(StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+    public async Task<ActionResult<RegistroPendienteResponse>> ReenviarCodigo(ReenviarCodigoRequest req, CancellationToken ct) =>
+        Accepted(await auth.ReenviarCodigoAsync(req, ct));
+
     [AllowAnonymous]
     [HttpPost("login")]
     [EnableRateLimiting(PoliticasRateLimit.Autenticacion)]

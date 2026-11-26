@@ -41,6 +41,11 @@ public record VerificarRegistroRequest(
     [RegularExpression(@"^\s*\d{6}\s*$", ErrorMessage = "El código tiene 6 dígitos.")]
     string Codigo);
 
+public record ReenviarCodigoRequest(
+    [Required(ErrorMessage = "El correo es obligatorio.")]
+    [EmailAddress(ErrorMessage = "El correo no tiene un formato válido.")]
+    string Correo);
+
 /// <summary>
 /// Respuesta del registro de un viajero: la cuenta aún no existe. Llegó un código a <paramref name="Correo"/>
 /// que vale hasta <paramref name="ExpiraEn"/>; se puede pedir otro a partir de <paramref name="ReenviarDesde"/>.
