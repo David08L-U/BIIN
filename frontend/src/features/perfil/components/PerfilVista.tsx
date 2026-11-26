@@ -30,6 +30,7 @@ export interface DatosPerfil {
   }
   itinerarios: ItinerarioPerfil[]
   errorItinerarios?: string | null
+  cargandoItinerarios?: boolean
 }
 
 interface Props {
@@ -142,7 +143,7 @@ export default function PerfilVista({ datos, demostracion = false, onCerrarSesio
           <Link className="perfil-enlace" to="/mi-viaje">Gestionar</Link>
         </div>
         {datos.errorItinerarios && <p className="perfil-error" role="alert">{datos.errorItinerarios}</p>}
-        {datos.itinerarios.length ? <ul className="perfil-itinerarios">
+        {datos.cargandoItinerarios ? <p role="status">Cargando itinerarios de tu cuenta…</p> : datos.itinerarios.length ? <ul className="perfil-itinerarios">
           {datos.itinerarios.slice(0, 2).map(item => <li className="perfil-tarjeta perfil-itinerario" key={item.id}>
             <div className="perfil-itinerario-iconos"><span className="perfil-icono-cuadro"><Icono nombre={item.icono} /></span><Icono nombre="bookmark" /></div>
             <h3>{item.nombre}</h3>
@@ -150,8 +151,8 @@ export default function PerfilVista({ datos, demostracion = false, onCerrarSesio
             {item.guardadoEn && <p className="perfil-fecha">Guardado: {new Date(item.guardadoEn).toLocaleString('es-MX')}</p>}
             <Link to={item.url} className="perfil-ver-ruta" aria-label={`Ver ruta de ${item.nombre}`}>Ver ruta</Link>
           </li>)}
-        </ul> : <div className="perfil-tarjeta perfil-vacio"><p>{datos.errorItinerarios ? 'No se pueden mostrar los itinerarios en este momento.' : 'No hay itinerarios guardados para esta cuenta en este navegador.'}</p><Link className="perfil-enlace" to="/rutas">Explorar destinos</Link></div>}
-        <p className="perfil-nota">{demostracion ? 'Las tarjetas son ejemplos del prototipo.' : 'Guardados solo en este navegador. Sin sincronización con el servidor.'}</p>
+        </ul> : <div className="perfil-tarjeta perfil-vacio"><p>{datos.errorItinerarios ? 'No se pueden mostrar los itinerarios en este momento.' : 'No hay itinerarios guardados para esta cuenta.'}</p><Link className="perfil-enlace" to="/rutas">Explorar destinos</Link></div>}
+        <p className="perfil-nota">{demostracion ? 'Las tarjetas son ejemplos del prototipo.' : 'Itinerarios sincronizados con tu cuenta.'}</p>
       </section>
 
       <div className="perfil-acciones-cuenta">

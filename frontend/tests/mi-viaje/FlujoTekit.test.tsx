@@ -5,7 +5,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Usuario } from '../../src/types/auth'
 import { router as routerAplicacion } from '../../src/app/router'
-import { guardarItinerarioLocal, leerItinerariosLocales } from '../../src/features/mi-viaje/storage/itinerariosLocales'
+import { guardarItinerarioLocal } from '../../src/features/mi-viaje/storage/itinerariosLocales'
 import { crearBorradorTekit, leerBorradorTekit } from '../../src/features/mi-viaje/plan/borradorTekit'
 import { crearBorradorValladolid } from '../../src/features/mi-viaje/plan/borradorValladolid'
 import { leerBorradorIzamal } from '../../src/features/mi-viaje/plan/borradorIzamal'
@@ -217,7 +217,7 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
     expect(screen.getAllByText(/Visita estimada:/)).toHaveLength(1)
     expect(router.state.location.search).toBe(consulta)
     await userEvent.click(screen.getByRole('button', { name: 'Guardar itinerario' }))
-    const item = leerItinerariosLocales(7).itinerarios[0]
+    const [item] = await (await fetch('/api/itinerarios')).json() as { destino: string; borrador: { seleccion: unknown[] } }[]
     expect(item.destino).toBe('tekit')
     expect(item.borrador.seleccion).toHaveLength(4)
     await userEvent.click(screen.getByRole('button', { name: 'Descargar plan' }))
@@ -241,10 +241,10 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
     expect(screen.getByLabelText('Fecha de visita')).toHaveValue('2026-11-30')
     expect(leerBorradorTekit(new URLSearchParams(router.state.location.search)).seleccion).toEqual(['taller-bordado', 'corredor-textil'])
     await userEvent.click(screen.getByRole('button', { name: 'Guardar itinerario' }))
-    expect(screen.getByText('Guardado en este navegador')).toHaveAttribute('role', 'status')
+    expect(await screen.findByRole('status')).toHaveTextContent('tu cuenta')
     await userEvent.click(screen.getByRole('button', { name: 'Guardar en Mi viaje' }))
     await userEvent.click(screen.getByRole('link', { name: 'Ver mis itinerarios guardados' }))
-    expect(screen.getAllByRole('link', { name: 'Abrir itinerario de Tekit' })).toHaveLength(1)
+    expect(await screen.findAllByRole('link', { name: 'Abrir itinerario de Tekit' })).toHaveLength(1)
     await userEvent.click(screen.getByRole('link', { name: 'Abrir itinerario de Tekit' }))
     expect(screen.getByRole('heading', { name: 'Tu Itinerario en Tekit' })).toBeInTheDocument()
   })
@@ -263,7 +263,7 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
     montar('/mi-viaje')
     expect(screen.queryByText(/2026-12-24/)).not.toBeInTheDocument()
     for (const [nombre, titulo] of [['Tekit', 'Tu Itinerario en Tekit'], ['Izamal', 'Tu Itinerario en Izamal'], ['Valladolid', 'Tu Itinerario en Valladolid']]) {
-      expect(screen.getAllByRole('link', { name: `Abrir itinerario de ${nombre}` })).toHaveLength(1)
+      expect(await screen.findAllByRole('link', { name: `Abrir itinerario de ${nombre}` })).toHaveLength(1)
       await userEvent.click(screen.getByRole('link', { name: `Abrir itinerario de ${nombre}` }))
       expect(screen.getByRole('heading', { name: titulo })).toBeInTheDocument()
       if (nombre === 'Valladolid') expect(screen.getByRole('heading', { name: 'Día 2 · 2026-12-01' })).toBeInTheDocument()
@@ -273,11 +273,11 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
 
   it('no anuncia éxito si falla guardar y permite seguir preparando la vista previa', async () => {
     autenticar()
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('Sin espacio', 'QuotaExceededError') })
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ detail: 'No se pudo guardar' }), { status: 500 })))
     montar(`/rutas/tekit/itinerario?${config}&generado=1`)
     await userEvent.click(screen.getByRole('button', { name: 'Guardar itinerario' }))
     expect(screen.getByRole('alert')).toHaveTextContent('No se pudo guardar')
-    expect(screen.queryByText('Guardado en este navegador')).not.toBeInTheDocument()
+    expect(screen.queryByText('Itinerario guardado en tu cuenta')).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
   })
 

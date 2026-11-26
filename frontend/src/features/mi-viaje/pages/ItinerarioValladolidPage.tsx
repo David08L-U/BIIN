@@ -17,7 +17,7 @@ import { horaLocal, instanteLocal } from '../plan/tiempoLocal'
 import { duracionPlan } from '../plan/duracion'
 import { compartirValladolid, descargarValladolid } from '../plan/accionesValladolid'
 import type { AvisoCompartir } from '../plan/accionesValladolid'
-import { actualizarItinerarioLocal, guardarItinerarioLocal } from '../storage/itinerariosLocales'
+import { useGuardarItinerarioServidor } from '../hooks/useGuardarItinerarioServidor'
 
 function Conexion({ dia }: { dia: JornadaValladolid }) {
   return <section className="iz-plan-conexion iz-plan-tarjeta" aria-label={`Conexión BIIN del Día ${dia.dia}`}>
@@ -35,6 +35,7 @@ function Conexion({ dia }: { dia: JornadaValladolid }) {
 export default function ItinerarioValladolidPage() {
   const { borrador, actualizar } = useBorradorValladolid()
   const { usuario, cargando } = useAuth()
+  const { guardar: guardarEnServidor, guardando } = useGuardarItinerarioServidor()
   const navegar = useNavigate()
   const [filtro, setFiltro] = useState<'todas' | 'cultural-cenotes' | 'gastronomia'>('todas')
   const clave = parametrosBorradorValladolid(borrador).toString()
@@ -59,12 +60,18 @@ export default function ItinerarioValladolidPage() {
     setIntento({ clave, errores: calculo.errores })
     if (calculo.plan) actualizar({ generado: true, seleccion: calculo.plan.seleccion })
   }
-  function guardar() {
-    if (!plan || cargando) return
+  async function guardar() {
+    if (!plan || cargando || guardando) return
     if (!usuario) { navegar('/login', { state: { desde: urlActual } }); return }
     if (borrador.editarId && !window.confirm(`¿Guardar cambios en el itinerario de Valladolid del ${borrador.configuracion.fecha || 'fecha sin confirmar'}?`)) return
-    const respuesta = borrador.editarId ? actualizarItinerarioLocal(usuario.idUsuario, borrador.editarId, { ...borradorVigente, generado: true }) : guardarItinerarioLocal(usuario.idUsuario, borradorVigente)
-    setAviso({ clave: claveCuenta, error: !respuesta.guardado, mensaje: respuesta.guardado ? (borrador.editarId ? 'Cambios guardados en este navegador' : 'Guardado en este navegador') : respuesta.error ?? 'No se pudo guardar el itinerario.' })
+    const respuesta = await guardarEnServidor({ ...borradorVigente, generado: true })
+    if (!respuesta.itinerario) {
+      setAviso({ clave: claveCuenta, error: true, mensaje: respuesta.error ?? 'No se pudo confirmar el guardado en el servidor.' })
+      return
+    }
+    const actualizado = { ...borradorVigente, generado: true, editarId: respuesta.itinerario.id }
+    actualizar({ editarId: respuesta.itinerario.id })
+    setAviso({ clave: `${usuario.idUsuario}:${parametrosBorradorValladolid(actualizado)}`, error: false, mensaje: borrador.editarId ? 'Cambios guardados en tu cuenta' : 'Itinerario guardado en tu cuenta' })
   }
   async function compartir() {
     if (!plan || compartiendo) return
@@ -82,7 +89,7 @@ export default function ItinerarioValladolidPage() {
 
   return <article className="iz-plan iz-itinerario" aria-labelledby="va-itinerario-titulo">
     <CabeceraPlan id="va-itinerario-titulo" titulo="Tu Itinerario en Valladolid" subtitulo="BIIN Escapadas" volver={urlBorradorValladolid('detalle', borradorVigente)} acciones={<>
-          <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando} onClick={guardar} aria-label={borrador.editarId ? 'Guardar cambios' : 'Guardar itinerario'}><Icono nombre="bookmark" tamano={20} /></button>
+          <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando || guardando} onClick={guardar} aria-busy={guardando} aria-label={guardando ? 'Guardando itinerario' : borrador.editarId ? 'Guardar cambios' : 'Guardar itinerario'}><Icono nombre="bookmark" tamano={20} /></button>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan || compartiendo} onClick={compartir} aria-label="Compartir"><Icono nombre="share" tamano={20} /></button>
 
         </>} />

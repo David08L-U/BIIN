@@ -5,7 +5,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Usuario } from '../../src/types/auth'
 import { router as routerAplicacion } from '../../src/app/router'
-import { guardarItinerarioLocal, leerItinerariosLocales } from '../../src/features/mi-viaje/storage/itinerariosLocales'
+import { guardarItinerarioLocal } from '../../src/features/mi-viaje/storage/itinerariosLocales'
 import { crearBorradorValladolid, leerBorradorValladolid, urlBorradorValladolid } from '../../src/features/mi-viaje/plan/borradorValladolid'
 import { leerBorradorIzamal } from '../../src/features/mi-viaje/plan/borradorIzamal'
 import * as acciones from '../../src/features/mi-viaje/plan/accionesValladolid'
@@ -197,7 +197,7 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
     expect(screen.queryByRole('heading', { name: 'Ex Convento de San Bernardino de Siena' })).not.toBeInTheDocument()
     expect(router.state.location.search).toBe(consulta)
     await userEvent.click(screen.getByRole('button', { name: 'Guardar itinerario' }))
-    const item = leerItinerariosLocales(7).itinerarios[0]
+    const [item] = await (await fetch('/api/itinerarios')).json() as { destino: string; borrador: { seleccion: unknown[]; configuracion: { minutosDisponibles: string } } }[]
     expect(item.destino).toBe('valladolid')
     if (item.destino === 'valladolid') {
       expect(item.borrador.seleccion).toHaveLength(4)
@@ -222,10 +222,10 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
     expect(screen.getByLabelText('Fecha de visita')).toHaveValue('2026-11-30')
     expect(screen.getByLabelText(/Fecha del Día 2/)).toHaveValue('2026-12-01')
     await user.click(screen.getByRole('button', { name: 'Guardar itinerario' }))
-    expect(screen.getByText('Guardado en este navegador')).toHaveAttribute('role', 'status')
+    expect(await screen.findByRole('status')).toHaveTextContent('tu cuenta')
     await user.click(screen.getByRole('button', { name: 'Guardar itinerario' }))
     await user.click(screen.getByRole('link', { name: 'Ver mis itinerarios guardados' }))
-    expect(screen.getAllByRole('link', { name: 'Abrir itinerario de Valladolid' })).toHaveLength(1)
+    expect(await screen.findAllByRole('link', { name: 'Abrir itinerario de Valladolid' })).toHaveLength(1)
     await user.click(screen.getByRole('link', { name: 'Abrir itinerario de Valladolid' }))
     expect(screen.getByRole('heading', { name: 'Día 2 · 2026-12-01' })).toBeInTheDocument()
   })
@@ -240,8 +240,8 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
     guardarItinerarioLocal(7, b)
     guardarItinerarioLocal(8, b)
     montar('/mi-viaje')
-    expect(screen.getAllByRole('link', { name: 'Abrir itinerario de Izamal' })).toHaveLength(1)
-    expect(screen.getAllByRole('link', { name: 'Abrir itinerario de Valladolid' })).toHaveLength(1)
+    expect(await screen.findAllByRole('link', { name: 'Abrir itinerario de Izamal' })).toHaveLength(1)
+    expect(await screen.findAllByRole('link', { name: 'Abrir itinerario de Valladolid' })).toHaveLength(1)
     await userEvent.click(screen.getByRole('link', { name: 'Abrir itinerario de Izamal' }))
     expect(screen.getByRole('heading', { name: 'Tu Itinerario en Izamal' })).toBeInTheDocument()
     await userEvent.click(screen.getByRole('link', { name: 'Ver mis itinerarios guardados' }))
@@ -251,11 +251,11 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
 
   it('no anuncia guardado cuando falla la escritura', async () => {
     iniciarSesion()
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('Sin espacio', 'QuotaExceededError') })
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ detail: 'No se pudo guardar' }), { status: 500 })))
     montar(`/rutas/valladolid/itinerario?${configuracion}&generado=1`)
     await userEvent.click(screen.getByRole('button', { name: 'Guardar itinerario' }))
     expect(screen.getByRole('alert')).toHaveTextContent('No se pudo guardar')
-    expect(screen.queryByText('Guardado en este navegador')).not.toBeInTheDocument()
+    expect(screen.queryByText('Itinerario guardado en tu cuenta')).not.toBeInTheDocument()
   })
 
   it('ofrece el enlace reproducible si compartir falla y comunica fallos de descarga', async () => {

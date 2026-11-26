@@ -14,11 +14,12 @@ import type { CategoriaIzamal } from '../data/lugaresIzamal'
 import { useBorradorIzamal } from '../hooks/useBorradorIzamal'
 import { urlBorrador } from '../plan/borradorIzamal'
 import { calcularPlan, estanciasIzamal, horaPlan, instantePlan } from '../plan/itinerarioIzamal'
-import { actualizarItinerarioLocal, guardarItinerarioLocal } from '../storage/itinerariosLocales'
+import { useGuardarItinerarioServidor } from '../hooks/useGuardarItinerarioServidor'
 
 export default function ItinerarioIzamalPage() {
   const { borrador, actualizar } = useBorradorIzamal()
   const { usuario, cargando } = useAuth()
+  const { guardar: guardarEnServidor, guardando } = useGuardarItinerarioServidor()
   const navegar = useNavigate()
   const [filtro, setFiltro] = useState<CategoriaIzamal | 'todas'>('todas')
   const [erroresIntento, setErroresIntento] = useState<string[]>([])
@@ -38,21 +39,27 @@ export default function ItinerarioIzamalPage() {
     setErroresIntento(calculo.errores)
     if (calculo.plan) actualizar({ generado: true })
   }
-  function guardar() {
-    if (!plan || cargando) return
+  async function guardar() {
+    if (!plan || cargando || guardando) return
     if (!usuario) {
       navegar('/login', { state: { desde: urlActual } })
       return
     }
     if (borrador.editarId && !window.confirm(`¿Guardar cambios en el itinerario de Izamal del ${borrador.configuracion.fecha || 'fecha sin confirmar'}?`)) return
-    const respuesta = borrador.editarId ? actualizarItinerarioLocal(usuario.idUsuario, borrador.editarId, { ...borrador, generado: true }) : guardarItinerarioLocal(usuario.idUsuario, borrador)
-    setGuardado({ clave: claveGuardado, error: !respuesta.guardado, mensaje: respuesta.guardado ? (borrador.editarId ? 'Cambios guardados en este navegador' : 'Guardado en este navegador') : respuesta.error ?? 'No se pudo guardar el itinerario.' })
+    const respuesta = await guardarEnServidor({ ...borrador, generado: true })
+    if (!respuesta.itinerario) {
+      setGuardado({ clave: claveGuardado, error: true, mensaje: respuesta.error ?? 'No se pudo confirmar el guardado en el servidor.' })
+      return
+    }
+    const actualizado = { ...borrador, generado: true, editarId: respuesta.itinerario.id }
+    actualizar({ editarId: respuesta.itinerario.id })
+    setGuardado({ clave: urlBorrador('itinerario', actualizado), error: false, mensaje: borrador.editarId ? 'Cambios guardados en tu cuenta' : 'Itinerario guardado en tu cuenta' })
   }
 
   return (
     <article className="iz-plan iz-itinerario" aria-labelledby="iz-itinerario-titulo">
       <CabeceraPlan id="iz-itinerario-titulo" titulo="Tu Itinerario en Izamal" subtitulo="BIIN Escapadas" volver={urlBorrador('detalle', borrador)} acciones={<>
-          <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando} onClick={guardar} aria-label={borrador.editarId ? 'Guardar cambios' : 'Guardar itinerario'}><Icono nombre="bookmark" tamano={16} /></button>
+          <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando || guardando} onClick={guardar} aria-busy={guardando} aria-label={guardando ? 'Guardando itinerario' : borrador.editarId ? 'Guardar cambios' : 'Guardar itinerario'}><Icono nombre="bookmark" tamano={16} /></button>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan} aria-label="Mostrar enlace del plan" onClick={() => setMostrarEnlace(valor => !valor)}><Icono nombre="share" tamano={16} /></button>
 
         </>} />

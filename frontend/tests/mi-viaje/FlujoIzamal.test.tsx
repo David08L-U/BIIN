@@ -190,22 +190,22 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     expect(await screen.findByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
     expect(screen.getByLabelText('Fecha de visita')).toHaveValue('2026-11-30')
     await user.click(screen.getByRole('button', { name: 'Guardar itinerario' }))
-    expect(screen.getByText('Guardado en este navegador')).toHaveAttribute('role', 'status')
+    expect(await screen.findByRole('status')).toHaveTextContent('tu cuenta')
     await user.click(screen.getByRole('button', { name: 'Guardar itinerario' }))
     await user.click(screen.getByRole('link', { name: 'Ver mis itinerarios guardados' }))
     expect(router.state.location.pathname).toBe('/mi-viaje')
-    expect(screen.getAllByRole('link', { name: 'Abrir itinerario de Izamal' })).toHaveLength(1)
+    expect(await screen.findAllByRole('link', { name: 'Abrir itinerario de Izamal' })).toHaveLength(1)
     await user.click(screen.getByRole('link', { name: 'Abrir itinerario de Izamal' }))
     expect(screen.getByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
   })
 
   it('muestra el fallo de guardado sin mensaje de éxito', async () => {
     sesion.usuario = { idUsuario: 7, nombre: 'Ana', correo: 'ana@biin.test', roles: ['viajero'] }
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('Bloqueado', 'SecurityError') })
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ detail: 'No se pudo guardar' }), { status: 500 })))
     montar(`/rutas/izamal/itinerario?${configuracion}&generado=1`)
     await userEvent.click(screen.getByRole('button', { name: 'Guardar itinerario' }))
     expect(screen.getByRole('alert')).toHaveTextContent('No se pudo guardar')
-    expect(screen.queryByText('Guardado en este navegador')).not.toBeInTheDocument()
+    expect(screen.queryByText('Itinerario guardado en tu cuenta')).not.toBeInTheDocument()
   })
 
   it('lista solo los itinerarios de la cuenta actual y maneja datos dañados', () => {
@@ -236,7 +236,9 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }))
     expect(leerItinerariosLocales(7).itinerarios).toHaveLength(1)
     expect(leerItinerariosLocales(7).itinerarios[0].id).toBe(original.id)
-    expect(leerItinerariosLocales(7).itinerarios[0].borrador.seleccion).toEqual(['convento'])
+    expect(leerItinerariosLocales(7).itinerarios[0].borrador.seleccion).toEqual(['convento', 'kinich'])
+    const remoto = await (await fetch('/api/itinerarios')).json() as { borrador: { seleccion: string[] } }[]
+    expect(remoto[0].borrador.seleccion).toEqual(['convento'])
     expect(router.state.location.search).toContain('editar=')
   })
 

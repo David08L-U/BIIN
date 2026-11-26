@@ -16,7 +16,7 @@ import { duracionPlan } from '../plan/duracion'
 import { horaLocal, instanteLocal } from '../plan/tiempoLocal'
 import { compartirHomun, descargarHomun } from '../plan/accionesHomun'
 import type { AvisoCompartir } from '../plan/accionesPlan'
-import { actualizarItinerarioLocal, guardarItinerarioLocal } from '../storage/itinerariosLocales'
+import { useGuardarItinerarioServidor } from '../hooks/useGuardarItinerarioServidor'
 
 function ConexionHomun({ dia }: { dia: JornadaHomun }) {
   return <section className="iz-plan-conexion iz-plan-tarjeta" aria-label={`Conexión BIIN del Día ${dia.dia}`}>
@@ -32,6 +32,7 @@ function ConexionHomun({ dia }: { dia: JornadaHomun }) {
 export default function ItinerarioHomunPage() {
   const { borrador, actualizar } = useBorradorHomun()
   const { usuario, cargando } = useAuth()
+  const { guardar: guardarEnServidor, guardando } = useGuardarItinerarioServidor()
   const navegar = useNavigate()
   const [filtro, setFiltro] = useState<'todas' | 'cenotes' | 'gastronomia'>('todas')
   const clave = parametrosBorradorHomun(borrador).toString()
@@ -55,12 +56,15 @@ export default function ItinerarioHomunPage() {
     setIntento({ clave, errores: r.errores })
     if (r.plan) actualizar({ generado: true, seleccion: r.plan.seleccion })
   }
-  function guardar() {
-    if (!plan || cargando) return
+  async function guardar() {
+    if (!plan || cargando || guardando) return
     if (!usuario) { navegar('/login', { state: { desde: urlActual } }); return }
     if (borrador.editarId && !window.confirm(`¿Guardar cambios en el itinerario de Homún del ${borrador.configuracion.fecha || 'fecha sin confirmar'}?`)) return
-    const r = borrador.editarId ? actualizarItinerarioLocal(usuario.idUsuario, borrador.editarId, { ...vigente, generado: true }) : guardarItinerarioLocal(usuario.idUsuario, vigente)
-    setAviso({ clave: cuenta, error: !r.guardado, mensaje: r.guardado ? (borrador.editarId ? 'Cambios guardados en este navegador' : 'Guardado en este navegador') : r.error ?? 'No se pudo guardar el itinerario.' })
+    const r = await guardarEnServidor({ ...vigente, generado: true })
+    if (!r.itinerario) { setAviso({ clave: cuenta, error: true, mensaje: r.error ?? 'No se pudo confirmar el guardado en el servidor.' }); return }
+    const actualizado = { ...vigente, generado: true, editarId: r.itinerario.id }
+    actualizar({ editarId: r.itinerario.id })
+    setAviso({ clave: `${usuario.idUsuario}:${parametrosBorradorHomun(actualizado)}`, error: false, mensaje: borrador.editarId ? 'Cambios guardados en tu cuenta' : 'Itinerario guardado en tu cuenta' })
   }
   async function compartir() {
     if (!plan || compartiendo) return
@@ -75,7 +79,7 @@ export default function ItinerarioHomunPage() {
   }
   return <article className="iz-plan iz-itinerario" aria-labelledby="hm-itinerario-titulo">
     <CabeceraPlan id="hm-itinerario-titulo" titulo="Tu Itinerario en Homún" subtitulo="BIIN Escapadas" volver={urlBorradorHomun('detalle', vigente)} acciones={<>
-          <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando} onClick={guardar} aria-label={borrador.editarId ? 'Guardar cambios' : 'Guardar itinerario'}><Icono nombre="bookmark" tamano={20} /></button>
+          <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando || guardando} onClick={guardar} aria-busy={guardando} aria-label={guardando ? 'Guardando itinerario' : borrador.editarId ? 'Guardar cambios' : 'Guardar itinerario'}><Icono nombre="bookmark" tamano={20} /></button>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan || compartiendo} onClick={compartir} aria-label="Compartir"><Icono nombre="share" tamano={20} /></button>
 
         </>} />

@@ -5,7 +5,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Usuario } from '../../src/types/auth'
 import { router as routerAplicacion } from '../../src/app/router'
-import { guardarItinerarioLocal, leerItinerariosLocales } from '../../src/features/mi-viaje/storage/itinerariosLocales'
+import { guardarItinerarioLocal } from '../../src/features/mi-viaje/storage/itinerariosLocales'
 import { crearBorradorHomun, leerBorradorHomun } from '../../src/features/mi-viaje/plan/borradorHomun'
 import { crearBorradorValladolid } from '../../src/features/mi-viaje/plan/borradorValladolid'
 import { crearBorradorTekit } from '../../src/features/mi-viaje/plan/borradorTekit'
@@ -175,7 +175,8 @@ describe('Flujo de Homún CU-09 / RF09', () => {
     expect(screen.getAllByText(/Visita estimada:/)).toHaveLength(1)
     expect(router.state.location.search).toBe(consulta)
     await userEvent.click(screen.getByRole('button', { name: 'Guardar itinerario' }))
-    expect(leerItinerariosLocales(7).itinerarios[0].borrador.seleccion).toHaveLength(4)
+    const [guardadoServidor] = await (await fetch('/api/itinerarios')).json() as { borrador: { seleccion: unknown[] } }[]
+    expect(guardadoServidor.borrador.seleccion).toHaveLength(4)
     await userEvent.click(screen.getByRole('button', { name: 'Descargar plan' }))
     expect(descarga.mock.calls[0][1].seleccion).toHaveLength(4)
     await userEvent.click(screen.getByRole('button', { name: 'Cenotes & Cavernas' }))
@@ -196,10 +197,10 @@ describe('Flujo de Homún CU-09 / RF09', () => {
     expect(screen.getByLabelText('Fecha del Día 2')).toHaveValue('2026-12-01')
     expect(leerBorradorHomun(new URLSearchParams(router.state.location.search)).seleccion).toEqual([{ lugarId: 'santa-rosa', dia: 1 }, { lugarId: 'tza-ujun-kat', dia: 2 }])
     await userEvent.click(screen.getByRole('button', { name: 'Guardar itinerario' }))
-    expect(screen.getByText('Guardado en este navegador')).toHaveAttribute('role', 'status')
+    expect(await screen.findByRole('status')).toHaveTextContent('tu cuenta')
     await userEvent.click(screen.getByRole('button', { name: 'Guardar en Mi viaje' }))
     await userEvent.click(screen.getByRole('link', { name: 'Ver mis itinerarios guardados' }))
-    expect(screen.getAllByRole('link', { name: 'Abrir itinerario de Homún' })).toHaveLength(1)
+    expect(await screen.findAllByRole('link', { name: 'Abrir itinerario de Homún' })).toHaveLength(1)
     await userEvent.click(screen.getByRole('link', { name: 'Abrir itinerario de Homún' }))
     expect(screen.getByRole('heading', { name: 'Tu Itinerario en Homún' })).toBeInTheDocument()
   })
@@ -214,20 +215,19 @@ describe('Flujo de Homún CU-09 / RF09', () => {
     montar('/mi-viaje')
     expect(screen.queryByText(/2026-12-24/)).not.toBeInTheDocument()
     for (const nombre of ['Homún', 'Izamal', 'Valladolid', 'Tekit']) {
-      expect(screen.getAllByRole('link', { name: `Abrir itinerario de ${nombre}` })).toHaveLength(1)
+      expect(await screen.findAllByRole('link', { name: `Abrir itinerario de ${nombre}` })).toHaveLength(1)
       await userEvent.click(screen.getByRole('link', { name: `Abrir itinerario de ${nombre}` }))
       expect(screen.getByRole('heading', { name: `Tu Itinerario en ${nombre}` })).toBeInTheDocument()
       await userEvent.click(screen.getByRole('link', { name: 'Ver mis itinerarios guardados' }))
     }
   })
-  it.each(['escritura', 'lectura'])('no anuncia éxito si falla la %s del almacenamiento', async tipo => {
+  it('no anuncia éxito si falla el guardado en el servidor', async () => {
     autenticar()
-    if (tipo === 'escritura') vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('Sin espacio', 'QuotaExceededError') })
-    else vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new DOMException('Bloqueado', 'SecurityError') })
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ detail: 'No se pudo guardar' }), { status: 500 })))
     montar(`/rutas/homun/itinerario?${config}&generado=1`)
     await userEvent.click(screen.getByRole('button', { name: 'Guardar itinerario' }))
-    expect(screen.getByRole('alert')).toHaveTextContent(tipo === 'escritura' ? 'No se pudo guardar' : 'No se pudieron leer')
-    expect(screen.queryByText('Guardado en este navegador')).not.toBeInTheDocument()
+    expect(screen.getByRole('alert')).toHaveTextContent('No se pudo guardar')
+    expect(screen.queryByText('Itinerario guardado en tu cuenta')).not.toBeInTheDocument()
   })
   it('conserva acciones y etiquetas de traslado cuando fallan imágenes originales', () => {
     const { container } = montar(`/rutas/homun/itinerario?${config}&generado=1`)
