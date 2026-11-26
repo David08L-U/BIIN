@@ -12,5 +12,9 @@ SELECT format('GRANT USAGE ON SCHEMA public TO %I', :'app_usuario')
 SELECT format('GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.itinerarios TO %I', :'app_usuario')
 \gexec
 
+-- La consulta de registros históricos agrega el número de actividades por itinerario.
+SELECT format('GRANT SELECT ON TABLE public.actividades_itinerario TO %I', :'app_usuario')
+\gexec
+
 SELECT format('GRANT USAGE, SELECT ON SEQUENCE public.itinerarios_id_itinerario_seq TO %I', :'app_usuario')
 \gexec

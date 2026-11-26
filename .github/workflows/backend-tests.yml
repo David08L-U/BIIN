@@ -85,7 +85,7 @@ jobs:
             --set app_usuario=biin_app --file database/seguridad/002_permisos_itinerarios_app.sql
 
           psql --host localhost --username postgres --dbname biin_test --set ON_ERROR_STOP=1 \
-            --tuples-only --no-align --command "SELECT CASE WHEN app.rolsuper OR app.rolcreatedb OR app.rolcreaterole OR has_table_privilege('biin_app', 'public.usuarios', 'SELECT') OR NOT has_table_privilege('biin_app', 'public.itinerarios', 'SELECT,INSERT,UPDATE,DELETE') OR fixture.rolsuper OR fixture.rolcreatedb OR fixture.rolcreaterole OR has_table_privilege('biin_test_fixture', 'public.usuarios', 'UPDATE') OR has_table_privilege('biin_test_fixture', 'public.itinerarios', 'UPDATE') THEN 'invalid' ELSE 'limited' END FROM pg_roles app, pg_roles fixture WHERE app.rolname = 'biin_app' AND fixture.rolname = 'biin_test_fixture'" \
+            --tuples-only --no-align --command "SELECT CASE WHEN app.rolsuper OR app.rolcreatedb OR app.rolcreaterole OR has_table_privilege('biin_app', 'public.usuarios', 'SELECT') OR NOT has_table_privilege('biin_app', 'public.itinerarios', 'SELECT,INSERT,UPDATE,DELETE') OR NOT has_table_privilege('biin_app', 'public.actividades_itinerario', 'SELECT') OR fixture.rolsuper OR fixture.rolcreatedb OR fixture.rolcreaterole OR has_table_privilege('biin_test_fixture', 'public.usuarios', 'UPDATE') OR has_table_privilege('biin_test_fixture', 'public.itinerarios', 'UPDATE') THEN 'invalid' ELSE 'limited' END FROM pg_roles app, pg_roles fixture WHERE app.rolname = 'biin_app' AND fixture.rolname = 'biin_test_fixture'" \
             | grep -qx limited
 
       - name: Run unit tests
