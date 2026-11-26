@@ -16,6 +16,7 @@ export function leerBorradorTicul(p: URLSearchParams, modoInicial: ModoItinerari
     modo: invalido ? '' : p.get('modo') ?? modoInicial,
     seleccion: p.getAll('lugares').length > 1 ? ['Selección repetida en el enlace'] : (p.get('lugares') ? p.get('lugares')!.split(',') : []),
     generado: p.get('generado') === '1',
+    editarId: p.get('editar') ?? undefined,
   }
 }
 export function parametrosBorradorTicul(b: BorradorTicul): URLSearchParams {
@@ -23,6 +24,7 @@ export function parametrosBorradorTicul(b: BorradorTicul): URLSearchParams {
   const p = new URLSearchParams({ estancia: c.estancia, fecha: c.fecha, inicio: c.horaInicio, minutos: c.minutosDisponibles, modo: b.modo })
   if (b.seleccion.length) p.set('lugares', b.seleccion.join(','))
   if (b.generado) p.set('generado', '1')
+  if (b.editarId) p.set('editar', b.editarId)
   return p
 }
 export function urlBorradorTicul(pantalla: 'detalle' | 'itinerario' | 'personalizar', b: BorradorTicul): string {

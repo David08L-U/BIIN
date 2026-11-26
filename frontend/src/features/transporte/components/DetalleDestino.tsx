@@ -24,7 +24,8 @@ function ImagenPrototipo({ src, alt, icono, recorte }: {
       <span id={avisoId}>Imagen del prototipo no disponible</span>
     </div>
   ) : (
-    <img className="izamal-imagen" src={src} alt={alt} style={recorte ? { objectViewBox: recorte } : undefined}
+    <img className="izamal-imagen" src={src} alt={alt} loading="lazy" decoding="async"
+      style={recorte ? { objectFit: 'cover', objectPosition: 'center' } : undefined}
       onError={() => setFallo(true)} />
   )
 }

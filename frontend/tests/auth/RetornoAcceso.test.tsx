@@ -93,19 +93,20 @@ describe('Retorno tras el acceso CU-01 / CU-09', () => {
     const usuario = userEvent.setup()
     const router = renderizarFlujo()
 
-    await screen.findByRole('heading', { name: 'Iniciar sesión' })
+    await screen.findByRole('heading', { name: 'Ingresa a tu cuenta' })
 
     await usuario.click(
-      screen.getByRole('link', { name: 'Regístrate' }),
+      screen.getByRole('link', { name: 'Crear cuenta' }),
     )
 
     expect(
       screen.getByRole('heading', { name: 'Crear cuenta' }),
     ).toBeInTheDocument()
 
-    await usuario.type(screen.getByLabelText('Nombre'), 'Ana López')
+    await usuario.type(screen.getByLabelText('Nombre'), 'Ana')
+    await usuario.type(screen.getByLabelText('Apellido'), 'López')
     await usuario.type(
-      screen.getByLabelText('Correo'),
+      screen.getByLabelText('Correo electrónico'),
       'ana@ejemplo.com',
     )
     await usuario.type(
@@ -139,17 +140,17 @@ describe('Retorno tras el acceso CU-01 / CU-09', () => {
     const usuario = userEvent.setup()
     const router = renderizarFlujo()
 
-    await screen.findByRole('heading', { name: 'Iniciar sesión' })
+    await screen.findByRole('heading', { name: 'Ingresa a tu cuenta' })
 
     await usuario.click(
-      screen.getByRole('link', { name: 'Regístrate' }),
+      screen.getByRole('link', { name: 'Crear cuenta' }),
     )
     await usuario.click(
       screen.getByRole('link', { name: 'Inicia sesión' }),
     )
 
     await usuario.type(
-      screen.getByLabelText('Correo'),
+      screen.getByLabelText('Correo electrónico'),
       'ana@ejemplo.com',
     )
     await usuario.type(

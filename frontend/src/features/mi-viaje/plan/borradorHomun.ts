@@ -22,6 +22,7 @@ export function leerBorradorHomun(p: URLSearchParams, modoInicial: ModoItinerari
     configuracion: { estancia: campo('estancia', base.configuracion.estancia), fecha: campo('fecha', ''), horaInicio: campo('inicio', base.configuracion.horaInicio), minutosDisponibles: campo('minutos', base.configuracion.minutosDisponibles), horaInicioDia2: campo('inicio2', base.configuracion.horaInicioDia2), minutosDia2: campo('minutos2', base.configuracion.minutosDia2) },
     modo: invalido ? '' : p.get('modo') ?? modoInicial,
     seleccion: [...seleccionDia(1), ...seleccionDia(2)], generado: p.get('generado') === '1',
+    editarId: p.get('editar') ?? undefined,
   }
 }
 export function parametrosBorradorHomun(b: BorradorHomun): URLSearchParams {
@@ -34,6 +35,7 @@ export function parametrosBorradorHomun(b: BorradorHomun): URLSearchParams {
   // Mantiene asignaciones ajenas para que sigan siendo inválidas al cambiar de pantalla.
   if (b.seleccion.some(s => s.dia !== 1 && s.dia !== 2)) p.set('dia3', 'Asignación inválida')
   if (b.generado) p.set('generado', '1')
+  if (b.editarId) p.set('editar', b.editarId)
   return p
 }
 export function urlBorradorHomun(pantalla: 'detalle' | 'itinerario' | 'personalizar', b: BorradorHomun): string {

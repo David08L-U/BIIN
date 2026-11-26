@@ -51,6 +51,31 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Selecciona al menos un lugar')
   })
 
+  it('quita un lugar solo de la selección y permite generar el estado vacío válido', async () => {
+    const { router } = montar(`/rutas/tekit/personalizar?${config}&modo=personalizado&lugares=corredor-textil,comida-mercado&generado=1`)
+    await userEvent.click(screen.getByRole('button', { name: 'Quitar Corredor Textil y Tiendas de Fabricantes del itinerario' }))
+    expect(screen.getByText('1 lugares seleccionados')).toBeInTheDocument()
+    expect(new URLSearchParams(router.state.location.search).get('lugares')).toBe('comida-mercado')
+    expect(new URLSearchParams(router.state.location.search).has('generado')).toBe(false)
+    expect(screen.getByRole('checkbox', { name: 'Corredor Textil y Tiendas de Fabricantes' })).not.toBeChecked()
+    await userEvent.click(screen.getByRole('button', { name: 'Quitar Cocina Económica Doña Lupita y Mercado del itinerario' }))
+    expect(screen.getByText('Aún no hay lugares seleccionados. El recorrido se puede generar vacío.')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
+    expect(screen.getByRole('alert')).toHaveTextContent('Selecciona al menos un lugar')
+  })
+
+  it('conserva lugares añadidos si no caben y no muestra un recorrido anterior vigente', async () => {
+    const { router } = montar('/rutas/tekit/personalizar?estancia=ruta-textil&fecha=2026-11-30&inicio=10%3A20&minutos=80&modo=personalizado&lugares=taller-bordado')
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Corredor Textil y Tiendas de Fabricantes' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
+    expect(screen.getByRole('alert')).toHaveTextContent(/excede el tiempo disponible/)
+    const params = new URLSearchParams(router.state.location.search)
+    expect(params.get('lugares')).toContain('taller-bordado')
+    expect(params.get('lugares')).toContain('corredor-textil')
+    expect(params.get('generado')).toBeNull()
+    expect(screen.queryByRole('heading', { name: 'Paso a paso a pie' })).not.toBeInTheDocument()
+  })
+
   it('selecciona con teclado, conserva otras categorías y actualiza tiempos y contadores', async () => {
     montar(`/rutas/tekit/personalizar?${config}`)
     const corredor = screen.getByRole('checkbox', { name: 'Corredor Textil y Tiendas de Fabricantes' })
@@ -209,7 +234,7 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
     expect(router.state.location.pathname).toBe('/login')
     expect(router.state.location.state.desde).toContain('/rutas/tekit/itinerario?')
     expect(localStorage.length).toBe(0)
-    await userEvent.type(screen.getByLabelText('Correo'), 'ana@biin.test')
+    await userEvent.type(screen.getByLabelText('Correo electrónico'), 'ana@biin.test')
     await userEvent.type(screen.getByLabelText('Contraseña'), 'ejemplo')
     await userEvent.click(screen.getByRole('button', { name: 'Entrar' }))
     expect(await screen.findByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
@@ -292,7 +317,7 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
 
   it('mantiene Mi viaje protegido', async () => {
     const { router } = montar('/mi-viaje')
-    expect(await screen.findByRole('heading', { name: 'Iniciar sesión' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Ingresa a tu cuenta' })).toBeInTheDocument()
     expect(router.state.location.state).toEqual({ desde: '/mi-viaje' })
   })
 })

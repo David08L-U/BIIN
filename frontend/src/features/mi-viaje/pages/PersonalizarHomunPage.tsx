@@ -11,6 +11,8 @@ import { useBorradorHomun } from '../hooks/useBorradorHomun'
 import { parametrosBorradorHomun, urlBorradorHomun } from '../plan/borradorHomun'
 import { calcularPlanHomun, resumirJornadaHomun, ventanasHomun } from '../plan/itinerarioHomun'
 import { duracionPlan, leerDuracion } from '../plan/duracion'
+import LugaresSeleccionados from '../components/LugaresSeleccionados'
+import CancelarEdicion from '../components/CancelarEdicion'
 
 export default function PersonalizarHomunPage() {
   const { borrador, actualizar } = useBorradorHomun('personalizado')
@@ -61,13 +63,13 @@ export default function PersonalizarHomunPage() {
             return <article key={l.id} className="iz-plan-lugar iz-plan-tarjeta">
               <label className="iz-plan-lugar-seleccion"><input type="checkbox" aria-label={l.nombre} checked={!!elegida} onChange={() => seleccionar(l.id)} /><span className="iz-plan-lugar-textos"><strong className="iz-plan-lugar-titulo">{l.nombre}</strong><span className="iz-plan-insignia">{l.etiqueta}</span></span></label>
               <p>{l.descripcion}</p><div className="iz-plan-metadatos"><span><Icono nombre="timer" tamano={14} />Visita: {duracionPlan(l.visitaMinutos)}</span><span><Icono nombre={l.traslado.icono} tamano={14} />{nombreTrasladoHomun(l)}</span></div>
-              {elegida && ventanas.length === 2 && <label>Jornada de {l.nombre}<select value={elegida.dia} onChange={e => actualizar({ seleccion: borrador.seleccion.map(s => s.lugarId === l.id ? { ...s, dia: Number(e.target.value) } : s) })}><option value="1">Día 1</option><option value="2">Día 2</option></select></label>}
             </article>
           })}
         </section>
+        <LugaresSeleccionados jornadas={ventanas.length} lugares={borrador.seleccion.map(s => ({ id: s.lugarId, nombre: lugaresHomun.find(l => l.id === s.lugarId)?.nombre ?? s.lugarId, dia: s.dia }))} onQuitar={id => actualizar({ seleccion: borrador.seleccion.filter(s => s.lugarId !== id) })} onCambiarDia={(id, dia) => actualizar({ seleccion: borrador.seleccion.map(s => s.lugarId === id ? { ...s, dia } : s) })} />
         <div className="iz-plan-resumen-final"><p role="status">{borrador.seleccion.length} lugares seleccionados</p><p>Los filtros conservan tu selección. Genera después de editar; aún no se ha guardado un plan.</p>
           {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}
-          <button type="submit" className="iz-plan-primario">Generar mi itinerario<Icono nombre="arrow_forward" tamano={20} /></button>
+          <CancelarEdicion editarId={borrador.editarId} /><button type="submit" className="iz-plan-primario">Generar mi itinerario<Icono nombre="arrow_forward" tamano={20} /></button>
           <button type="button" className="iz-plan-restablecer" onClick={restablecer}><Icono nombre="restart_alt" tamano={16} />Restablecer selección</button>
         </div>
       </form>

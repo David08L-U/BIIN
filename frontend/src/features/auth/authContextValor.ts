@@ -11,6 +11,8 @@ import type {
 export interface AuthContextValor {
   usuario: Usuario | null
   cargando: boolean
+  errorRestauracion: string | null
+  reintentarRestauracion: () => Promise<void>
   iniciarSesion: (datos: LoginRequest) => Promise<void>
   /** Paso 1 del registro de viajero: manda el código al correo, todavía no inicia sesión. */
   registrarse: (datos: RegistroRequest) => Promise<RegistroPendiente>

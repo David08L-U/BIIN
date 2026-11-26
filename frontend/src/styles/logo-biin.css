@@ -1,0 +1,16 @@
+.logo-biin {
+  display: block;
+  flex: none;
+  height: auto;
+  object-fit: contain;
+}
+
+.logo-biin--compacto { width: 60px; }
+.logo-biin--acceso { width: min(154px, 52vw); margin: 0 auto; }
+
+.marca-logo {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  text-decoration: none;
+}

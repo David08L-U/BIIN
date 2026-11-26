@@ -1,11 +1,11 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Usuario } from '../../src/types/auth'
 import { router as routerAplicacion } from '../../src/app/router'
-import { guardarItinerarioLocal } from '../../src/features/mi-viaje/storage/itinerariosLocales'
+import { guardarItinerarioLocal, leerItinerariosLocales } from '../../src/features/mi-viaje/storage/itinerariosLocales'
 import { leerBorradorIzamal } from '../../src/features/mi-viaje/plan/borradorIzamal'
 
 const sesion = vi.hoisted(() => ({ usuario: null as Usuario | null, cargando: false }))
@@ -184,7 +184,7 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     expect(router.state.location.pathname).toBe('/login')
     expect(router.state.location.state.desde).toContain('/rutas/izamal/itinerario?')
     expect(localStorage.length).toBe(0)
-    await user.type(screen.getByLabelText('Correo'), 'ana@biin.test')
+    await user.type(screen.getByLabelText('Correo electrónico'), 'ana@biin.test')
     await user.type(screen.getByLabelText('Contraseña'), 'ejemplo')
     await user.click(screen.getByRole('button', { name: 'Entrar' }))
     expect(await screen.findByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
@@ -220,6 +220,46 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     expect(screen.getByRole('link', { name: 'Preparar otro itinerario en Izamal' })).toBeInTheDocument()
   })
 
+  it('edita un guardado sin alterarlo hasta confirmar y conserva el original al cancelar', async () => {
+    sesion.usuario = { idUsuario: 7, nombre: 'Ana', correo: 'ana@biin.test', roles: ['viajero'] }
+    const borrador = leerBorradorIzamal(new URLSearchParams(`${configuracion}&modo=personalizado&lugares=convento,kinich&generado=1`))
+    const original = guardarItinerarioLocal(7, borrador).guardado!
+    const { router } = montar('/mi-viaje')
+    await userEvent.click(screen.getByRole('link', { name: 'Editar itinerario' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Quitar Restaurante Kinich del itinerario' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
+    expect(await screen.findByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
+    const confirmar = vi.spyOn(window, 'confirm').mockReturnValue(false)
+    await userEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+    expect(leerItinerariosLocales(7).itinerarios[0]).toEqual(original)
+    confirmar.mockReturnValue(true)
+    await userEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+    expect(leerItinerariosLocales(7).itinerarios).toHaveLength(1)
+    expect(leerItinerariosLocales(7).itinerarios[0].id).toBe(original.id)
+    expect(leerItinerariosLocales(7).itinerarios[0].borrador.seleccion).toEqual(['convento'])
+    expect(router.state.location.search).toContain('editar=')
+  })
+
+  it('confirma antes de eliminar un viaje y conserva el registro al cancelar', async () => {
+    sesion.usuario = { idUsuario: 7, nombre: 'Ana', correo: 'ana@biin.test', roles: ['viajero'] }
+    const borrador = leerBorradorIzamal(new URLSearchParams(`${configuracion}&modo=personalizado&lugares=convento,kinich&generado=1`))
+    const original = guardarItinerarioLocal(7, borrador).guardado!
+    guardarItinerarioLocal(8, { ...borrador, configuracion: { ...borrador.configuracion, fecha: '2026-12-01' } })
+    montar('/mi-viaje')
+    const boton = screen.getByRole('button', { name: 'Eliminar viaje' })
+    await userEvent.click(boton)
+    expect(screen.getByRole('dialog')).toHaveTextContent('Izamal')
+    expect(screen.getByRole('dialog')).toHaveTextContent('2026-11-30')
+    await userEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
+    expect(leerItinerariosLocales(7).itinerarios[0].id).toBe(original.id)
+    await waitFor(() => expect(boton).toHaveFocus())
+    await userEvent.click(boton)
+    await userEvent.click(screen.getByRole('button', { name: 'Confirmar eliminación' }))
+    expect(await screen.findByText('Todavía no hay itinerarios guardados para esta cuenta en este navegador.')).toBeInTheDocument()
+    expect(leerItinerariosLocales(7).itinerarios).toEqual([])
+    expect(leerItinerariosLocales(8).itinerarios).toHaveLength(1)
+  })
+
   it('mantiene las acciones disponibles cuando fallan las imágenes y no simula servicios', () => {
     const { container } = montar(`/rutas/izamal/itinerario?${configuracion}&generado=1`)
     for (const imagen of screen.getAllByRole('img')) fireEvent.error(imagen)
@@ -230,7 +270,7 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
 
   it('conserva la protección real de /mi-viaje y su retorno de acceso', async () => {
     const { router } = montar('/mi-viaje')
-    expect(await screen.findByRole('heading', { name: 'Iniciar sesión' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Ingresa a tu cuenta' })).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/login')
     expect(router.state.location.state).toEqual({ desde: '/mi-viaje' })
     expect(screen.queryByRole('heading', { name: 'Mis itinerarios' })).not.toBeInTheDocument()

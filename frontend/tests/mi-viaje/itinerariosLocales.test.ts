@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { guardarItinerarioLocal, leerItinerariosLocales } from '../../src/features/mi-viaje/storage/itinerariosLocales'
+import { actualizarItinerarioLocal, eliminarItinerarioLocal, guardarItinerarioLocal, leerItinerariosLocales } from '../../src/features/mi-viaje/storage/itinerariosLocales'
 import type { BorradorIzamal } from '../../src/features/mi-viaje/plan/itinerarioIzamal'
 
 const borrador: BorradorIzamal = { configuracion: { estancia: 'medio-dia', fecha: '2026-11-30', horaInicio: '11:30', minutosDisponibles: '240' }, modo: 'personalizado', seleccion: ['convento', 'kinich'], generado: true }
@@ -48,5 +48,43 @@ describe('Guardado local por cuenta CU-09', () => {
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new DOMException('Bloqueado', 'SecurityError') })
     expect(leerItinerariosLocales(7)).toMatchObject({ itinerarios: [], error: expect.any(String) })
     expect(guardarItinerarioLocal(7, borrador).guardado).toBeNull()
+  })
+
+  it('elimina únicamente un viaje de la cuenta solicitada y mantiene los de otras cuentas', () => {
+    const primero = guardarItinerarioLocal(7, borrador).guardado!
+    const segundo = guardarItinerarioLocal(7, { ...borrador, seleccion: ['mercado'] }).guardado!
+    guardarItinerarioLocal(8, borrador)
+    expect(eliminarItinerarioLocal(7, primero.id)).toEqual({ eliminado: true, error: null })
+    expect(leerItinerariosLocales(7).itinerarios.map(item => item.id)).toEqual([segundo.id])
+    expect(leerItinerariosLocales(8).itinerarios).toHaveLength(1)
+  })
+
+  it('no anuncia eliminación ante identificador ausente o error de escritura', () => {
+    const item = guardarItinerarioLocal(7, borrador).guardado!
+    expect(eliminarItinerarioLocal(7, 'otro-id').eliminado).toBe(false)
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('Sin espacio', 'QuotaExceededError') })
+    expect(eliminarItinerarioLocal(7, item.id)).toMatchObject({ eliminado: false, error: expect.stringContaining('No se pudo eliminar') })
+    vi.restoreAllMocks()
+    expect(leerItinerariosLocales(7).itinerarios).toHaveLength(1)
+  })
+
+  it('actualiza el mismo viaje solo dentro de la cuenta y conserva el original si el cambio no es válido', () => {
+    const original = guardarItinerarioLocal(7, borrador).guardado!
+    const otraCuenta = guardarItinerarioLocal(8, borrador).guardado!
+    expect(actualizarItinerarioLocal(7, original.id, { ...borrador, seleccion: ['mercado'], generado: true })).toMatchObject({ guardado: { id: original.id }, error: null })
+    expect(leerItinerariosLocales(7).itinerarios).toHaveLength(1)
+    expect(leerItinerariosLocales(7).itinerarios[0].borrador.seleccion).toEqual(['mercado'])
+    expect(leerItinerariosLocales(8).itinerarios[0].id).toBe(otraCuenta.id)
+    expect(actualizarItinerarioLocal(7, original.id, { ...borrador, generado: false }).guardado).toBeNull()
+    expect(leerItinerariosLocales(7).itinerarios[0].borrador.seleccion).toEqual(['mercado'])
+  })
+
+  it('rechaza actualizar un guardado a una configuración duplicada', () => {
+    const primero = guardarItinerarioLocal(7, borrador).guardado!
+    const segundo = guardarItinerarioLocal(7, { ...borrador, seleccion: ['mercado'] }).guardado!
+    const duplicado = actualizarItinerarioLocal(7, segundo.id, { ...borrador, generado: true })
+    expect(duplicado.guardado).toBeNull()
+    expect(duplicado.error).toContain('No se creó un duplicado')
+    expect(leerItinerariosLocales(7).itinerarios.map(item => item.id)).toEqual([primero.id, segundo.id])
   })
 })

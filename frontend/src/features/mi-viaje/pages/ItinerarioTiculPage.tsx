@@ -15,7 +15,7 @@ import { duracionPlan } from '../plan/duracion'
 import { horaLocal, instanteLocal } from '../plan/tiempoLocal'
 import { compartirTicul, descargarTicul } from '../plan/accionesTicul'
 import type { AvisoCompartir } from '../plan/accionesPlan'
-import { guardarItinerarioLocal } from '../storage/itinerariosLocales'
+import { actualizarItinerarioLocal, guardarItinerarioLocal } from '../storage/itinerariosLocales'
 
 export default function ItinerarioTiculPage() {
   const { borrador, actualizar } = useBorradorTicul()
@@ -46,8 +46,9 @@ export default function ItinerarioTiculPage() {
   function guardar() {
     if (!plan || cargando) return
     if (!usuario) { navegar('/login', { state: { desde: urlActual } }); return }
-    const r = guardarItinerarioLocal(usuario.idUsuario, vigente)
-    setAviso({ clave: cuenta, error: !r.guardado, mensaje: r.guardado ? 'Guardado en este navegador' : r.error ?? 'No se pudo guardar el itinerario.' })
+    if (borrador.editarId && !window.confirm(`¿Guardar cambios en el itinerario de Ticul del ${c.fecha || 'fecha sin confirmar'}?`)) return
+    const r = borrador.editarId ? actualizarItinerarioLocal(usuario.idUsuario, borrador.editarId, { ...vigente, generado: true }) : guardarItinerarioLocal(usuario.idUsuario, vigente)
+    setAviso({ clave: cuenta, error: !r.guardado, mensaje: r.guardado ? (borrador.editarId ? 'Cambios guardados en este navegador' : 'Guardado en este navegador') : r.error ?? 'No se pudo guardar el itinerario.' })
   }
   async function compartir() {
     if (!plan || compartiendo) return
@@ -62,7 +63,7 @@ export default function ItinerarioTiculPage() {
   }
   return <article className="iz-plan iz-itinerario" aria-labelledby="ti-itinerario-titulo">
     <CabeceraPlan id="ti-itinerario-titulo" titulo="Tu Itinerario en Ticul" subtitulo="BIIN Escapadas" volver={urlBorradorTicul('detalle', vigente)} acciones={<>
-          <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando} onClick={guardar} aria-label="Guardar itinerario"><Icono nombre="bookmark" tamano={20} /></button>
+          <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando} onClick={guardar} aria-label={borrador.editarId ? 'Guardar cambios' : 'Guardar itinerario'}><Icono nombre="bookmark" tamano={20} /></button>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan || compartiendo} onClick={compartir} aria-label="Compartir itinerario"><Icono nombre="share" tamano={20} /></button>
 
         </>} />

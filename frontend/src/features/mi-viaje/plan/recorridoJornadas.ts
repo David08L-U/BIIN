@@ -25,6 +25,7 @@ export interface BorradorJornadas {
   modo: string
   seleccion: VisitaJornada[]
   generado: boolean
+  editarId?: string
 }
 export interface VentanaJornada { dia: number; fecha: string; horaInicio: string; minutosDisponibles: string }
 export interface JornadaPlan extends VentanaJornada {

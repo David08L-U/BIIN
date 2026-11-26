@@ -14,7 +14,7 @@ import type { CategoriaIzamal } from '../data/lugaresIzamal'
 import { useBorradorIzamal } from '../hooks/useBorradorIzamal'
 import { urlBorrador } from '../plan/borradorIzamal'
 import { calcularPlan, estanciasIzamal, horaPlan, instantePlan } from '../plan/itinerarioIzamal'
-import { guardarItinerarioLocal } from '../storage/itinerariosLocales'
+import { actualizarItinerarioLocal, guardarItinerarioLocal } from '../storage/itinerariosLocales'
 
 export default function ItinerarioIzamalPage() {
   const { borrador, actualizar } = useBorradorIzamal()
@@ -44,14 +44,15 @@ export default function ItinerarioIzamalPage() {
       navegar('/login', { state: { desde: urlActual } })
       return
     }
-    const respuesta = guardarItinerarioLocal(usuario.idUsuario, borrador)
-    setGuardado({ clave: claveGuardado, error: !respuesta.guardado, mensaje: respuesta.guardado ? 'Guardado en este navegador' : respuesta.error ?? 'No se pudo guardar el itinerario.' })
+    if (borrador.editarId && !window.confirm(`¿Guardar cambios en el itinerario de Izamal del ${borrador.configuracion.fecha || 'fecha sin confirmar'}?`)) return
+    const respuesta = borrador.editarId ? actualizarItinerarioLocal(usuario.idUsuario, borrador.editarId, { ...borrador, generado: true }) : guardarItinerarioLocal(usuario.idUsuario, borrador)
+    setGuardado({ clave: claveGuardado, error: !respuesta.guardado, mensaje: respuesta.guardado ? (borrador.editarId ? 'Cambios guardados en este navegador' : 'Guardado en este navegador') : respuesta.error ?? 'No se pudo guardar el itinerario.' })
   }
 
   return (
     <article className="iz-plan iz-itinerario" aria-labelledby="iz-itinerario-titulo">
       <CabeceraPlan id="iz-itinerario-titulo" titulo="Tu Itinerario en Izamal" subtitulo="BIIN Escapadas" volver={urlBorrador('detalle', borrador)} acciones={<>
-          <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando} onClick={guardar} aria-label="Guardar itinerario"><Icono nombre="bookmark" tamano={16} /></button>
+          <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando} onClick={guardar} aria-label={borrador.editarId ? 'Guardar cambios' : 'Guardar itinerario'}><Icono nombre="bookmark" tamano={16} /></button>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan} aria-label="Mostrar enlace del plan" onClick={() => setMostrarEnlace(valor => !valor)}><Icono nombre="share" tamano={16} /></button>
 
         </>} />

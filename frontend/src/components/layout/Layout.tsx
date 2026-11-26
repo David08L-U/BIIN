@@ -2,13 +2,17 @@ import { useRef } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { useAuth } from '../../features/auth/useAuth'
 import { useScrollAlNavegar } from '../../hooks/useScrollAlNavegar'
+import LogoBiin from '../ui/LogoBiin'
 import '../../styles/melanie.css'
 
 export default function Layout() {
   useScrollAlNavegar()
 
   const { usuario, cerrarSesion, tieneRol } = useAuth()
-  const { pathname } = useLocation()
+  const location = useLocation()
+  const { pathname } = location
+  const borradorFuente = /^\/rutas\/(izamal|valladolid|tekit|homun|ticul)(?:\/(?:itinerario|personalizar))?$/.test(pathname)
+    ? `${pathname}${location.search}` : undefined
   const menu = useRef<HTMLDialogElement>(null)
 
   const abrirMenu = () => menu.current?.showModal()
@@ -66,8 +70,8 @@ export default function Layout() {
               </span>
             </button>
 
-            <Link className="marca" to="/">
-              BIIN
+            <Link className="marca-logo" to="/">
+              <LogoBiin tamaño="compacto" />
             </Link>
 
             <Link to={usuario ? '/perfil' : '/login'}>
@@ -88,14 +92,18 @@ export default function Layout() {
           <span>Inicio</span>
         </NavLink>
 
-        <NavLink to="/rutas">
+        <Link
+          to="/rutas"
+          className={pathname === '/recorridos' || /^\/rutas(?:\/|$)/.test(pathname) ? 'active' : undefined}
+          aria-current={pathname === '/recorridos' || /^\/rutas(?:\/|$)/.test(pathname) ? 'page' : undefined}
+        >
           <span aria-hidden="true" className="biin-icon">
             route
           </span>
           <span>Rutas</span>
-        </NavLink>
+        </Link>
 
-        <NavLink to="/explorar">
+        <NavLink to="/explorar" state={borradorFuente ? { borradorFuente } : undefined}>
           <span aria-hidden="true" className="biin-icon">
             explore
           </span>
@@ -126,7 +134,7 @@ export default function Layout() {
         }}
       >
         <div className="biin-menu-top">
-          <strong className="marca">BIIN</strong>
+          <LogoBiin tamaño="compacto" />
 
           <button
             className="biin-icon-button"

@@ -2,7 +2,10 @@ import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
 import Boton from '../../../components/ui/Boton'
 import Campo from '../../../components/ui/Campo'
+import LogoBiin from '../../../components/ui/LogoBiin'
+import { destinoTrasAcceso } from '../../../utils/navegacion'
 import { useAuth } from '../useAuth'
+import '../../../styles/auth.css'
 
 type CampoAcceso = 'correo' | 'contrasena'
 
@@ -11,8 +14,9 @@ export default function LoginPage() {
   const navegar = useNavigate()
   const ubicacion = useLocation()
 
-  const desde =
-    (ubicacion.state as { desde?: string } | null)?.desde ?? '/'
+  const desde = destinoTrasAcceso(
+    (ubicacion.state as { desde?: string } | null)?.desde,
+  )
 
   const [correo, setCorreo] = useState('')
   const [contrasena, setContrasena] = useState('')
@@ -20,6 +24,8 @@ export default function LoginPage() {
   const [campoConError, setCampoConError] =
     useState<CampoAcceso | null>(null)
   const [enviando, setEnviando] = useState(false)
+  const [mostrarContrasena, setMostrarContrasena] = useState(false)
+  const [avisoIntegracion, setAvisoIntegracion] = useState<string | null>(null)
 
   async function enviar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -30,6 +36,7 @@ export default function LoginPage() {
     const correoLimpio = correo.trim()
 
     setError(null)
+    setAvisoIntegracion(null)
     setCampoConError(null)
 
     function mostrarError(campo: CampoAcceso, mensaje: string) {
@@ -84,8 +91,11 @@ export default function LoginPage() {
   }
 
   return (
-    <section className="pagina pagina--angosta">
-      <h1>Iniciar sesión</h1>
+    <section className="pagina pagina--angosta auth-page" aria-labelledby="login-titulo">
+      <header className="auth-cabecera">
+        <LogoBiin tamaño="acceso" />
+        <h1 id="login-titulo">Ingresa a tu cuenta</h1>
+      </header>
 
       <form
         onSubmit={enviar}
@@ -93,7 +103,8 @@ export default function LoginPage() {
         aria-busy={enviando}
       >
         <Campo
-          etiqueta="Correo"
+          etiqueta="Correo electrónico"
+          icono="mail"
           name="correo"
           type="email"
           autoComplete="email"
@@ -109,13 +120,20 @@ export default function LoginPage() {
 
         <Campo
           etiqueta="Contraseña"
+          icono="lock"
           name="contrasena"
-          type="password"
+          type={mostrarContrasena ? 'text' : 'password'}
           autoComplete="current-password"
           required
           disabled={enviando}
           value={contrasena}
           onChange={e => setContrasena(e.target.value)}
+          accion={{
+            etiqueta: mostrarContrasena ? 'Ocultar contraseña' : 'Mostrar contraseña',
+            activa: mostrarContrasena,
+            alActivar: () => setMostrarContrasena(actual => !actual),
+            icono: mostrarContrasena ? 'visibility_off' : 'visibility',
+          }}
           aria-invalid={campoConError === 'contrasena' || undefined}
           aria-describedby={
             campoConError === 'contrasena'
@@ -134,15 +152,24 @@ export default function LoginPage() {
           </p>
         )}
 
+        <button type="button" className="auth-enlace auth-recuperacion" onClick={() => setAvisoIntegracion('La recuperación de contraseña está pendiente de integración.')}>¿Olvidaste tu contraseña?</button>
+
         <Boton type="submit" disabled={enviando}>
           {enviando ? 'Entrando…' : 'Entrar'}
         </Boton>
+
+        <div className="auth-separador" aria-hidden="true"><span>O continúa con</span></div>
+        <button type="button" className="auth-google" onClick={() => setAvisoIntegracion('El acceso con Google está pendiente de integración.')}>
+          <span className="auth-google-icon" aria-hidden="true">G</span> Google
+        </button>
       </form>
 
-      <p>
+      {avisoIntegracion && <p className="auth-aviso" role="status" aria-live="polite">{avisoIntegracion}</p>}
+
+      <p className="auth-cambiar">
         ¿No tienes cuenta?{' '}
         <Link to="/registro" state={{ desde }}>
-          Regístrate
+          Crear cuenta
         </Link>
       </p>
     </section>

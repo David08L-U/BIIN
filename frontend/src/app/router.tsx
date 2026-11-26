@@ -30,6 +30,8 @@ import PersonalizarTiculPage from '../features/mi-viaje/pages/PersonalizarTiculP
 import MiViajePage from '../features/mi-viaje/pages/MiViajePage'
 import PerfilPage from '../features/perfil/pages/PerfilPage'
 import VistaPreviaPerfilPage from '../features/perfil/pages/VistaPreviaPerfilPage'
+import ExplorarPage, { ExplorarDetallePage } from '../features/explorar/pages/ExplorarPage'
+import ElegirItinerarioPage from '../features/explorar/pages/ElegirItinerarioPage'
 
 export const router = createBrowserRouter([
   {
@@ -99,23 +101,11 @@ export const router = createBrowserRouter([
         path: 'registro',
         element: <RegistroPage />,
       },
-      {
-        path: 'explorar',
-        element: (
-          <PaginaEnConstruccion
-            titulo="Explorar"
-            casos="CU-05, CU-06, CU-07, CU-14"
-          />
-        ),
-      },
+      { path: 'explorar/lugares/:destino/:id', element: <ExplorarDetallePage /> },
+      { path: 'explorar', element: <ExplorarPage /> },
       {
         path: 'recorridos',
-        element: (
-          <PaginaEnConstruccion
-            titulo="Recorridos sugeridos"
-            casos="CU-13"
-          />
-        ),
+        element: <ElegirItinerarioPage />,
       },
       {
         path: 'asistente',

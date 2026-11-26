@@ -25,6 +25,7 @@ export interface BorradorValladolid {
   modo: string
   seleccion: VisitaValladolid[]
   generado: boolean
+  editarId?: string
 }
 export interface VentanaValladolid { dia: number; fecha: string; horaInicio: string; minutosDisponibles: string }
 export interface JornadaValladolid extends VentanaValladolid {
