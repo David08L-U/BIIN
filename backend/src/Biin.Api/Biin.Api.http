@@ -3,7 +3,10 @@
 ### Estado de la API y de la base de datos
 GET {{api}}/api/salud
 
-### Registrar cuenta (CU-01)
+### Registrar viajero, paso 1: manda un código al correo (202, todavía no hay cuenta) (CU-01, RF01)
+# En local sin Correo:Servidor el código aparece en la consola de la API.
+# Con correos @biin.test pon VerificacionCorreo:ValidarDominio = false (el dominio .test no existe en DNS).
+# Volver a registrarse con el mismo correo corrige nombre y contraseña; el código se reenvía solo tras 60 s.
 POST {{api}}/api/auth/registro
 Content-Type: application/json
 
@@ -11,6 +14,24 @@ Content-Type: application/json
   "nombre": "Usuario de prueba",
   "correo": "prueba@biin.test",
   "contrasena": "Prueba1234"
+}
+
+### Registrar viajero, paso 2: confirmar el código, crea la cuenta e inicia sesión (201)
+# 400 si es incorrecto (a los 5 intentos o a los 15 min se anula el registro), 404 si no hay registro pendiente
+POST {{api}}/api/auth/registro/verificar
+Content-Type: application/json
+
+{
+  "correo": "prueba@biin.test",
+  "codigo": "PEGAR_CODIGO"
+}
+
+### Pedir otro código (202); el anterior deja de servir. 400 si no han pasado 60 s
+POST {{api}}/api/auth/registro/reenviar
+Content-Type: application/json
+
+{
+  "correo": "prueba@biin.test"
 }
 
 ### Iniciar sesión (CU-01)
