@@ -4,7 +4,9 @@ La pantalla actual usa como datos demostrativos los mismos catálogos de lugares
 
 Al conectar un servicio, Explorar necesitará una fuente de lugares publicada por destino con identificadores estables y únicos dentro del destino, nombre, descripción, categoría, fotografía autorizada y su texto alternativo, además del estado/fecha de validación. El servicio debe poder consultar por texto, destino y categorías disponibles y devolver resultados paginados. Esta implementación no crea un contrato ni hace llamadas remotas.
 
-La acción «Planear visita» abre el detalle y el planificador ya existentes del destino; no añade automáticamente un lugar al borrador.
+La acción «Planear visita» abre el planificador recomendado ya existente. «Agregar a itinerario» ofrece el borrador actual del mismo destino (si se llegó desde un planificador), los viajes guardados de esa cuenta y crear un plan nuevo. Los viajes guardados se identifican por destino, fecha y estado temporal; las opciones pertenecen solo al destino del lugar.
+
+Al elegir un borrador o viaje guardado, el lugar se suma a la selección personalizada y se abre el planificador existente con el resultado invalidado para que vuelva a calcularse. En planes de varias jornadas se puede elegir el día. Un viaje guardado no cambia en este paso: para editarlo debe generarse un nuevo resultado y confirmarse «Guardar cambios». Cancelar la edición conserva el guardado original. Si el usuario no ha iniciado sesión, se conserva el lugar en la URL de retorno al acceso. Todo el guardado sigue usando el almacenamiento local v1 por identificador de cuenta; no se crea otro sistema ni se sincroniza con el servidor.
 
 ## Fotografías con procedencia
 
