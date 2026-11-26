@@ -1,0 +1,119 @@
+name: Backend tests
+
+on:
+  push:
+    branches:
+      - feature/melanie-frontend
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: .NET and PostgreSQL tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: biin_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ format('BIIN_ci_{0}_{1}_disposable', github.run_id, github.run_attempt) }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d biin_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Generate disposable application role credential
+        shell: bash
+        run: |
+          set -euo pipefail
+          app_password="$(openssl rand -hex 24)"
+          fixture_password="$(openssl rand -hex 24)"
+          echo "::add-mask::${app_password}"
+          echo "::add-mask::${fixture_password}"
+          printf 'BIIN_CI_APP_PASSWORD=%s\n' "$app_password" >> "$GITHUB_ENV"
+          printf 'BIIN_CI_FIXTURE_PASSWORD=%s\n' "$fixture_password" >> "$GITHUB_ENV"
+
+      - name: Prepare isolated BIIN test schema
+        shell: bash
+        env:
+          PGPASSWORD: ${{ format('BIIN_ci_{0}_{1}_disposable', github.run_id, github.run_attempt) }}
+        run: |
+          set -euo pipefail
+          psql --host localhost --username postgres --dbname biin_test --set ON_ERROR_STOP=1 \
+            --file database/schema/001_esquema.sql \
+            --file database/schema/002_ampliaciones_mvp.sql \
+            --file database/schema/003_busqueda.sql \
+            --file database/schema/004_vistas.sql \
+            --file database/schema/005_itinerarios_jsonb.sql \
+            --file database/triggers/001_reglas.sql \
+            --file database/seed/001_catalogos.sql
+
+          psql --host localhost --username postgres --dbname biin_test --set ON_ERROR_STOP=1 \
+            --set app_password="$BIIN_CI_APP_PASSWORD" <<'SQL'
+          CREATE ROLE biin_app LOGIN PASSWORD :'app_password'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
+          SQL
+
+          psql --host localhost --username postgres --dbname biin_test --set ON_ERROR_STOP=1 \
+            --set fixture_password="$BIIN_CI_FIXTURE_PASSWORD" <<'SQL'
+          CREATE ROLE biin_test_fixture LOGIN PASSWORD :'fixture_password'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
+          GRANT CONNECT ON DATABASE biin_test TO biin_test_fixture;
+          GRANT USAGE ON SCHEMA public TO biin_test_fixture;
+          GRANT SELECT, INSERT, DELETE ON TABLE public.usuarios TO biin_test_fixture;
+          GRANT SELECT, INSERT ON TABLE public.itinerarios TO biin_test_fixture;
+          GRANT USAGE, SELECT ON SEQUENCE public.usuarios_id_usuario_seq,
+            public.itinerarios_id_itinerario_seq TO biin_test_fixture;
+          SQL
+
+          psql --host localhost --username postgres --dbname biin_test --set ON_ERROR_STOP=1 \
+            --set app_usuario=biin_app --file database/seguridad/002_permisos_itinerarios_app.sql
+
+          psql --host localhost --username postgres --dbname biin_test --set ON_ERROR_STOP=1 \
+            --tuples-only --no-align --command "SELECT CASE WHEN app.rolsuper OR app.rolcreatedb OR app.rolcreaterole OR has_table_privilege('biin_app', 'public.usuarios', 'SELECT') OR NOT has_table_privilege('biin_app', 'public.itinerarios', 'SELECT,INSERT,UPDATE,DELETE') OR fixture.rolsuper OR fixture.rolcreatedb OR fixture.rolcreaterole OR has_table_privilege('biin_test_fixture', 'public.usuarios', 'UPDATE') OR has_table_privilege('biin_test_fixture', 'public.itinerarios', 'UPDATE') THEN 'invalid' ELSE 'limited' END FROM pg_roles app, pg_roles fixture WHERE app.rolname = 'biin_app' AND fixture.rolname = 'biin_test_fixture'" \
+            | grep -qx limited
+
+      - name: Run unit tests
+        run: dotnet test backend/tests/Biin.UnitTests/Biin.UnitTests.csproj --configuration Release --logger "trx;LogFileName=unit.trx" --results-directory artifacts/unit
+
+      - name: Require all unit tests to execute
+        run: python3 .github/scripts/assert-trx.py artifacts/unit/unit.trx --min-tests 11
+
+      - name: Run PostgreSQL integration tests as the limited app role
+        env:
+          BIIN_TEST_CONNECTION_STRING: Host=localhost;Port=5432;Database=biin_test;Username=biin_app;Password=${{ env.BIIN_CI_APP_PASSWORD }};Include Error Detail=false
+          BIIN_TEST_FIXTURE_CONNECTION_STRING: Host=localhost;Port=5432;Database=biin_test;Username=biin_test_fixture;Password=${{ env.BIIN_CI_FIXTURE_PASSWORD }};Include Error Detail=false
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$BIIN_TEST_CONNECTION_STRING"
+          test -n "$BIIN_TEST_FIXTURE_CONNECTION_STRING"
+          dotnet test backend/tests/Biin.IntegrationTests/Biin.IntegrationTests.csproj \
+            --configuration Release --logger "trx;LogFileName=postgres-integration.trx" \
+            --results-directory artifacts/integration
+
+      - name: Require PostgreSQL integration test to execute
+        run: python3 .github/scripts/assert-trx.py artifacts/integration/postgres-integration.trx --min-tests 1
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-results
+          path: artifacts/**/*.trx
+          if-no-files-found: ignore
