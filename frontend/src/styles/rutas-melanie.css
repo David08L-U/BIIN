@@ -189,7 +189,7 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 16px 16px 12px;
+  padding: 12px 12px 10px;
   min-width: 0;
 }
 
@@ -286,7 +286,7 @@
   gap: 8px;
   border-top: 1px solid #eae6dfb3;
   background: #faf3eb80;
-  padding: 10px 16px;
+  padding: 8px 12px;
 }
 
 .rutas-metadata {

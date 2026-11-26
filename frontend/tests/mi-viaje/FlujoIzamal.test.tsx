@@ -226,7 +226,7 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     const borrador = leerBorradorIzamal(new URLSearchParams(`${configuracion}&modo=personalizado&lugares=convento,kinich&generado=1`))
     const original = guardarItinerarioLocal(7, borrador).guardado!
     const { router } = montar('/mi-viaje')
-    await userEvent.click(await screen.findByRole('link', { name: 'Editar itinerario' }))
+    await userEvent.click(await screen.findByRole('link', { name: 'Editar itinerario de Izamal' }))
     await userEvent.click(await screen.findByRole('button', { name: 'Quitar Restaurante Kinich del itinerario' }))
     await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
     expect(await screen.findByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()

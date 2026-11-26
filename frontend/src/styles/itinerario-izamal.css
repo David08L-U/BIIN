@@ -204,14 +204,24 @@
 .iz-personalizar .iz-plan-resumen-final { margin-inline: -20px; padding-inline: 20px; }
 .iz-plan-restablecer { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 38px; border: 0; background: transparent; color: var(--color-acento-texto); font-size: 11px; }
 .iz-plan-mis-viajes > p { margin-top: 12px; }
-.iz-plan-mis-viajes ul { display: grid; gap: 12px; padding: 0; margin: 24px 0; list-style: none; }
+.iz-plan-mis-viajes ul { display: grid; gap: 12px; padding: 0; margin: 16px 0; list-style: none; }
 .iz-plan-mis-viajes li { display: grid; gap: 12px; }
-.iz-plan-mis-viajes-seccion { margin-top: 24px; }
+.iz-plan-mis-viajes-seccion { margin-top: 20px; }
 .iz-plan-mis-viajes-seccion > h2 { margin-bottom: 12px; }
-.iz-plan-destinos-crear { grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 14px !important; margin-top: 0 !important; padding-bottom: 20px !important; }
-.iz-plan-destinos-crear > li { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; padding: 14px; }
+.iz-plan-destinos-crear { grid-template-columns: minmax(0, 1fr); gap: 12px !important; margin-top: 0 !important; padding-bottom: 24px !important; }
+.iz-plan-destinos-crear > li { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 12px; min-width: 0; padding: 10px 12px; }
 .iz-plan-destinos-crear > li h3 { min-width: 0; font-size: 16px; }
-.iz-plan-destinos-crear > li a { flex: 0 0 auto; min-height: 40px; display: inline-flex; align-items: center; padding: 8px 10px; border: 1px solid var(--color-borde-tarjeta); border-radius: 8px; background: var(--color-superficie); font-weight: 600; text-decoration: none; }
+.iz-plan-destinos-crear > li a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px 10px; border: 1px solid var(--color-borde-tarjeta); border-radius: 8px; background: var(--color-superficie); color: var(--color-cafe); font-weight: 600; text-decoration: none; }
+.iz-plan-mis-viajes .iz-plan-guardado { grid-template-columns: 56px minmax(0, 1fr); align-items: start; gap: 12px; padding: 12px; }
+.iz-plan-destino-miniatura { display: grid; place-items: center; width: 56px; height: 56px; border: 1px solid var(--color-borde-tarjeta); border-radius: 8px; background: var(--color-superficie-suave); color: var(--color-cafe); }
+.iz-plan-destino-miniatura .biin-icon { font-size: 26px; }
+.iz-plan-guardado-contenido { display: grid; gap: 6px; min-width: 0; }
+.iz-plan-guardado-contenido h2 { font-size: 16px; line-height: 22px; }
+.iz-plan-guardado-contenido > p { font-size: 12px; line-height: 17px; overflow-wrap: anywhere; }
+.iz-plan-guardado-estado { color: var(--color-texto-suave); }
+.iz-plan-guardado-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 2px; }
+.iz-plan-guardado-acciones > :is(a, button) { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px 10px; border: 1px solid var(--color-borde-tarjeta); border-radius: 8px; background: var(--color-superficie); color: var(--color-cafe); font: inherit; font-weight: 700; text-decoration: none; }
+.iz-plan-guardado-acciones .iz-plan-restablecer { color: var(--color-error-texto); border-color: var(--color-error); }
 .iz-lugares-seleccionados { margin-top: 16px; padding: 12px; border: 1px solid var(--color-borde-tarjeta); border-radius: 12px; background: var(--color-superficie); }
 .iz-lugares-seleccionados h2 { margin-bottom: 8px; }
 .iz-lugares-seleccionados ul { display: grid; gap: 8px; padding: 0; margin: 0; list-style: none; }
@@ -227,4 +237,6 @@
   .iz-itinerario .iz-plan-icono-boton { width: 36px; height: 40px; }
   .iz-plan-campos { grid-template-columns: minmax(0, 1fr); }
   .iz-plan-consejos > div { grid-template-columns: minmax(0, 1fr); }
+  .iz-plan-destinos-crear > li { grid-template-columns: 40px minmax(0, 1fr); }
+  .iz-plan-destinos-crear > li a { grid-column: 2; justify-self: start; }
 }

@@ -196,13 +196,18 @@ function MiViajeContenido({ idUsuario, cerrarSesion }: { idUsuario: number; cerr
     {!cargando && elementos.length > 0 && <ul>{elementos.map(item => {
       const destino = nombreDestino(item)
       const local = !item.id.startsWith('servidor:')
-      return <li key={item.id} className="iz-plan-tarjeta">
-        <h2>{destino} · {item.borrador.modo}</h2>
-        {resumen(item).map((linea, index) => <p key={`${item.id}-${index}`}>{linea}</p>)}
-        <p>{local ? 'Solo en este navegador' : 'Guardado en tu cuenta'} · {new Date(item.guardadoEn).toLocaleString('es-MX')}</p>
-        <Link to={rutaItinerario(item)}>Abrir itinerario de {destino}</Link>
-        <Link to={rutaItinerario(item, true)}>Editar itinerario</Link>
-        <EliminarViaje item={item} alEliminar={eliminar} />
+      return <li key={item.id} className="iz-plan-tarjeta iz-plan-guardado">
+        <span className="iz-plan-destino-miniatura" aria-hidden="true"><span className="biin-icon">{item.destino === 'homun' ? 'water_drop' : item.destino === 'ticul' ? 'museum' : item.destino === 'tekit' ? 'checkroom' : item.destino === 'valladolid' ? 'church' : 'temple_buddhist'}</span></span>
+        <div className="iz-plan-guardado-contenido">
+          <h2>{destino} · {item.borrador.modo}</h2>
+          {resumen(item).map((linea, index) => <p key={`${item.id}-${index}`}>{linea}</p>)}
+          <p className="iz-plan-guardado-estado">{local ? 'Solo en este navegador' : 'Guardado en tu cuenta'} · {new Date(item.guardadoEn).toLocaleString('es-MX')}</p>
+          <div className="iz-plan-guardado-acciones">
+            <Link to={rutaItinerario(item)} aria-label={`Abrir itinerario de ${destino}`}>Abrir</Link>
+            <Link to={rutaItinerario(item, true)} aria-label={`Editar itinerario de ${destino}`}>Editar</Link>
+            <EliminarViaje item={item} alEliminar={eliminar} />
+          </div>
+        </div>
       </li>
     })}</ul>}
     {!cargando && !error && anteriores.length > 0 && <section className="iz-plan-tarjeta" aria-labelledby="itinerarios-anteriores-titulo">
@@ -224,6 +229,7 @@ function MiViajeContenido({ idUsuario, cerrarSesion }: { idUsuario: number; cerr
           ['homun', 'Homún'],
           ['ticul', 'Ticul'],
         ].map(([destino, nombre]) => <li className="iz-plan-tarjeta" key={destino}>
+          <span className="iz-plan-destino-miniatura" aria-hidden="true"><span className="biin-icon">{destino === 'homun' ? 'water_drop' : destino === 'ticul' ? 'museum' : destino === 'tekit' ? 'checkroom' : destino === 'valladolid' ? 'church' : 'temple_buddhist'}</span></span>
           <h3>{nombre}</h3>
           <Link to={`/rutas/${destino}`}>Crear itinerario</Link>
         </li>)}
