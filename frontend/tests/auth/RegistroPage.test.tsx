@@ -194,27 +194,8 @@ describe('RegistroPage', () => {
     ).toBeEnabled()
   })
 
-  it('envía nombre y correo limpios y navega tras una respuesta exitosa', async () => {
-    vi.mocked(fetch).mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          token: 'token-de-prueba',
-          expiraEn: '2030-01-01T00:00:00Z',
-          usuario: {
-            idUsuario: 42,
-            nombre: 'Ana López',
-            correo: 'ana@ejemplo.com',
-            roles: ['viajero'],
-          },
-        }),
-        {
-          status: 201,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      ),
-    )
+  it('envía nombre y correo limpios y pide el código sin iniciar sesión', async () => {
+    vi.mocked(fetch).mockResolvedValue(respuestaPendiente())
 
     renderizarRegistro()
     const usuario = await completarFormulario(
@@ -228,8 +209,10 @@ describe('RegistroPage', () => {
     )
 
     expect(
-      await screen.findByRole('heading', { name: 'Inicio de prueba' }),
+      await screen.findByRole('heading', { name: 'Confirma tu correo' }),
     ).toBeInTheDocument()
+    expect(screen.getByText('ana@ejemplo.com')).toBeInTheDocument()
+    expect(localStorage.getItem('biin.token')).toBeNull()
 
     expect(fetch).toHaveBeenCalledTimes(1)
     expect(fetch).toHaveBeenCalledWith(
@@ -244,4 +227,174 @@ describe('RegistroPage', () => {
       }),
     )
   })
+
+  it('avisa en el campo de correo que llegará un código', () => {
+    renderizarRegistro()
+
+    expect(screen.getByLabelText('Correo')).toHaveAccessibleDescription(
+      'Te enviaremos un código para confirmarlo.',
+    )
+  })
+
+  it('confirma el código, guarda la sesión y navega', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(respuestaPendiente())
+      .mockResolvedValueOnce(
+        respuestaJson(201, {
+          token: 'token-de-prueba',
+          expiraEn: '2030-01-01T00:00:00Z',
+          usuario: {
+            idUsuario: 42,
+            nombre: 'Ana López',
+            correo: 'ana@ejemplo.com',
+            roles: ['viajero'],
+          },
+        }),
+      )
+
+    renderizarRegistro()
+    const usuario = await completarFormulario()
+    await usuario.click(screen.getByRole('button', { name: 'Crear cuenta' }))
+
+    await usuario.type(await screen.findByLabelText('Código'), '04 29a17')
+    await usuario.click(
+      screen.getByRole('button', { name: 'Confirmar y crear cuenta' }),
+    )
+
+    expect(
+      await screen.findByRole('heading', { name: 'Inicio de prueba' }),
+    ).toBeInTheDocument()
+    expect(localStorage.getItem('biin.token')).toBe('token-de-prueba')
+    expect(fetch).toHaveBeenLastCalledWith(
+      '/api/auth/registro/verificar',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ correo: 'ana@ejemplo.com', codigo: '042917' }),
+      }),
+    )
+  })
+
+  it('pide los 6 dígitos antes de llamar al servidor', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(respuestaPendiente())
+
+    renderizarRegistro()
+    const usuario = await completarFormulario()
+    await usuario.click(screen.getByRole('button', { name: 'Crear cuenta' }))
+
+    await usuario.type(await screen.findByLabelText('Código'), '123')
+    await usuario.click(
+      screen.getByRole('button', { name: 'Confirmar y crear cuenta' }),
+    )
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Escribe los 6 dígitos del código que te enviamos.',
+    )
+    expect(fetch).toHaveBeenCalledTimes(1)
+  })
+
+  it('muestra el error de un código incorrecto y deja reintentar', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(respuestaPendiente())
+      .mockResolvedValueOnce(
+        respuestaJson(400, {
+          detail: 'El código no es correcto. Te quedan 4 intentos.',
+        }),
+      )
+
+    renderizarRegistro()
+    const usuario = await completarFormulario()
+    await usuario.click(screen.getByRole('button', { name: 'Crear cuenta' }))
+
+    await usuario.type(await screen.findByLabelText('Código'), '000000')
+    await usuario.click(
+      screen.getByRole('button', { name: 'Confirmar y crear cuenta' }),
+    )
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Te quedan 4 intentos',
+    )
+    expect(
+      screen.getByRole('button', { name: 'Confirmar y crear cuenta' }),
+    ).toBeEnabled()
+    expect(localStorage.getItem('biin.token')).toBeNull()
+  })
+
+  it('permite volver al formulario con los datos escritos para corregir el correo', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(respuestaPendiente('ana@gmial.com'))
+      .mockResolvedValueOnce(respuestaPendiente('ana@gmail.com'))
+
+    renderizarRegistro()
+    const usuario = await completarFormulario('Ana López', 'ana@gmial.com')
+    await usuario.click(screen.getByRole('button', { name: 'Crear cuenta' }))
+
+    await usuario.click(
+      await screen.findByRole('button', { name: 'Volver y corregir mis datos' }),
+    )
+
+    expect(screen.getByRole('heading', { name: 'Crear cuenta' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Nombre')).toHaveValue('Ana López')
+    expect(screen.getByLabelText('Correo')).toHaveValue('ana@gmial.com')
+    expect(screen.getByLabelText('Contraseña')).toHaveValue('clave12345')
+
+    await usuario.clear(screen.getByLabelText('Correo'))
+    await usuario.type(screen.getByLabelText('Correo'), 'ana@gmail.com')
+    await usuario.click(screen.getByRole('button', { name: 'Crear cuenta' }))
+
+    expect(await screen.findByText('ana@gmail.com')).toBeInTheDocument()
+    expect(fetch).toHaveBeenLastCalledWith(
+      '/api/auth/registro',
+      expect.objectContaining({
+        body: JSON.stringify({
+          nombre: 'Ana López',
+          correo: 'ana@gmail.com',
+          contrasena: 'clave12345',
+        }),
+      }),
+    )
+  })
+
+  it('bloquea el reenvío durante la espera y lo permite al terminar', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(respuestaPendiente('ana@ejemplo.com', 0))
+      .mockResolvedValueOnce(respuestaPendiente('ana@ejemplo.com', 60))
+
+    renderizarRegistro()
+    const usuario = await completarFormulario()
+    await usuario.click(screen.getByRole('button', { name: 'Crear cuenta' }))
+
+    await usuario.click(
+      await screen.findByRole('button', { name: 'Reenviar código' }),
+    )
+
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Te enviamos un código nuevo.',
+    )
+    expect(fetch).toHaveBeenLastCalledWith(
+      '/api/auth/registro/reenviar',
+      expect.objectContaining({
+        body: JSON.stringify({ correo: 'ana@ejemplo.com' }),
+      }),
+    )
+    expect(
+      screen.getByRole('button', { name: /Reenviar código \(\d+ s\)/ }),
+    ).toBeDisabled()
+  })
 })
+
+function respuestaJson(status: number, cuerpo: unknown) {
+  return new Response(JSON.stringify(cuerpo), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  })
+}
+
+/** Respuesta 202 del registro; `esperaSegundos` fija cuándo se puede pedir otro código. */
+function respuestaPendiente(correo = 'ana@ejemplo.com', esperaSegundos = 60) {
+  const ahora = Date.now()
+  return respuestaJson(202, {
+    correo,
+    expiraEn: new Date(ahora + 15 * 60_000).toISOString(),
+    reenviarDesde: new Date(ahora + esperaSegundos * 1000).toISOString(),
+  })
+}

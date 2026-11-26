@@ -76,8 +76,19 @@ describe('Retorno tras el acceso CU-01 / CU-09', () => {
     vi.unstubAllGlobals()
   })
 
-  it('regresa al enlace completo después de pasar de acceso a registro', async () => {
-    vi.mocked(fetch).mockResolvedValue(respuestaExitosa(201))
+  it('regresa al enlace completo después de pasar de acceso a registro y confirmar el correo', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            correo: 'ana@ejemplo.com',
+            expiraEn: '2030-01-01T00:15:00Z',
+            reenviarDesde: '2030-01-01T00:01:00Z',
+          }),
+          { status: 202, headers: { 'Content-Type': 'application/json' } },
+        ),
+      )
+      .mockResolvedValueOnce(respuestaExitosa(201))
 
     const usuario = userEvent.setup()
     const router = renderizarFlujo()
@@ -105,6 +116,11 @@ describe('Retorno tras el acceso CU-01 / CU-09', () => {
       screen.getByRole('button', { name: 'Crear cuenta' }),
     )
 
+    await usuario.type(await screen.findByLabelText('Código'), '123456')
+    await usuario.click(
+      screen.getByRole('button', { name: 'Confirmar y crear cuenta' }),
+    )
+
     expect(
       await screen.findByRole('heading', { name: 'Mi viaje de prueba' }),
     ).toBeInTheDocument()
@@ -114,7 +130,7 @@ describe('Retorno tras el acceso CU-01 / CU-09', () => {
     expect(
       ubicacion.pathname + ubicacion.search + ubicacion.hash,
     ).toBe(destino)
-    expect(fetch).toHaveBeenCalledTimes(1)
+    expect(fetch).toHaveBeenCalledTimes(2)
   })
 
   it('conserva el destino al ir a registro y volver al inicio de sesión', async () => {
