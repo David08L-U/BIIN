@@ -59,6 +59,7 @@ public static class BdPruebas
             DELETE FROM recursos WHERE id_recurso IN (SELECT id_recurso FROM pruebas_recursos);
             DELETE FROM bitacora_admin WHERE id_usuario IN (SELECT id_usuario FROM pruebas_usuarios);
             DELETE FROM usuarios WHERE id_usuario IN (SELECT id_usuario FROM pruebas_usuarios);
+            DELETE FROM registros_pendientes WHERE correo LIKE '%@' || @dominio;
             DELETE FROM ubicaciones WHERE direccion_referencia LIKE @marca || '%';
             DELETE FROM localidades l WHERE l.nombre LIKE @marca || '%'
                 AND NOT EXISTS (SELECT 1 FROM ubicaciones u WHERE u.id_localidad = l.id_localidad);

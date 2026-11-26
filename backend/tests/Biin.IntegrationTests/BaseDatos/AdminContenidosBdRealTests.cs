@@ -43,9 +43,8 @@ public class AdminContenidosBdRealTests(BdRealFactory factory) : IClassFixture<B
     public async Task Viajero_recibe_403_en_administracion()
     {
         using var client = factory.CreateClient();
-        var registro = await client.PostAsJsonAsync("/api/auth/registro",
-            new RegistroRequest("Viajero Curioso", BdPruebas.CorreoUnico("curioso"), Contrasena));
-        var token = (await registro.Content.ReadFromJsonAsync<AuthResponse>())!.Token;
+        var token = (await factory.RegistrarViajeroAsync(
+            client, "Viajero Curioso", BdPruebas.CorreoUnico("curioso"), Contrasena)).Token;
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         Assert.Equal(HttpStatusCode.Forbidden, (await client.GetAsync("/api/admin/contenidos")).StatusCode);

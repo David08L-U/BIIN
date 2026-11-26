@@ -27,14 +27,11 @@ public class SesionBdRealTests(BdRealFactory factory) : IClassFixture<BdRealFact
         using var client = factory.CreateClient();
         var correo = BdPruebas.CorreoUnico("sesion");
 
-        var registro = await client.PostAsJsonAsync("/api/auth/registro",
-            new RegistroRequest("Viajera de Prueba Ñandú", correo.ToUpperInvariant(), "Prueba1234"));
-        Assert.Equal(HttpStatusCode.Created, registro.StatusCode);
-        var auth = (await registro.Content.ReadFromJsonAsync<AuthResponse>())!;
+        var auth = await factory.RegistrarViajeroAsync(client, "Viajera de Prueba Ñandú", correo.ToUpperInvariant(), "Prueba1234");
         Assert.Equal(correo, auth.Usuario.Correo);
         Assert.Equal(["viajero"], auth.Usuario.Roles);
 
-        // El índice único lower(correo) impide repetir la cuenta con otras mayúsculas
+        // Con la cuenta creada, repetir el correo con otras mayúsculas responde 409
         var repetido = await client.PostAsJsonAsync("/api/auth/registro",
             new RegistroRequest("Otra", correo, "Prueba1234"));
         Assert.Equal(HttpStatusCode.Conflict, repetido.StatusCode);
@@ -59,5 +56,54 @@ public class SesionBdRealTests(BdRealFactory factory) : IClassFixture<BdRealFact
         Assert.Equal(HttpStatusCode.Unauthorized, viejo.StatusCode);
         var nuevo = await client.PostAsJsonAsync("/api/auth/login", new LoginRequest(correo, "NuevaClave1234"));
         Assert.Equal(HttpStatusCode.OK, nuevo.StatusCode);
+    }
+
+    [FactBd]
+    public async Task Sin_confirmar_el_correo_no_hay_cuenta_y_se_puede_regresar_a_corregir_contra_PostgreSQL()
+    {
+        using var client = factory.CreateClient();
+        var correo = BdPruebas.CorreoUnico("confirmar");
+
+        var registro = await client.PostAsJsonAsync("/api/auth/registro",
+            new RegistroRequest("Viajero Sin Confirmar", correo, "Prueba1234"));
+        Assert.Equal(HttpStatusCode.Accepted, registro.StatusCode);
+        var pendiente = (await registro.Content.ReadFromJsonAsync<RegistroPendienteResponse>())!;
+        Assert.Equal(correo, pendiente.Correo);
+        var codigo = factory.Buzon.UltimoCodigo(correo);
+
+        // Sin confirmar: no existe la cuenta y el login avisa qué falta
+        await using (var db = BdPruebas.CrearContexto())
+        {
+            Assert.False(db.Usuarios.Any(u => u.Correo == correo));
+            Assert.True(db.RegistrosPendientes.Any(r => r.Correo == correo));
+        }
+        var login = await client.PostAsJsonAsync("/api/auth/login", new LoginRequest(correo, "Prueba1234"));
+        Assert.Equal(HttpStatusCode.Unauthorized, login.StatusCode);
+        Assert.Contains("confirmas tu correo", await login.Content.ReadAsStringAsync());
+
+        // Regresa al formulario y corrige el nombre: no llega otro código y el primero sigue sirviendo
+        var enviadosAntes = factory.Buzon.Enviados;
+        var corregido = await client.PostAsJsonAsync("/api/auth/registro",
+            new RegistroRequest("Viajero Corregido", correo, "Prueba1234"));
+        Assert.Equal(HttpStatusCode.Accepted, corregido.StatusCode);
+        Assert.Equal(enviadosAntes, factory.Buzon.Enviados);
+
+        var malo = codigo == "000000" ? "111111" : "000000";
+        var incorrecto = await client.PostAsJsonAsync("/api/auth/registro/verificar", new VerificarRegistroRequest(correo, malo));
+        Assert.Equal(HttpStatusCode.BadRequest, incorrecto.StatusCode);
+
+        var reenvioTemprano = await client.PostAsJsonAsync("/api/auth/registro/reenviar", new ReenviarCodigoRequest(correo));
+        Assert.Equal(HttpStatusCode.BadRequest, reenvioTemprano.StatusCode);
+
+        var verificar = await client.PostAsJsonAsync("/api/auth/registro/verificar", new VerificarRegistroRequest(correo, codigo));
+        Assert.Equal(HttpStatusCode.Created, verificar.StatusCode);
+        var auth = (await verificar.Content.ReadFromJsonAsync<AuthResponse>())!;
+        Assert.Equal("Viajero Corregido", auth.Usuario.Nombre);
+
+        await using (var db = BdPruebas.CrearContexto())
+        {
+            Assert.True(db.Usuarios.Any(u => u.Correo == correo));
+            Assert.False(db.RegistrosPendientes.Any(r => r.Correo == correo));
+        }
     }
 }

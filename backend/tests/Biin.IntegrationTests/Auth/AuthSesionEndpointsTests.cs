@@ -52,6 +52,33 @@ public class AuthSesionEndpointsTests : IClassFixture<AuthSesionEndpointsTests.S
         Assert.Equal("application/problem+json", respClave.Content.Headers.ContentType?.MediaType);
     }
 
+    [Theory]
+    [InlineData("12345")]
+    [InlineData("1234567")]
+    [InlineData("abcdef")]
+    [InlineData("")]
+    public async Task Verificar_registro_con_codigo_mal_formado_devuelve_400_sin_tocar_la_base(string codigo)
+    {
+        using var client = _factory.CreateClient();
+
+        var resp = await client.PostAsJsonAsync("/api/auth/registro/verificar", new { correo = "viajero@biin.test", codigo });
+
+        Assert.Equal(HttpStatusCode.BadRequest, resp.StatusCode);
+    }
+
+    [Fact]
+    public async Task Registro_y_reenvio_con_correo_invalido_devuelven_400()
+    {
+        using var client = _factory.CreateClient();
+
+        var registro = await client.PostAsJsonAsync("/api/auth/registro",
+            new { nombre = "Viajero", correo = "no-es-correo", contrasena = "Clave1234" });
+        var reenvio = await client.PostAsJsonAsync("/api/auth/registro/reenviar", new { correo = "no-es-correo" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, registro.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, reenvio.StatusCode);
+    }
+
     [Fact]
     public async Task Logout_devuelve_204_e_invalida_el_mismo_token_en_la_siguiente_peticion()
     {
