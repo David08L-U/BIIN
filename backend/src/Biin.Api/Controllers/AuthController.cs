@@ -14,18 +14,20 @@ namespace Biin.Api.Controllers;
 [Route("api/auth")]
 public class AuthController(AuthService auth) : ControllerBase
 {
+    /// <summary>
+    /// Registro de viajero, paso 1: manda un código al correo. La cuenta se crea al confirmarlo
+    /// en <c>POST /api/auth/registro/verificar</c>; si el correo no existe, el código nunca llega.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("registro")]
     [EnableRateLimiting(PoliticasRateLimit.Autenticacion)]
-    [ProducesResponseType<AuthResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<RegistroPendienteResponse>(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-    public async Task<ActionResult<AuthResponse>> Registrar(RegistroRequest req, CancellationToken ct)
-    {
-        var respuesta = await auth.RegistrarAsync(req, ct);
-        return CreatedAtAction(nameof(Yo), respuesta);
-    }
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+    public async Task<ActionResult<RegistroPendienteResponse>> Registrar(RegistroRequest req, CancellationToken ct) =>
+        Accepted(await auth.RegistrarAsync(req, ct));
 
     [AllowAnonymous]
     [HttpPost("login")]

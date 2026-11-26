@@ -5,6 +5,7 @@ using Biin.Domain.Entities;
 using Biin.Domain.Enums;
 using Biin.Domain.Exceptions;
 using Biin.UnitTests.Fakes;
+using Microsoft.Extensions.Options;
 
 namespace Biin.UnitTests.Auth;
 
@@ -14,6 +15,10 @@ public class AuthServiceTests
     private readonly HashFalso _hash = new();
     private readonly GeneradorTokenFalso _tokens = new();
     private readonly RevocacionFalsa _revocacion = new();
+    private readonly RelojFijo _reloj = new();
+    private readonly CorreoFalso _correo = new();
+    private readonly ValidadorDominioFalso _dominios = new();
+    private readonly VerificacionCorreoOptions _opciones = new();
     private readonly AuthService _servicio;
 
     public AuthServiceTests()
@@ -24,22 +29,29 @@ public class AuthServiceTests
             new Rol { IdRol = 2, Nombre = Roles.Operador },
             new Rol { IdRol = 3, Nombre = Roles.Administrador }
         ]);
-        _servicio = new AuthService(_db, _hash, _tokens, _revocacion);
+        _servicio = new AuthService(_db, _hash, _tokens, _revocacion, _reloj, _correo, _dominios,
+            Options.Create(_opciones));
     }
 
     [Fact]
-    public async Task Registrar_normaliza_datos_asigna_solo_viajero_y_guarda_hash()
+    public async Task Registrar_no_crea_la_cuenta_y_manda_codigo_al_correo_normalizado()
     {
         var resp = await _servicio.RegistrarAsync(new RegistroRequest("  María Uc  ", "  MARIA@BIIN.TEST ", "Secreto123"));
 
-        Assert.Equal("María Uc", resp.Usuario.Nombre);
-        Assert.Equal("maria@biin.test", resp.Usuario.Correo);
-        Assert.Equal([Roles.Viajero], resp.Usuario.Roles);
-        Assert.False(string.IsNullOrWhiteSpace(resp.Token));
+        Assert.Empty(_db.UsuariosSet.Items);
+        Assert.Equal("maria@biin.test", resp.Correo);
+        Assert.Equal(_reloj.AhoraUtc.AddMinutes(15), resp.ExpiraEn);
+        Assert.Equal(_reloj.AhoraUtc.AddSeconds(60), resp.ReenviarDesde);
 
-        var guardado = Assert.Single(_db.UsuariosSet.Items);
-        Assert.NotEqual("Secreto123", guardado.HashContrasena);
-        Assert.True(_hash.Verificar("Secreto123", guardado.HashContrasena));
+        var enviado = Assert.Single(_correo.Enviados);
+        Assert.Equal(("maria@biin.test", "María Uc"), (enviado.Correo, enviado.Nombre));
+        Assert.Matches(@"^\d{6}$", enviado.Codigo);
+
+        var pendiente = Assert.Single(_db.RegistrosPendientesSet.Items);
+        Assert.True(_hash.Verificar("Secreto123", pendiente.HashContrasena));
+        // Solo se guarda el hash del código, nunca el código
+        Assert.NotEqual(enviado.Codigo, pendiente.HashCodigo);
+        Assert.True(_hash.Verificar(enviado.Codigo, pendiente.HashCodigo));
     }
 
     [Fact]
@@ -69,15 +81,6 @@ public class AuthServiceTests
 
         await Assert.ThrowsAsync<ReglaNegocioException>(() =>
             _servicio.RegistrarAsync(new RegistroRequest("Usuario", "larga@biin.test", larga)));
-    }
-
-    [Fact]
-    public async Task Registrar_falla_si_falta_rol_viajero_en_catalogo()
-    {
-        _db.RolesSet.Items.Clear();
-
-        await Assert.ThrowsAsync<ReglaNegocioException>(() =>
-            _servicio.RegistrarAsync(new RegistroRequest("Usuario", "nuevo@biin.test", "Clave1234")));
     }
 
     [Fact]

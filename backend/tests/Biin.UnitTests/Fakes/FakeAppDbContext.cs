@@ -125,6 +125,10 @@ public sealed class FakeAppDbContext : IAppDbContext
                 a.IdItinerario = a.Itinerario.IdItinerario;
         }
 
+        var pendientes = RegistrosPendientesSet.Items;
+        foreach (var p in pendientes.Where(p => p.IdRegistro == 0))
+            p.IdRegistro = pendientes.Max(x => x.IdRegistro) + 1;
+
         foreach (var b in BitacoraAdminSet.Items)
         {
             if (b.IdBitacora == 0)
@@ -233,4 +237,30 @@ public sealed class RevocacionFalsa : IRevocacionToken
     public HashSet<string> Revocados { get; } = [];
     public void Revocar(string jti, DateTime expiraEnUtc) => Revocados.Add(jti);
     public bool EstaRevocado(string jti) => Revocados.Contains(jti);
+}
+
+/// <summary>Guarda los códigos "enviados" para que la prueba los lea como si abriera el correo.</summary>
+public sealed class CorreoFalso : IEnvioCorreo
+{
+    public List<(string Correo, string Nombre, string Codigo, DateTime ExpiraEn)> Enviados { get; } = [];
+    public bool Fallar { get; set; }
+
+    public string UltimoCodigo(string correo) => Enviados.Last(e => e.Correo == correo).Codigo;
+
+    public Task EnviarCodigoVerificacionAsync(
+        string correo, string nombre, string codigo, DateTime expiraEnUtc, CancellationToken ct = default)
+    {
+        if (Fallar) throw new InvalidOperationException("SMTP caído (prueba)");
+        Enviados.Add((correo, nombre, codigo, expiraEnUtc));
+        return Task.CompletedTask;
+    }
+}
+
+/// <summary>Acepta cualquier dominio salvo los marcados como inexistentes.</summary>
+public sealed class ValidadorDominioFalso : IValidadorDominioCorreo
+{
+    public HashSet<string> SinCorreo { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+    public Task<bool> PuedeRecibirCorreoAsync(string dominio, CancellationToken ct = default) =>
+        Task.FromResult(!SinCorreo.Contains(dominio));
 }
