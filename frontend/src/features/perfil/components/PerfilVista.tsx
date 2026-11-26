@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router'
+import { regresarEnBIIN } from '../../../utils/navegacion'
 import '../../../styles/perfil.css'
 
 export interface ItinerarioPerfil {
@@ -43,6 +44,8 @@ function Icono({ nombre }: { nombre: string }) {
 
 /** Vista del prototipo; recibe datos sin modificar cuentas ni crear sesiones. */
 export default function PerfilVista({ datos, demostracion = false, onCerrarSesion }: Props) {
+  const navegar = useNavigate()
+  const ubicacion = useLocation()
   const [aviso, setAviso] = useState('')
   const [fotoFallida, setFotoFallida] = useState(false)
   const iniciales = datos.nombre.trim().split(/\s+/).slice(0, 2).map(p => p[0]).join('').toLocaleUpperCase('es') || 'BI'
@@ -62,7 +65,10 @@ export default function PerfilVista({ datos, demostracion = false, onCerrarSesio
 
   return <section className="perfil" aria-labelledby="perfil-titulo">
     <header className="perfil-cabecera">
-      <Link to="/" className="perfil-volver" aria-label="Volver al inicio"><Icono nombre="arrow_back" /></Link>
+      <button type="button" className="perfil-volver" aria-label="Regresar a la pantalla anterior"
+        onClick={() => regresarEnBIIN(navegar, (ubicacion.state as { desde?: string } | null)?.desde, '/') }>
+        <Icono nombre="arrow_back" />
+      </button>
       <h1 id="perfil-titulo">Mi perfil</h1>
     </header>
 

@@ -45,6 +45,9 @@
   flex-shrink: 0;
   color: var(--color-texto);
   border-radius: 8px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
 .perfil-cabecera h1 {
