@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Biin.IntegrationTests;
@@ -56,11 +57,18 @@ public sealed class ItinerariosPostgresTests
             {
                 Autenticar(client, usuarioA.IdUsuario);
                 var crear = await client.PostAsJsonAsync("/api/itinerarios", cuerpo);
+                if (crear.StatusCode != HttpStatusCode.Created)
+                    throw new InvalidOperationException($"La creación devolvió {(int)crear.StatusCode}: {await crear.Content.ReadAsStringAsync()}");
                 Assert.Equal(HttpStatusCode.Created, crear.StatusCode);
                 using var creadoJson = JsonDocument.Parse(await crear.Content.ReadAsStringAsync());
                 idItinerario = creadoJson.RootElement.GetProperty("idItinerario").GetInt32();
                 Assert.Equal("ticul", creadoJson.RootElement.GetProperty("destino").GetString());
                 Assert.Equal("taller-alfareria", creadoJson.RootElement.GetProperty("borrador").GetProperty("seleccion")[0].GetString());
+
+                var listaInicial = await client.GetFromJsonAsync<JsonElement[]>("/api/itinerarios");
+                Assert.NotNull(listaInicial);
+                Assert.Single(listaInicial);
+                Assert.Equal(idItinerario, listaInicial[0].GetProperty("idItinerario").GetInt32());
 
                 var duplicado = await client.PostAsJsonAsync("/api/itinerarios", cuerpo);
                 Assert.Equal(HttpStatusCode.OK, duplicado.StatusCode);
@@ -68,13 +76,17 @@ public sealed class ItinerariosPostgresTests
                 Assert.Equal(idItinerario, duplicadoJson.RootElement.GetProperty("idItinerario").GetInt32());
             }
 
-            // Una nueva instancia de API y cliente representa reinicio y otra sesión del navegador.
+            // Una nueva instancia de API prueba persistencia tras reinicio; dos clientes prueban sesiones HTTP aisladas.
             await using (var apiReiniciada = CrearApi(connectionString))
             using (var propietario = apiReiniciada.CreateClient())
             using (var otraCuenta = apiReiniciada.CreateClient())
             {
                 Autenticar(propietario, usuarioA.IdUsuario);
                 Autenticar(otraCuenta, usuarioB.IdUsuario);
+                var listaPersistida = await propietario.GetFromJsonAsync<JsonElement[]>("/api/itinerarios");
+                Assert.NotNull(listaPersistida);
+                Assert.Single(listaPersistida);
+                Assert.Equal(idItinerario, listaPersistida[0].GetProperty("idItinerario").GetInt32());
                 var reapertura = await propietario.GetAsync($"/api/itinerarios/{idItinerario}");
                 Assert.Equal(HttpStatusCode.OK, reapertura.StatusCode);
                 using var reaperturaJson = JsonDocument.Parse(await reapertura.Content.ReadAsStringAsync());
@@ -90,7 +102,10 @@ public sealed class ItinerariosPostgresTests
 
                 var actualizado = await propietario.PutAsJsonAsync($"/api/itinerarios/{idItinerario}", Request("ticul", ["taller-alfareria"]));
                 Assert.Equal(HttpStatusCode.OK, actualizado.StatusCode);
+                using var actualizadoJson = JsonDocument.Parse(await actualizado.Content.ReadAsStringAsync());
+                Assert.Equal(new[] { "taller-alfareria" }, actualizadoJson.RootElement.GetProperty("borrador").GetProperty("seleccion").EnumerateArray().Select(x => x.GetString()).ToArray());
                 Assert.Equal(HttpStatusCode.NoContent, (await propietario.DeleteAsync($"/api/itinerarios/{idItinerario}")).StatusCode);
+                Assert.Empty((await propietario.GetFromJsonAsync<JsonElement[]>("/api/itinerarios"))!);
             }
         }
         finally
@@ -138,6 +153,11 @@ public sealed class ItinerariosPostgresTests
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Testing");
+            builder.UseSetting("ConnectionStrings:Biin", connectionString);
+            builder.UseSetting("Jwt:Clave", ClavePrueba);
+            builder.UseSetting("Jwt:Emisor", "biin-api");
+            builder.UseSetting("Jwt:Audiencia", "biin-web");
+            builder.ConfigureLogging(logging => logging.ClearProviders());
             builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["ConnectionStrings:Biin"] = connectionString,
