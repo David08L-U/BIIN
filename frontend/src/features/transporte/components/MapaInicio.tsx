@@ -15,7 +15,7 @@ const marquesita = icon({
 
 function ContenidoMapa({ fallo }: { fallo: boolean }) {
   const mapa = useMap()
-  const { posicion, estado, usarUbicacion } = useUbicacionInicio(({ punto }) => encuadrarUbicacion(mapa, punto))
+  const { posicion, estado, usarUbicacion, mostrarInvitacion, ahoraNo } = useUbicacionInicio(({ punto }) => encuadrarUbicacion(mapa, punto))
   const desactualizada = posicion !== null && estado.tipo !== 'vigente'
   const color = desactualizada ? '#625954' : '#1769aa'
   const controles = useRef<HTMLDivElement>(null)
@@ -35,7 +35,7 @@ function ContenidoMapa({ fallo }: { fallo: boolean }) {
       </Marker>
     </>}
     <div ref={controles} className="melanie-controles">
-      <button type="button" className="biin-icon-button" aria-label={estado.tipo === 'vigente' ? 'Centrar en mi ubicación' : 'Usar mi ubicación'} onClick={usarUbicacion}>
+      <button type="button" className="biin-icon-button" aria-label={estado.tipo === 'vigente' ? 'Mi ubicación' : 'Usar ubicación del mapa'} onClick={usarUbicacion}>
         <span aria-hidden="true" className="biin-icon">my_location</span>
       </button>
       <div className="melanie-zoom">
@@ -47,6 +47,11 @@ function ContenidoMapa({ fallo }: { fallo: boolean }) {
         </button>
       </div>
     </div>
+    {mostrarInvitacion && <section className="melanie-ubicacion-invitacion" aria-labelledby="titulo-invitacion-ubicacion">
+      <p id="titulo-invitacion-ubicacion">¿Quieres usar tu ubicación para centrar el mapa?</p>
+      <button type="button" onClick={usarUbicacion}>Usar mi ubicación</button>
+      <button type="button" onClick={ahoraNo}>Ahora no</button>
+    </section>}
     <div className="melanie-mapa-nota">
       {!posicion && <div>Vista general de Mérida · Referencia</div>}
       <div aria-live="polite" aria-atomic="true">

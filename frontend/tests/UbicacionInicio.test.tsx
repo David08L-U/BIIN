@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { latLng } from 'leaflet'
 import type { ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -38,7 +38,8 @@ function simularAPI() {
 }
 
 function usarUbicacion() {
-  fireEvent.click(screen.getByRole('button', { name: 'Usar mi ubicación' }))
+  const accion = screen.queryByRole('button', { name: /Usar mi ubicaci/ }) ?? document.querySelector('.melanie-controles button.biin-icon-button')!
+  fireEvent.click(accion)
 }
 
 beforeEach(() => {
@@ -64,6 +65,9 @@ describe('ubicación de Inicio con la API simulada', () => {
     expect(api.watchPosition).not.toHaveBeenCalled()
     expect(screen.queryByTestId('ubicacion')).not.toBeInTheDocument()
     expect(screen.getByText(/Vista general de Mérida/)).toBeInTheDocument()
+    expect(screen.getByText('¿Quieres usar tu ubicación para centrar el mapa?')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Ahora no' }))
+    expect(screen.queryByText('¿Quieres usar tu ubicación para centrar el mapa?')).not.toBeInTheDocument()
 
     usarUbicacion()
     usarUbicacion()
@@ -85,13 +89,55 @@ describe('ubicación de Inicio con la API simulada', () => {
     expect(screen.getByTestId('ubicacion')).toHaveAttribute('data-punto', '2,3')
     expect(screen.getByTestId('precision')).toHaveAttribute('data-radio', '30')
     expect(mapa.fitBounds).toHaveBeenCalledTimes(1)
-    fireEvent.click(screen.getByRole('button', { name: 'Centrar en mi ubicación' }))
+    fireEvent.click(screen.getByRole('button', { name: /Mi ubicaci/ }))
     expect(mapa.fitBounds.mock.lastCall?.[0].getCenter()).toEqual(latLng(2, 3))
     expect(api.watchPosition).toHaveBeenCalledTimes(1)
     unmount()
     expect(api.clearWatch).toHaveBeenCalledExactlyOnceWith(0)
     api.recibir(3, 4, 10)
     expect(mapa.fitBounds).toHaveBeenCalledTimes(2)
+  })
+
+  it('reanuda un único seguimiento al entrar si el permiso ya está concedido', async () => {
+    const api = simularAPI()
+    const estado = Object.assign(new EventTarget(), { state: 'granted', onchange: null }) as PermissionStatus
+    vi.stubGlobal('navigator', {
+      geolocation: { watchPosition: api.watchPosition, clearWatch: api.clearWatch },
+      permissions: { query: vi.fn().mockResolvedValue(estado) },
+    })
+    const { unmount } = render(<MapaInicio />)
+    await waitFor(() => expect(api.watchPosition).toHaveBeenCalledTimes(1))
+    expect(screen.queryByTestId('ubicacion')).not.toBeInTheDocument()
+    expect(screen.queryByText('¿Quieres usar tu ubicación para centrar el mapa?')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /Usar ubicaci/ }))
+    expect(api.watchPosition).toHaveBeenCalledTimes(1)
+    unmount()
+    expect(api.clearWatch).toHaveBeenCalledExactlyOnceWith(0)
+  })
+
+  it('inicia el seguimiento solo al aceptar la invitación y evita duplicados', () => {
+    const api = simularAPI()
+    render(<MapaInicio />)
+    expect(api.watchPosition).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: /Usar mi ubicaci/ }))
+    expect(api.watchPosition).toHaveBeenCalledTimes(1)
+    expect(screen.queryByText(/Quieres usar tu ubicaci/)).not.toBeInTheDocument()
+    usarUbicacion()
+    expect(api.watchPosition).toHaveBeenCalledTimes(1)
+  })
+
+  it('no repite la solicitud si el permiso ya está rechazado en el navegador', async () => {
+    const api = simularAPI()
+    const estado = Object.assign(new EventTarget(), { state: 'denied', onchange: null }) as PermissionStatus
+    vi.stubGlobal('navigator', {
+      geolocation: { watchPosition: api.watchPosition, clearWatch: api.clearWatch },
+      permissions: { query: vi.fn().mockResolvedValue(estado) },
+    })
+    render(<MapaInicio />)
+    await waitFor(() => expect(screen.getByText(/Permiso de ubicaci/)).toBeInTheDocument())
+    expect(screen.queryByText(/Quieres usar tu ubicaci/)).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /Usar ubicaci/ }))
+    expect(api.watchPosition).not.toHaveBeenCalled()
   })
 
   it.each([
@@ -108,7 +154,7 @@ describe('ubicación de Inicio con la API simulada', () => {
     expect(screen.queryByTestId('ubicacion')).not.toBeInTheDocument()
     expect(api.clearWatch).toHaveBeenCalledExactlyOnceWith(0)
     usarUbicacion()
-    expect(api.watchPosition).toHaveBeenCalledTimes(2)
+    expect(api.watchPosition).toHaveBeenCalledTimes(codigo === 1 ? 1 : 2)
   })
 
   it('marca como desactualizada la última lectura si el seguimiento falla', () => {

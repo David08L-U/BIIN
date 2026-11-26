@@ -368,6 +368,63 @@
   pointer-events: none;
 }
 
+.melanie-ubicacion-invitacion {
+  position: absolute;
+  z-index: 18;
+  left: 12px;
+  right: 72px;
+  bottom: 126px;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--color-borde);
+  border-radius: 12px;
+  background: var(--color-superficie);
+  box-shadow: 0 2px 12px #35221924;
+  pointer-events: auto;
+}
+
+.melanie-ubicacion-invitacion p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.melanie-ubicacion-invitacion button {
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  font: inherit;
+  cursor: pointer;
+}
+
+.melanie-ubicacion-invitacion button:first-of-type {
+  background: var(--color-primario);
+  color: var(--color-superficie);
+}
+
+.melanie-ubicacion-invitacion button:focus-visible {
+  outline: 3px solid var(--color-secundario);
+  outline-offset: 2px;
+}
+
+@media (max-width: 420px) {
+  .melanie-ubicacion-invitacion {
+    left: 8px;
+    right: 64px;
+    bottom: 134px;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .melanie-ubicacion-invitacion p {
+    grid-column: 1 / -1;
+  }
+}
+
 /* Panel inferior del mapa */
 
 .melanie-panel {
