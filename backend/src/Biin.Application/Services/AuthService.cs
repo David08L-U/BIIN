@@ -154,6 +154,12 @@ public class AuthService(
             .Include(u => u.Roles).ThenInclude(ur => ur.Rol)
             .SingleOrDefaultAsync(u => u.Correo.ToLower() == correo, ct);
 
+        // Solo quien conoce la contraseña del registro pendiente se entera de que falta confirmar
+        if (usuario is null && await BuscarPendienteAsync(correo, ct) is { } pendiente &&
+            !pendiente.Vencido(reloj.AhoraUtc) && hash.Verificar(req.Contrasena, pendiente.HashContrasena))
+            throw new NoAutenticadoException(
+                "Aún no confirmas tu correo. Escribe el código que te enviamos o regístrate de nuevo para recibir otro.");
+
         // Mismo mensaje para correo o contraseña incorrectos: no revela qué cuentas existen
         if (usuario is null || !hash.Verificar(req.Contrasena, usuario.HashContrasena))
             throw new NoAutenticadoException("Correo o contraseña incorrectos.");
