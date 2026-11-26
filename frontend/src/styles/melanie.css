@@ -45,17 +45,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--color-borde);
+  border: 1px solid var(--color-borde-tarjeta);
   border-radius: 16px;
   background: var(--color-superficie);
-  color: var(--color-texto);
+  color: var(--color-accion);
   cursor: pointer;
   box-shadow: 0 2px 7px #2b18100a;
 }
 
 .biin-icon-button:hover {
-  background: var(--color-superficie-suave);
+  background: var(--color-secundario-suave);
 }
+
+.biin-icon-button:active { background: var(--color-accion); color: var(--color-superficie); }
 
 .biin-cabecera-simple {
   display: flex;
@@ -105,7 +107,7 @@
 
 .biin-nav a.active {
   background: var(--color-secundario-suave);
-  color: var(--color-secundario-texto);
+  color: var(--color-accion-texto, var(--color-secundario-texto));
 }
 
 .biin-nav .biin-icon {
@@ -403,7 +405,8 @@
 }
 
 .melanie-ubicacion-invitacion button:first-of-type {
-  background: var(--color-primario);
+  background: var(--color-accion);
+  border-color: var(--color-accion);
   color: var(--color-superficie);
 }
 
@@ -481,10 +484,13 @@
 }
 
 .melanie-accion-principal {
-  background: var(--color-primario);
+  background: var(--color-accion);
   color: var(--color-fondo);
   box-shadow: 0 1px 3px #2b181015;
 }
+
+.melanie-accion-principal:hover { background: var(--color-accion-hover); }
+.melanie-accion-principal:active { background: var(--color-accion-hover); transform: translateY(1px); }
 
 .melanie-accion-principal .biin-icon {
   color: var(--color-acento);

@@ -857,9 +857,12 @@
 }
 
 .izamal-accion-principal {
-  background: var(--color-primario);
+  background: var(--color-accion);
   color: var(--color-superficie);
 }
+
+.izamal-accion-principal:hover { background: var(--color-accion-hover); }
+.izamal-accion-principal:active { background: var(--color-accion-hover); transform: translateY(1px); }
 
 .izamal-accion-principal .biin-icon:first-child {
   color: var(--color-acento);

@@ -24,7 +24,7 @@
 .ti-tarjeta { border: 1px solid var(--color-borde-tarjeta); border-radius: 12px; background: var(--color-superficie); box-shadow: var(--sombra-tarjeta); }
 .ti-modos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .ti-modos a { display: grid; place-items: center; min-height: 40px; padding: 8px; border-radius: 8px; background: #f4ede5; color: #1e1b17; font-size: 12px; font-weight: 700; text-decoration: none; }
-.ti-modos a[aria-current] { background: #070100; color: #fff; }
+.ti-modos a[aria-current] { background: var(--color-accion); color: #fff; }
 .ti-formulario, .ti-personalizar form { display: flex; flex-direction: column; gap: 16px; }
 .ti-config { display: flex; flex-direction: column; gap: 12px; width: 100%; border: 0; margin: 0; padding: 16px; }
 .ti-config legend { display: flex; align-items: center; gap: 8px; padding: 0 4px; font-weight: 700; }
@@ -33,7 +33,7 @@
 .ti-plan :is(input:not([type=checkbox]), select) { width: 100%; max-width: 100%; min-height: 44px; padding: 9px 10px; border: 1px solid #817470; border-radius: 8px; background: #fff; color: #1e1b17; }
 .ti-campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .ti-campos label:last-child { grid-column: 1 / -1; }
-.ti-primario, .ti-guardar { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; padding: 12px; border-radius: 8px; background: #2b1810; color: #fff; font-size: 14px; line-height: 20px; font-weight: 700; }
+.ti-primario, .ti-guardar { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; padding: 12px; border-radius: 8px; background: var(--color-accion); color: #fff; font-size: 14px; line-height: 20px; font-weight: 700; }
 .ti-error { padding: 12px; border-radius: 8px; background: #ffdad6; color: #93000a; font-size: 13px; line-height: 20px; }
 .ti-error p + p { margin-top: 6px; }
 .ti-vacio { padding: 12px; border-radius: 8px; background: #f4ede5; }
@@ -52,7 +52,7 @@
 .ti-tiempo-chip .biin-icon { color: #855400; }
 .ti-filtros { display: flex; gap: 8px; overflow-x: auto; margin: -4px -3px -7px; padding: 4px 3px 7px; }
 .ti-filtros button { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; min-height: 40px; padding: 8px 16px; border-radius: 999px; background: #fff; color: #4f4440; box-shadow: 0 1px 2px #0000000d; font-size: 12px; line-height: 16px; font-weight: 700; }
-.ti-filtros button[aria-pressed=true] { background: #070100; color: #fff; }
+.ti-filtros button[aria-pressed=true] { background: var(--color-accion); color: #fff; }
 .ti-seccion-titulo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .ti-seccion-titulo h2 { display: flex; align-items: center; gap: 8px; }
 .ti-seccion-titulo > span { padding: 4px 10px; border-radius: 4px; background: #f4ede5; color: #4f4440; font-size: 11px; line-height: 16px; font-weight: 700; }
@@ -91,7 +91,7 @@
 .ti-resumen-final > p, .ti-resumen-final > a { font-size: 12px; line-height: 18px; }
 .ti-acciones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .ti-acciones :is(button, a) { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 10px 8px; border-radius: 8px; background: #f4ede5; color: #1e1b17; font-size: 14px; line-height: 18px; font-weight: 700; text-decoration: none; }
-.ti-acciones a { background: #070100; color: #fff; }
+.ti-acciones a { background: var(--color-accion); color: #fff; }
 .ti-contexto { display: flex; flex-direction: column; gap: 12px; }
 .ti-contexto h2 { display: flex; align-items: center; gap: 8px; }
 .ti-contexto > p { color: #4f4440; }

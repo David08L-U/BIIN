@@ -96,8 +96,8 @@
 .ticul-lugares ul { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
 .ticul-lugares li { display: flex; align-items: center; gap: 4px; min-width: 0; border-radius: 8px; padding: 4px 10px; background: #faf3eb; font-size: 12px; line-height: 16px; }
 .ticul-lugares .biin-icon { color: #855400; }
-.ticul-itinerario-boton { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 48px; border: 0; border-radius: 12px; padding: 14px 20px; background: #2b1810; color: #fff; box-shadow: 0 4px 6px -1px #0000001a, 0 2px 4px -2px #0000001a; font-size: 14px; line-height: 18px; font-weight: 700; letter-spacing: 0.01em; text-align: left; }
+.ticul-itinerario-boton { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 48px; border: 0; border-radius: 12px; padding: 14px 20px; background: var(--color-accion); color: #fff; box-shadow: 0 4px 6px -1px #0000001a, 0 2px 4px -2px #0000001a; font-size: 14px; line-height: 18px; font-weight: 700; letter-spacing: 0.01em; text-align: left; }
 .ticul-itinerario-boton > span:first-child { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .ticul-itinerario-boton > span:first-child > .biin-icon { color: #fdae3f; }
-.ticul-itinerario-boton:hover { background: #070100; }
+.ticul-itinerario-boton:hover { background: var(--color-accion-hover); }
 .ticul-detalle .ticul-nota-favorito { margin-top: 16px; color: #855400; font-size: 11px; line-height: 16px; }

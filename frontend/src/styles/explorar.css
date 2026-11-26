@@ -2,7 +2,7 @@
 .explorar-cabecera { margin: 4px 0 16px; }
 .explorar-destinos { display: flex; gap: 8px; max-width: 100%; margin: 0 -16px 16px; padding: 2px 16px 8px; overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: thin; }
 .explorar-destinos button { flex: 0 0 auto; min-height: 42px; padding: 8px 14px; border: 1px solid var(--color-borde-tarjeta); border-radius: 999px; background: var(--color-superficie); color: var(--color-texto); font: inherit; font-weight: 700; }
-.explorar-destinos button.activo { border: 2px solid var(--color-primario); background: var(--color-primario); color: var(--color-superficie); box-shadow: 0 0 0 2px var(--color-acento); }
+.explorar-destinos button.activo { border: 2px solid var(--color-accion); background: var(--color-accion); color: var(--color-superficie); box-shadow: 0 0 0 2px var(--color-acento); }
 .explorar-cabecera p, .explorar-card > p { margin-top: 8px; }
 .explorar-filtros { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
 .explorar-filtros label { min-width: 0; }

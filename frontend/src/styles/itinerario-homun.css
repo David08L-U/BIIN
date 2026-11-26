@@ -26,7 +26,7 @@
 .hm-tarjeta { border: 1px solid var(--color-borde-tarjeta); border-radius: 12px; background: var(--color-superficie); box-shadow: var(--sombra-tarjeta); }
 .hm-modos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .hm-modos a { display: grid; place-items: center; min-height: 40px; padding: 8px; border-radius: 8px; background: #f4ede5; color: #1e1b17; font-size: 12px; font-weight: 700; text-decoration: none; }
-.hm-modos a[aria-current] { background: #070100; color: #fff; }
+.hm-modos a[aria-current] { background: var(--color-accion); color: #fff; }
 .hm-formulario, .hm-personalizar form { display: flex; flex-direction: column; gap: 16px; }
 .hm-config { display: flex; flex-direction: column; gap: 12px; width: 100%; border: 0; margin: 0; padding: 16px; }
 .hm-config > legend { display: flex; align-items: center; gap: 8px; padding: 0 4px; font-weight: 700; }
@@ -38,7 +38,7 @@
 .hm-campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .hm-ventana { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 12px 0 0; border: 0; border-top: 1px solid #e8e1da; }
 .hm-ventana legend { padding: 0 4px 0 0; font-size: 12px; line-height: 18px; font-weight: 700; }
-.hm-primario, .hm-guardar { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; padding: 12px; border-radius: 8px; background: #2b1810; color: #fff; font-size: 14px; line-height: 20px; font-weight: 700; }
+.hm-primario, .hm-guardar { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; padding: 12px; border-radius: 8px; background: var(--color-accion); color: #fff; font-size: 14px; line-height: 20px; font-weight: 700; }
 .hm-error { padding: 12px; border-radius: 8px; background: #ffdad6; color: #93000a; font-size: 13px; line-height: 20px; }
 .hm-error p + p { margin-top: 6px; }
 .hm-vacio { padding: 12px; border-radius: 8px; background: #f4ede5; }
@@ -57,7 +57,7 @@
 .hm-tiempo-chip .biin-icon { color: #855400; }
 .hm-filtros { display: flex; gap: 4px; overflow-x: auto; margin: -4px -3px -7px; padding: 4px 3px 7px; }
 .hm-filtros button { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; min-height: 40px; padding: 8px 16px; border-radius: 999px; background: #fff; color: #4f4440; font-size: 12px; line-height: 16px; font-weight: 700; }
-.hm-filtros button[aria-pressed=true] { background: #070100; color: #fff; box-shadow: 0 1px 2px #0000000d; }
+.hm-filtros button[aria-pressed=true] { background: var(--color-accion); color: #fff; box-shadow: 0 1px 2px #0000000d; }
 .hm-seccion-titulo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .hm-seccion-titulo h2 { display: flex; align-items: center; gap: 6px; }
 .hm-recorrido > .hm-seccion-titulo h2 { font-family: var(--fuente-aplicacion); font-size: 11px; line-height: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
@@ -94,7 +94,7 @@
 .hm-resumen-final > p, .hm-resumen-final > a { font-size: 12px; line-height: 18px; }
 .hm-acciones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .hm-acciones :is(button, a) { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 10px 8px; border-radius: 8px; background: #f4ede5; color: #070100; font-size: 14px; line-height: 18px; font-weight: 700; text-decoration: none; }
-.hm-acciones a { background: #070100; color: #fff; box-shadow: 0 4px 6px #0000001a; }
+.hm-acciones a { background: var(--color-accion); color: #fff; box-shadow: 0 4px 6px #0000001a; }
 .hm-contexto { display: flex; flex-direction: column; gap: 12px; }
 .hm-contexto h2 { display: flex; align-items: center; gap: 8px; }
 .hm-contexto > p { color: #4f4440; }

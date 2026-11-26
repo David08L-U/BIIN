@@ -18,6 +18,9 @@
   --color-secundario: #b94d32;
   --color-secundario-texto: #983d26;
   --color-secundario-suave: #f7e4da;
+  --color-accion: var(--color-secundario);
+  --color-accion-hover: #983d26;
+  --color-accion-texto: var(--color-secundario-texto);
   --color-acento: #d99520;
   --color-acento-texto: #805010;
   --color-acento-suave: #f9e3b8;
@@ -195,13 +198,18 @@ a {
 }
 
 .boton--primario {
-  background: var(--color-primario);
+  background: var(--color-accion);
   color: var(--color-superficie);
+  border-color: var(--color-accion);
 }
 
 .boton--primario:hover {
-  background: var(--color-primario-oscuro);
+  background: var(--color-accion-hover);
+  border-color: var(--color-accion-hover);
 }
+
+.boton--primario:active { background: var(--color-accion-hover); transform: translateY(1px); }
+.boton--primario:disabled { background: var(--color-texto-suave); border-color: var(--color-texto-suave); }
 
 .boton--secundario {
   background: transparent;

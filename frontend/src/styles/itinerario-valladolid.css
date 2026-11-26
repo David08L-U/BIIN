@@ -25,7 +25,7 @@
 .va-tarjeta { min-width: 0; border: 1px solid var(--color-borde-tarjeta); border-radius: 12px; background: var(--color-superficie); box-shadow: var(--sombra-tarjeta); }
 .va-modos { display: flex; flex-wrap: wrap; gap: 8px; }
 .va-modos a { display: flex; align-items: center; justify-content: center; min-height: 38px; border: 1px solid #d3c3be66; border-radius: 999px; padding: 6px 14px; background: #fff; color: #1e1b17; font-size: 12px; line-height: 16px; text-decoration: none; }
-.va-modos a[aria-current='page'] { background: #070100; color: #fff; }
+.va-modos a[aria-current='page'] { background: var(--color-accion); color: #fff; }
 .va-formulario { display: grid; min-width: 0; gap: 12px; }
 .va-config { min-width: 0; margin: 0; border: 1px solid #d3c3be66; border-radius: 12px; padding: 16px; background: #fff; }
 .va-config > legend { padding: 0 6px; font-family: var(--fuente-aplicacion); font-size: 18px; line-height: 24px; font-weight: 700; }
@@ -39,7 +39,7 @@
 .va-ventana { min-width: 0; margin: 12px 0; border: 1px solid #d3c3be66; border-radius: 8px; padding: 8px; }
 .va-ventana legend { padding: 0 4px; color: #855400; font-size: 12px; line-height: 16px; font-weight: 700; }
 .va-ventana .va-campos { margin: 8px 0; }
-.va-primario { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; border: 0; border-radius: 8px; padding: 12px; background: #070100; color: #fff; font-size: 14px; line-height: 18px; font-weight: 700; }
+.va-primario { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; border: 0; border-radius: 8px; padding: 12px; background: var(--color-accion); color: #fff; font-size: 14px; line-height: 18px; font-weight: 700; }
 .va-nota { color: #855400; font-size: 11px; line-height: 16px; }
 .va-error { border: 1px solid #ba1a1a; border-radius: 8px; padding: 12px; background: #fff0ed; color: #93000a; font-size: 12px; line-height: 18px; }
 .va-error p + p { margin-top: 6px; }
@@ -60,7 +60,7 @@
 .va-conexion-margen > span { display: flex; align-items: center; gap: 4px; color: #855400; }
 .va-filtros { display: flex; gap: 4px; max-width: 100%; overflow-x: auto; padding: 4px; }
 .va-filtros button { flex-shrink: 0; min-height: 38px; border: 0; border-radius: 999px; padding: 4px 16px; background: #fff; color: #1e1b17; box-shadow: 0 1px 2px #0000000d; font-size: 12px; line-height: 16px; font-weight: 700; }
-.va-filtros button[aria-pressed='true'] { background: #070100; color: #fff; }
+.va-filtros button[aria-pressed='true'] { background: var(--color-accion); border-color: var(--color-accion); color: #fff; }
 .va-seccion-titulo { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .va-seccion-titulo > span { flex-shrink: 0; color: #855400; font-size: 11px; line-height: 14px; font-weight: 700; }
 .va-jornada { margin-top: 12px; }
@@ -101,7 +101,7 @@
 .va-guardar { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 44px; border: 1px solid #d3c3be66; border-radius: 8px; background: #fff; color: #1e1b17; padding: 8px; }
 .va-acciones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .va-acciones > :is(button, a) { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 48px; border: 0; border-radius: 8px; padding: 8px; background: #f4ede5; color: #1e1b17; font-size: 14px; line-height: 18px; font-weight: 700; text-decoration: none; }
-.va-acciones > a { background: #070100; color: #fff; }
+.va-acciones > a { background: var(--color-accion); color: #fff; }
 .va-personalizar .va-presupuesto + .va-presupuesto { margin-top: 8px; }
 .va-personalizar .va-config { margin-top: 16px; }
 .va-personalizar .va-asignacion { margin-top: 12px; }
