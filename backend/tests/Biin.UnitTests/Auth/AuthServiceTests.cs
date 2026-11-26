@@ -84,6 +84,100 @@ public class AuthServiceTests
     }
 
     [Fact]
+    public async Task Regresar_y_registrarse_otra_vez_dentro_de_la_espera_corrige_datos_sin_reenviar()
+    {
+        var codigo = await RegistrarYLeerCodigoAsync("Ana Pat", "ana@biin.test", "Clave1234");
+        _reloj.AhoraUtc = _reloj.AhoraUtc.AddSeconds(10);
+
+        await _servicio.RegistrarAsync(new RegistroRequest("Ana Patricia", "ana@biin.test", "OtraClave99"));
+
+        Assert.Single(_correo.Enviados);
+        var pendiente = Assert.Single(_db.RegistrosPendientesSet.Items);
+        Assert.Equal("Ana Patricia", pendiente.Nombre);
+        Assert.True(_hash.Verificar("OtraClave99", pendiente.HashContrasena));
+
+        // El código que ya llegó sigue sirviendo y la cuenta toma los datos corregidos
+        var resp = await _servicio.VerificarRegistroAsync(new VerificarRegistroRequest("ana@biin.test", codigo));
+        Assert.Equal("Ana Patricia", resp.Usuario.Nombre);
+        Assert.True(_hash.Verificar("OtraClave99", _db.UsuariosSet.Items.Single().HashContrasena));
+    }
+
+    [Fact]
+    public async Task Regresar_y_registrar_otro_correo_manda_codigo_al_nuevo_y_no_crea_cuentas()
+    {
+        await RegistrarYLeerCodigoAsync("Ana", "ana@gmial.com", "Clave1234");
+
+        await _servicio.RegistrarAsync(new RegistroRequest("Ana", "ana@gmail.com", "Clave1234"));
+
+        Assert.Equal(["ana@gmial.com", "ana@gmail.com"], _correo.Enviados.Select(e => e.Correo));
+        Assert.Empty(_db.UsuariosSet.Items);
+        Assert.Equal(2, _db.RegistrosPendientesSet.Items.Count);
+    }
+
+    [Fact]
+    public async Task Registrar_despues_de_la_espera_manda_un_codigo_nuevo()
+    {
+        await RegistrarYLeerCodigoAsync("Ana", "ana@biin.test", "Clave1234");
+        _reloj.AhoraUtc = _reloj.AhoraUtc.AddMinutes(20);
+
+        await _servicio.RegistrarAsync(new RegistroRequest("Ana", "ana@biin.test", "Clave1234"));
+
+        Assert.Equal(2, _correo.Enviados.Count);
+        var pendiente = Assert.Single(_db.RegistrosPendientesSet.Items);
+        Assert.Equal(_reloj.AhoraUtc.AddMinutes(15), pendiente.ExpiraEn);
+    }
+
+    [Fact]
+    public async Task Registrar_borra_registros_vencidos_de_otros_correos()
+    {
+        await RegistrarYLeerCodigoAsync("Viejo", "viejo@biin.test", "Clave1234");
+        _reloj.AhoraUtc = _reloj.AhoraUtc.AddHours(1);
+
+        await _servicio.RegistrarAsync(new RegistroRequest("Nuevo", "nuevo@biin.test", "Clave1234"));
+
+        Assert.Equal("nuevo@biin.test", Assert.Single(_db.RegistrosPendientesSet.Items).Correo);
+    }
+
+    [Fact]
+    public async Task Registrar_rechaza_dominio_que_no_recibe_correo_sin_enviar_nada()
+    {
+        _dominios.SinCorreo.Add("noexiste-biin.mx");
+
+        var ex = await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.RegistrarAsync(new RegistroRequest("Ana", "ana@NoExiste-Biin.mx", "Clave1234")));
+
+        Assert.Contains("noexiste-biin.mx", ex.Message);
+        Assert.Empty(_correo.Enviados);
+        Assert.Empty(_db.RegistrosPendientesSet.Items);
+    }
+
+    [Fact]
+    public async Task Registrar_no_consulta_dominio_si_la_validacion_esta_apagada()
+    {
+        _dominios.SinCorreo.Add("biin.test");
+        _opciones.ValidarDominio = false;
+
+        await _servicio.RegistrarAsync(new RegistroRequest("Ana", "ana@biin.test", "Clave1234"));
+
+        Assert.Single(_correo.Enviados);
+    }
+
+    [Fact]
+    public async Task Registrar_si_falla_el_envio_responde_no_disponible_y_no_deja_pendiente()
+    {
+        _correo.Fallar = true;
+
+        await Assert.ThrowsAsync<ServicioNoDisponibleException>(() =>
+            _servicio.RegistrarAsync(new RegistroRequest("Ana", "ana@biin.test", "Clave1234")));
+
+        Assert.Empty(_db.RegistrosPendientesSet.Items);
+        // Puede reintentar de inmediato, sin esperar
+        _correo.Fallar = false;
+        await _servicio.RegistrarAsync(new RegistroRequest("Ana", "ana@biin.test", "Clave1234"));
+        Assert.Single(_correo.Enviados);
+    }
+
+    [Fact]
     public async Task Verificar_con_codigo_correcto_crea_solo_viajero_inicia_sesion_y_borra_el_pendiente()
     {
         var codigo = await RegistrarYLeerCodigoAsync("María Uc", "maria@biin.test", "Secreto123");
@@ -220,6 +314,20 @@ public class AuthServiceTests
             _servicio.IniciarSesionAsync(new LoginRequest("ana@biin.test", "Incorrecta")));
 
         Assert.Equal(exCorreo.Message, exClave.Message);
+    }
+
+    [Fact]
+    public async Task IniciarSesion_con_registro_sin_confirmar_avisa_solo_si_la_contrasena_coincide()
+    {
+        await RegistrarYLeerCodigoAsync("Ana", "ana@biin.test", "Clave1234");
+
+        var pendiente = await Assert.ThrowsAsync<NoAutenticadoException>(() =>
+            _servicio.IniciarSesionAsync(new LoginRequest("ana@biin.test", "Clave1234")));
+        var otraClave = await Assert.ThrowsAsync<NoAutenticadoException>(() =>
+            _servicio.IniciarSesionAsync(new LoginRequest("ana@biin.test", "Equivocada1")));
+
+        Assert.Contains("confirmas tu correo", pendiente.Message);
+        Assert.Equal("Correo o contraseña incorrectos.", otraClave.Message);
     }
 
     [Fact]
