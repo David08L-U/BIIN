@@ -206,6 +206,10 @@
 .iz-plan-mis-viajes > p { margin-top: 12px; }
 .iz-plan-mis-viajes ul { display: grid; gap: 12px; padding: 0; margin: 24px 0; list-style: none; }
 .iz-plan-mis-viajes li { display: grid; gap: 12px; }
+.iz-dialogo-fondo { position: fixed; inset: 0; z-index: 2000; display: grid; place-items: center; padding: 20px; background: rgb(0 0 0 / 45%); }
+.iz-dialogo { width: min(100%, 420px); max-height: min(90dvh, 640px); overflow: auto; background: var(--color-superficie); }
+.iz-dialogo-acciones { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.iz-dialogo-acciones > button { min-height: 44px; }
 
 @media (max-width: 370px) {
   .iz-plan-cabecera { gap: 6px; }

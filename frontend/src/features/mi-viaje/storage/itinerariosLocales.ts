@@ -172,3 +172,19 @@ export function guardarItinerarioLocal(idUsuario: number, borrador: BorradorIzam
     return { guardado: null, error: 'No se pudo guardar el itinerario en este navegador. Comprueba que el almacenamiento esté permitido y tenga espacio.' }
   }
 }
+
+/** Elimina únicamente el registro indicado dentro de la cuenta activa. */
+export function eliminarItinerarioLocal(idUsuario: number, id: string): { eliminado: boolean; error: string | null } {
+  const lectura = leerItinerariosLocales(idUsuario)
+  if (lectura.error) return { eliminado: false, error: lectura.error }
+  if (!lectura.itinerarios.some(item => item.id === id)) {
+    return { eliminado: false, error: 'No se encontró ese itinerario en esta cuenta.' }
+  }
+  try {
+    const restantes = lectura.itinerarios.filter(item => item.id !== id)
+    localStorage.setItem(claveCuenta(idUsuario), JSON.stringify({ version: 1, itinerarios: restantes }))
+    return { eliminado: true, error: null }
+  } catch {
+    return { eliminado: false, error: 'No se pudo eliminar el itinerario en este navegador. Comprueba que el almacenamiento esté permitido.' }
+  }
+}

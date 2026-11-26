@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { guardarItinerarioLocal, leerItinerariosLocales } from '../../src/features/mi-viaje/storage/itinerariosLocales'
+import { eliminarItinerarioLocal, guardarItinerarioLocal, leerItinerariosLocales } from '../../src/features/mi-viaje/storage/itinerariosLocales'
 import type { BorradorIzamal } from '../../src/features/mi-viaje/plan/itinerarioIzamal'
 
 const borrador: BorradorIzamal = { configuracion: { estancia: 'medio-dia', fecha: '2026-11-30', horaInicio: '11:30', minutosDisponibles: '240' }, modo: 'personalizado', seleccion: ['convento', 'kinich'], generado: true }
@@ -48,5 +48,23 @@ describe('Guardado local por cuenta CU-09', () => {
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new DOMException('Bloqueado', 'SecurityError') })
     expect(leerItinerariosLocales(7)).toMatchObject({ itinerarios: [], error: expect.any(String) })
     expect(guardarItinerarioLocal(7, borrador).guardado).toBeNull()
+  })
+
+  it('elimina únicamente un viaje de la cuenta solicitada y mantiene los de otras cuentas', () => {
+    const primero = guardarItinerarioLocal(7, borrador).guardado!
+    const segundo = guardarItinerarioLocal(7, { ...borrador, seleccion: ['mercado'] }).guardado!
+    guardarItinerarioLocal(8, borrador)
+    expect(eliminarItinerarioLocal(7, primero.id)).toEqual({ eliminado: true, error: null })
+    expect(leerItinerariosLocales(7).itinerarios.map(item => item.id)).toEqual([segundo.id])
+    expect(leerItinerariosLocales(8).itinerarios).toHaveLength(1)
+  })
+
+  it('no anuncia eliminación ante identificador ausente o error de escritura', () => {
+    const item = guardarItinerarioLocal(7, borrador).guardado!
+    expect(eliminarItinerarioLocal(7, 'otro-id').eliminado).toBe(false)
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('Sin espacio', 'QuotaExceededError') })
+    expect(eliminarItinerarioLocal(7, item.id)).toMatchObject({ eliminado: false, error: expect.stringContaining('No se pudo eliminar') })
+    vi.restoreAllMocks()
+    expect(leerItinerariosLocales(7).itinerarios).toHaveLength(1)
   })
 })
