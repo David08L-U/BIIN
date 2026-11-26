@@ -8,11 +8,26 @@ export default function RutaProtegida({
 }: {
   roles?: Rol[]
 }) {
-  const { usuario, cargando, tieneRol } = useAuth()
+  const { usuario, cargando, tieneRol, errorRestauracion, reintentarRestauracion, cerrarSesion } = useAuth()
   const ubicacion = useLocation()
 
   if (cargando) {
     return <p className="estado">Cargando…</p>
+  }
+
+  if (errorRestauracion) {
+    return (
+      <section className="pagina" role="alert" aria-live="assertive">
+        <h1>Tu sesión no está disponible</h1>
+        <p>{errorRestauracion}</p>
+        <button type="button" onClick={() => void reintentarRestauracion()}>
+          Reintentar
+        </button>
+        <button type="button" onClick={cerrarSesion}>
+          Volver a iniciar sesión
+        </button>
+      </section>
+    )
   }
 
   if (!usuario) {

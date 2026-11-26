@@ -4,6 +4,8 @@ import type { LoginRequest, RegistroRequest, Rol, Usuario } from '../../types/au
 export interface AuthContextValor {
   usuario: Usuario | null
   cargando: boolean
+  errorRestauracion: string | null
+  reintentarRestauracion: () => Promise<void>
   iniciarSesion: (datos: LoginRequest) => Promise<void>
   registrarse: (datos: RegistroRequest) => Promise<void>
   cerrarSesion: () => void
