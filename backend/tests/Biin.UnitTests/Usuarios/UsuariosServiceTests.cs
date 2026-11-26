@@ -87,6 +87,35 @@ public class UsuariosServiceTests
         Assert.False(_db.UsuariosSet.Items.Single(u => u.IdUsuario == 1).Activo);
     }
 
+    [Fact]
+    public async Task ObtenerResumenPerfil_cuenta_itinerarios_y_favoritos_solo_del_usuario_autenticado()
+    {
+        AgregarUsuario(1, "Ana", "ana@biin.test", "Clave1234", true, Roles.Viajero);
+        AgregarUsuario(2, "Luis", "luis@biin.test", "Clave1234", true, Roles.Viajero);
+        AgregarUsuario(3, "Inactivo", "inactivo@biin.test", "Clave1234", false, Roles.Viajero);
+
+        _db.Set<Itinerario>().Items.AddRange(
+        [
+            new Itinerario { IdItinerario = 1, IdUsuario = 1, Nombre = "Homún", Inicio = new DateOnly(2026, 12, 1), Fin = new DateOnly(2026, 12, 2) },
+            new Itinerario { IdItinerario = 2, IdUsuario = 1, Nombre = "Izamal", Inicio = new DateOnly(2026, 12, 5), Fin = new DateOnly(2026, 12, 5) },
+            new Itinerario { IdItinerario = 3, IdUsuario = 2, Nombre = "Otro", Inicio = new DateOnly(2026, 12, 6), Fin = new DateOnly(2026, 12, 6) }
+        ]);
+        _db.Set<Favorito>().Items.AddRange(
+        [
+            new Favorito { IdUsuario = 1, IdRecurso = 10 },
+            new Favorito { IdUsuario = 2, IdRecurso = 10 },
+            new Favorito { IdUsuario = 2, IdRecurso = 11 }
+        ]);
+
+        var resumen = await _servicio.ObtenerResumenPerfilAsync(1);
+
+        Assert.Equal("Ana", resumen.Nombre);
+        Assert.Equal(2, resumen.ItinerariosGuardados);
+        Assert.Equal(1, resumen.FavoritosGuardados);
+
+        await Assert.ThrowsAsync<NoAutenticadoException>(() => _servicio.ObtenerResumenPerfilAsync(3));
+    }
+
     private Usuario AgregarUsuario(int id, string nombre, string correo, string contrasena, bool activo, params string[] roles)
     {
         var usuario = new Usuario

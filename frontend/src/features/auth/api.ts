@@ -1,10 +1,14 @@
 import { api } from '../../services/api'
 import type {
   AuthResponse,
+  CambiarContrasenaRequest,
+  ConfirmarRecuperacionRequest,
   LoginRequest,
+  PerfilUsuario,
+  RecuperacionIniciadaResponse,
   RegistroPendiente,
   RegistroRequest,
-  Usuario,
+  SolicitarRecuperacionRequest,
   VerificarRegistroRequest,
 } from '../../types/auth'
 
@@ -16,5 +20,11 @@ export const authApi = {
   verificarRegistro: (datos: VerificarRegistroRequest) =>
     api.post<AuthResponse>('/auth/registro/verificar', datos),
   reenviarCodigo: (correo: string) => api.post<RegistroPendiente>('/auth/registro/reenviar', { correo }),
-  yo: () => api.get<Usuario>('/auth/yo'),
+  yo: () => api.get<PerfilUsuario>('/auth/yo'),
+  logout: () => api.post<void>('/auth/logout'),
+  cambiarContrasena: (datos: CambiarContrasenaRequest) => api.put<void>('/auth/contrasena', datos),
+  solicitarRecuperacion: (datos: SolicitarRecuperacionRequest) =>
+    api.post<RecuperacionIniciadaResponse>('/auth/recuperar-contrasena', datos),
+  confirmarRecuperacion: (datos: ConfirmarRecuperacionRequest) =>
+    api.post<void>('/auth/recuperar-contrasena/confirmar', datos),
 }

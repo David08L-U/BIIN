@@ -83,6 +83,10 @@ Content-Type: application/json
 GET {{api}}/api/usuarios/perfil
 Authorization: Bearer PEGAR_TOKEN
 
+### Resumen del perfil con conteos reales de itinerarios y favoritos (CU-01, CU-09, CU-10)
+GET {{api}}/api/usuarios/perfil/resumen
+Authorization: Bearer PEGAR_TOKEN
+
 ### Actualizar perfil propio (CU-01)
 PUT {{api}}/api/usuarios/perfil
 Authorization: Bearer PEGAR_TOKEN
@@ -91,6 +95,15 @@ Content-Type: application/json
 {
   "nombre": "Usuario Actualizado",
   "correo": "prueba@biin.test"
+}
+
+### Desactivar cuenta propia confirmando contraseña (CU-01)
+DELETE {{api}}/api/usuarios/perfil
+Authorization: Bearer PEGAR_TOKEN
+Content-Type: application/json
+
+{
+  "contrasenaActual": "Prueba1234"
 }
 
 ### Admin: catálogo de roles (CU-12)
