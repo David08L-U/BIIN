@@ -12,6 +12,12 @@ public class ItinerarioConfiguration : IEntityTypeConfiguration<Itinerario>
         b.ToTable("itinerarios");
         b.HasKey(x => x.IdItinerario);
         b.Property(x => x.FechaCreacion).HasDefaultValueSql("now()");
+        b.Property(x => x.Borrador).HasColumnName("borrador").HasColumnType("jsonb");
+        b.Property(x => x.HuellaPlan).HasColumnName("huella_plan").HasMaxLength(64);
+        b.HasIndex(x => new { x.IdUsuario, x.HuellaPlan })
+            .IsUnique()
+            .HasFilter("huella_plan IS NOT NULL")
+            .HasDatabaseName("ux_itinerarios_usuario_huella_plan");
         b.HasOne(x => x.Usuario).WithMany(u => u.Itinerarios).HasForeignKey(x => x.IdUsuario);
     }
 }

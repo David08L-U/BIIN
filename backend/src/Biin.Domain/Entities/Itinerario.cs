@@ -1,5 +1,7 @@
 namespace Biin.Domain.Entities;
 
+using System.Text.Json;
+
 public class Itinerario
 {
     public int IdItinerario { get; set; }
@@ -9,6 +11,8 @@ public class Itinerario
     public DateOnly Fin { get; set; }
     public decimal? PresupuestoEstimado { get; set; }
     public DateTime FechaCreacion { get; set; }
+    public JsonDocument? Borrador { get; set; }
+    public string? HuellaPlan { get; set; }
 
     public Usuario Usuario { get; set; } = null!;
     public ICollection<ActividadItinerario> Actividades { get; set; } = new List<ActividadItinerario>();

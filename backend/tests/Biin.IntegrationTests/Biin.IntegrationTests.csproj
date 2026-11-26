@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Biin.Api\Biin.Api.csproj" />
+    <ProjectReference Include="..\..\src\Biin.Infrastructure\Biin.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
