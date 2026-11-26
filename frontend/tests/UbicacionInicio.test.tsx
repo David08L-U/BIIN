@@ -53,13 +53,13 @@ afterEach(() => {
 })
 
 describe('ubicación de Inicio con la API simulada', () => {
-  it.each([0, 21, 60])('cubre unos 2 km hacia el norte y el este a latitud %i', latitud => {
+  it.each([0, 21, 60])('encuadra el entorno inmediato con unos 450 m de radio a latitud %i', latitud => {
     const centro = latLng(latitud, -30)
     const limites = limitesUbicacion([centro.lat, centro.lng])
     const radios = [centro.distanceTo([limites.getNorth(), centro.lng]), centro.distanceTo([centro.lat, limites.getEast()])]
     for (const radio of radios) {
-      expect(radio).toBeGreaterThan(1980)
-      expect(radio).toBeLessThan(2020)
+      expect(radio).toBeGreaterThan(440)
+      expect(radio).toBeLessThan(460)
     }
   })
 
@@ -87,7 +87,8 @@ describe('ubicación de Inicio con la API simulada', () => {
     expect(mapa.fitBounds).toHaveBeenCalledTimes(1)
     const encuadre = mapa.fitBounds.mock.calls[0][0]
     expect(encuadre.getCenter()).toEqual(latLng(1, 2))
-    expect(latLng(1, 2).distanceTo([encuadre.getNorth(), 2])).toBeCloseTo(1998, 0)
+    expect(latLng(1, 2).distanceTo([encuadre.getNorth(), 2])).toBeGreaterThan(440)
+    expect(latLng(1, 2).distanceTo([encuadre.getNorth(), 2])).toBeLessThan(460)
 
     api.recibir(2, 3, 30)
     expect(screen.getByTestId('ubicacion')).toHaveAttribute('data-punto', '2,3')

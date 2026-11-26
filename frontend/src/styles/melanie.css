@@ -216,6 +216,16 @@
   background: var(--color-superficie);
   box-shadow: 0 0 0 3px var(--color-fondo), 0 0 0 8px #d9952040, 0 3px 8px #35221955;
   object-fit: cover;
+  animation: marquesita-halo 2.8s ease-in-out infinite;
+}
+
+@keyframes marquesita-halo {
+  0%, 100% { box-shadow: 0 0 0 3px var(--color-fondo), 0 0 0 8px #d9952030, 0 3px 8px #35221955; }
+  50% { box-shadow: 0 0 0 3px var(--color-fondo), 0 0 0 10px #d9952055, 0 3px 8px #35221955; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .melanie-mapa .melanie-ubicacion-marquesita { animation: none; }
 }
 
 .melanie-mapa .melanie-ubicacion-etiqueta {

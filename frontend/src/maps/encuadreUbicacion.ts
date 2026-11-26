@@ -1,6 +1,7 @@
 import { latLng, type LatLngTuple, type Map } from 'leaflet'
 
-const radioMetros = 2_000
+// Encuadre de entorno inmediato: 450 m de radio (aprox. 900 m de extremo a extremo).
+const radioMetros = 450
 
 export function limitesUbicacion(punto: LatLngTuple) {
   return latLng(punto).toBounds(radioMetros * 2)
