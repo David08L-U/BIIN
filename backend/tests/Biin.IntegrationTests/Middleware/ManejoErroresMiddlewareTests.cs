@@ -32,6 +32,7 @@ public class ManejoErroresMiddlewareTests
 
     [Theory]
     [InlineData(PostgresErrorCodes.UniqueViolation, StatusCodes.Status409Conflict, "Registro duplicado")]
+    [InlineData(PostgresErrorCodes.ExclusionViolation, StatusCodes.Status409Conflict, "Conflicto de vigencia")]
     [InlineData(PostgresErrorCodes.CheckViolation, StatusCodes.Status400BadRequest, "Dato inválido")]
     [InlineData(PostgresErrorCodes.ForeignKeyViolation, StatusCodes.Status400BadRequest, "Referencia inválida")]
     public async Task Desempaqueta_DbUpdateException_con_PostgresException(string sqlState, int estadoEsperado, string tituloEsperado)
