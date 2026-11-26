@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useOutletContext } from 'react-router'
 import MapaInicio from '../components/MapaInicio'
 
-// Valores del prototipo, pendientes de validar con operadores.
+// Valores de referencia, pendientes de validar con operadores.
 const destinos = [
   {
     id: 'izamal',
@@ -210,7 +210,7 @@ export default function InicioPage() {
         </div>
 
         <p className="melanie-datos-aviso">
-          Tarifas y tiempos del prototipo, pendientes de
+          Tarifas y tiempos de referencia, pendientes de
           validar.
         </p>
 

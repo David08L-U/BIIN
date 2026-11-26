@@ -9,7 +9,7 @@ export function textoPlanHomun(b: BorradorHomun, plan: PlanHomun): string {
   return [
     'BIIN · Itinerario estimado en Homún', `Estancia: ${b.configuracion.estancia} · Modo: ${b.modo}`,
     `Archivo generado: ${new Date().toLocaleString()}`,
-    'Referencias demostrativas sin fecha de validación. Visitas y traslados del prototipo; aperturas, precios, acceso y transporte sin confirmar. El mototaxi no está contratado ni se acredita disponibilidad.',
+    'Referencias demostrativas sin fecha de validación. Visitas y traslados estimados. Aperturas, precios y acceso por confirmar; mototaxi no contratado.',
     avisoRegresoHomun,
     'Horas en la zona local del navegador que genera este archivo. No incluye mapas offline ni reservas.',
     ...plan.jornadas.flatMap(d => [

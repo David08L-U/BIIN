@@ -20,14 +20,14 @@ export default function DetalleTiculPage({ ruta }: { ruta: RutaPrototipo }) {
       corredor: detalle.referenciaMapa,
       tiempo: `Duración aproximada · ~${ruta.tiempo}`,
       notaRecorrido: detalle.corredor,
-      altCultural: 'Imagen de artesanía y taller del prototipo para Ticul',
+      altCultural: 'Artesanías y talleres de Ticul',
       leyenda: 'Estancia o modalidad',
       tituloPrecio: 'Tarifa por pasaje',
       notaMapa: 'Mapa ilustrativo · Sin verificar',
       notaPrecio: 'Medios de pago sin confirmar',
       distintivo: 'Top Destino del Sur',
       etiquetaLugares: 'Lugares destacados de Ticul',
-      notaDatos: 'Tarifa, duración, recorrido y referencias del prototipo: pendientes de validar, sin fecha de validación.',
+      notaDatos: 'Tarifa, duración y recorrido por confirmar.',
     }}
   />
 }

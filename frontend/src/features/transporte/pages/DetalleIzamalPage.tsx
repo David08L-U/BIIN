@@ -33,7 +33,7 @@ export default function DetalleIzamalPage({ ruta }: { ruta: RutaPrototipo }) {
     referenciaCultural: 'Convento Franciscano · Pirámide Kinich Kakmó · Gastronomía',
     altCultural: 'Atrio y arcadas amarillas del convento de San Antonio de Padua en Izamal',
     etiquetaCultural: 'Pueblo Mágico Amarillo',
-    notaDatos: 'Tarifa y recorrido del prototipo, pendientes de validar. Sin fecha de validación.',
+    notaDatos: 'Tarifa y recorrido por confirmar.',
     notaRecorrido: `El detalle original indica ${detalle.tiempo}; el catálogo, ${ruta.tiempo}. Tiempos pendientes de validar. El origen es ilustrativo; no representa tu ubicación.`,
     notaRegreso: 'Horarios y opciones de regreso: sin confirmar. Verifica con la terminal antes de viajar.',
   }} />

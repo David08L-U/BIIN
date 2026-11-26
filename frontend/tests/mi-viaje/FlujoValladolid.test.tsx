@@ -273,7 +273,7 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
   it('mantiene las acciones cuando fallan las imágenes y no simula servicios', () => {
     const { container } = montar(`/rutas/valladolid/itinerario?${completo}&generado=1`)
     for (const imagen of screen.getAllByRole('img')) fireEvent.error(imagen)
-    expect(screen.getAllByText('Imagen del prototipo no disponible')).toHaveLength(4)
+    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(4)
     expect(screen.getByRole('link', { name: 'Personalizar' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Ver detalle de ruta' })).toBeInTheDocument()
     expect(container).not.toHaveTextContent(/Apartando asiento|Abrir vista en vivo|Acceso libre|Entrada \$30|marcadas con GPS|salidas frecuentes cada|2[.,]4 km totales/i)

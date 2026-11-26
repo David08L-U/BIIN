@@ -232,7 +232,7 @@ describe('Flujo de Homún CU-09 / RF09', () => {
     const { container } = montar(`/rutas/homun/itinerario?${config}&generado=1`)
     expect(screen.getAllByRole('img')).toHaveLength(4)
     for (const img of screen.getAllByRole('img')) fireEvent.error(img)
-    expect(screen.getAllByText('Imagen del prototipo no disponible')).toHaveLength(4)
+    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(4)
     const visitas = screen.getByRole('list', { name: 'Recorrido del Día 1' })
     expect(within(visitas).getByText(/Mototaxi · 3 min estimados/)).toBeInTheDocument()
     expect(within(visitas).getByText(/Traslado entre senderos · 5 min estimados/)).toBeInTheDocument()

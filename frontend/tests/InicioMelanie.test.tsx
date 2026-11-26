@@ -35,7 +35,7 @@ function montar() {
   return router
 }
 
-describe('Inicio basado en el prototipo de Melanie', () => {
+describe('Inicio basado en el referencia de Melanie', () => {
   it('combina búsqueda sin acentos y filtro CU-02', async () => {
     montar()
     const user = userEvent.setup()

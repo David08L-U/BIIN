@@ -163,7 +163,7 @@ export default function RutasPage() {
       </div>
 
       <p className="rutas-nota">
-        Datos del prototipo: tarifas y tiempos pendientes
+        Información por confirmar: tarifas y tiempos pendientes
         de validar.
       </p>
 

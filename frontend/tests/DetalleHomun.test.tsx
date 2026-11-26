@@ -52,10 +52,10 @@ describe('Detalle propio de Homún CU-03 / RF03', () => {
     const recorrido = screen.getByRole('region', { name: 'Mapeo de ruta y paradas' })
     expect(within(recorrido).getByText('~55 min')).toBeInTheDocument()
     expect(within(recorrido).getByText('Corredor Oriente Cenotes')).toBeInTheDocument()
-    expect(within(recorrido).getByRole('img', { name: 'Mapa ilustrativo del recorrido a Homún del prototipo' })).toBeInTheDocument()
-    expect(within(recorrido).getByRole('list', { name: 'Recorrido del prototipo a Homún' })).toBeInTheDocument()
+    expect(within(recorrido).getByRole('img', { name: 'Mapa ilustrativo del recorrido a Homún' })).toBeInTheDocument()
+    expect(within(recorrido).getByRole('list', { name: 'Recorrido ilustrativo a Homún' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Descubre Homún a tu ritmo' })).toBeInTheDocument()
-    expect(screen.getByText(/Datos del prototipo, pendientes de validar y sin fecha de validación/)).toBeInTheDocument()
+    expect(screen.getByText(/Tarifa, duración y recorrido por confirmar/)).toBeInTheDocument()
   })
 
   it.each(['/rutas/homun', '/rutas/homun/'])('permite acceso directo a %s, con Rutas activa y cabecera única', url => {
@@ -78,7 +78,7 @@ describe('Detalle propio de Homún CU-03 / RF03', () => {
 
   it('conserva el orden de las cinco paradas con Origen y Destino', () => {
     montar()
-    const lista = screen.getByRole('list', { name: 'Recorrido del prototipo a Homún' })
+    const lista = screen.getByRole('list', { name: 'Recorrido ilustrativo a Homún' })
     const paradas = within(lista).getAllByRole('listitem')
     expect(paradas).toHaveLength(5)
     const nombres = ['Mérida (Parque San Juan)', 'Periférico Oriente', 'Acanceh (Entronque)', 'Cuzamá', 'Homún Centro']
@@ -94,7 +94,7 @@ describe('Detalle propio de Homún CU-03 / RF03', () => {
     expect(within(lugares).getAllByRole('listitem')).toHaveLength(2)
     expect(within(lugares).getByText('Cenote Santa Rosa')).toBeInTheDocument()
     expect(within(lugares).getByText('Cenote Tza Ujun Kat')).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'Imagen de referencia cultural del prototipo para Homún' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Paisaje de cenotes y naturaleza de Homún' })).toBeInTheDocument()
     expect(screen.getByRole('article', { name: 'Homún' })).not.toHaveTextContent(/Convento San Bernardino|Mercado Municipal Bazar/)
   })
 
@@ -188,11 +188,11 @@ describe('Detalle propio de Homún CU-03 / RF03', () => {
 
   it('mantiene información y selección si fallan las imágenes originales', () => {
     montar()
-    fireEvent.error(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Homún del prototipo' }))
-    fireEvent.error(screen.getByRole('img', { name: 'Imagen de referencia cultural del prototipo para Homún' }))
-    expect(screen.getAllByText('Imagen del prototipo no disponible')).toHaveLength(2)
-    expect(screen.getByRole('img', { name: 'Imagen de referencia cultural del prototipo para Homún' })).toBeInTheDocument()
-    expect(screen.getByRole('list', { name: 'Recorrido del prototipo a Homún' })).toBeInTheDocument()
+    fireEvent.error(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Homún' }))
+    fireEvent.error(screen.getByRole('img', { name: 'Paisaje de cenotes y naturaleza de Homún' }))
+    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(2)
+    expect(screen.getByRole('img', { name: 'Paisaje de cenotes y naturaleza de Homún' })).toBeInTheDocument()
+    expect(screen.getByRole('list', { name: 'Recorrido ilustrativo a Homún' })).toBeInTheDocument()
     expect(screen.getByRole('radio', { name: /Fin de semana/ })).toBeInTheDocument()
   })
 

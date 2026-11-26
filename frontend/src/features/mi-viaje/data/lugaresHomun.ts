@@ -18,7 +18,7 @@ export const lugaresHomun = [
     "id": "santa-rosa",
     "nombre": "Cenote Santa Rosa",
     "categoria": "cenotes",
-    "descripcion": "Referencia del prototipo: cenote cerrado en gruta subterránea, aguas turquesas y plataforma de madera. Consulta condiciones de acceso y servicios con el establecimiento.",
+    "descripcion": "Información por confirmar: cenote cerrado en gruta subterránea, aguas turquesas y plataforma de madera. Consulta condiciones de acceso y servicios con el establecimiento.",
     "etiqueta": "Gruta subterránea",
     "icono": "water_drop",
     "visitaMinutos": 75,
@@ -30,14 +30,14 @@ export const lugaresHomun = [
     },
     "imagen": {
       "src": homunSantaRosa,
-      "alt": "Caverna y agua turquesa, referencia del prototipo para Cenote Santa Rosa"
+      "alt": "Caverna y agua turquesa en Cenote Santa Rosa"
     }
   },
   {
     "id": "tza-ujun-kat",
     "nombre": "Cenote Tza Ujun Kat",
     "categoria": "cenotes",
-    "descripcion": "El prototipo describe una caverna semiabierta con luz natural, golondrinas y estalactitas. Información demostrativa pendiente de validar.",
+    "descripcion": "Descripción pendiente de validar: una caverna semiabierta con luz natural, golondrinas y estalactitas. Información demostrativa pendiente de validar.",
     "etiqueta": "Bóveda y luz natural",
     "icono": "wb_sunny",
     "visitaMinutos": 65,
@@ -49,14 +49,14 @@ export const lugaresHomun = [
     },
     "imagen": {
       "src": homunTzaUjunKat,
-      "alt": "Caverna semiabierta con luz natural, referencia del prototipo para Cenote Tza Ujun Kat"
+      "alt": "Caverna semiabierta con luz natural en Cenote Tza Ujun Kat"
     }
   },
   {
     "id": "restaurante-cenote",
     "nombre": "Restaurante El Cenote y Cocina Tradicional",
     "categoria": "gastronomia",
-    "descripcion": "Referencia gastronómica del prototipo: cochinita pibil, queso relleno y agua de pitahaya. Nombre, menú y disponibilidad pendientes de validar.",
+    "descripcion": "Información gastronómica por confirmar: cochinita pibil, queso relleno y agua de pitahaya. Nombre, menú y disponibilidad pendientes de validar.",
     "etiqueta": "Almuerzo regional",
     "icono": "restaurant",
     "visitaMinutos": 60,
@@ -68,14 +68,14 @@ export const lugaresHomun = [
     },
     "imagen": {
       "src": homunRestauranteCenote,
-      "alt": "Comida yucateca, referencia gastronómica del prototipo de Homún"
+      "alt": "Comida yucateca asociada a Homún"
     }
   },
   {
     "id": "plaza-parroquia",
     "nombre": "Plaza Principal y Parroquia de San Buenaventura",
     "categoria": "patrimonio",
-    "descripcion": "El prototipo propone conocer la plaza y el templo franciscano, con referencias a nieves artesanales de coco y mamey. Confirma las condiciones de visita.",
+    "descripcion": "Descripción pendiente de validar: la plaza y el templo franciscano, con referencias a nieves artesanales de coco y mamey. Confirma las condiciones de visita.",
     "etiqueta": "Plaza y patrimonio",
     "icono": "church",
     "visitaMinutos": 35,
@@ -90,7 +90,7 @@ export const lugaresHomun = [
 export type LugarHomun = typeof lugaresHomun[number]
 export const mapaHomun = {
   "src": "https://lh3.googleusercontent.com/aida-public/AB6AXuDXb-oSp1XZIQxyW53PSlcgUV-gQg399RRFnbHQ5XSptF82DDG-BtMVts-cKK1Ko-fGIx7xAUi9dfjT2UOpNWuLdlaGtmAMVZaTgXzh4DXYKh782R5nidCYqkP9BzeHSrPXxsXXrMZI0yuKrAoFWfhSZPxgdI4RpPgEzWoMfytTxKXoFeHFpH2CSywv-6L3XdYKdYRNn2aiZjB0Jmgpmjl2NU3ZEAg3miawSjV8wGNt",
-  "alt": "Mapa ilustrativo del Circuito Cenotes Homún del prototipo"
+  "alt": "Mapa ilustrativo del Circuito Cenotes Homún de referencia"
 }
 export const MARGEN_HOMUN = 15
 /** El HTML no define duración ni medio del regreso final. Supuesto de planificación. */

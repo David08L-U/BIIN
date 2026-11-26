@@ -57,7 +57,7 @@ export default function PersonalizarValladolidPage() {
         })}
       </section>
       <ConfiguracionValladolid borrador={borrador} onChange={nuevo => { actualizar(nuevo); setErrores([]) }} />
-      <p className="iz-plan-nota">Lugares, descripciones, imágenes, visitas y caminatas del prototipo: demostrativos, sin fecha de validación. Aperturas, tarifas y transporte sin confirmar.</p>
+      <p className="iz-plan-nota">Información demostrativa, pendiente de validar. Aperturas, tarifas y transporte por confirmar.</p>
       <FiltrosPlan etiqueta="Categorías de lugares" opciones={categoriasValladolid} activo={categoria} seleccionar={setCategoria} contador={contador} />
       <section className="iz-plan-selector" aria-labelledby="va-categoria-titulo">
         <div className="iz-plan-categoria-titulo"><h2 id="va-categoria-titulo"><Icono nombre={categoriaActual.icono} />{categoriaActual.titulo}</h2><span>{contador(categoria)} seleccionados</span></div>

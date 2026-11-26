@@ -57,7 +57,7 @@ describe('Detalle propio de Ticul CU-03 / RF03', () => {
     expect(screen.getByText('Top Destino del Sur')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Descubre Ticul a tu ritmo' })).toBeInTheDocument()
     expect(screen.getByText('Barrio Alfarero de San Enrique · Calzado Fino · Ruta Puuc')).toBeInTheDocument()
-    expect(screen.getByText(/Tarifa, duración, recorrido y referencias del prototipo: pendientes de validar, sin fecha de validación/)).toBeInTheDocument()
+    expect(screen.getByText(/Tarifa, duración y recorrido por confirmar/)).toBeInTheDocument()
   })
 
   it.each(['/rutas/ticul', '/rutas/ticul/'])('permite acceso directo a %s con Rutas activa y una sola cabecera', url => {
@@ -78,9 +78,9 @@ describe('Detalle propio de Ticul CU-03 / RF03', () => {
     expect(screen.getAllByRole('link', { name: /^Ver ruta a / })).toHaveLength(5)
   })
 
-  it('conserva el orden y las referencias de las cinco paradas del prototipo', () => {
+  it('conserva el orden y las referencias de las cinco paradas de referencia', () => {
     montar()
-    const lista = screen.getByRole('list', { name: 'Recorrido del prototipo a Ticul' })
+    const lista = screen.getByRole('list', { name: 'Recorrido ilustrativo a Ticul' })
     const paradas = within(lista).getAllByRole('listitem')
     const nombres = ['Mérida (Parque San Juan)', 'Umán / Entronque Carretera', 'Muna Centro', 'Entronque San José Tipceh', 'Ticul Centro']
     expect(paradas).toHaveLength(5)
@@ -194,12 +194,12 @@ describe('Detalle propio de Ticul CU-03 / RF03', () => {
   it('conserva imágenes alternativas, recorrido y selección al fallar las imágenes originales', async () => {
     montar()
     await userEvent.click(screen.getByRole('radio', { name: 'Tour de Compras' }))
-    fireEvent.error(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Ticul del prototipo' }))
-    fireEvent.error(screen.getByRole('img', { name: 'Imagen de artesanía y taller del prototipo para Ticul' }))
-    expect(screen.getAllByText('Imagen del prototipo no disponible')).toHaveLength(2)
-    expect(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Ticul del prototipo' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'Imagen de artesanía y taller del prototipo para Ticul' })).toBeInTheDocument()
-    expect(screen.getByRole('list', { name: 'Recorrido del prototipo a Ticul' })).toBeInTheDocument()
+    fireEvent.error(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Ticul' }))
+    fireEvent.error(screen.getByRole('img', { name: 'Artesanías y talleres de Ticul' }))
+    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(2)
+    expect(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Ticul' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Artesanías y talleres de Ticul' })).toBeInTheDocument()
+    expect(screen.getByRole('list', { name: 'Recorrido ilustrativo a Ticul' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Descubre Ticul a tu ritmo' })).toBeInTheDocument()
     expect(screen.getByRole('radio', { name: 'Tour de Compras' })).toBeChecked()
     expect(screen.getByRole('button', { name: 'Itinerario recomendado en Ticul' })).toBeInTheDocument()

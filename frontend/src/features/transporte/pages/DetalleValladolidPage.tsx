@@ -20,12 +20,12 @@ export default function DetalleValladolidPage({ ruta }: { ruta: RutaPrototipo })
       corredor: detalle.carretera,
       tiempo: `~${ruta.tiempo}`,
       referenciaCultural: 'Calzada de los Frailes · Cenote Zací · Gastronomía Colonial',
-      altCultural: 'Convento San Bernardino de Valladolid, imagen cultural del prototipo',
+      altCultural: 'Convento San Bernardino de Valladolid, imagen cultural de referencia',
       leyenda: 'Tiempo disponible estimado',
       tituloPrecio: 'Tarifa',
-      altMapa: 'Mapa ilustrativo de Mérida a Valladolid del prototipo',
+      altMapa: 'Mapa ilustrativo de Mérida a Valladolid',
       notaMapa: 'Distancia sin validar',
-      notaDatos: '\n        Datos del prototipo, pendientes de validar y sin fecha de validación: tarifa, duración, recorrido y referencias. Horarios, andén y distancia sin confirmar.\n      ',
+      notaDatos: '\n        Tarifa, duración y recorrido por confirmar. Horarios, andén y distancia sin confirmar.\n      ',
     }}
   />
 }

@@ -45,7 +45,7 @@ function montar(ruta = '/rutas') {
 }
 
 describe('Catálogo de rutas de Melanie CU-02', () => {
-  it('muestra los cinco destinos del prototipo', () => {
+  it('muestra los cinco destinos de referencia', () => {
     montar()
 
     expect(

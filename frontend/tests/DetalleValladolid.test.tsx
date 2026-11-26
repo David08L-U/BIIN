@@ -54,7 +54,7 @@ describe('Detalle de Valladolid CU-03 / RF03', () => {
     for (const lugar of ['Convento San Bernardino', 'Cenote Zací', 'Calzada de los Frailes', 'Mercado Municipal Bazar']) {
       expect(screen.getByText(lugar, { exact: true })).toBeInTheDocument()
     }
-    expect(screen.getByText(/Datos del prototipo, pendientes de validar y sin fecha de validación/)).toBeInTheDocument()
+    expect(screen.getByText(/Tarifa, duración y recorrido por confirmar/)).toBeInTheDocument()
   })
 
   it.each(['/rutas/valladolid', '/rutas/valladolid/'])('permite acceso directo a %s sin cabeceras duplicadas', url => {
@@ -75,9 +75,9 @@ describe('Detalle de Valladolid CU-03 / RF03', () => {
     expect(screen.getAllByRole('link', { name: /^Ver ruta a / })).toHaveLength(5)
   })
 
-  it('muestra el recorrido de Valladolid en el orden del prototipo', () => {
+  it('muestra el recorrido de Valladolid en el orden de referencia', () => {
     montar()
-    const lista = screen.getByRole('list', { name: 'Recorrido del prototipo a Valladolid' })
+    const lista = screen.getByRole('list', { name: 'Recorrido ilustrativo a Valladolid' })
     const paradas = within(lista).getAllByRole('listitem')
     expect(paradas).toHaveLength(5)
     const nombres = ['Mérida (Terminal Noreste)', 'Kanasín / Entronque Cancún', 'Kantunil', 'Pisté / Chichén Itzá', 'Valladolid Centro']
@@ -173,11 +173,11 @@ describe('Detalle de Valladolid CU-03 / RF03', () => {
 
   it('conserva la información y los controles cuando fallan las imágenes originales', () => {
     montar()
-    fireEvent.error(screen.getByRole('img', { name: 'Mapa ilustrativo de Mérida a Valladolid del prototipo' }))
-    fireEvent.error(screen.getByRole('img', { name: 'Convento San Bernardino de Valladolid, imagen cultural del prototipo' }))
-    expect(screen.getAllByText('Imagen del prototipo no disponible')).toHaveLength(2)
-    expect(screen.getByRole('img', { name: 'Mapa ilustrativo de Mérida a Valladolid del prototipo' })).toBeInTheDocument()
-    expect(screen.getByRole('list', { name: 'Recorrido del prototipo a Valladolid' })).toBeInTheDocument()
+    fireEvent.error(screen.getByRole('img', { name: 'Mapa ilustrativo de Mérida a Valladolid' }))
+    fireEvent.error(screen.getByRole('img', { name: 'Convento San Bernardino de Valladolid, imagen cultural de referencia' }))
+    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(2)
+    expect(screen.getByRole('img', { name: 'Mapa ilustrativo de Mérida a Valladolid' })).toBeInTheDocument()
+    expect(screen.getByRole('list', { name: 'Recorrido ilustrativo a Valladolid' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Itinerario recomendado en Valladolid' })).toBeInTheDocument()
   })
 

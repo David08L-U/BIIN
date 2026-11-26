@@ -73,13 +73,13 @@ export default function ItinerarioIzamalPage() {
         <ConfiguracionViaje configuracion={borrador.configuracion} onChange={configuracion => { actualizar({ configuracion }); setErroresIntento([]) }} />
         <button type="submit" className="iz-plan-primario">{borrador.modo === 'personalizado' ? 'Generar itinerario personalizado' : 'Generar itinerario recomendado'}<Icono nombre="arrow_forward" tamano={20} /></button>
       </form>
-      <p className="iz-plan-nota">Vista previa de demostración, sin fecha de validación. Lugares y duraciones del prototipo; horarios de apertura, tarifas y transporte sin confirmar. No es una optimización geográfica real.</p>
+      <p className="iz-plan-nota">Información demostrativa; aperturas, tarifas y transporte por confirmar. Recorrido no optimizado geográficamente.</p>
       {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}
       {!borrador.generado && <p className="iz-plan-vacio" role="status">Aún no hay un plan vigente. Si cambiaste la configuración, genera de nuevo.{borrador.modo === 'personalizado' && ' Puedes cambiar los lugares en Personalizar.'}</p>}
       {plan && <>
         <section className="iz-plan-conexion iz-plan-tarjeta" aria-labelledby="iz-plan-conexion-titulo">
           <div className="iz-plan-conexion-titulo"><h2 id="iz-plan-conexion-titulo">Conexión Van BIIN</h2><span>Ruta Mérida · Izamal</span></div>
-          <div className="iz-plan-conexion-fila"><Icono nombre="directions_bus" tamano={14} /><div><p className="iz-plan-ceja">Inicio elegido</p><strong>{horaPlan(borrador.configuracion, 0)} · Izamal Centro</strong><p>Punto ilustrativo del prototipo. Llegada de la van sin confirmar.</p></div></div>
+          <div className="iz-plan-conexion-fila"><Icono nombre="directions_bus" tamano={14} /><div><p className="iz-plan-ceja">Inicio elegido</p><strong>{horaPlan(borrador.configuracion, 0)} · Izamal Centro</strong><p>Punto de inicio ilustrativo. Llegada de la van sin confirmar.</p></div></div>
           <p className="iz-plan-conexion-margen"><Icono nombre="swap_vert" tamano={14} />{duracionPlan(Number(borrador.configuracion.minutosDisponibles))} disponibles · {duracionPlan(plan.libresMinutos)} libres</p>
           <div className="iz-plan-conexion-fila"><Icono nombre="departure_board" tamano={14} /><div><p className="iz-plan-ceja">Hora objetivo de regreso</p><strong>{horaPlan(borrador.configuracion, Number(borrador.configuracion.minutosDisponibles))}</strong><p>Objetivo del usuario; no es una salida confirmada de van.</p></div></div>
           <p className="iz-plan-nota">Visitas {duracionPlan(plan.visitasMinutos)} + desplazamientos estimados {duracionPlan(plan.trasladosMinutos)} + margen final {duracionPlan(plan.margenMinutos)} = {duracionPlan(plan.totalMinutos)}.</p>
@@ -108,7 +108,7 @@ export default function ItinerarioIzamalPage() {
           {filtro !== 'todas' && !plan.seleccion.some(id => lugaresIzamal.some(lugar => lugar.id === id && lugar.categoria === filtro)) && <p role="status">No hay lugares de esta categoría en el plan. El filtro no modifica el recorrido.</p>}
           <div className="iz-plan-cierre iz-plan-tarjeta"><h3>Cierre del recorrido</h3>{plan.bloques.slice(-2).map(bloque => <p key={bloque.titulo}>{horaPlan(borrador.configuracion, bloque.inicio)} – {horaPlan(borrador.configuracion, bloque.fin)} · {bloque.titulo}: {duracionPlan(bloque.fin - bloque.inicio)}.</p>)}<p>Quedan {duracionPlan(plan.libresMinutos)} libres antes de tu hora objetivo. Confirma el paradero y el transporte de regreso con la terminal.</p></div>
         </section>
-        <section className="iz-plan-mapa iz-plan-tarjeta" aria-label="Referencia visual del prototipo"><ImagenItinerario {...imagenesItinerarioIzamal.mapa} /><Link to={urlBorrador('detalle', borrador)}>Ver detalle de ruta<Icono nombre="arrow_forward" tamano={14} /></Link></section>
+        <section className="iz-plan-mapa iz-plan-tarjeta" aria-label="Mapa ilustrativo"><ImagenItinerario {...imagenesItinerarioIzamal.mapa} /><Link to={urlBorrador('detalle', borrador)}>Ver detalle de ruta<Icono nombre="arrow_forward" tamano={14} /></Link></section>
         <section className="iz-plan-consejos"><h2>Consejos de viaje BIIN</h2><div><article className="iz-plan-tarjeta"><Icono nombre="wb_sunny" tamano={20} /><h3>Protección solar</h3><p>Usa sombrero y mantén agua fresca en mano.</p></article><article className="iz-plan-tarjeta"><Icono nombre="payments" tamano={20} /><h3>Efectivo en mano</h3><p>Consulta los medios de pago, precios y horarios con cada lugar antes de visitarlo.</p></article></div></section>
       </>}
       <div className="iz-plan-resumen-final">

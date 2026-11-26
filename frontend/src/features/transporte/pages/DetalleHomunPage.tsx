@@ -19,11 +19,11 @@ export default function DetalleHomunPage({ ruta }: { ruta: RutaPrototipo }) {
       opciones: detalle.estancias,
       corredor: detalle.corredor,
       tiempo: `~${ruta.tiempo}`,
-      altCultural: 'Imagen de referencia cultural del prototipo para Homún',
+      altCultural: 'Paisaje de cenotes y naturaleza de Homún',
       leyenda: 'Tiempo disponible estimado',
       tituloPrecio: 'Pasaje',
       etiquetaLugares: 'Lugares destacados de Homún',
-      notaDatos: 'Datos del prototipo, pendientes de validar y sin fecha de validación: tarifa, duración, recorrido y referencias. Salida, disponibilidad, horarios y distancia sin confirmar.',
+      notaDatos: 'Tarifa, duración y recorrido por confirmar. Salida, horarios y disponibilidad sin confirmar.',
     }}
   />
 }

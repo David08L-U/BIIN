@@ -15,7 +15,7 @@ export default function DetalleTekitPage({ ruta }: { ruta: RutaPrototipo }) {
       <span className="biin-icon" aria-hidden="true">near_me</span>
     </button>
     <div id="tekit-referencia-salida" role="region" aria-label="Referencia de salida de Tekit" hidden={!mostrarReferencia}>
-      <p>Referencia del prototipo: {detalle.terminal}. {detalle.referenciaTerminal}. Andén y horarios sin confirmar. No representa tu ubicación ni ofrece indicaciones GPS.</p>
+      <p>Terminal de referencia: {detalle.terminal}. {detalle.referenciaTerminal}. Andén y horarios por confirmar. No representa tu ubicación ni ofrece indicaciones GPS.</p>
     </div>
   </>
 
@@ -31,12 +31,12 @@ export default function DetalleTekitPage({ ruta }: { ruta: RutaPrototipo }) {
       corredor: detalle.carretera,
       tiempo: `Tiempo estimado de viaje · ~${ruta.tiempo}`,
       referenciaCultural: 'Ruta Textil · Talleres de Bordado · Gastronomía Local',
-      altCultural: 'Taller textil de guayaberas de Tekit, imagen cultural del prototipo',
+      altCultural: 'Taller textil de guayaberas de Tekit, imagen cultural de referencia',
       leyenda: 'Estancia o modalidad de visita',
       tituloPrecio: 'Tarifa',
       notaPrecio: 'Por validar',
-      etiquetaLugares: 'Lugares destacados del prototipo',
-      notaDatos: 'Datos del prototipo, pendientes de validar y sin fecha de validación: tarifa, duración, trazado y referencias. Salida, disponibilidad, horarios y medios de pago sin confirmar.',
+      etiquetaLugares: 'Lugares destacados de Tekit',
+      notaDatos: 'Tarifa, duración y recorrido por confirmar. Salida, horarios, disponibilidad y medios de pago sin confirmar.',
     }}
   />
 }

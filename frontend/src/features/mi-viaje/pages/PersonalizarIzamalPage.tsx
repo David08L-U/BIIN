@@ -63,7 +63,7 @@ export default function PersonalizarIzamalPage() {
           </div>
         </section>
         <ConfiguracionViaje configuracion={borrador.configuracion} onChange={configuracion => { actualizar({ configuracion }); setErrores([]) }} />
-        <p className="iz-plan-nota">Lugares, descripciones y duraciones del prototipo: demostrativos, sin fecha de validación. Precios, aperturas y traslados sin verificar.</p>
+        <p className="iz-plan-nota">Información demostrativa, pendiente de validar. Precios, aperturas y traslados por confirmar.</p>
         <FiltrosPlan etiqueta="Categorías de lugares" opciones={categoriasIzamal} activo={categoria} seleccionar={setCategoria} contador={contador} />
         <section className="iz-plan-selector" aria-labelledby="iz-plan-categoria">
           <div className="iz-plan-categoria-titulo"><h2 id="iz-plan-categoria"><Icono nombre={categoriaActual.icono} />{categoriaActual.titulo}</h2><span>{contador(categoria)} seleccionados</span></div>

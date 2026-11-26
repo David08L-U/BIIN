@@ -22,7 +22,7 @@ function ConexionHomun({ dia }: { dia: JornadaHomun }) {
   return <section className="iz-plan-conexion iz-plan-tarjeta" aria-label={`Conexión BIIN del Día ${dia.dia}`}>
     <header><h2>Conexión Van BIIN</h2><span>Ruta Mérida · Homún</span><Icono nombre="airport_shuttle" tamano={20} /></header>
     <p className="iz-plan-ceja">Día {dia.dia} · {dia.fecha}</p>
-    <div className="iz-plan-conexion-fila"><Icono nombre="login" tamano={16} /><div><p className="iz-plan-ceja">Inicio elegido · {horaLocal(dia, 0)}</p><strong>Homún Centro (Frente al Palacio Municipal)</strong><p>Referencia del prototipo. Llegada del transporte sin confirmar.</p></div></div>
+    <div className="iz-plan-conexion-fila"><Icono nombre="login" tamano={16} /><div><p className="iz-plan-ceja">Inicio elegido · {horaLocal(dia, 0)}</p><strong>Homún Centro (Frente al Palacio Municipal)</strong><p>Punto ilustrativo. Llegada del transporte sin confirmar.</p></div></div>
     <p className="iz-plan-conexion-margen"><Icono nombre="timelapse" tamano={16} />{duracionPlan(Number(dia.minutosDisponibles))} disponibles · {duracionPlan(dia.libresMinutos)} libres</p>
     <div className="iz-plan-conexion-fila"><Icono nombre="logout" tamano={16} /><div><p className="iz-plan-ceja">Hora objetivo de regreso · {horaLocal(dia, Number(dia.minutosDisponibles))}</p><strong>Referencia de paradero en Homún</strong><p>Objetivo del usuario; no es una salida confirmada. Consulta paradero y transporte con la terminal.</p></div></div>
     <p className="iz-plan-nota">Visitas {duracionPlan(dia.visitasMinutos)} + traslados {duracionPlan(dia.trasladosMinutos)} (incluye regreso) + margen {duracionPlan(dia.margenMinutos)} = {duracionPlan(dia.totalMinutos)}.</p>
@@ -88,7 +88,7 @@ export default function ItinerarioHomunPage() {
       <p className="iz-plan-nota">{esEstanciaHomun(estancia) ? estanciasHomun[estancia].nombre : 'Estancia sin validar'}</p>
       <ModosHomun borrador={vigente} />
       <form className="iz-plan-formulario" noValidate onSubmit={generar}><ConfiguracionHomun borrador={borrador} onChange={actualizar} /><button type="submit" className="iz-plan-primario">Generar itinerario {borrador.modo === 'personalizado' ? 'personalizado' : 'recomendado'}<Icono nombre="arrow_forward" tamano={18} /></button></form>
-      <p className="iz-plan-nota">Datos e imágenes demostrativos, sin fecha de validación. Visitas y traslados estimados; aperturas, entradas y acceso sin confirmar. Mototaxi sin precio ni disponibilidad confirmados; no está contratado. {avisoRegresoHomun}</p>
+      <p className="iz-plan-nota">Información demostrativa; visitas, accesos, entradas y traslados por confirmar. Mototaxi sin precio ni disponibilidad; no está contratado. {avisoRegresoHomun}</p>
       {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}
       {!borrador.generado && <p className="iz-plan-vacio" role="status">Aún no hay un plan vigente. Si cambiaste configuración o selección, genera de nuevo.</p>}
       {plan && <>
@@ -123,7 +123,7 @@ export default function ItinerarioHomunPage() {
             </section>
           })}
         </section>
-        <section className="iz-plan-mapa iz-plan-tarjeta" aria-labelledby="hm-mapa-titulo"><div className="iz-plan-categoria-titulo"><h2 id="hm-mapa-titulo"><Icono nombre="map" tamano={18} />Circuito Cenotes Homún</h2><Link to={urlBorradorHomun('detalle', vigente)}>Ver detalle de ruta<Icono nombre="arrow_forward" tamano={14} /></Link></div><ImagenItinerario {...mapaHomun} className="iz-plan-imagen" /><p className="iz-plan-nota">Mapa ilustrativo del prototipo; no representa tu ubicación ni un circuito geográfico verificado.</p></section>
+        <section className="iz-plan-mapa iz-plan-tarjeta" aria-labelledby="hm-mapa-titulo"><div className="iz-plan-categoria-titulo"><h2 id="hm-mapa-titulo"><Icono nombre="map" tamano={18} />Circuito Cenotes Homún</h2><Link to={urlBorradorHomun('detalle', vigente)}>Ver detalle de ruta<Icono nombre="arrow_forward" tamano={14} /></Link></div><ImagenItinerario {...mapaHomun} className="iz-plan-imagen" /><p className="iz-plan-nota">Mapa ilustrativo de referencia; no representa tu ubicación ni un circuito geográfico verificado.</p></section>
         <section className="iz-plan-consejos" aria-labelledby="hm-consejos-titulo"><h2 id="hm-consejos-titulo"><Icono nombre="tips_and_updates" tamano={18} />Consejos de viaje BIIN</h2><div><Icono nombre="safety_check" tamano={16} /><p><strong>Consulta requisitos y servicios:</strong> confirma condiciones de acceso, uso de chaleco y qué incluye cada establecimiento.</p></div><div><Icono nombre="eco" tamano={16} /><p><strong>Conservación del agua:</strong> consulta y respeta las normas de cada cenote sobre productos, ducha y cuidado del entorno.</p></div></section>
       </>}
       <div className="iz-plan-resumen-final">

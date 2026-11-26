@@ -16,14 +16,14 @@ export const detalleTiculPrototipo = {
   referenciaCultural: 'Barrio Alfarero de San Enrique · Calzado Fino · Ruta Puuc',
   paradas: [
     { nombre: 'Mérida (Parque San Juan)', descripcion: 'Calle 69 x 64 · Referencia de salida', tipo: 'origen', etiqueta: 'Origen' },
-    { nombre: 'Umán / Entronque Carretera', descripcion: 'Referencia de parada del prototipo', tipo: 'intermedia' },
-    { nombre: 'Muna Centro', descripcion: 'Mirador Ruta Puuc · Referencia del prototipo', tipo: 'intermedia' },
+    { nombre: 'Umán / Entronque Carretera', descripcion: 'Parada intermedia por confirmar', tipo: 'intermedia' },
+    { nombre: 'Muna Centro', descripcion: 'Mirador de la Ruta Puuc · Referencia por confirmar', tipo: 'intermedia' },
     { nombre: 'Entronque San José Tipceh', descripcion: 'Parada intermedia regional', tipo: 'intermedia' },
     { nombre: 'Ticul Centro', descripcion: 'Frente al Mercado Municipal y Plaza de Armas', tipo: 'destino', etiqueta: 'Destino' },
   ],
   estancias: [
     { id: 'medio-dia', nombre: 'Medio día (3–4 horas)' },
-    // Modalidades del prototipo, sin convertirlas en duraciones numéricas.
+    // Modalidades de referencia, sin convertirlas en duraciones numéricas.
     { id: 'dia-completo', nombre: 'Día completo (Ruta Puuc)' },
     { id: 'tour-compras', nombre: 'Tour de Compras' },
   ],

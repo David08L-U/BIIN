@@ -1,5 +1,5 @@
 /** CU-09 / RF09. Datos demostrativos del selector HTML de Melanie.
- * Duraciones y caminatas son supuestos del prototipo, sin validación geográfica.
+ * Duraciones y caminatas son estimaciones por confirmar, sin validación geográfica.
  * No representan horarios de apertura, precios ni disponibilidad actuales.
  */
 export type CategoriaIzamal = 'gastronomia' | 'cultura' | 'monumentos'
@@ -33,9 +33,9 @@ export const lugaresIzamal: LugarIzamal[] = [
   { id: 'ramon', nombre: 'Taller de Semilla de Ramón', categoria: 'cultura', visitaMinutos: 40, trasladoMinutos: 4, etiqueta: 'Joyería botánica', descripcion: 'Demostración de joyería botánica con maestras artesanas mayas y degustación de infusión silvestre.' },
   { id: 'henequen', nombre: 'Taller de Henequén y Tintes', categoria: 'cultura', visitaMinutos: 45, trasladoMinutos: 6, etiqueta: 'Demostración', descripcion: 'Historia del oro verde yucateco, desfibrado tradicional y técnicas de teñido con añil y corteza de chaca.' },
   { id: 'cocina', nombre: 'Muestra de Cocina de Humo', categoria: 'cultura', visitaMinutos: 35, trasladoMinutos: 5, etiqueta: 'Patio colonial', descripcion: 'Tortillado a mano en comal de barro con masa de maíz criollo y molienda en metate en patio virreinal.' },
-  { id: 'convento', nombre: 'Convento San Antonio de Padua', categoria: 'monumentos', visitaMinutos: 60, trasladoMinutos: 2, etiqueta: 'Imperdible', descripcion: 'Atrio cerrado monumental con 75 arcos coloniales y Camarín de la Virgen. Descripción del prototipo pendiente de validar.' },
+  { id: 'convento', nombre: 'Convento San Antonio de Padua', categoria: 'monumentos', visitaMinutos: 60, trasladoMinutos: 2, etiqueta: 'Imperdible', descripcion: 'Atrio cerrado monumental con 75 arcos coloniales y Camarín de la Virgen. Información por confirmar.' },
   { id: 'piramide', nombre: 'Pirámide Kinich Kakmó', categoria: 'monumentos', visitaMinutos: 45, trasladoMinutos: 7, etiqueta: 'Vista 360°', descripcion: 'Gran acrópolis maya solar consagrada a la guacamaya de fuego. Vista panorámica sobre las copas de la selva.' },
-  { id: 'kabul', nombre: 'Pirámide Kabul & Los Remedios', categoria: 'monumentos', visitaMinutos: 30, trasladoMinutos: 6, etiqueta: 'Histórico', descripcion: 'Mascarón maya del dios Kinich Ahau y capilla abierta virreinal del siglo XVI en tranquila plazoleta. Descripción del prototipo pendiente de validar.' },
+  { id: 'kabul', nombre: 'Pirámide Kabul & Los Remedios', categoria: 'monumentos', visitaMinutos: 30, trasladoMinutos: 6, etiqueta: 'Histórico', descripcion: 'Mascarón maya del dios Kinich Ahau y capilla abierta virreinal del siglo XVI en tranquila plazoleta. Información por confirmar.' },
 ]
 
 /** Orden editorial de demostración, sin optimización geográfica. */

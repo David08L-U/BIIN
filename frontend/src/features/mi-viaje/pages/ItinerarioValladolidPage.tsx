@@ -24,9 +24,9 @@ function Conexion({ dia }: { dia: JornadaValladolid }) {
     <header><h2><Icono nombre="directions_bus" tamano={18} />Conexión BIIN</h2><span>Ruta Mérida · Valladolid</span></header>
     <div className="iz-plan-conexion-contenido">
       <p className="iz-plan-ceja">Día {dia.dia} · {dia.fecha}</p>
-      <div className="iz-plan-conexion-fila"><span><Icono nombre="pin_drop" tamano={16} /></span><div><p className="iz-plan-ceja">Inicio elegido · {horaLocal(dia, 0)}</p><strong>Valladolid Centro</strong><p>Frente al Parque Principal Francisco Cantón. Referencia del prototipo; llegada del transporte sin confirmar.</p></div></div>
+      <div className="iz-plan-conexion-fila"><span><Icono nombre="pin_drop" tamano={16} /></span><div><p className="iz-plan-ceja">Inicio elegido · {horaLocal(dia, 0)}</p><strong>Valladolid Centro</strong><p>Frente al Parque Principal Francisco Cantón. Punto de referencia ilustrativo; llegada del transporte sin confirmar.</p></div></div>
       <div className="iz-plan-conexion-margen"><span><Icono nombre="directions_walk" tamano={16} />Tiempo para la visita</span><strong>{duracionPlan(Number(dia.minutosDisponibles))}</strong></div>
-      <div className="iz-plan-conexion-fila"><span ><Icono nombre="sync_alt" tamano={16} /></span><div><p className="iz-plan-ceja">Hora objetivo de regreso · {horaLocal(dia, Number(dia.minutosDisponibles))}</p><strong>Referencia de regreso del prototipo</strong><p>Objetivo del usuario; no es una salida confirmada. Confirma punto y transporte con la terminal.</p></div></div>
+      <div className="iz-plan-conexion-fila"><span ><Icono nombre="sync_alt" tamano={16} /></span><div><p className="iz-plan-ceja">Hora objetivo de regreso · {horaLocal(dia, Number(dia.minutosDisponibles))}</p><strong>Referencia de regreso de referencia</strong><p>Objetivo del usuario; no es una salida confirmada. Confirma punto y transporte con la terminal.</p></div></div>
       <p className="iz-plan-nota">Visitas {duracionPlan(dia.visitasMinutos)} + traslados {duracionPlan(dia.trasladosMinutos)} (incluye traslado final) + margen {duracionPlan(dia.margenMinutos)} = {duracionPlan(dia.totalMinutos)}. Libres: {duracionPlan(dia.libresMinutos)}.</p>
     </div>
   </section>
@@ -97,7 +97,7 @@ export default function ItinerarioValladolidPage() {
       <div className="iz-plan-estancia"><span><Icono nombre="schedule" tamano={16} />{nombreEstancia} en la Sultana del Oriente</span><span className="iz-plan-insignia">Plan estimado</span></div>
       <ModosPlan modo={borrador.modo} recomendado={urlBorradorValladolid('itinerario', { ...borrador, modo: 'recomendado', generado: false })} personalizado={personalizar} />
       <form className="iz-plan-formulario" noValidate onSubmit={generar}><ConfiguracionValladolid borrador={borrador} onChange={nuevo => actualizar(nuevo)} /><button type="submit" className="iz-plan-primario">Generar itinerario {borrador.modo === 'personalizado' ? 'personalizado' : 'recomendado'}<Icono nombre="arrow_forward" tamano={18} /></button></form>
-      <p className="iz-plan-nota">Vista previa estimada. Lugares, imágenes, visitas y caminatas del prototipo, sin fecha de validación. Tarifas, aperturas y transporte sin confirmar. No es una optimización geográfica real.</p>
+      <p className="iz-plan-nota">Información demostrativa. Tarifas, aperturas y transporte por confirmar; recorrido no optimizado geográficamente.</p>
       {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}
       {!borrador.generado && <p className="iz-plan-vacio" role="status">Aún no hay un plan vigente. Si cambiaste configuración o selección, genera de nuevo.</p>}
       {plan && <>
@@ -133,7 +133,7 @@ export default function ItinerarioValladolidPage() {
             </section>
           })}
         </section>
-        <section className="iz-plan-mapa iz-plan-tarjeta" aria-label="Circuito Peatonal Valladolid"><div className="iz-plan-categoria-titulo"><h2><Icono nombre="map" tamano={20} />Circuito Peatonal Valladolid</h2><Link to={urlBorradorValladolid('detalle', borrador)}>Ver detalle de ruta<Icono nombre="open_in_new" tamano={16} /></Link></div><div className="iz-plan-mapa-imagen"><ImagenItinerario src={detalleValladolidPrototipo.imagenRecorrido} alt="Mapa ilustrativo de Valladolid del prototipo" className="iz-plan-imagen" /><span>Referencia ilustrativa · Sin GPS</span></div></section>
+        <section className="iz-plan-mapa iz-plan-tarjeta" aria-label="Circuito Peatonal Valladolid"><div className="iz-plan-categoria-titulo"><h2><Icono nombre="map" tamano={20} />Circuito Peatonal Valladolid</h2><Link to={urlBorradorValladolid('detalle', borrador)}>Ver detalle de ruta<Icono nombre="open_in_new" tamano={16} /></Link></div><div className="iz-plan-mapa-imagen"><ImagenItinerario src={detalleValladolidPrototipo.imagenRecorrido} alt="Mapa ilustrativo de Valladolid de referencia" className="iz-plan-imagen" /><span>Referencia ilustrativa · Sin GPS</span></div></section>
         <section className="iz-plan-consejos iz-plan-tarjeta" aria-labelledby="va-consejos-titulo"><h2 id="va-consejos-titulo"><Icono nombre="lightbulb" tamano={20} />Consejos de viaje BIIN</h2><div><span><Icono nombre="footprint" tamano={18} /></span><p><strong>Calzado cómodo</strong><span>Camina sobre adoquín colonial y aceras de piedra.</span></p></div><div><span><Icono nombre="pool" tamano={18} /></span><p><strong>Traje de baño y toalla</strong><span>Consulta las condiciones y aperturas antes de visitar el Cenote Zací.</span></p></div></section>
       </>}
       <div className="iz-plan-resumen-final">

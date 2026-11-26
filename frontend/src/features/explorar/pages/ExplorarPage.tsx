@@ -104,7 +104,7 @@ export function ExplorarDetallePage() {
       <p className="explorar-meta">{lugar.destinoNombre} · {lugar.categoriaNombre}</p>
       <h1 id="explorar-detalle-titulo">{lugar.nombre}</h1>
       <p>{lugar.descripcion}</p>
-      <p className="explorar-nota">Referencia demostrativa del prototipo; la información está pendiente de validación.</p>
+      <p className="explorar-nota">Información demostrativa, pendiente de validar.</p>
       <Link className="iz-plan-primario" to={urlPlanificador(lugar.destino, 'recomendado')}>Planear visita en {lugar.destinoNombre}</Link>
       <AgregarLugar lugar={lugar} />
     </article>
@@ -141,6 +141,6 @@ export default function ExplorarPage() {
       <Foto lugar={lugar} /><p className="explorar-meta">{lugar.destinoNombre} · {lugar.categoriaNombre}</p><h2>{lugar.nombre}</h2><p>{lugar.descripcion}</p>
       <Link to={`/explorar/lugares/${lugar.destino}/${encodeURIComponent(lugar.id)}${location.search}`} state={{ desde: `${location.pathname}${location.search}`, borradorFuente: (location.state as { borradorFuente?: string } | null)?.borradorFuente }}>Ver detalle de {lugar.nombre}</Link>
     </article>)}</div> : <p role="status" className="iz-plan-tarjeta explorar-vacio">No encontramos lugares con esta búsqueda y filtros. Prueba otros términos o limpia los filtros.</p>}
-    <p className="explorar-nota">Datos demostrativos del prototipo, pendientes de validación.</p>
+    <p className="explorar-nota">Información demostrativa, pendiente de validar.</p>
   </section>
 }

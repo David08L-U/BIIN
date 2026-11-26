@@ -266,7 +266,7 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
   it('mantiene las acciones disponibles cuando fallan las imágenes y no simula servicios', () => {
     const { container } = montar(`/rutas/izamal/itinerario?${configuracion}&generado=1`)
     for (const imagen of screen.getAllByRole('img')) fireEvent.error(imagen)
-    expect(screen.getAllByText('Imagen del prototipo no disponible').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Imagen no disponible').length).toBeGreaterThan(0)
     expect(screen.getByRole('link', { name: 'Personalizar' })).toBeInTheDocument()
     expect(container).not.toHaveTextContent(/Apartando asiento|Abrir vista en vivo|\d+[.,]\d+ km totales/)
   })

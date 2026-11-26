@@ -11,7 +11,7 @@ export function compartirValladolid(url: string) {
 export function textoPlanValladolid(borrador: BorradorValladolid, plan: PlanValladolid): string {
   return [
     'BIIN · Itinerario estimado en Valladolid', `Modo: ${borrador.modo}`,
-    'Datos del prototipo, sin fecha de validación. Visitas y traslados estimados; aperturas, tarifas y transporte sin confirmar.',
+    'Información por confirmar, sin fecha de validación. Visitas y traslados estimados; aperturas, tarifas y transporte sin confirmar.',
     'Horas en la zona local del navegador que genera este archivo. No incluye mapas offline ni reservas.',
     ...plan.jornadas.flatMap(dia => [
       '', `Día ${dia.dia} · ${dia.fecha}`, `Inicio elegido: ${horaLocal(dia, 0)}`,

@@ -42,6 +42,6 @@ describe('fotografías de destinos', () => {
     expect(screen.getByRole('img', { name: /Pirámide Kinich Kakmó/ })).not.toHaveAttribute('src')
     fireEvent.error(screen.getByRole('img', { name: /arcadas amarillas/ }))
     expect(screen.getByRole('img', { name: /arcadas amarillas/ })).toHaveTextContent('no disponible')
-    expect(screen.getByRole('img', { name: /arcadas amarillas/ })).toHaveAccessibleDescription('Imagen del prototipo no disponible')
+    expect(screen.getByRole('img', { name: /arcadas amarillas/ })).toHaveAccessibleDescription('Imagen no disponible')
   })
 })

@@ -33,7 +33,7 @@ export const lugaresTicul = [
     },
     "imagen": {
       "src": ticulTalleresAlfareros,
-      "alt": "Alfarería de barro rojo, imagen del prototipo para Ticul"
+      "alt": "Alfarería de barro rojo, imagen de referencia para Ticul"
     }
   },
   {
@@ -52,7 +52,7 @@ export const lugaresTicul = [
     },
     "imagen": {
       "src": ticulCorredorCalzado,
-      "alt": "Sandalias y calzado artesanal, imagen del prototipo de Ticul"
+      "alt": "Sandalias y calzado artesanal, imagen de referencia de Ticul"
     }
   },
   {
@@ -71,14 +71,14 @@ export const lugaresTicul = [
     },
     "imagen": {
       "src": ticulComidaMercado,
-      "alt": "Poc chuc y acompañamientos, referencia gastronómica del prototipo de Ticul"
+      "alt": "Poc chuc y acompañamientos, información gastronómica por confirmar de Ticul"
     }
   },
   {
     "id": "iglesia-san-antonio",
     "nombre": "Ex Convento e Iglesia de San Antonio de Padua",
     "categoria": "patrimonio",
-    "descripcion": "El prototipo propone conocer la edificación franciscana, su atrio abierto y sus retablos. Consulta las condiciones de acceso antes de la visita.",
+    "descripcion": "Descripción pendiente de validar: la edificación franciscana, su atrio abierto y sus retablos. Consulta las condiciones de acceso antes de la visita.",
     "etiqueta": "Patrimonio histórico",
     "visitaMinutos": 30,
     "trasladoMinutos": 2,
@@ -90,14 +90,14 @@ export const lugaresTicul = [
     },
     "imagen": {
       "src": ticulIglesiaSanAntonio,
-      "alt": "Iglesia y convento, imagen de patrimonio del prototipo para Ticul"
+      "alt": "Iglesia y convento, imagen de patrimonio de referencia para Ticul"
     }
   }
 ] as const
 export type LugarTicul = typeof lugaresTicul[number]
 export const mapaTicul = {
   "src": "https://lh3.googleusercontent.com/aida-public/AB6AXuCm3a4Ug-KpkuDu7U8JnCa230iZy3yiEzfRW0vEZERE6Wx8uzflZMKGmxkge5q6acJ8wYIfBxEmdswfY_2ZchcX7aQrDiQWMo68FTIyO2x1xa90_jNcDED1OZqPdd8sEjokvGE61InHr7U1PDZok9q_-aT0Lp-gYfim58H1sjaEYUKBLB_ie51j00W9Xy0yffiA3qkbVeEWOLr5IGBYGEFLkKOj1goS0Vqy80O5UM2k",
-  "alt": "Mapa ilustrativo del Circuito Artesanal Ticul del prototipo"
+  "alt": "Mapa ilustrativo del Circuito Artesanal Ticul de referencia"
 }
 export const REGRESO_TICUL = 3
 export const MARGEN_TICUL = 15

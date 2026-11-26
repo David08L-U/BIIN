@@ -76,7 +76,7 @@ export default function ItinerarioTiculPage() {
       <p className="iz-plan-nota">{esModalidadTicul(c.estancia) ? modalidadesTicul[c.estancia].nombre : 'Modalidad sin validar'}</p>
       <ModosTicul borrador={vigente} />
       <form className="iz-plan-formulario" noValidate onSubmit={generar}><ConfiguracionTicul borrador={borrador} onChange={actualizar} /><button type="submit" className="iz-plan-primario">Generar itinerario {borrador.modo === 'personalizado' ? 'personalizado' : 'recomendado'}<Icono nombre="arrow_forward" tamano={18} /></button></form>
-      <p className="iz-plan-nota">Datos e imágenes demostrativos, sin fecha de validación. Tiempos estimados; precios, aperturas y acceso sin confirmar. Mototaxi sin disponibilidad confirmada, no contratado. {avisoTrasladoComidaTicul}</p>
+      <p className="iz-plan-nota">Información demostrativa; precios, aperturas y acceso por confirmar. Mototaxi sin disponibilidad confirmada. {avisoTrasladoComidaTicul}</p>
       {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}
       {!borrador.generado && <p className="iz-plan-vacio" role="status">Aún no hay un plan vigente. Si cambiaste configuración o selección, genera de nuevo.</p>}
       {plan && <>

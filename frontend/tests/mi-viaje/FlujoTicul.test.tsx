@@ -250,7 +250,7 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
     const { container } = montar('/rutas/ticul/itinerario?' + amplio + '&generado=1')
     expect(screen.getAllByRole('img')).toHaveLength(5)
     for (const img of screen.getAllByRole('img')) fireEvent.error(img)
-    expect(screen.getAllByText('Imagen del prototipo no disponible')).toHaveLength(5)
+    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(5)
     const visitas = screen.getByRole('list', { name: 'Recorrido de Ticul' })
     expect(within(visitas).getByText(/Mototaxi · 3 min estimados/)).toBeInTheDocument()
     expect(within(visitas).getByText(/A pie · 5 min estimados/)).toBeInTheDocument()

@@ -61,7 +61,7 @@ function montar(opciones: { sesion?: boolean; cargando?: boolean; previa?: boole
 beforeEach(() => localStorage.clear())
 afterEach(() => { localStorage.clear(); vi.restoreAllMocks() })
 
-describe('Perfil del prototipo CU-01 / CU-09 / RNF06', () => {
+describe('Perfil de referencia CU-01 / CU-09 / RNF06', () => {
   it('muestra la identidad actual sin inventar verificación ni viajes', async () => {
     montar()
     expect(screen.getByRole('heading', { name: 'Mi perfil' })).toBeInTheDocument()
@@ -203,7 +203,7 @@ describe('Perfil del prototipo CU-01 / CU-09 / RNF06', () => {
     expect(localStorage.length).toBe(0)
   })
 
-  it('conserva una alternativa al avatar si la imagen del prototipo falla', () => {
+  it('conserva una alternativa al avatar si la imagen de referencia falla', () => {
     montar({ previa: true, sesion: false })
     fireEvent.error(screen.getByAltText(''))
     expect(screen.getByText('MG')).toBeInTheDocument()

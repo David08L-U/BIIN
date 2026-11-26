@@ -21,7 +21,7 @@ function ImagenPrototipo({ src, alt, icono, recorte }: {
   return fallo ? (
     <div className="izamal-imagen-alternativa" role="img" aria-label={alt} aria-describedby={avisoId}>
       <Icono nombre={icono} />
-      <span id={avisoId}>Imagen del prototipo no disponible</span>
+      <span id={avisoId}>Imagen no disponible</span>
     </div>
   ) : (
     <img className="izamal-imagen" src={src} alt={alt} loading="lazy" decoding="async"
@@ -109,7 +109,7 @@ export default function DetalleDestino<Id extends string>({ ruta, detalle, estan
             <span className="izamal-icono-metrica"><Icono nombre="payments" /></span>
           </div>
           <p className="izamal-valor"><strong>${ruta.precio}</strong>{' '}<span>MXN</span></p>
-          <p className="izamal-metrica-nota">Tarifa por pasaje · Prototipo</p>
+          <p className="izamal-metrica-nota">Tarifa por pasaje · Por confirmar</p>
           {detalle.notaPrecio && <p className="izamal-metrica-nota">{detalle.notaPrecio}</p>}
         </section>
         <section className="izamal-tarjeta izamal-metrica" aria-labelledby="izamal-asientos">
@@ -123,7 +123,7 @@ export default function DetalleDestino<Id extends string>({ ruta, detalle, estan
       </div>
 
       <p className="izamal-nota-datos">
-        {detalle.notaDatos ?? 'Datos del prototipo pendientes de validar y sin fecha de validación. Salida, disponibilidad, horarios y distancia sin confirmar.'}
+        {detalle.notaDatos ?? 'Información por confirmar. Salida, disponibilidad, horarios y distancia por confirmar.'}
       </p>
 
       <section className="izamal-tarjeta izamal-terminal" aria-labelledby="izamal-terminal">
@@ -139,15 +139,15 @@ export default function DetalleDestino<Id extends string>({ ruta, detalle, estan
       <section className="izamal-tarjeta izamal-recorrido" aria-labelledby="izamal-mapeo">
         <header className="izamal-recorrido-cabecera">
           <h2 id="izamal-mapeo"><Icono nombre="timeline" />Mapeo de ruta y paradas</h2>
-          <span>{detalle.tiempo ?? ruta.tiempo}<small>Prototipo</small></span>
+          <span>{detalle.tiempo ?? ruta.tiempo}<small>Por confirmar</small></span>
         </header>
         <div className="izamal-foto-recorrido">
-          <ImagenPrototipo src={detalle.imagenRecorrido} alt={detalle.altMapa ?? `Mapa ilustrativo del recorrido a ${nombre} del prototipo`} icono="map" />
+          <ImagenPrototipo src={detalle.imagenRecorrido} alt={detalle.altMapa ?? `Mapa ilustrativo del recorrido a ${nombre}`} icono="map" />
           <p className="izamal-pie-imagen"><Icono nombre="explore" />{detalle.corredor}</p>
         </div>
         {detalle.notaMapa && <p className="izamal-nota-recorrido">{detalle.notaMapa}</p>}
         {detalle.notaRecorrido && <p className="izamal-nota-recorrido">{detalle.notaRecorrido}</p>}
-        <ol className="izamal-paradas" aria-label={esIzamal ? 'Recorrido del prototipo' : `Recorrido del prototipo a ${nombre}`}>
+        <ol className="izamal-paradas" aria-label={esIzamal ? 'Recorrido ilustrativo' : `Recorrido ilustrativo a ${nombre}`}>
           {detalle.paradas.map(parada => (
             <li key={parada.nombre} className={`izamal-parada izamal-parada-${parada.tipo}`}>
               <span className="izamal-marcador" aria-hidden="true">
@@ -169,7 +169,7 @@ export default function DetalleDestino<Id extends string>({ ruta, detalle, estan
 
       <section className="izamal-tarjeta izamal-cultura" aria-labelledby="izamal-cultura">
         <div className="izamal-foto-cultural">
-          <ImagenPrototipo src={detalle.imagenCultural} alt={detalle.altCultural ?? `Imagen cultural de ${nombre} del prototipo`}
+          <ImagenPrototipo src={detalle.imagenCultural} alt={detalle.altCultural ?? `Imagen cultural de ${nombre}`}
             icono="temple_buddhist" recorte={detalle.recorteCultural} />
           <span className="izamal-top-destino"><Icono nombre="auto_awesome" /> {detalle.distintivo ?? 'Top Destino'}</span>
           <div className="izamal-foto-textos">
@@ -207,7 +207,7 @@ export default function DetalleDestino<Id extends string>({ ruta, detalle, estan
             </div>
           </fieldset>
           <div className="izamal-lugares">
-            <p className="izamal-sobretitulo">Paradas imperdibles del prototipo:</p>
+            <p className="izamal-sobretitulo">Lugares destacados:</p>
             <ul aria-label={detalle.etiquetaLugares}>
               {detalle.lugares.map(lugar => {
                 const titulo = typeof lugar === 'string' ? lugar : lugar.nombre

@@ -47,9 +47,9 @@ describe('Detalle de Izamal CU-03 / RF03', () => {
     expect(screen.getByRole('heading', { name: 'Izamal', level: 1 })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Terminal Noreste · Calle 67' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Mapeo de ruta y paradas' })).toBeInTheDocument()
-    expect(within(screen.getByRole('list', { name: 'Recorrido del prototipo' })).getAllByRole('listitem')).toHaveLength(5)
+    expect(within(screen.getByRole('list', { name: 'Recorrido ilustrativo' })).getAllByRole('listitem')).toHaveLength(5)
     expect(screen.getByRole('heading', { name: 'Descubre Izamal a tu ritmo' })).toBeInTheDocument()
-    expect(screen.getByText(/Tarifa y recorrido del prototipo, pendientes de validar/)).toBeInTheDocument()
+    expect(screen.getByText(/Tarifa y recorrido por confirmar/)).toBeInTheDocument()
     expect(screen.getByText(/El detalle original indica ~58 min; el catálogo, 1 h 15 min/)).toHaveTextContent('Tiempos pendientes de validar')
   })
 
@@ -175,14 +175,14 @@ describe('Detalle de Izamal CU-03 / RF03', () => {
 
   it('conserva el recorrido y las acciones cuando fallan las imágenes originales', () => {
     montar()
-    const mapa = screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Izamal del prototipo' })
+    const mapa = screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Izamal' })
     const cultura = screen.getByRole('img', { name: 'Atrio y arcadas amarillas del convento de San Antonio de Padua en Izamal' })
     fireEvent.error(mapa)
     fireEvent.error(cultura)
 
-    expect(screen.getAllByText('Imagen del prototipo no disponible')).toHaveLength(2)
-    expect(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Izamal del prototipo' })).toBeInTheDocument()
-    expect(screen.getByRole('list', { name: 'Recorrido del prototipo' })).toBeInTheDocument()
+    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(2)
+    expect(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Izamal' })).toBeInTheDocument()
+    expect(screen.getByRole('list', { name: 'Recorrido ilustrativo' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Personalizar mi itinerario' })).toBeInTheDocument()
   })
 })

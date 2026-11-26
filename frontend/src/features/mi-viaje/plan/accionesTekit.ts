@@ -12,7 +12,7 @@ export function textoPlanTekit(b: BorradorTekit, plan: PlanTekit): string {
     'BIIN · Itinerario estimado en Tekit', `Fecha de visita: ${c.fecha} · Modo: ${b.modo}`,
     `Modalidad: ${esModalidadTekit(c.estancia) ? modalidadesTekit[c.estancia].nombre : c.estancia}`,
     `Archivo generado: ${new Date().toLocaleString()}`,
-    'Referencias demostrativas sin fecha de validación. Visitas y traslados son supuestos del prototipo, no mediciones geográficas reales. Aperturas, precios, visitas guiadas y transporte sin confirmar.',
+    'Referencias demostrativas sin fecha de validación. Visitas y traslados son estimaciones por confirmar, no mediciones geográficas reales. Aperturas, precios, visitas guiadas y transporte sin confirmar.',
     'Horas en la zona local del navegador que genera este archivo. No incluye mapas offline ni reservas.',
     `Inicio elegido: ${horaLocal(c, 0)} · ${duracionPlan(Number(c.minutosDisponibles))} disponibles`,
     ...plan.bloques.map(p => `${horaLocal(c, p.inicio)} – ${horaLocal(c, p.fin)} · ${p.titulo} · ${duracionPlan(p.fin - p.inicio)}`),

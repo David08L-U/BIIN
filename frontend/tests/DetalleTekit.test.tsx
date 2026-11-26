@@ -54,11 +54,11 @@ describe('Detalle propio de Tekit CU-03 / RF03', () => {
     expect(screen.getByText('Tiempo estimado de viaje · ~1 h 05 min')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Descubre Tekit a tu ritmo' })).toBeInTheDocument()
     expect(screen.getByText('Ruta Textil · Talleres de Bordado · Gastronomía Local')).toBeInTheDocument()
-    const lugares = screen.getByRole('list', { name: 'Lugares destacados del prototipo' })
+    const lugares = screen.getByRole('list', { name: 'Lugares destacados de Tekit' })
     for (const nombre of ['Talleres de Guayaberas', 'Parroquia San Antonio', 'Cenote Bekal', 'Panaderías Tradicionales']) {
       expect(within(lugares).getByText(nombre)).toBeInTheDocument()
     }
-    expect(screen.getByText(/Datos del prototipo, pendientes de validar y sin fecha de validación/)).toBeInTheDocument()
+    expect(screen.getByText(/Tarifa, duración y recorrido por confirmar/)).toBeInTheDocument()
   })
 
   it.each(['/rutas/tekit', '/rutas/tekit/'])('abre directamente %s con Rutas activa y sin cabecera duplicada', url => {
@@ -81,7 +81,7 @@ describe('Detalle propio de Tekit CU-03 / RF03', () => {
 
   it('conserva las cinco paradas del recorrido de Tekit en orden', () => {
     montar()
-    const lista = screen.getByRole('list', { name: 'Recorrido del prototipo a Tekit' })
+    const lista = screen.getByRole('list', { name: 'Recorrido ilustrativo a Tekit' })
     const paradas = within(lista).getAllByRole('listitem')
     expect(paradas).toHaveLength(5)
     const nombres = ['Mérida (Parque San Juan)', 'Periférico Sur / Kanasín', 'Acanceh Centro', 'Tecoh', 'Tekit Centro']
@@ -182,11 +182,11 @@ describe('Detalle propio de Tekit CU-03 / RF03', () => {
 
   it('mantiene recorrido y controles cuando fallan las imágenes originales', () => {
     montar()
-    fireEvent.error(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Tekit del prototipo' }))
-    fireEvent.error(screen.getByRole('img', { name: 'Taller textil de guayaberas de Tekit, imagen cultural del prototipo' }))
-    expect(screen.getAllByText('Imagen del prototipo no disponible')).toHaveLength(2)
-    expect(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Tekit del prototipo' })).toBeInTheDocument()
-    expect(screen.getByRole('list', { name: 'Recorrido del prototipo a Tekit' })).toBeInTheDocument()
+    fireEvent.error(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Tekit' }))
+    fireEvent.error(screen.getByRole('img', { name: 'Taller textil de guayaberas de Tekit, imagen cultural de referencia' }))
+    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(2)
+    expect(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Tekit' })).toBeInTheDocument()
+    expect(screen.getByRole('list', { name: 'Recorrido ilustrativo a Tekit' })).toBeInTheDocument()
     expect(screen.getByRole('radio', { name: /Ruta Textil.*Compras/ })).toBeInTheDocument()
   })
 

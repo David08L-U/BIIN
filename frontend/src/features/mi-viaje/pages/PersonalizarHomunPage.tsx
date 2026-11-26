@@ -54,7 +54,7 @@ export default function PersonalizarHomunPage() {
           })}
         </section>
         <ConfiguracionHomun borrador={borrador} onChange={actualizar} />
-        <p className="iz-plan-nota">Datos demostrativos sin fecha de validación. Visitas y traslados son supuestos del prototipo. Mototaxi sin disponibilidad ni precio confirmados; no está contratado. {avisoRegresoHomun}</p>
+        <p className="iz-plan-nota">Información por confirmar. Mototaxi sin precio ni disponibilidad; no está contratado. {avisoRegresoHomun}</p>
         <FiltrosPlan etiqueta="Categorías de lugares" opciones={categoriasHomun} activo={categoria} seleccionar={setCategoria} contador={contador} />
         <section className="iz-plan-selector" aria-labelledby="hm-categoria-titulo">
           <div className="iz-plan-categoria-titulo"><h2 id="hm-categoria-titulo">{categoriasHomun.find(c => c.id === categoria)!.nombre}</h2><span>{contador(categoria)} seleccionados</span></div>

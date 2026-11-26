@@ -50,7 +50,7 @@ export default function PersonalizarTekitPage() {
           </div>
         </section>
         <ConfiguracionTekit borrador={borrador} onChange={actualizar} />
-        <p className="iz-plan-nota">Datos demostrativos, sin fecha de validación. Visitas y desplazamientos son supuestos del prototipo; no son mediciones geográficas. Aperturas, precios y visitas guiadas sin confirmar.</p>
+        <p className="iz-plan-nota">Información por confirmar. Traslados estimados, no geográficos. Aperturas, precios y visitas guiadas pendientes.</p>
         <FiltrosPlan etiqueta="Categorías de lugares" opciones={categoriasTekit} activo={categoria} seleccionar={setCategoria} contador={contador} />
         <section aria-labelledby="tk-categoria-titulo" className="iz-plan-selector">
           <div className="iz-plan-categoria-titulo"><h2 id="tk-categoria-titulo">{categoriasTekit.find(c => c.id === categoria)!.nombre}</h2><span>{contador(categoria)} seleccionados</span></div>

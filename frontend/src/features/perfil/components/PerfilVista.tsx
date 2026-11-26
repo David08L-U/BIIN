@@ -43,7 +43,7 @@ function Icono({ nombre }: { nombre: string }) {
   return <span className="biin-icon" aria-hidden="true">{nombre}</span>
 }
 
-/** Vista del prototipo; recibe datos sin modificar cuentas ni crear sesiones. */
+/** Vista de referencia; recibe datos sin modificar cuentas ni crear sesiones. */
 export default function PerfilVista({ datos, demostracion = false, onCerrarSesion }: Props) {
   const navegar = useNavigate()
   const ubicacion = useLocation()
@@ -152,7 +152,7 @@ export default function PerfilVista({ datos, demostracion = false, onCerrarSesio
             <Link to={item.url} className="perfil-ver-ruta" aria-label={`Ver ruta de ${item.nombre}`}>Ver ruta</Link>
           </li>)}
         </ul> : <div className="perfil-tarjeta perfil-vacio"><p>{datos.errorItinerarios ? 'No se pueden mostrar los itinerarios en este momento.' : 'No hay itinerarios guardados para esta cuenta.'}</p><Link className="perfil-enlace" to="/rutas">Explorar destinos</Link></div>}
-        <p className="perfil-nota">{demostracion ? 'Las tarjetas son ejemplos del prototipo.' : 'Itinerarios sincronizados con tu cuenta.'}</p>
+        <p className="perfil-nota">{demostracion ? 'Las tarjetas son ejemplos de referencia.' : 'Itinerarios sincronizados con tu cuenta.'}</p>
       </section>
 
       <div className="perfil-acciones-cuenta">

@@ -77,14 +77,14 @@ export default function ItinerarioTekitPage() {
       <p className="iz-plan-nota">{esModalidadTekit(c.estancia) ? modalidadesTekit[c.estancia].nombre : 'Modalidad sin validar'}</p>
       <ModosTekit borrador={vigente} />
       <form className="iz-plan-formulario" noValidate onSubmit={generar}><ConfiguracionTekit borrador={borrador} onChange={actualizar} /><button type="submit" className="iz-plan-primario">Generar itinerario {borrador.modo === 'personalizado' ? 'personalizado' : 'recomendado'}<Icono nombre="arrow_forward" tamano={18} /></button></form>
-      <p className="iz-plan-nota">Vista previa demostrativa sin fecha de validación. Visitas y desplazamientos son supuestos del prototipo, no mediciones geográficas. Precios, aperturas, visitas guiadas y transporte sin confirmar.</p>
+      <p className="iz-plan-nota">Información demostrativa; precios, aperturas, visitas guiadas y transporte por confirmar. Traslados estimados, no geográficos.</p>
       {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}
       {!borrador.generado && <p className="iz-plan-vacio" role="status">Aún no hay un plan vigente. Si cambiaste configuración o selección, genera de nuevo.</p>}
       {plan && <>
         <section className="iz-plan-conexion iz-plan-tarjeta" aria-labelledby="tk-conexion-titulo">
           <header className="iz-plan-conexion-titulo"><h2 id="tk-conexion-titulo">Conexión Van BIIN</h2><span>Ruta Mérida · Tekit</span><Icono nombre="directions_bus" tamano={20} /></header>
           <div className="iz-plan-conexion-tramo">
-            <div><p className="iz-plan-ceja">Inicio elegido · <strong>{horaLocal(c, 0)}</strong></p><p>Tekit Centro, frente a la Parroquia de San Antonio. Referencia del prototipo; llegada sin confirmar.</p></div>
+            <div><p className="iz-plan-ceja">Inicio elegido · <strong>{horaLocal(c, 0)}</strong></p><p>Tekit Centro, frente a la Parroquia de San Antonio. Punto de referencia ilustrativo; llegada sin confirmar.</p></div>
             <p className="iz-plan-conexion-margen"><Icono nombre="schedule" tamano={15} />{duracionPlan(Number(c.minutosDisponibles))} disponibles · {duracionPlan(plan.libresMinutos)} libres</p>
             <div><p className="iz-plan-ceja">Hora objetivo de regreso · <strong>{horaLocal(c, Number(c.minutosDisponibles))}</strong></p><p>Objetivo del usuario. Confirma paradero y transporte con la terminal.</p></div>
           </div>

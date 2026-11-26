@@ -48,7 +48,7 @@ describe('Compartir y descargar Tekit', () => {
     expect(texto).toContain('Ruta Textil · Compras')
     expect(texto).toContain('1 h 50 min de visitas + 8 min de traslados (incluye regreso final) + 15 min de margen = 2 h 13 min')
     expect(texto).toContain('Tiempo libre: 47 min')
-    expect(texto).toContain('supuestos del prototipo')
+    expect(texto).toContain('estimaciones por confirmar')
     expect(texto).toContain('No incluye mapas offline ni reservas')
     for (const b of plan.bloques) expect(texto).toContain(b.titulo)
     const createObjectURL = vi.fn().mockReturnValue('blob:tekit')
