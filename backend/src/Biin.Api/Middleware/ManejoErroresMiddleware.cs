@@ -28,6 +28,7 @@ public class ManejoErroresMiddleware(RequestDelegate next, ILogger<ManejoErrores
                 AccesoDenegadoException => (StatusCodes.Status403Forbidden, "Acceso denegado"),
                 NoEncontradoException => (StatusCodes.Status404NotFound, "No encontrado"),
                 ConflictoException => (StatusCodes.Status409Conflict, "Conflicto"),
+                ServicioNoDisponibleException => (StatusCodes.Status503ServiceUnavailable, "Servicio no disponible"),
                 // Violaciones de CHECK, UNIQUE, FK o triggers de la base de datos
                 PostgresException { SqlState: PostgresErrorCodes.CheckViolation } =>
                     (StatusCodes.Status400BadRequest, "Dato inválido"),
