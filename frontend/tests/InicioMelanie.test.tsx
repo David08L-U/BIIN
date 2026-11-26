@@ -59,6 +59,8 @@ describe('Inicio basado en el referencia de Melanie', () => {
       }),
     ).not.toBeInTheDocument()
 
+    expect(screen.getByRole('button', { name: 'Buscar destino' }).querySelector('img[alt="BIIN"]')).not.toBeNull()
+
     await user.click(
       screen.getByRole('button', {
         name: 'Directos',

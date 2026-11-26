@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useOutletContext } from 'react-router'
 import MapaInicio from '../components/MapaInicio'
+import LogoBiin from '../../../components/ui/LogoBiin'
 
 // Valores de referencia, pendientes de validar con operadores.
 const destinos = [
@@ -135,8 +136,8 @@ export default function InicioPage() {
               type="submit"
               aria-label="Buscar destino"
             >
-              BIIN
-              <i />
+              <LogoBiin tamaño="compacto" />
+              <i aria-hidden="true" />
             </button>
           </label>
         </form>
