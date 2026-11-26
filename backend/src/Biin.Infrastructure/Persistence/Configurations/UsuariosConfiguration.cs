@@ -14,6 +14,17 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
     }
 }
 
+/// <summary>Registros que esperan confirmar el correo (database/schema/005_verificacion_correo.sql).</summary>
+public class RegistroPendienteConfiguration : IEntityTypeConfiguration<RegistroPendiente>
+{
+    public void Configure(EntityTypeBuilder<RegistroPendiente> b)
+    {
+        b.ToTable("registros_pendientes");
+        b.HasKey(x => x.IdRegistro);
+        b.Property(x => x.EnviadoEn).HasDefaultValueSql("now()");
+    }
+}
+
 public class RolConfiguration : IEntityTypeConfiguration<Rol>
 {
     public void Configure(EntityTypeBuilder<Rol> b)

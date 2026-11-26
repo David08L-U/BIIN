@@ -26,6 +26,8 @@ public sealed class FakeAppDbContext : IAppDbContext
     public DbSet<Usuario> Usuarios => UsuariosSet;
     public DbSet<Rol> Roles => RolesSet;
     public DbSet<UsuarioRol> UsuarioRoles => UsuarioRolesSet;
+    public FakeDbSet<RegistroPendiente> RegistrosPendientesSet { get; } = new();
+    public DbSet<RegistroPendiente> RegistrosPendientes => RegistrosPendientesSet;
     public DbSet<Municipio> Municipios { get; } = new FakeDbSet<Municipio>();
     public DbSet<Localidad> Localidades { get; } = new FakeDbSet<Localidad>();
     public DbSet<Ubicacion> Ubicaciones { get; } = new FakeDbSet<Ubicacion>();

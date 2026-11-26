@@ -10,6 +10,7 @@ public interface IAppDbContext
     DbSet<Usuario> Usuarios { get; }
     DbSet<Rol> Roles { get; }
     DbSet<UsuarioRol> UsuarioRoles { get; }
+    DbSet<RegistroPendiente> RegistrosPendientes { get; }
     DbSet<Municipio> Municipios { get; }
     DbSet<Localidad> Localidades { get; }
     DbSet<Ubicacion> Ubicaciones { get; }

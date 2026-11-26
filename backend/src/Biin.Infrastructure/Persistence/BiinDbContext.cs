@@ -16,6 +16,7 @@ public class BiinDbContext(DbContextOptions<BiinDbContext> options) : DbContext(
     public DbSet<Usuario> Usuarios => Set<Usuario>();
     public DbSet<Rol> Roles => Set<Rol>();
     public DbSet<UsuarioRol> UsuarioRoles => Set<UsuarioRol>();
+    public DbSet<RegistroPendiente> RegistrosPendientes => Set<RegistroPendiente>();
     public DbSet<Municipio> Municipios => Set<Municipio>();
     public DbSet<Localidad> Localidades => Set<Localidad>();
     public DbSet<Ubicacion> Ubicaciones => Set<Ubicacion>();
