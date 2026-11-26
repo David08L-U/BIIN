@@ -21,3 +21,15 @@ export interface LoginRequest {
 export interface RegistroRequest extends LoginRequest {
   nombre: string
 }
+
+/** El registro quedó pendiente: llegó un código al correo (la cuenta aún no existe). */
+export interface RegistroPendiente {
+  correo: string
+  expiraEn: string
+  reenviarDesde: string
+}
+
+export interface VerificarRegistroRequest {
+  correo: string
+  codigo: string
+}
