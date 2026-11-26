@@ -63,6 +63,7 @@ public static class DependencyInjection
             Retries = 1,
             UseCache = true
         }));
+        services.AddSingleton<IDiagnosticoCorreo, DiagnosticoCorreoService>();
         services.AddSingleton<IValidadorDominioCorreo, DnsValidadorDominioCorreo>();
         services.AddHostedService<LimpiezaRegistrosPendientesHostedService>();
 

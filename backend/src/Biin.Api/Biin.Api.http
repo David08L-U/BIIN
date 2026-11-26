@@ -293,3 +293,16 @@ Authorization: Bearer PEGAR_TOKEN_ADMIN
 ### Bitácora de cambios administrativos (17.1.5)
 GET {{api}}/api/admin/bitacora?accion=publicar&desde=2026-12-01
 Authorization: Bearer PEGAR_TOKEN_ADMIN
+
+### Admin: verificar estado de configuración SMTP (sin exponer contraseñas) (RF01, RNF08)
+GET {{api}}/api/admin/correo/estado
+Authorization: Bearer PEGAR_TOKEN_ADMIN
+
+### Admin: enviar correo real de verificación SMTP (RF01, RNF08)
+POST {{api}}/api/admin/correo/prueba
+Authorization: Bearer PEGAR_TOKEN_ADMIN
+Content-Type: application/json
+
+{
+  "correoDestino": "tu.correo@ejemplo.com"
+}
