@@ -11,6 +11,7 @@ import { useBorradorValladolid } from '../hooks/useBorradorValladolid'
 import { urlBorradorValladolid } from '../plan/borradorValladolid'
 import { calcularPlanValladolid, resumirJornadaValladolid, ventanasValladolid } from '../plan/itinerarioValladolid'
 import { duracionPlan, leerDuracion } from '../plan/duracion'
+import LugaresSeleccionados from '../components/LugaresSeleccionados'
 
 /** Reutiliza la estructura aprobada del selector, sin cambiar la pantalla de Izamal. */
 export default function PersonalizarValladolidPage() {
@@ -65,11 +66,11 @@ export default function PersonalizarValladolidPage() {
           return <article key={lugar.id} className="iz-plan-lugar iz-plan-tarjeta">
             <label className="iz-plan-lugar-seleccion"><input type="checkbox" aria-label={lugar.nombre} checked={!!elegida} onChange={() => seleccionar(lugar.id)} /><span className="iz-plan-lugar-textos"><span className="iz-plan-lugar-titulo">{lugar.nombre}</span><span className="iz-plan-insignia">{lugar.etiqueta}</span></span></label>
             <div className="iz-plan-lugar-detalle"><p>{lugar.descripcion}</p><div className="iz-plan-metadatos"><span><Icono nombre="timer" tamano={14} />{duracionPlan(lugar.visitaMinutos)}</span><span><Icono nombre="directions_walk" tamano={14} />{duracionPlan(lugar.trasladoMinutos)} estimados</span><span>Demostración</span></div>
-              {elegida && ventanas.length === 2 && <label className="iz-plan-asignacion">Jornada de {lugar.nombre}<select value={elegida.dia} onChange={e => { actualizar({ seleccion: borrador.seleccion.map(s => s.lugarId === lugar.id ? { ...s, dia: Number(e.target.value) } : s) }); setErrores([]) }}><option value="1">Día 1</option><option value="2">Día 2</option></select></label>}
             </div>
           </article>
         })}</div>
       </section>
+      <LugaresSeleccionados jornadas={ventanas.length} lugares={borrador.seleccion.map(s => ({ id: s.lugarId, nombre: lugaresValladolid.find(l => l.id === s.lugarId)?.nombre ?? s.lugarId, dia: s.dia }))} onQuitar={id => { actualizar({ seleccion: borrador.seleccion.filter(s => s.lugarId !== id) }); setErrores([]) }} onCambiarDia={(id, dia) => { actualizar({ seleccion: borrador.seleccion.map(s => s.lugarId === id ? { ...s, dia } : s) }); setErrores([]) }} />
       <div className="iz-plan-resumen-final">
         <p role="status">{borrador.seleccion.length} lugares seleccionados</p><p>El orden sigue tu selección dentro de cada día, sin optimización geográfica. Aún no hay un plan vigente; genera después de elegir.</p>
         {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}

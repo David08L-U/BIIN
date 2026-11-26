@@ -11,6 +11,7 @@ import { useBorradorTicul } from '../hooks/useBorradorTicul'
 import { parametrosBorradorTicul, urlBorradorTicul } from '../plan/borradorTicul'
 import { calcularPlanTicul, resumirSeleccionTicul } from '../plan/itinerarioTicul'
 import { duracionPlan, leerDuracion } from '../plan/duracion'
+import LugaresSeleccionados from '../components/LugaresSeleccionados'
 
 export default function PersonalizarTiculPage() {
   const { borrador, actualizar } = useBorradorTicul('personalizado')
@@ -45,6 +46,7 @@ export default function PersonalizarTiculPage() {
         <section className="iz-plan-selector" aria-labelledby="ti-categoria-titulo"><div className="iz-plan-categoria-titulo"><h2 id="ti-categoria-titulo">{categoriasTicul.find(c => c.id === categoria)!.nombre}</h2><span>{contador(categoria)} seleccionados</span></div>
           {lugaresTicul.filter(l => l.categoria === categoria).map(l => <article className="iz-plan-lugar iz-plan-tarjeta" key={l.id}><label className="iz-plan-lugar-seleccion"><input type="checkbox" aria-label={l.nombre} checked={borrador.seleccion.includes(l.id)} onChange={() => actualizar({ seleccion: borrador.seleccion.includes(l.id) ? borrador.seleccion.filter(id => id !== l.id) : [...borrador.seleccion, l.id] })} /><span className="iz-plan-lugar-textos"><strong className="iz-plan-lugar-titulo">{l.nombre}</strong><span className="iz-plan-insignia">{l.etiqueta}</span></span></label><p>{l.descripcion}</p><div className="iz-plan-metadatos"><span><Icono nombre="timer" tamano={14} />Visita: {duracionPlan(l.visitaMinutos)}</span><span><Icono nombre={l.traslado.icono} tamano={14} />{nombreTrasladoTicul(l)}</span></div></article>)}
         </section>
+        <LugaresSeleccionados lugares={borrador.seleccion.map(id => ({ id, nombre: lugaresTicul.find(l => l.id === id)?.nombre ?? id }))} onQuitar={id => actualizar({ seleccion: borrador.seleccion.filter(elegido => elegido !== id) })} />
         <div className="iz-plan-resumen-final"><p role="status">{borrador.seleccion.length} lugares seleccionados</p><p>Los filtros conservan tu selección. Genera después de editar.</p>{errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}<button type="submit" className="iz-plan-primario">Generar mi itinerario<Icono nombre="arrow_forward" tamano={20} /></button><button type="button" className="iz-plan-restablecer" onClick={restablecer}><Icono nombre="restart_alt" tamano={16} />Restablecer selección</button></div>
       </form>
     </div>

@@ -11,6 +11,7 @@ import type { CategoriaIzamal } from '../data/lugaresIzamal'
 import { useBorradorIzamal } from '../hooks/useBorradorIzamal'
 import { urlBorrador } from '../plan/borradorIzamal'
 import { calcularPlan, resumirSeleccion } from '../plan/itinerarioIzamal'
+import LugaresSeleccionados from '../components/LugaresSeleccionados'
 
 export default function PersonalizarIzamalPage() {
   const { borrador, actualizar } = useBorradorIzamal('personalizado')
@@ -78,6 +79,7 @@ export default function PersonalizarIzamalPage() {
             ))}
           </div>
         </section>
+        <LugaresSeleccionados lugares={borrador.seleccion.map(id => ({ id, nombre: lugaresIzamal.find(l => l.id === id)?.nombre ?? id }))} onQuitar={id => { actualizar({ seleccion: borrador.seleccion.filter(elegido => elegido !== id) }); setErrores([]) }} />
         <div className="iz-plan-resumen-final">
           <p role="status">{borrador.seleccion.length} lugares seleccionados</p>
           <p>El orden seguirá tu selección, sin optimización geográfica.</p>
