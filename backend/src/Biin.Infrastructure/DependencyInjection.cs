@@ -1,5 +1,6 @@
 using Biin.Application.Interfaces;
 using Biin.Application.Services;
+using Biin.Infrastructure.BackgroundServices;
 using Biin.Infrastructure.ExternalServices.Correo;
 using Biin.Infrastructure.Persistence;
 using Biin.Infrastructure.Security;
@@ -63,6 +64,7 @@ public static class DependencyInjection
             UseCache = true
         }));
         services.AddSingleton<IValidadorDominioCorreo, DnsValidadorDominioCorreo>();
+        services.AddHostedService<LimpiezaRegistrosPendientesHostedService>();
 
         return services;
     }

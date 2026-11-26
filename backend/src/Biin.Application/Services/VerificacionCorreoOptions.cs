@@ -16,4 +16,10 @@ public class VerificacionCorreoOptions
 
     /// <summary>Si es true, rechaza correos cuyo dominio no tiene servidor de correo (consulta DNS).</summary>
     public bool ValidarDominio { get; set; } = true;
+
+    /// <summary>Cada cuántos minutos se limpian automáticamente los registros pendientes vencidos (0 = desactivado).</summary>
+    public int IntervaloLimpiezaMinutos { get; set; } = 60;
+
+    /// <summary>Máximo de registros pendientes vencidos a borrar en cada ciclo de limpieza.</summary>
+    public int LoteLimpieza { get; set; } = 200;
 }
