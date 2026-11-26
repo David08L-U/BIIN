@@ -47,6 +47,7 @@ describe('LoginPage', () => {
   it('muestra campos con etiqueta para correo y contraseña', () => {
     renderizarLogin()
 
+    expect(screen.getByRole('img', { name: 'BIIN' })).toBeInTheDocument()
     expect(screen.getByLabelText('Correo electrónico')).toBeInTheDocument()
     expect(screen.getByLabelText('Contraseña')).toBeInTheDocument()
   })

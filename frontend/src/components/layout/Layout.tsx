@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { useAuth } from '../../features/auth/useAuth'
 import { useScrollAlNavegar } from '../../hooks/useScrollAlNavegar'
+import LogoBiin from '../ui/LogoBiin'
 import '../../styles/melanie.css'
 
 export default function Layout() {
@@ -69,8 +70,8 @@ export default function Layout() {
               </span>
             </button>
 
-            <Link className="marca" to="/">
-              BIIN
+            <Link className="marca-logo" to="/">
+              <LogoBiin tamaño="compacto" />
             </Link>
 
             <Link to={usuario ? '/perfil' : '/login'}>
@@ -133,7 +134,7 @@ export default function Layout() {
         }}
       >
         <div className="biin-menu-top">
-          <strong className="marca">BIIN</strong>
+          <LogoBiin tamaño="compacto" />
 
           <button
             className="biin-icon-button"

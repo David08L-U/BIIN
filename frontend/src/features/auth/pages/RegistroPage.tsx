@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
 import Boton from '../../../components/ui/Boton'
 import Campo from '../../../components/ui/Campo'
+import LogoBiin from '../../../components/ui/LogoBiin'
 import { destinoTrasAcceso } from '../../../utils/navegacion'
 import { useAuth } from '../useAuth'
 import '../../../styles/auth.css'
@@ -113,7 +114,7 @@ export default function RegistroPage() {
   return (
     <section className="pagina pagina--angosta auth-page" aria-labelledby="registro-titulo">
       <header className="auth-cabecera">
-        <span className="marca" aria-label="Marca BIIN">BIIN</span>
+        <LogoBiin tamaño="acceso" />
         <h1 id="registro-titulo">Crear cuenta</h1>
       </header>
 

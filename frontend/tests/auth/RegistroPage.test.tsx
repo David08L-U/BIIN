@@ -68,6 +68,7 @@ describe('RegistroPage', () => {
   it('muestra los campos y la ayuda de la contraseña', () => {
     renderizarRegistro()
 
+    expect(screen.getByRole('img', { name: 'BIIN' })).toBeInTheDocument()
     expect(screen.getByLabelText('Nombre')).toBeInTheDocument()
     expect(screen.getByLabelText('Apellido')).toBeInTheDocument()
     expect(screen.getByLabelText('Correo electrónico')).toBeInTheDocument()
