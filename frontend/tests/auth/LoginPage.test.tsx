@@ -47,8 +47,33 @@ describe('LoginPage', () => {
   it('muestra campos con etiqueta para correo y contraseña', () => {
     renderizarLogin()
 
-    expect(screen.getByLabelText('Correo')).toBeInTheDocument()
+    expect(screen.getByLabelText('Correo electrónico')).toBeInTheDocument()
     expect(screen.getByLabelText('Contraseña')).toBeInTheDocument()
+  })
+
+  it('muestra el título BIIN y permite mostrar/ocultar la contraseña', async () => {
+    renderizarLogin()
+    expect(screen.getByRole('heading', { name: 'Ingresa a tu cuenta' })).toBeInTheDocument()
+    const usuario = userEvent.setup()
+    const entrada = screen.getByLabelText('Contraseña')
+    expect(entrada).toHaveAttribute('type', 'password')
+    await usuario.click(screen.getByRole('button', { name: 'Mostrar contraseña' }))
+    expect(screen.getByLabelText('Contraseña')).toHaveAttribute('type', 'text')
+    await usuario.click(screen.getByRole('button', { name: 'Ocultar contraseña' }))
+    expect(screen.getByLabelText('Contraseña')).toHaveAttribute('type', 'password')
+  })
+
+  it('muestra estados pendientes de Google y recuperación sin contactar servicios', async () => {
+    const solicitar = vi.fn()
+    vi.stubGlobal('fetch', solicitar)
+    renderizarLogin()
+    const usuario = userEvent.setup()
+    await usuario.click(screen.getByRole('button', { name: /Google/ }))
+    expect(screen.getByRole('status')).toHaveTextContent('pendiente de integración')
+    await usuario.click(screen.getByRole('button', { name: /Olvidaste tu contraseña/ }))
+    expect(screen.getByRole('status')).toHaveTextContent('recuperación de contraseña')
+    expect(screen.queryByRole('button', { name: /Apple/ })).not.toBeInTheDocument()
+    expect(solicitar).not.toHaveBeenCalled()
   })
 
   it('pide el correo y evita enviar el formulario vacío', async () => {
@@ -63,8 +88,8 @@ describe('LoginPage', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(
       'Escribe tu correo electrónico.',
     )
-    expect(screen.getByLabelText('Correo')).toHaveFocus()
-    expect(screen.getByLabelText('Correo')).toHaveAttribute(
+    expect(screen.getByLabelText('Correo electrónico')).toHaveFocus()
+    expect(screen.getByLabelText('Correo electrónico')).toHaveAttribute(
       'aria-invalid',
       'true',
     )
@@ -79,7 +104,7 @@ describe('LoginPage', () => {
     renderizarLogin()
 
     await usuario.type(
-      screen.getByLabelText('Correo'),
+      screen.getByLabelText('Correo electrónico'),
       'correo-invalido',
     )
     await usuario.type(
@@ -91,7 +116,7 @@ describe('LoginPage', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(
       'Escribe un correo electrónico válido.',
     )
-    expect(screen.getByLabelText('Correo')).toHaveFocus()
+    expect(screen.getByLabelText('Correo electrónico')).toHaveFocus()
     expect(solicitar).not.toHaveBeenCalled()
   })
 
@@ -103,7 +128,7 @@ describe('LoginPage', () => {
     renderizarLogin()
 
     await usuario.type(
-      screen.getByLabelText('Correo'),
+      screen.getByLabelText('Correo electrónico'),
       'ana@ejemplo.com',
     )
     await usuario.click(screen.getByRole('button', { name: 'Entrar' }))
@@ -129,7 +154,7 @@ describe('LoginPage', () => {
     renderizarLogin()
 
     await usuario.type(
-      screen.getByLabelText('Correo'),
+      screen.getByLabelText('Correo electrónico'),
       'ana@ejemplo.com',
     )
     await usuario.type(
@@ -153,7 +178,7 @@ describe('LoginPage', () => {
     renderizarLogin()
 
     await usuario.type(
-      screen.getByLabelText('Correo'),
+      screen.getByLabelText('Correo electrónico'),
       '  ana@ejemplo.com  ',
     )
     await usuario.type(

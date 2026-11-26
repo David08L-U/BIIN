@@ -9,6 +9,13 @@ export function destinoInterno(destino: unknown, respaldo: string): string {
   return esLocal(respaldo) ? respaldo : '/'
 }
 
+/** Keeps auth routes from becoming their own post-login return destination. */
+export function destinoTrasAcceso(destino: unknown, respaldo = '/'): string {
+  const local = destinoInterno(destino, respaldo)
+  const ruta = local.split(/[?#]/, 1)[0].replace(/\/$/, '')
+  return ruta === '/login' || ruta === '/registro' ? respaldo : local
+}
+
 /** Uses browser Back only when the browser has an in-app entry to return to. */
 export function regresarEnBIIN(
   navegar: NavigateFunction,
