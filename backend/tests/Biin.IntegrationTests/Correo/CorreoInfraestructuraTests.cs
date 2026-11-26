@@ -39,6 +39,20 @@ public class CorreoInfraestructuraTests
         Assert.Contains("&lt;script&gt;", html);
     }
 
+    [Fact]
+    public void La_plantilla_de_recuperacion_muestra_codigo_hora_local_y_escapa_HTML()
+    {
+        var texto = PlantillaRecuperacionContrasena.Texto("María", "819203", Expira);
+        var html = PlantillaRecuperacionContrasena.Html("<b>Maria</b>", "819203", Expira);
+
+        Assert.Contains("819203", texto);
+        Assert.Contains("12:15", texto);
+        Assert.Contains("819203", html);
+        Assert.Contains("12:15", html);
+        Assert.DoesNotContain("<b>Maria</b>", html);
+        Assert.Contains("&lt;b&gt;Maria&lt;/b&gt;", html);
+    }
+
     [Theory]
     [InlineData("localhost")]
     [InlineData("sin-punto")]

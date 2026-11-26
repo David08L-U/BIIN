@@ -23,6 +23,17 @@ public class SmtpEnvioCorreo(IOptions<CorreoOptions> opciones, ILogger<SmtpEnvio
             "código de confirmación",
             ct);
 
+    public Task EnviarCodigoRecuperacionAsync(
+        string correo, string nombre, string codigo, DateTime expiraEnUtc, CancellationToken ct = default) =>
+        EnviarMensajeAsync(
+            correo,
+            nombre,
+            PlantillaRecuperacionContrasena.Asunto,
+            PlantillaRecuperacionContrasena.Texto(nombre, codigo, expiraEnUtc),
+            PlantillaRecuperacionContrasena.Html(nombre, codigo, expiraEnUtc),
+            "código de recuperación de contraseña",
+            ct);
+
     internal async Task EnviarMensajeAsync(
         string correo,
         string? nombreDestinatario,

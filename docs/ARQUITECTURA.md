@@ -163,6 +163,7 @@ BIIN/
 | `POST /api/auth/registro/verificar` | Público | RF01, paso 2: con el código correcto crea la cuenta como viajero e inicia sesión (201) |
 | `POST /api/auth/registro/reenviar` | Público | Manda otro código si ya pasaron 60 s; el anterior deja de servir (202) |
 | `POST /api/auth/login`, `GET /api/auth/yo`, `POST /api/auth/logout`, `PUT /api/auth/contrasena` | Público / Sesión | CU-01: sesión JWT con revocación |
+| `POST /api/auth/recuperar-contrasena`, `POST /api/auth/recuperar-contrasena/confirmar` | Público | CU-01 / RF01: restablecimiento de contraseña por código al correo (anti-enumeración) y cierre de sesiones previas |
 | `GET /api/catalogos/{categorias,municipios,localidades}` | Público | Filtros; localidades buscan sin acentos |
 | `GET /api/negocios`, `/api/negocios/{id}` | Público | RF05: localidad, municipio, categoría, presupuesto, texto; horarios y «abierto ahora» |
 | `GET /api/eventos`, `/api/eventos/{id}` | Público | RF06: próximos por defecto, rango de días en hora de Yucatán, estado (incluye cancelados) |

@@ -33,6 +33,7 @@ public static class DependencyInjection
         services.AddSingleton<IHashContrasena, BcryptHashContrasena>();
         services.AddSingleton<IGeneradorToken, JwtGeneradorToken>();
         services.AddSingleton<IRevocacionToken, DistribuidaRevocacionToken>();
+        services.AddSingleton<IAlmacenRecuperacionContrasena, DistribuidaAlmacenRecuperacionContrasena>();
         services.AddSingleton<IReloj, RelojSistema>();
         services.AddCorreo(config);
 

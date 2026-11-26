@@ -61,6 +61,24 @@ Content-Type: application/json
 POST {{api}}/api/auth/logout
 Authorization: Bearer PEGAR_TOKEN
 
+### Recuperar contraseña olvidada, paso 1: solicita código al correo (202, respuesta uniforme) (CU-01, RF01)
+POST {{api}}/api/auth/recuperar-contrasena
+Content-Type: application/json
+
+{
+  "correo": "prueba@biin.test"
+}
+
+### Recuperar contraseña olvidada, paso 2: confirma el código y establece nueva contraseña (204) (CU-01, RF01)
+POST {{api}}/api/auth/recuperar-contrasena/confirmar
+Content-Type: application/json
+
+{
+  "correo": "prueba@biin.test",
+  "codigo": "PEGAR_CODIGO",
+  "contrasenaNueva": "NuevaClaveSegura123"
+}
+
 ### Perfil completo del usuario autenticado (CU-01)
 GET {{api}}/api/usuarios/perfil
 Authorization: Bearer PEGAR_TOKEN

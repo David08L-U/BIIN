@@ -71,4 +71,12 @@ public sealed class BuzonPruebas : IEnvioCorreo
         Enviados++;
         return Task.CompletedTask;
     }
+
+    public Task EnviarCodigoRecuperacionAsync(
+        string correo, string nombre, string codigo, DateTime expiraEnUtc, CancellationToken ct = default)
+    {
+        _codigos[correo] = codigo;
+        Enviados++;
+        return Task.CompletedTask;
+    }
 }

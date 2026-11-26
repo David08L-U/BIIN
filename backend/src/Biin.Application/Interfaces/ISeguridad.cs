@@ -34,3 +34,20 @@ public interface IAutorizacionOperador
     /// <summary>Indica si el usuario está autorizado para operar la ruta en operador_ruta (RF04, RNF04).</summary>
     Task<bool> PuedeOperarRutaAsync(int idUsuario, int idRuta, CancellationToken ct = default);
 }
+
+/// <summary>Estado temporal de una solicitud de recuperación de contraseña (sin guardar el código en claro).</summary>
+public record RecuperacionPendiente(
+    int IdUsuario,
+    string Correo,
+    string HashCodigo,
+    int Intentos,
+    DateTime EnviadoEnUtc,
+    DateTime ExpiraEnUtc);
+
+/// <summary>Almacén temporal distribuible para códigos de recuperación de contraseña (RF01, RNF04).</summary>
+public interface IAlmacenRecuperacionContrasena
+{
+    Task<RecuperacionPendiente?> ObtenerAsync(string correoNormalizado, CancellationToken ct = default);
+    Task GuardarAsync(RecuperacionPendiente pendiente, CancellationToken ct = default);
+    Task EliminarAsync(string correoNormalizado, CancellationToken ct = default);
+}

@@ -11,6 +11,10 @@ public interface IEnvioCorreo
     /// </summary>
     Task EnviarCodigoVerificacionAsync(
         string correo, string nombre, string codigo, DateTime expiraEnUtc, CancellationToken ct = default);
+
+    /// <summary>Manda un código de un solo uso para restablecer la contraseña olvidada (RF01, CU-01).</summary>
+    Task EnviarCodigoRecuperacionAsync(
+        string correo, string nombre, string codigo, DateTime expiraEnUtc, CancellationToken ct = default);
 }
 
 /// <summary>Permite a administradores comprobar la configuración SMTP y disparar un envío real de prueba (RF01, RNF08).</summary>

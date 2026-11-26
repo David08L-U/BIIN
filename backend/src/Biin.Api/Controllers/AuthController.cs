@@ -96,4 +96,31 @@ public class AuthController(AuthService auth) : ControllerBase
         await auth.CambiarContrasenaAsync(User.IdUsuario(), req, User.Jti(), User.ExpiraEnUtc(), ct);
         return NoContent();
     }
+
+    /// <summary>Solicita un código al correo para restablecer una contraseña olvidada (RF01, CU-01).</summary>
+    [AllowAnonymous]
+    [HttpPost("recuperar-contrasena")]
+    [EnableRateLimiting(PoliticasRateLimit.Autenticacion)]
+    [ProducesResponseType<RecuperacionIniciadaResponse>(StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+    public async Task<ActionResult<RecuperacionIniciadaResponse>> SolicitarRecuperacion(
+        SolicitarRecuperacionRequest req, CancellationToken ct) =>
+        Accepted(await auth.SolicitarRecuperacionContrasenaAsync(req, ct));
+
+    /// <summary>Confirma el código de recuperación, guarda la nueva contraseña y revoca sesiones previas (RF01, CU-01).</summary>
+    [AllowAnonymous]
+    [HttpPost("recuperar-contrasena/confirmar")]
+    [EnableRateLimiting(PoliticasRateLimit.Autenticacion)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+    public async Task<IActionResult> ConfirmarRecuperacion(
+        ConfirmarRecuperacionRequest req, CancellationToken ct)
+    {
+        await auth.ConfirmarRecuperacionContrasenaAsync(req, ct);
+        return NoContent();
+    }
 }

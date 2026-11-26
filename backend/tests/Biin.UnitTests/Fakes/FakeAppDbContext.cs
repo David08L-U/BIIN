@@ -248,15 +248,45 @@ public sealed class RevocacionFalsa : IRevocacionToken
 public sealed class CorreoFalso : IEnvioCorreo
 {
     public List<(string Correo, string Nombre, string Codigo, DateTime ExpiraEn)> Enviados { get; } = [];
+    public List<(string Correo, string Nombre, string Codigo, DateTime ExpiraEn)> RecuperacionesEnviadas { get; } = [];
     public bool Fallar { get; set; }
 
     public string UltimoCodigo(string correo) => Enviados.Last(e => e.Correo == correo).Codigo;
+    public string UltimoCodigoRecuperacion(string correo) => RecuperacionesEnviadas.Last(e => e.Correo == correo).Codigo;
 
     public Task EnviarCodigoVerificacionAsync(
         string correo, string nombre, string codigo, DateTime expiraEnUtc, CancellationToken ct = default)
     {
         if (Fallar) throw new InvalidOperationException("SMTP caído (prueba)");
         Enviados.Add((correo, nombre, codigo, expiraEnUtc));
+        return Task.CompletedTask;
+    }
+
+    public Task EnviarCodigoRecuperacionAsync(
+        string correo, string nombre, string codigo, DateTime expiraEnUtc, CancellationToken ct = default)
+    {
+        if (Fallar) throw new InvalidOperationException("SMTP caído (prueba)");
+        RecuperacionesEnviadas.Add((correo, nombre, codigo, expiraEnUtc));
+        return Task.CompletedTask;
+    }
+}
+
+public sealed class AlmacenRecuperacionFalso : IAlmacenRecuperacionContrasena
+{
+    public Dictionary<string, RecuperacionPendiente> Registros { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+    public Task<RecuperacionPendiente?> ObtenerAsync(string correoNormalizado, CancellationToken ct = default) =>
+        Task.FromResult(Registros.TryGetValue(correoNormalizado, out var p) ? p : null);
+
+    public Task GuardarAsync(RecuperacionPendiente pendiente, CancellationToken ct = default)
+    {
+        Registros[pendiente.Correo] = pendiente;
+        return Task.CompletedTask;
+    }
+
+    public Task EliminarAsync(string correoNormalizado, CancellationToken ct = default)
+    {
+        Registros.Remove(correoNormalizado);
         return Task.CompletedTask;
     }
 }
