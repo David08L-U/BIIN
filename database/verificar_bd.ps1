@@ -3,7 +3,7 @@
     Comprueba que la base de BIIN esté completa y ejecuta las pruebas SQL.
 
 .DESCRIPTION
-    Revisa que existan las 30 tablas, las 3 vistas, la función f_normalizar,
+    Revisa que existan las 31 tablas, las 3 vistas, la función f_normalizar,
     los roles del catálogo y que el usuario de la API pueda conectarse.
     Después ejecuta database/pruebas/*.sql (no dejan datos) y termina con
     error si alguna prueba falla. Pensado para correrlo después de crear o
@@ -28,7 +28,7 @@ function Write-Resultado([string]$caso, [bool]$ok, [string]$detalle) {
 
 Write-Host "Estructura de '$base':"
 $tablas = [int](Invoke-Psql $admin $base @('-tAc', "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'"))
-Write-Resultado 'Tablas del modelo' ($tablas -eq 30) "($tablas de 30)"
+Write-Resultado 'Tablas del modelo' ($tablas -eq 31) "($tablas de 31)"
 
 $vistas = [int](Invoke-Psql $admin $base @('-tAc', "SELECT count(*) FROM information_schema.views WHERE table_schema = 'public' AND table_name IN ('v_recursos_publicados', 'v_paradas_ruta', 'v_cupo_vigente')"))
 Write-Resultado 'Vistas de consulta' ($vistas -eq 3) "($vistas de 3)"
