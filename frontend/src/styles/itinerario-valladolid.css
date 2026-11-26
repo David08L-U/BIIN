@@ -2,9 +2,9 @@
  * cronología de 32 px, imágenes de visitas 112 px y mapa de 176 px.
  * La personalización reutiliza la estructura aprobada; estas reglas no alteran Izamal.
  */
-.va-plan { width: 100%; min-width: 0; padding-bottom: 32px; background: var(--color-fondo); color: #1e1b17; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; line-height: 20px; overflow-wrap: anywhere; }
+.va-plan { width: 100%; min-width: 0; padding-bottom: 32px; background: var(--color-fondo); color: #1e1b17; font-family: var(--fuente-aplicacion); font-size: 14px; line-height: 20px; overflow-wrap: anywhere; }
 .va-plan :is(h1, h2, h3, h4, p) { margin: 0; }
-.va-plan :is(h1, h2, h3, h4) { font-family: var(--fuente-titulos); font-size: 18px; line-height: 24px; font-weight: 600; }
+.va-plan :is(h1, h2, h3, h4) { font-family: var(--fuente-aplicacion); font-size: 18px; line-height: 24px; font-weight: 700; }
 .va-plan h1 { font-weight: 700; }
 .va-plan :where(button, input, select) { font: inherit; }
 .va-plan button { cursor: pointer; }
@@ -20,7 +20,7 @@
 .va-plan .va-ceja { color: #855400; font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
 .va-utilidades { display: flex; gap: 4px; }
 .va-contenido { display: flex; flex-direction: column; gap: 16px; min-width: 0; padding: 16px 20px 0; }
-.va-estancia { display: inline-flex; align-self: flex-start; align-items: center; gap: 4px; border-radius: 999px; padding: 4px 16px; background: #f4ede5; font-size: 12px; line-height: 16px; font-weight: 600; }
+.va-estancia { display: inline-flex; align-self: flex-start; align-items: center; gap: 4px; border-radius: 999px; padding: 4px 16px; background: #f4ede5; font-size: 12px; line-height: 16px; font-weight: 700; }
 .va-estancia .biin-icon { color: #855400; }
 .va-tarjeta { min-width: 0; border: 1px solid var(--color-borde-tarjeta); border-radius: 12px; background: var(--color-superficie); box-shadow: var(--sombra-tarjeta); }
 .va-modos { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -28,49 +28,49 @@
 .va-modos a[aria-current='page'] { background: #070100; color: #fff; }
 .va-formulario { display: grid; min-width: 0; gap: 12px; }
 .va-config { min-width: 0; margin: 0; border: 1px solid #d3c3be66; border-radius: 12px; padding: 16px; background: #fff; }
-.va-config > legend { padding: 0 6px; font-family: var(--fuente-titulos); font-size: 18px; line-height: 24px; font-weight: 600; }
+.va-config > legend { padding: 0 6px; font-family: var(--fuente-aplicacion); font-size: 18px; line-height: 24px; font-weight: 700; }
 .va-config > legend .biin-icon { margin-right: 6px; vertical-align: middle; }
 .va-config p, .va-config label > span { color: #4f4440; font-size: 12px; line-height: 16px; }
 .va-config p + p { margin-top: 8px; }
 .va-campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 12px 0; }
-.va-config label { display: block; min-width: 0; font-size: 12px; line-height: 16px; font-weight: 600; }
+.va-config label { display: block; min-width: 0; font-size: 12px; line-height: 16px; font-weight: 700; }
 .va-config :is(input, select), .va-asignacion select { display: block; width: 100%; min-width: 0; max-width: 100%; min-height: 44px; border: 1px solid #d3c3be99; border-radius: 8px; padding: 8px; margin-top: 6px; background: #faf3eb; color: #1e1b17; font: inherit; }
 .va-config input[readonly] { color: #4f4440; }
 .va-ventana { min-width: 0; margin: 12px 0; border: 1px solid #d3c3be66; border-radius: 8px; padding: 8px; }
-.va-ventana legend { padding: 0 4px; color: #855400; font-size: 12px; line-height: 16px; font-weight: 600; }
+.va-ventana legend { padding: 0 4px; color: #855400; font-size: 12px; line-height: 16px; font-weight: 700; }
 .va-ventana .va-campos { margin: 8px 0; }
-.va-primario { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; border: 0; border-radius: 8px; padding: 12px; background: #070100; color: #fff; font-size: 14px; line-height: 18px; font-weight: 600; }
+.va-primario { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; border: 0; border-radius: 8px; padding: 12px; background: #070100; color: #fff; font-size: 14px; line-height: 18px; font-weight: 700; }
 .va-nota { color: #855400; font-size: 11px; line-height: 16px; }
 .va-error { border: 1px solid #ba1a1a; border-radius: 8px; padding: 12px; background: #fff0ed; color: #93000a; font-size: 12px; line-height: 18px; }
 .va-error p + p { margin-top: 6px; }
 .va-vacio { padding: 16px 8px; color: #4f4440; text-align: center; }
 .va-conexion { overflow: hidden; }
 .va-conexion > header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 16px; background: #2b1810; color: #fff; }
-.va-conexion > header h2 { display: flex; align-items: center; gap: 4px; color: #ffddb7; font-family: var(--fuente-titulos); font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.va-conexion > header h2 { display: flex; align-items: center; gap: 4px; color: #ffddb7; font-family: var(--fuente-aplicacion); font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
 .va-conexion > header .biin-icon { color: #fdae3f; }
 .va-conexion > header > span { color: #eee7df; font-size: 12px; line-height: 16px; }
 .va-conexion-contenido { display: flex; flex-direction: column; gap: 8px; padding: 16px; }
 .va-conexion-fila { display: flex; align-items: flex-start; gap: 8px; }
 .va-conexion-fila > span { display: grid; place-items: center; flex-shrink: 0; width: 28px; height: 28px; margin-top: 2px; border-radius: 50%; background: #eee7df; color: #855400; }
 .va-conexion-fila > div { min-width: 0; }
-.va-conexion-fila strong { font-weight: 500; }
+.va-conexion-fila strong { font-weight: 700; }
 .va-conexion-fila p:last-child { color: #4f4440; font-size: 12px; line-height: 16px; }
 .va-conexion-fila > .va-regreso-icono { background: #070100; color: #fff; }
 .va-conexion-margen { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-left: 14px; border-radius: 8px; padding: 4px 8px 4px 20px; background: #faf3eb; color: #4f4440; font-size: 12px; line-height: 16px; }
 .va-conexion-margen > span { display: flex; align-items: center; gap: 4px; color: #855400; }
 .va-filtros { display: flex; gap: 4px; max-width: 100%; overflow-x: auto; padding: 4px; }
-.va-filtros button { flex-shrink: 0; min-height: 38px; border: 0; border-radius: 999px; padding: 4px 16px; background: #fff; color: #1e1b17; box-shadow: 0 1px 2px #0000000d; font-size: 12px; line-height: 16px; font-weight: 600; }
+.va-filtros button { flex-shrink: 0; min-height: 38px; border: 0; border-radius: 999px; padding: 4px 16px; background: #fff; color: #1e1b17; box-shadow: 0 1px 2px #0000000d; font-size: 12px; line-height: 16px; font-weight: 700; }
 .va-filtros button[aria-pressed='true'] { background: #070100; color: #fff; }
 .va-seccion-titulo { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .va-seccion-titulo > span { flex-shrink: 0; color: #855400; font-size: 11px; line-height: 14px; font-weight: 700; }
 .va-jornada { margin-top: 12px; }
-.va-jornada > h3 { margin-bottom: 8px; color: #855400; font-size: 14px; line-height: 20px; font-weight: 600; }
+.va-jornada > h3 { margin-bottom: 8px; color: #855400; font-size: 14px; line-height: 20px; font-weight: 700; }
 .va-linea { position: relative; display: flex; flex-direction: column; gap: 16px; margin: 0; padding: 0; list-style: none; }
 .va-linea::before { content: ''; position: absolute; top: 20px; bottom: 32px; left: 15px; width: 2px; background: #eee7df; }
 .va-linea > li { position: relative; z-index: 1; display: grid; grid-template-columns: 32px minmax(0, 1fr); align-items: start; gap: 8px; }
-.va-orden { display: grid; place-items: center; width: 32px; height: 32px; margin-top: 4px; border-radius: 50%; background: #070100; color: #fff; font-size: 12px; line-height: 16px; font-weight: 600; box-shadow: 0 1px 2px #0000000d; }
+.va-orden { display: grid; place-items: center; width: 32px; height: 32px; margin-top: 4px; border-radius: 50%; background: #070100; color: #fff; font-size: 12px; line-height: 16px; font-weight: 700; box-shadow: 0 1px 2px #0000000d; }
 .va-paso { display: flex; flex-direction: column; gap: 4px; padding: 16px; }
-.va-paso-hora { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px; color: #855400; font-size: 11px; line-height: 14px; font-weight: 600; }
+.va-paso-hora { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px; color: #855400; font-size: 11px; line-height: 14px; font-weight: 700; }
 .va-paso-hora > span:last-child { border-radius: 4px; padding: 2px 4px; background: #f4ede5; color: #1e1b17; }
 .va-paso > p { color: #4f4440; }
 .va-paso .va-caminata { display: flex; align-items: center; gap: 4px; font-size: 11px; line-height: 14px; }
@@ -93,14 +93,14 @@
 .va-consejos { display: flex; flex-direction: column; gap: 8px; padding: 16px; background: #faf3eb; }
 .va-consejos > div { display: flex; align-items: center; gap: 8px; border-radius: 8px; padding: 8px; background: #fff; }
 .va-consejos > div > span { display: grid; place-items: center; flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: #f4ede5; color: #4f4440; }
-.va-consejos strong { display: block; font-size: 12px; line-height: 16px; font-weight: 600; }
+.va-consejos strong { display: block; font-size: 12px; line-height: 16px; font-weight: 700; }
 .va-consejos p > span { display: block; color: #4f4440; font-size: 12px; line-height: 16px; }
 .va-resumen-final { display: flex; flex-direction: column; gap: 12px; margin-inline: -20px; padding: 16px 20px; border-top: 1px solid #d3c3be4d; background: #fffffff2; font-size: 12px; line-height: 16px; }
-.va-resumen-final label { display: block; font-weight: 600; }
+.va-resumen-final label { display: block; font-weight: 700; }
 .va-resumen-final input { display: block; width: 100%; min-width: 0; min-height: 44px; margin-top: 6px; border: 1px solid #d3c3be99; border-radius: 8px; padding: 8px; background: #faf3eb; color: #1e1b17; }
 .va-guardar { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 44px; border: 1px solid #d3c3be66; border-radius: 8px; background: #fff; color: #1e1b17; padding: 8px; }
 .va-acciones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.va-acciones > :is(button, a) { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 48px; border: 0; border-radius: 8px; padding: 8px; background: #f4ede5; color: #1e1b17; font-size: 14px; line-height: 18px; font-weight: 600; text-decoration: none; }
+.va-acciones > :is(button, a) { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 48px; border: 0; border-radius: 8px; padding: 8px; background: #f4ede5; color: #1e1b17; font-size: 14px; line-height: 18px; font-weight: 700; text-decoration: none; }
 .va-acciones > a { background: #070100; color: #fff; }
 .va-personalizar .va-presupuesto + .va-presupuesto { margin-top: 8px; }
 .va-personalizar .va-config { margin-top: 16px; }

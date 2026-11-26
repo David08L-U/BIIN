@@ -34,13 +34,13 @@
 .tekit-metrica-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #855400; }
 .tekit-metrica-cabecera > span:not(.biin-icon, .tekit-punto-disponibilidad) { padding: 2px 8px; border-radius: 999px; background: #f4ede5; font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.04em; }
 .tekit-punto-disponibilidad { width: 10px; height: 10px; flex-shrink: 0; border-radius: 50%; background: #fdae3f; }
-.tekit-valor { color: #070100; font-family: 'Space Grotesk', sans-serif; font-size: 22px; line-height: 28px; font-weight: 700; letter-spacing: -0.025em; }
+.tekit-valor { color: #070100; font-family: var(--fuente-aplicacion); font-size: 22px; line-height: 28px; font-weight: 700; letter-spacing: -0.025em; }
 .tekit-metrica .tekit-metrica-nota { margin-top: 2px; color: #4f4440; font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.04em; }
 .tekit-terminal { grid-column: 1 / -1; display: grid; grid-template-columns: 44px minmax(0, 1fr) 38px; align-items: center; gap: 12px; padding: 16px; }
 .tekit-terminal-icono { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 8px; background: #faf3eb; color: #070100; }
 .tekit-terminal-textos { min-width: 0; }
 .tekit-terminal-textos > p:first-child { color: #855400; font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
-.tekit-terminal h2 { color: #070100; font-family: var(--fuente-titulos); font-size: 14px; line-height: 20px; font-weight: 600; }
+.tekit-terminal h2 { color: #070100; font-family: var(--fuente-aplicacion); font-size: 14px; line-height: 20px; font-weight: 700; }
 .tekit-terminal-textos > p:last-child { color: #4f4440; font-size: 12px; line-height: 16px; }
 .tekit-terminal-referencia-boton { display: grid; place-items: center; width: 38px; height: 38px; border: 0; border-radius: 50%; padding: 0; background: #f4ede5; color: #070100; }
 .tekit-terminal-referencia { grid-column: 1 / -1; border-radius: 8px; padding: 12px; background: #faf3eb; color: #4f4440; font-size: 12px; line-height: 18px; }
@@ -48,7 +48,7 @@
 
 .tekit-recorrido { display: flex; flex-direction: column; gap: 8px; margin-top: 24px; }
 .tekit-recorrido-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.tekit-recorrido-cabecera h2 { color: #070100; font-size: 18px; line-height: 24px; font-weight: 600; }
+.tekit-recorrido-cabecera h2 { color: #070100; font-size: 18px; line-height: 24px; font-weight: 700; }
 .tekit-recorrido-cabecera p { color: #4f4440; font-size: 12px; line-height: 16px; }
 .tekit-recorrido-cabecera > .biin-icon { color: #855400; }
 .tekit-mapa { position: relative; isolation: isolate; display: flex; align-items: flex-end; min-height: 144px; overflow: hidden; border-radius: 12px; padding: 8px; background: #f4ede5; box-shadow: 0 1px 2px #0000000d; }
@@ -67,12 +67,12 @@
 .tekit-parada-destino .tekit-marcador { background: #855400; }
 .tekit-parada-origen .tekit-marcador::before, .tekit-parada-destino .tekit-marcador::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #fff; }
 .tekit-parada-titulo { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 8px; }
-.tekit-parada-titulo strong { min-width: 0; color: #070100; font-size: 14px; line-height: 20px; font-weight: 500; }
-.tekit-parada-origen strong { font-weight: 600; }
+.tekit-parada-titulo strong { min-width: 0; color: #070100; font-size: 14px; line-height: 20px; font-weight: 700; }
+.tekit-parada-origen strong { font-weight: 700; }
 .tekit-parada-destino strong { font-weight: 700; }
 .tekit-parada-etiqueta { border-radius: 999px; padding: 2px 8px; background: #ffdbcd; color: #2a170f; font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.04em; }
-.tekit-parada-destino .tekit-parada-etiqueta { background: #ffddb7; color: #2a1700; font-weight: 600; }
-.tekit-parada-horario { color: #4f4440; font-family: ui-monospace, monospace; font-size: 11px; line-height: 14px; letter-spacing: 0.04em; }
+.tekit-parada-destino .tekit-parada-etiqueta { background: #ffddb7; color: #2a1700; font-weight: 700; }
+.tekit-parada-horario { color: #4f4440; font-family: var(--fuente-aplicacion); font-size: 11px; line-height: 14px; letter-spacing: 0.04em; }
 .tekit-parada p { color: #4f4440; font-size: 12px; line-height: 16px; }
 
 .tekit-cultura { margin-top: 24px; overflow: hidden; border-radius: 16px; }
@@ -82,10 +82,10 @@
 .tekit-foto-cultural .tekit-imagen-alternativa > .biin-icon { display: none; }
 .tekit-foto-textos { position: relative; z-index: 1; display: flex; flex-direction: column; min-width: 0; width: 100%; padding: 16px; color: #fff; }
 .tekit-foto-textos > span { align-self: flex-start; margin-bottom: 4px; border-radius: 4px; padding: 2px 8px; background: #fdae3f; color: #6d4400; font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.025em; text-transform: uppercase; }
-.tekit-foto-textos h2 { font-size: 18px; line-height: 24px; font-weight: 600; }
+.tekit-foto-textos h2 { font-size: 18px; line-height: 24px; font-weight: 700; }
 .tekit-foto-textos p { color: #e8e1da; font-size: 12px; line-height: 16px; }
 .tekit-planificador { display: flex; flex-direction: column; gap: 8px; padding: 16px; }
-.tekit-itinerario-intro h3 { color: #070100; font-family: var(--fuente-titulos); font-size: 14px; line-height: 18px; font-weight: 700; letter-spacing: 0.01em; }
+.tekit-itinerario-intro h3 { color: #070100; font-family: var(--fuente-aplicacion); font-size: 14px; line-height: 18px; font-weight: 700; letter-spacing: 0.01em; }
 .tekit-itinerario-intro p { margin-top: 2px; color: #4f4440; font-size: 12px; line-height: 16px; }
 .tekit-estancia { min-width: 0; border: 0; margin: 4px 0 0; padding: 0; }
 .tekit-solo-lectores { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -102,4 +102,4 @@
 .tekit-lugares li { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 4px 10px; background: #f4ede5; font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.04em; }
 .tekit-lugares .biin-icon { color: #855400; }
 .tekit-acciones { margin-top: 8px; }
-.tekit-itinerario-boton { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; border: 0; border-radius: 8px; padding: 12px; background: #2b1810; color: #fff; box-shadow: 0 4px 6px -1px #0000001a, 0 2px 4px -2px #0000001a; font-size: 14px; line-height: 18px; font-weight: 600; letter-spacing: 0.01em; }
+.tekit-itinerario-boton { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; border: 0; border-radius: 8px; padding: 12px; background: #2b1810; color: #fff; box-shadow: 0 4px 6px -1px #0000001a, 0 2px 4px -2px #0000001a; font-size: 14px; line-height: 18px; font-weight: 700; letter-spacing: 0.01em; }

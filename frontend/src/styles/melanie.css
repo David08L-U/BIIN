@@ -100,7 +100,7 @@
   color: var(--color-texto-suave);
   text-decoration: none;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .biin-nav a.active {
@@ -195,7 +195,7 @@
 }
 
 .melanie-mapa .leaflet-container {
-  font-family: var(--fuente-texto);
+  font-family: var(--fuente-aplicacion);
   z-index: 0;
 }
 
@@ -295,7 +295,7 @@
   border: 1px solid #fdae3f33;
   border-radius: 30px;
   color: var(--color-primario);
-  font-family: var(--fuente-texto);
+  font-family: var(--fuente-aplicacion);
   font-size: 10px !important;
   font-weight: 700 !important;
   cursor: pointer;
@@ -419,7 +419,7 @@
   gap: 8px;
   border-radius: 16px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -493,7 +493,7 @@
   border: 1px solid #eae6df;
   color: #552818;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   padding: 8px 13px;
   cursor: pointer;
 }

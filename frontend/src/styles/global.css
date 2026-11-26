@@ -1,10 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Lora:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
 
 /* Base visual tomada del HTML de Melanie. RNF01 / RNF02. */
 
 :root {
-  --fuente-titulos: 'Lora', Georgia, serif;
-  --fuente-texto: 'Lato', sans-serif;
+  --fuente-aplicacion: 'Lato', sans-serif;
 
   --color-primario: #352219;
   --color-primario-oscuro: #23150e;
@@ -30,7 +29,7 @@
   --radio: 8px;
   --espacio: 16px;
 
-  font-family: var(--fuente-texto);
+  font-family: var(--fuente-aplicacion);
   line-height: 1.5;
   color: var(--color-texto);
   background: var(--color-fondo);
@@ -54,19 +53,19 @@ h4,
 h5,
 h6,
 .marca {
-  font-family: var(--fuente-titulos);
+  font-family: var(--fuente-aplicacion);
 }
 
 h1 {
   font-weight: 700;
 }
 
-/* Encabezados de las pantallas de rutas mantienen Lora aunque sus hojas
+/* Encabezados de las pantallas de rutas conservan la familia global aunque sus hojas
    específicas definan tamaños y composición propios. */
 :is(.izamal-detalle, .valladolid-detalle, .tekit-detalle, .homun-detalle, .ticul-detalle,
   .iz-plan, .va-plan, .tk-plan, .hm-plan, .ti-plan) :is(h1, h2, h3, h4, h5, h6) {
-  font-family: var(--fuente-titulos);
-  font-weight: 600;
+  font-family: var(--fuente-aplicacion);
+  font-weight: 700;
 }
 
 :is(.izamal-detalle, .valladolid-detalle, .tekit-detalle, .homun-detalle, .ticul-detalle,
@@ -75,7 +74,7 @@ h1 {
 }
 
 :where(button, input, select, textarea) {
-  font-family: var(--fuente-texto);
+  font-family: var(--fuente-aplicacion);
 }
 
 a {
@@ -186,7 +185,7 @@ a {
 
 .boton {
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   padding: 10px 16px;
   border-radius: var(--radio);
   border: 2px solid var(--color-primario);

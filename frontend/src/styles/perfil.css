@@ -112,7 +112,7 @@
   color: var(--color-texto);
   box-shadow: 0 1px 3px #0000000d;
   font-size: 12px !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
 }
 
 .perfil-editar .biin-icon {
@@ -173,9 +173,9 @@
   color: var(--color-acento-texto);
   display: grid;
   place-items: center;
-  font-family: var(--fuente-titulos);
+  font-family: var(--fuente-aplicacion);
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .perfil-avatar img {
@@ -194,7 +194,7 @@
 .perfil-identidad h2 {
   margin: 0;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 24px;
   letter-spacing: -.02em;
   overflow-wrap: anywhere;
@@ -206,7 +206,7 @@
   gap: 4px;
   color: var(--color-acento-texto);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 16px;
   letter-spacing: .04em;
   text-transform: uppercase;
@@ -250,7 +250,7 @@
 
 .perfil-seccion-cabecera h2 {
   margin: 0;
-  font: 600 11px/16px var(--fuente-texto);
+  font: 700 11px/16px var(--fuente-aplicacion);
   text-transform: uppercase;
   letter-spacing: .04em;
   color: var(--color-texto-suave);
@@ -265,7 +265,7 @@
   color: var(--color-acento-texto);
   border: 0;
   font-size: 12px !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   line-height: 18px;
   flex-shrink: 0;
 }
@@ -303,7 +303,7 @@
 
 .perfil-metrica strong {
   margin-top: 8px;
-  font: 600 18px/24px var(--fuente-titulos);
+  font: 700 18px/24px var(--fuente-aplicacion);
   letter-spacing: -.02em;
 }
 
@@ -445,7 +445,7 @@
 }
 
 .perfil-itinerario h3 {
-  font: 600 14px/18px var(--fuente-texto);
+  font: 700 14px/18px var(--fuente-aplicacion);
   margin: 12px 0 0;
   overflow-wrap: anywhere;
 }
@@ -484,7 +484,7 @@
   background: var(--color-superficie-suave);
   color: var(--color-texto);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .perfil-itinerario p + .perfil-ver-ruta {
@@ -535,7 +535,7 @@
   min-width: 0;
   flex: 1;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 20px;
 }
 
@@ -556,7 +556,7 @@
   background: transparent;
   color: var(--color-error);
   font-size: 14px !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
 }
 
 .perfil-cerrar-sesion .biin-icon {

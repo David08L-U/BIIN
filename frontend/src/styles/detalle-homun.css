@@ -37,22 +37,22 @@
 .homun-metrica-cabecera { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; color: #4f4440; }
 .homun-metrica-cabecera > span:not(.biin-icon) { font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.025em; text-transform: uppercase; }
 .homun-metrica-cabecera .biin-icon { color: #855400; }
-.homun-valor { font-family: 'Space Grotesk', sans-serif; font-size: 18px; line-height: 24px; font-weight: 600; }
+.homun-valor { font-family: var(--fuente-aplicacion); font-size: 18px; line-height: 24px; font-weight: 700; }
 .homun-metrica .homun-metrica-nota { margin-top: 2px; color: #4f4440; font-size: 12px; line-height: 16px; }
 .homun-nota-datos, .homun-nota-favorito { color: #855400; font-size: 11px; line-height: 16px; }
 .homun-terminal { display: flex; align-items: center; gap: 16px; }
 .homun-terminal-icono { display: grid; place-items: center; flex-shrink: 0; width: 48px; height: 48px; border-radius: 8px; background: #e8e1da; color: #070100; }
 .homun-terminal > div { min-width: 0; }
-.homun-terminal p:first-child { color: #855400; font-size: 11px; line-height: 14px; font-weight: 600; text-transform: uppercase; }
-.homun-terminal h2 { font-family: var(--fuente-titulos); font-size: 14px; line-height: 18px; font-weight: 600; letter-spacing: 0.01em; }
+.homun-terminal p:first-child { color: #855400; font-size: 11px; line-height: 14px; font-weight: 700; text-transform: uppercase; }
+.homun-terminal h2 { font-family: var(--fuente-aplicacion); font-size: 14px; line-height: 18px; font-weight: 700; letter-spacing: 0.01em; }
 .homun-terminal p:last-child { color: #4f4440; font-size: 12px; line-height: 16px; }
 
 .homun-recorrido { display: flex; flex-direction: column; gap: 16px; }
 .homun-recorrido-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .homun-recorrido-cabecera > div { display: flex; flex: 1; min-width: 0; align-items: center; gap: 8px; }
 .homun-recorrido-cabecera .biin-icon { color: #855400; }
-.homun-recorrido-cabecera h2 { min-width: 0; font-size: 18px; line-height: 24px; font-weight: 600; }
-.homun-recorrido-cabecera > span { flex-shrink: 0; border-radius: 4px; padding: 2px 8px; background: #eee7df; color: #4f4440; font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.02em; }
+.homun-recorrido-cabecera h2 { min-width: 0; font-size: 18px; line-height: 24px; font-weight: 700; }
+.homun-recorrido-cabecera > span { flex-shrink: 0; border-radius: 4px; padding: 2px 8px; background: #eee7df; color: #4f4440; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.02em; }
 .homun-mapa { position: relative; isolation: isolate; min-height: 144px; overflow: hidden; border-radius: 8px; background: #f4ede5; box-shadow: inset 0 2px 4px #0000000d; }
 .homun-imagen, .homun-imagen-alternativa { position: absolute; inset: 0; width: 100%; height: 100%; }
 .homun-imagen { display: block; object-fit: cover; }
@@ -73,7 +73,7 @@
 .homun-parada-destino .homun-marcador { background: #855400; color: #fff; box-shadow: 0 1px 2px #0000000d; }
 .homun-parada-destino .homun-marcador::before { content: none; }
 .homun-parada-titulo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 8px; }
-.homun-parada-titulo strong { font-size: 14px; line-height: 18px; font-weight: 500; letter-spacing: 0.01em; }
+.homun-parada-titulo strong { font-size: 14px; line-height: 18px; font-weight: 700; letter-spacing: 0.01em; }
 .homun-parada-origen strong, .homun-parada-destino strong { font-weight: 700; }
 .homun-parada-titulo > span { border-radius: 4px; padding: 2px 8px; background: #070100; color: #fff; font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.04em; }
 .homun-parada-destino .homun-parada-titulo > span { background: #ffddb7; color: #2a1700; }
@@ -83,12 +83,12 @@
 .homun-foto-cultural { position: relative; isolation: isolate; min-height: 176px; background: #f4ede5; }
 .homun-foto-cultural::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, #fff, #ffffff4d, transparent); pointer-events: none; }
 .homun-foto-cultural .homun-imagen-alternativa { padding-bottom: 24px; }
-.homun-top-destino { position: absolute; z-index: 1; top: 12px; left: 12px; border-radius: 4px; padding: 4px 10px; background: #ffffffe6; color: #1e1b17; font-size: 11px; line-height: 14px; font-weight: 600; letter-spacing: 0.025em; text-transform: uppercase; }
+.homun-top-destino { position: absolute; z-index: 1; top: 12px; left: 12px; border-radius: 4px; padding: 4px 10px; background: #ffffffe6; color: #1e1b17; font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.025em; text-transform: uppercase; }
 .homun-cultura-contenido { display: flex; flex-direction: column; gap: 16px; padding: 4px 16px 16px; }
-.homun-cultura-contenido h2 { font-size: 18px; line-height: 24px; font-weight: 600; }
+.homun-cultura-contenido h2 { font-size: 18px; line-height: 24px; font-weight: 700; }
 .homun-cultura-contenido > div:first-child p { margin-top: 4px; color: #4f4440; font-size: 12px; line-height: 16px; }
 .homun-itinerario-intro { display: flex; flex-direction: column; gap: 4px; border-radius: 8px; padding: 8px; background: #faf3eb; }
-.homun-itinerario-intro h3 { display: flex; align-items: center; gap: 6px; color: #855400; font-family: var(--fuente-titulos); font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.02em; }
+.homun-itinerario-intro h3 { display: flex; align-items: center; gap: 6px; color: #855400; font-family: var(--fuente-aplicacion); font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.02em; }
 .homun-itinerario-intro p { color: #4f4440; font-size: 12px; line-height: 16px; }
 .homun-estancia { min-width: 0; border: 0; margin: 0; padding: 0; }
 .homun-estancia legend { margin-bottom: 6px; padding: 0; color: #4f4440; font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
@@ -96,7 +96,7 @@
 .homun-estancia-opciones label { position: relative; min-width: 0; cursor: pointer; }
 .homun-estancia-opciones input { position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .homun-estancia-opciones label > span { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 48px; border-radius: 8px; padding: 10px 8px; background: #f4ede5; color: #4f4440; font-size: 11px; line-height: 14px; text-align: center; }
-.homun-estancia-opciones strong { font-weight: 500; }
+.homun-estancia-opciones strong { font-weight: 700; }
 .homun-estancia-opciones small { font-size: 11px; line-height: 14px; font-weight: 400; }
 .homun-estancia-opciones input:checked + span { background: #070100; color: #fff; box-shadow: 0 1px 2px #0000000d; }
 .homun-estancia-opciones input:checked + span small { color: #ffffffcc; }
@@ -104,5 +104,5 @@
 .homun-lugares > p { color: #4f4440; font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
 .homun-lugares ul { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; padding: 0; list-style: none; }
 .homun-lugares li { border-radius: 999px; padding: 4px 10px; background: #f4ede5; font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.04em; }
-.homun-itinerario-boton { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; border: 0; border-radius: 8px; padding: 12px; background: #2b1810; color: #fff; box-shadow: 0 4px 6px -1px #0000001a, 0 2px 4px -2px #0000001a; font-size: 14px; line-height: 18px; font-weight: 600; letter-spacing: 0.01em; }
+.homun-itinerario-boton { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; border: 0; border-radius: 8px; padding: 12px; background: #2b1810; color: #fff; box-shadow: 0 4px 6px -1px #0000001a, 0 2px 4px -2px #0000001a; font-size: 14px; line-height: 18px; font-weight: 700; letter-spacing: 0.01em; }
 .homun-itinerario-boton:hover { background: #070100; }
