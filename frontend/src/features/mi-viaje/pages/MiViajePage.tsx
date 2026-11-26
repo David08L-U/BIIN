@@ -181,8 +181,9 @@ function MiViajeContenido({ idUsuario, cerrarSesion }: { idUsuario: number; cerr
   }
 
   return <section className="iz-plan iz-plan-mis-viajes" aria-labelledby="mis-viajes-titulo">
-    <h1 ref={headingRef} id="mis-viajes-titulo" tabIndex={-1}>Mis itinerarios</h1>
-    <p>Los itinerarios confirmados por tu cuenta están sincronizados con el servidor.</p>
+    <h1 ref={headingRef} id="mis-viajes-titulo" tabIndex={-1}>Mi viaje</h1>
+    <section className="iz-plan-mis-viajes-seccion" aria-labelledby="mis-itinerarios-guardados-titulo">
+      <h2 id="mis-itinerarios-guardados-titulo">Mis itinerarios guardados</h2>
     {cargando && <p role="status">Cargando itinerarios de tu cuenta…</p>}
     {error && <p role="alert" className="iz-plan-error">{error}</p>}
     {locales.error && <p role="alert" className="iz-plan-error">{locales.error}</p>}
@@ -191,7 +192,7 @@ function MiViajeContenido({ idUsuario, cerrarSesion }: { idUsuario: number; cerr
       <button type="button" className="iz-plan-primario" disabled={importando} onClick={() => void importarLocales()}>{importando ? 'Importando…' : `Importar ${localesPendientes.length} a mi cuenta`}</button>
       {mensajeImportacion && <p role="status" aria-live="polite">{mensajeImportacion}</p>}
     </section>}
-    {!cargando && !error && elementos.length === 0 && anteriores.length === 0 && <p role="status">Todavía no hay itinerarios guardados para esta cuenta.</p>}
+    {!cargando && !error && elementos.length === 0 && anteriores.length === 0 && <p role="status">Aún no tienes itinerarios guardados.</p>}
     {!cargando && elementos.length > 0 && <ul>{elementos.map(item => {
       const destino = nombreDestino(item)
       const local = !item.id.startsWith('servidor:')
@@ -212,10 +213,21 @@ function MiViajeContenido({ idUsuario, cerrarSesion }: { idUsuario: number; cerr
         <p>{item.inicio}{item.fin !== item.inicio ? ` – ${item.fin}` : ''} · {item.actividadesRegistradas} actividades registradas</p>
       </li>)}</ul>
     </section>}
-    <Link className="iz-plan-primario" to="/rutas/izamal">Preparar otro itinerario en Izamal</Link>
-    <Link className="iz-plan-primario" to="/rutas/valladolid">Preparar otro itinerario en Valladolid</Link>
-    <Link className="iz-plan-primario" to="/rutas/tekit">Preparar otro itinerario en Tekit</Link>
-    <Link className="iz-plan-primario" to="/rutas/homun">Preparar otro itinerario en Homún</Link>
-    <Link className="iz-plan-primario" to="/rutas/ticul">Preparar otro itinerario en Ticul</Link>
+    </section>
+    <section className="iz-plan-mis-viajes-seccion" aria-labelledby="crear-itinerario-titulo">
+      <h2 id="crear-itinerario-titulo">Crear un itinerario</h2>
+      <ul className="iz-plan-destinos-crear">
+        {[
+          ['izamal', 'Izamal'],
+          ['valladolid', 'Valladolid'],
+          ['tekit', 'Tekit'],
+          ['homun', 'Homún'],
+          ['ticul', 'Ticul'],
+        ].map(([destino, nombre]) => <li className="iz-plan-tarjeta" key={destino}>
+          <h3>{nombre}</h3>
+          <Link to={`/rutas/${destino}`}>Crear itinerario</Link>
+        </li>)}
+      </ul>
+    </section>
   </section>
 }

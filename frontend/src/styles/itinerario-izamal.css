@@ -206,6 +206,12 @@
 .iz-plan-mis-viajes > p { margin-top: 12px; }
 .iz-plan-mis-viajes ul { display: grid; gap: 12px; padding: 0; margin: 24px 0; list-style: none; }
 .iz-plan-mis-viajes li { display: grid; gap: 12px; }
+.iz-plan-mis-viajes-seccion { margin-top: 24px; }
+.iz-plan-mis-viajes-seccion > h2 { margin-bottom: 12px; }
+.iz-plan-destinos-crear { grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 14px !important; margin-top: 0 !important; padding-bottom: 20px !important; }
+.iz-plan-destinos-crear > li { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; padding: 14px; }
+.iz-plan-destinos-crear > li h3 { min-width: 0; font-size: 16px; }
+.iz-plan-destinos-crear > li a { flex: 0 0 auto; min-height: 40px; display: inline-flex; align-items: center; padding: 8px 10px; border: 1px solid var(--color-borde-tarjeta); border-radius: 8px; background: var(--color-superficie); font-weight: 600; text-decoration: none; }
 .iz-lugares-seleccionados { margin-top: 16px; padding: 12px; border: 1px solid var(--color-borde-tarjeta); border-radius: 12px; background: var(--color-superficie); }
 .iz-lugares-seleccionados h2 { margin-bottom: 8px; }
 .iz-lugares-seleccionados ul { display: grid; gap: 8px; padding: 0; margin: 0; list-style: none; }

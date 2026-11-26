@@ -106,7 +106,7 @@ describe('Perfil del prototipo CU-01 / CU-09 / RNF06', () => {
   it('abre Mi viaje con los cinco destinos guardados y activa su navegación', async () => {
     sembrar(7, [izamal, muestras[1][1], muestras[2][1], muestras[3][1], muestras[4][1]])
     montar({ ruta: '/mi-viaje' })
-    expect(screen.getByRole('heading', { name: 'Mis itinerarios' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Mis itinerarios guardados' })).toBeInTheDocument()
     for (const nombre of ['Izamal', 'Valladolid', 'Tekit', 'Homún', 'Ticul']) {
       expect(await screen.findByRole('link', { name: `Abrir itinerario de ${nombre}` })).toBeInTheDocument()
     }
@@ -148,7 +148,7 @@ describe('Perfil del prototipo CU-01 / CU-09 / RNF06', () => {
     expect(enlaces[0].getAttribute('href')).toContain('fecha=2026-12-03')
     expect(enlaces[1].getAttribute('href')).toContain('fecha=2026-12-02')
     await userEvent.click(screen.getByRole('link', { name: 'Gestionar' }))
-    expect(screen.getByRole('heading', { name: 'Mis itinerarios' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Mis itinerarios guardados' })).toBeInTheDocument()
   })
 
   it('conserva intactos los datos locales dañados para permitir su importación posterior', async () => {

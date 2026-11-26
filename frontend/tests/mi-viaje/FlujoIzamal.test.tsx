@@ -213,10 +213,12 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     sesion.usuario = { idUsuario: 8, nombre: 'Beto', correo: 'beto@biin.test', roles: ['viajero'] }
     localStorage.setItem('biin:itinerarios:v1:8', '{dañado')
     montar('/mi-viaje')
-    expect(screen.getByRole('heading', { name: 'Mis itinerarios' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Mis itinerarios guardados' })).toBeInTheDocument()
     expect(screen.getByRole('alert')).toHaveTextContent(/bloqueado o dañado/)
     expect(screen.queryByRole('link', { name: 'Abrir itinerario de Izamal' })).not.toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Preparar otro itinerario en Izamal' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Crear un itinerario' })).toBeInTheDocument()
+    expect(screen.getAllByRole('link', { name: 'Crear itinerario' })).toHaveLength(5)
+    expect(screen.getAllByRole('link', { name: 'Crear itinerario' })[0]).toHaveAttribute('href', '/rutas/izamal')
   })
 
   it('edita un guardado sin alterarlo hasta confirmar y conserva el original al cancelar', async () => {
@@ -256,7 +258,7 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     await waitFor(() => expect(boton).toHaveFocus())
     await userEvent.click(boton)
     await userEvent.click(screen.getByRole('button', { name: 'Confirmar eliminación' }))
-    expect(await screen.findByText('Todavía no hay itinerarios guardados para esta cuenta.')).toBeInTheDocument()
+    expect(await screen.findByText('Aún no tienes itinerarios guardados.')).toBeInTheDocument()
     expect(leerItinerariosLocales(7).itinerarios).toEqual([])
     expect(leerItinerariosLocales(8).itinerarios).toHaveLength(1)
   })
@@ -274,6 +276,6 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     expect(await screen.findByRole('heading', { name: 'Ingresa a tu cuenta' })).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/login')
     expect(router.state.location.state).toEqual({ desde: '/mi-viaje' })
-    expect(screen.queryByRole('heading', { name: 'Mis itinerarios' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Mis itinerarios guardados' })).not.toBeInTheDocument()
   })
 })
