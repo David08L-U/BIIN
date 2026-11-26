@@ -103,10 +103,9 @@ describe('Retorno tras el acceso CU-01 / CU-09', () => {
       screen.getByRole('heading', { name: 'Crear cuenta' }),
     ).toBeInTheDocument()
 
-    await usuario.type(screen.getByLabelText('Nombre'), 'Ana')
-    await usuario.type(screen.getByLabelText('Apellido'), 'López')
+    await usuario.type(screen.getByLabelText('Nombre'), 'Ana López')
     await usuario.type(
-      screen.getByLabelText('Correo electrónico'),
+      screen.getByLabelText('Correo'),
       'ana@ejemplo.com',
     )
     await usuario.type(
