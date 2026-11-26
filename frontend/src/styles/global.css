@@ -1,17 +1,35 @@
-/* Estilos globales. Diseño primero para 360 px (RNF01) y contraste 4.5:1 (RNF06). */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+
+/* Base visual tomada del HTML de Melanie. RNF01 / RNF02. */
 
 :root {
-  --color-primario: #0f5c55;
-  --color-primario-oscuro: #0a403b;
-  --color-fondo: #f7f7f4;
+  --fuente-aplicacion: 'Lato', sans-serif;
+
+  --color-primario: #352219;
+  --color-primario-oscuro: #23150e;
+  --color-fondo: #fafaf8;
   --color-superficie: #ffffff;
-  --color-texto: #1d2321;
-  --color-texto-suave: #4a524f;
-  --color-borde: #c9cfcc;
-  --color-error: #b3261e;
+  --color-texto: var(--color-primario);
+  --color-texto-suave: #66554b;
+  --color-borde: #e8ddd2;
+  --color-borde-tarjeta: rgba(0, 0, 0, 0.65);
+  --sombra-tarjeta: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --color-secundario: #b94d32;
+  --color-secundario-texto: #983d26;
+  --color-secundario-suave: #f7e4da;
+  --color-acento: #d99520;
+  --color-acento-texto: #805010;
+  --color-acento-suave: #f9e3b8;
+  --color-superficie-suave: #faf2e9;
+  --color-superficie-acentuada: #f3e9de;
+  --color-error: #ba1a1a;
+  --color-error-texto: #93000a;
+  --color-error-fondo: #fff0ed;
+
   --radio: 8px;
   --espacio: 16px;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  font-family: var(--fuente-aplicacion);
   line-height: 1.5;
   color: var(--color-texto);
   background: var(--color-fondo);
@@ -28,12 +46,43 @@ body {
   min-width: 320px;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.marca {
+  font-family: var(--fuente-aplicacion);
+}
+
+h1 {
+  font-weight: 700;
+}
+
+/* Encabezados de las pantallas de rutas conservan la familia global aunque sus hojas
+   específicas definan tamaños y composición propios. */
+:is(.izamal-detalle, .valladolid-detalle, .tekit-detalle, .homun-detalle, .ticul-detalle,
+  .iz-plan, .va-plan, .tk-plan, .hm-plan, .ti-plan) :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--fuente-aplicacion);
+  font-weight: 700;
+}
+
+:is(.izamal-detalle, .valladolid-detalle, .tekit-detalle, .homun-detalle, .ticul-detalle,
+  .iz-plan, .va-plan, .tk-plan, .hm-plan, .ti-plan) h1 {
+  font-weight: 700;
+}
+
+:where(button, input, select, textarea) {
+  font-family: var(--fuente-aplicacion);
+}
+
 a {
   color: var(--color-primario);
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-primario);
+  outline: 3px solid var(--color-secundario);
   outline-offset: 2px;
 }
 
@@ -57,12 +106,12 @@ a {
   gap: 8px 16px;
   padding: 12px var(--espacio);
   background: var(--color-primario);
-  color: #fff;
+  color: var(--color-superficie);
 }
 
 .encabezado a,
 .encabezado .enlace {
-  color: #fff;
+  color: var(--color-superficie);
 }
 
 .marca {
@@ -86,7 +135,7 @@ a {
 }
 
 .encabezado nav a.active {
-  border-bottom: 2px solid #fff;
+  border-bottom: 2px solid var(--color-superficie);
 }
 
 .sesion {
@@ -136,7 +185,7 @@ a {
 
 .boton {
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   padding: 10px 16px;
   border-radius: var(--radio);
   border: 2px solid var(--color-primario);
@@ -146,7 +195,7 @@ a {
 
 .boton--primario {
   background: var(--color-primario);
-  color: #fff;
+  color: var(--color-superficie);
 }
 
 .boton--primario:hover {

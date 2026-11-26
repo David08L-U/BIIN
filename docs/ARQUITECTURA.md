@@ -172,6 +172,30 @@ BIIN/
 
 Dentro de cada `features/<modulo>/` se usan las subcarpetas que hagan falta: `components/`, `pages/`, `hooks/` y `api/`. Se crean conforme se programe el módulo.
 
+**Implementación provisional de itinerarios de Izamal, Valladolid, Tekit, Homún y Ticul (CU-09 / RF09):**
+`features/mi-viaje` separa datos demostrativos (`data/`), cálculo puro (`plan/`),
+interfaz y almacenamiento (`storage/`). Mientras no exista un servicio HTTP de
+itinerarios, guarda en `localStorage` por `idUsuario`, sin sincronización con el
+servidor. `/mi-viaje` conserva la protección de sesión. El borrador se conserva en
+la URL para recarga y retorno desde login. Ver [ITINERARIOS_IZAMAL.md](ITINERARIOS_IZAMAL.md)
+para límites y supuestos de Izamal. Valladolid añade dos jornadas de calendario local
+independientes para fin de semana y registros con destino explícito, conservando la
+lectura de los registros antiguos de Izamal en la misma clave v1. Ver
+[ITINERARIOS_VALLADOLID.md](ITINERARIOS_VALLADOLID.md) para cálculo, acciones y
+compatibilidad de persistencia. Tekit añade una jornada con modalidad textil,
+borrador en URL y guardado compatible en la misma clave. El resumen y los bloques
+secuenciales se comparten con Izamal; las acciones de compartir y descarga de texto
+se comparten con Valladolid, conservando sus contratos. Ver
+[ITINERARIOS_TEKIT.md](ITINERARIOS_TEKIT.md). Homún reutiliza las jornadas de
+Valladolid mediante un cálculo parametrizado que conserva sus contratos y usa
+`recorridoSecuencial.ts` para sumas y bloques. Conserva tipos de traslado, imágenes
+del prototipo y guardado compatible en la misma clave. Ver
+[ITINERARIOS_HOMUN.md](ITINERARIOS_HOMUN.md). Ticul añade una jornada con modalidades
+de alfarería y calzado, duración solicitada para Ruta Puuc y Tour de Compras,
+cronología propia y las mismas acciones y clave v1. Reutiliza el motor secuencial,
+sin modificar los cálculos anteriores. Ver [ITINERARIOS_TICUL.md](ITINERARIOS_TICUL.md).
+No cambia el modelo de BD.
+
 ## 4. Modelo de base de datos (27 tablas, 3FN)
 
 Convención de la documentación: tablas y columnas en **snake_case, en español y en plural** (`usuarios`, `id_usuario`). PK = clave primaria, FK = clave foránea.
