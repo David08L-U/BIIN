@@ -9,6 +9,8 @@ import PerfilPage from '../src/features/perfil/pages/PerfilPage'
 import VistaPreviaPerfilPage from '../src/features/perfil/pages/VistaPreviaPerfilPage'
 import { type ItinerarioGuardado } from '../src/features/mi-viaje/storage/itinerariosLocales'
 import type { BorradorIzamal } from '../src/features/mi-viaje/plan/itinerarioIzamal'
+import MiViajePage from '../src/features/mi-viaje/pages/MiViajePage'
+import ElegirItinerarioPage from '../src/features/explorar/pages/ElegirItinerarioPage'
 
 const borrador: BorradorIzamal = { configuracion: { estancia: 'medio-dia', fecha: '2026-11-30', horaInicio: '11:30', minutosDisponibles: '240' }, modo: 'personalizado', seleccion: ['convento', 'kinich'], generado: true }
 const izamal: ItinerarioGuardado = { id: 'izamal-ejemplo', guardadoEn: '2026-11-25T10:00:00Z', borrador }
@@ -32,7 +34,7 @@ function sembrar(idUsuario: number, itinerarios: ItinerarioGuardado[]) {
   localStorage.setItem(`biin:itinerarios:v1:${idUsuario}`, JSON.stringify({ version: 1, itinerarios }))
 }
 
-function montar(opciones: { sesion?: boolean; cargando?: boolean; previa?: boolean; nombre?: string; correo?: string } = {}) {
+function montar(opciones: { sesion?: boolean; cargando?: boolean; previa?: boolean; nombre?: string; correo?: string; ruta?: string } = {}) {
   const usuario = opciones.sesion === false ? null : { idUsuario: 7, nombre: opciones.nombre ?? 'Ana López', correo: opciones.correo ?? 'ana@ejemplo.com', roles: ['viajero' as const] }
   const contexto: AuthContextValor = {
     usuario, cargando: opciones.cargando ?? false,
@@ -45,10 +47,11 @@ function montar(opciones: { sesion?: boolean; cargando?: boolean; previa?: boole
       { element: <RutaProtegida />, children: [{ path: '/perfil', element: <PerfilPage /> }] },
       { path: '/login', element: <h1>Acceso de prueba</h1> },
       { path: '/', element: <h1>Inicio de prueba</h1> },
-      { path: '/mi-viaje', element: <h1>Itinerarios de prueba</h1> },
+      { path: '/recorridos', element: <ElegirItinerarioPage /> },
+      { element: <RutaProtegida />, children: [{ path: '/mi-viaje', element: <MiViajePage /> }] },
       { path: '/rutas/:destino/itinerario', element: <h1>Plan abierto</h1> },
     ],
-  }], { initialEntries: [opciones.previa ? '/vista-previa/perfil' : '/perfil'] })
+  }], { initialEntries: [opciones.ruta ?? (opciones.previa ? '/vista-previa/perfil' : '/perfil')] })
   const resultado = render(<AuthContext.Provider value={contexto}><RouterProvider router={router} /></AuthContext.Provider>)
   return { ...resultado, router, contexto }
 }
@@ -98,6 +101,28 @@ describe('Perfil del prototipo CU-01 / CU-09 / RNF06', () => {
     expect(parametros.get('modo')).toBe(item.borrador.modo)
   })
 
+  it('abre Mi viaje con los cinco destinos guardados y activa su navegación', () => {
+    sembrar(7, [izamal, muestras[1][1], muestras[2][1], muestras[3][1], muestras[4][1]])
+    montar({ ruta: '/mi-viaje' })
+    expect(screen.getByRole('heading', { name: 'Mis itinerarios' })).toBeInTheDocument()
+    for (const nombre of ['Izamal', 'Valladolid', 'Tekit', 'Homún', 'Ticul']) {
+      expect(screen.getByRole('link', { name: `Abrir itinerario de ${nombre}` })).toBeInTheDocument()
+    }
+    expect(within(screen.getByRole('navigation', { name: 'Navegación principal' })).getByRole('link', { name: 'Mi viaje' })).toHaveAttribute('aria-current', 'page')
+  })
+
+  it('mantiene Mi viaje protegido y guarda el destino de regreso para la sesión', async () => {
+    const { router } = montar({ sesion: false, ruta: '/mi-viaje' })
+    expect(await screen.findByRole('heading', { name: 'Acceso de prueba' })).toBeInTheDocument()
+    expect(router.state.location.state).toEqual({ desde: '/mi-viaje' })
+  })
+
+  it('marca Rutas como sección activa al elegir planificador desde recorridos', () => {
+    montar({ ruta: '/recorridos' })
+    expect(screen.getByRole('heading', { name: 'Elige tu destino' })).toBeInTheDocument()
+    expect(within(screen.getByRole('navigation', { name: 'Navegación principal' })).getByRole('link', { name: 'Rutas' })).toHaveAttribute('aria-current', 'page')
+  })
+
   it('lee solo los guardados de la cuenta actual y no reescribe ninguna cuenta', () => {
     sembrar(7, [izamal])
     sembrar(8, [muestras[1][1]])
@@ -121,7 +146,7 @@ describe('Perfil del prototipo CU-01 / CU-09 / RNF06', () => {
     expect(enlaces[0].getAttribute('href')).toContain('fecha=2026-12-03')
     expect(enlaces[1].getAttribute('href')).toContain('fecha=2026-12-02')
     await userEvent.click(screen.getByRole('link', { name: 'Gestionar' }))
-    expect(screen.getByRole('heading', { name: 'Itinerarios de prueba' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Mis itinerarios' })).toBeInTheDocument()
   })
 
   it('explica los datos locales dañados sin borrarlos', () => {

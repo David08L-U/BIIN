@@ -88,12 +88,16 @@ export default function Layout() {
           <span>Inicio</span>
         </NavLink>
 
-        <NavLink to="/rutas">
+        <Link
+          to="/rutas"
+          className={pathname === '/recorridos' || /^\/rutas(?:\/|$)/.test(pathname) ? 'active' : undefined}
+          aria-current={pathname === '/recorridos' || /^\/rutas(?:\/|$)/.test(pathname) ? 'page' : undefined}
+        >
           <span aria-hidden="true" className="biin-icon">
             route
           </span>
           <span>Rutas</span>
-        </NavLink>
+        </Link>
 
         <NavLink to="/explorar">
           <span aria-hidden="true" className="biin-icon">

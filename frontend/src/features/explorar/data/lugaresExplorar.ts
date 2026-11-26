@@ -2,6 +2,7 @@ import { lugaresIzamal } from '../../mi-viaje/data/lugaresIzamal'
 import { imagenesItinerarioIzamal } from '../../mi-viaje/data/imagenesItinerarioIzamal'
 import { lugaresValladolid } from '../../mi-viaje/data/lugaresValladolid'
 import { lugaresTekit } from '../../mi-viaje/data/lugaresTekit'
+import { detalleTekitPrototipo } from '../../transporte/data/detalleTekitPrototipo'
 import { lugaresHomun } from '../../mi-viaje/data/lugaresHomun'
 import { lugaresTicul } from '../../mi-viaje/data/lugaresTicul'
 
@@ -43,7 +44,7 @@ function adaptar(destino: DestinoExplorar, elementos: readonly LugarFuente[]): L
 export const lugaresExplorar: LugarExplorar[] = [
   ...adaptar('izamal', lugaresIzamal.map(lugar => ({ ...lugar, imagen: imagenesItinerarioIzamal[lugar.id]?.src ? { src: imagenesItinerarioIzamal[lugar.id].src!, alt: imagenesItinerarioIzamal[lugar.id].alt } : undefined }))),
   ...adaptar('valladolid', lugaresValladolid),
-  ...adaptar('tekit', lugaresTekit),
+  ...adaptar('tekit', lugaresTekit.map(lugar => lugar.id === 'corredor-textil' ? { ...lugar, imagen: { src: detalleTekitPrototipo.imagenCultural, alt: 'Guayaberas textiles de Tekit, imagen de referencia del prototipo' } } : lugar)),
   ...adaptar('homun', lugaresHomun),
   ...adaptar('ticul', lugaresTicul),
 ]
