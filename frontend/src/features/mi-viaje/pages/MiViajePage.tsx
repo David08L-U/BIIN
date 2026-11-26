@@ -27,11 +27,13 @@ function nombreDestino(item: ItinerarioGuardado) {
 }
 
 function rutaItinerario(item: ItinerarioGuardado, editar = false) {
-  if (item.destino === 'valladolid') return urlBorradorValladolid('itinerario', { ...(item.borrador as BorradorValladolid), ...(editar ? { editarId: item.id } : {}) })
-  if (item.destino === 'tekit') return urlBorradorTekit('itinerario', { ...(item.borrador as BorradorTekit), ...(editar ? { editarId: item.id } : {}) })
-  if (item.destino === 'homun') return urlBorradorHomun('itinerario', { ...(item.borrador as BorradorHomun), ...(editar ? { editarId: item.id } : {}) })
-  if (item.destino === 'ticul') return urlBorradorTicul('itinerario', { ...(item.borrador as BorradorTicul), ...(editar ? { editarId: item.id } : {}) })
-  return urlBorrador('itinerario', { ...(item.borrador as BorradorIzamal), ...(editar ? { editarId: item.id } : {}) })
+  const cambios = editar ? { modo: 'personalizado' as const, generado: false, editarId: item.id } : {}
+  const pantalla = editar ? 'personalizar' : 'itinerario'
+  if (item.destino === 'valladolid') return urlBorradorValladolid(pantalla, { ...(item.borrador as BorradorValladolid), ...cambios })
+  if (item.destino === 'tekit') return urlBorradorTekit(pantalla, { ...(item.borrador as BorradorTekit), ...cambios })
+  if (item.destino === 'homun') return urlBorradorHomun(pantalla, { ...(item.borrador as BorradorHomun), ...cambios })
+  if (item.destino === 'ticul') return urlBorradorTicul(pantalla, { ...(item.borrador as BorradorTicul), ...cambios })
+  return urlBorrador(pantalla, { ...(item.borrador as BorradorIzamal), ...cambios })
 }
 
 function resumen(item: ItinerarioGuardado): string[] {

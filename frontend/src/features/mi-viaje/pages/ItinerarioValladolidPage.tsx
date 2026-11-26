@@ -70,7 +70,7 @@ export default function ItinerarioValladolidPage() {
       return
     }
     const actualizado = { ...borradorVigente, generado: true, editarId: respuesta.itinerario.id }
-    actualizar({ editarId: respuesta.itinerario.id })
+    actualizar({ editarId: respuesta.itinerario.id, generado: true })
     setAviso({ clave: `${usuario.idUsuario}:${parametrosBorradorValladolid(actualizado)}`, error: false, mensaje: borrador.editarId ? 'Cambios guardados en tu cuenta' : 'Itinerario guardado en tu cuenta' })
   }
   async function compartir() {

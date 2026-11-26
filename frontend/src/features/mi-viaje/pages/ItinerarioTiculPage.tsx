@@ -51,7 +51,7 @@ export default function ItinerarioTiculPage() {
     const r = await guardarEnServidor({ ...vigente, generado: true })
     if (!r.itinerario) { setAviso({ clave: cuenta, error: true, mensaje: r.error ?? 'No se pudo confirmar el guardado en el servidor.' }); return }
     const actualizado = { ...vigente, generado: true, editarId: r.itinerario.id }
-    actualizar({ editarId: r.itinerario.id })
+    actualizar({ editarId: r.itinerario.id, generado: true })
     setAviso({ clave: `${usuario.idUsuario}:${parametrosBorradorTicul(actualizado)}`, error: false, mensaje: borrador.editarId ? 'Cambios guardados en tu cuenta' : 'Itinerario guardado en tu cuenta' })
   }
   async function compartir() {

@@ -52,8 +52,8 @@ export default function ItinerarioIzamalPage() {
       return
     }
     const actualizado = { ...borrador, generado: true, editarId: respuesta.itinerario.id }
-    actualizar({ editarId: respuesta.itinerario.id })
-    setGuardado({ clave: urlBorrador('itinerario', actualizado), error: false, mensaje: borrador.editarId ? 'Cambios guardados en tu cuenta' : 'Itinerario guardado en tu cuenta' })
+    actualizar({ editarId: respuesta.itinerario.id, generado: true })
+    setGuardado({ clave: `${usuario.idUsuario}:${urlBorrador('itinerario', actualizado)}`, error: false, mensaje: borrador.editarId ? 'Cambios guardados en tu cuenta' : 'Itinerario guardado en tu cuenta' })
   }
 
   return (
