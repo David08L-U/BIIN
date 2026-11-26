@@ -5,6 +5,7 @@ using Biin.Domain.Entities;
 using Biin.Domain.Enums;
 using Biin.Domain.Exceptions;
 using Biin.Infrastructure.Security;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
@@ -123,5 +124,31 @@ public class SeguridadBaseTests
 
         var sinSub = new ClaimsPrincipal(new ClaimsIdentity());
         Assert.Throws<NoAutenticadoException>(() => sinSub.IdUsuario());
+    }
+
+    [Fact]
+    public void DistribuidaRevocacionToken_revoca_por_jti_y_globalmente_por_usuario()
+    {
+        var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+        var revocacion = new DistribuidaRevocacionToken(cache);
+        var jti = Guid.NewGuid().ToString();
+        var ahora = DateTime.UtcNow;
+
+        Assert.False(revocacion.EstaRevocado(jti));
+        revocacion.Revocar(jti, ahora.AddMinutes(10));
+        Assert.True(revocacion.EstaRevocado(jti));
+
+        // Un token ya vencido no se almacena
+        var jtiViejo = Guid.NewGuid().ToString();
+        revocacion.Revocar(jtiViejo, ahora.AddMinutes(-5));
+        Assert.False(revocacion.EstaRevocado(jtiViejo));
+
+        // Revocación global por usuario invalida tokens emitidos hasta el corte, pero permite tokens posteriores
+        Assert.False(revocacion.SesionUsuarioRevocada(7, ahora.AddMinutes(-2)));
+        revocacion.RevocarSesionesUsuario(7, ahora, TimeSpan.FromHours(2));
+        Assert.True(revocacion.SesionUsuarioRevocada(7, ahora.AddMinutes(-2)));
+        Assert.True(revocacion.SesionUsuarioRevocada(7, ahora));
+        Assert.False(revocacion.SesionUsuarioRevocada(7, ahora.AddSeconds(5)));
+        Assert.False(revocacion.SesionUsuarioRevocada(8, ahora.AddMinutes(-2)));
     }
 }

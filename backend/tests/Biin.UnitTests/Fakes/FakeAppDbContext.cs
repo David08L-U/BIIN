@@ -235,8 +235,13 @@ public sealed class RelojFijo(DateTime? ahoraUtc = null) : IReloj
 public sealed class RevocacionFalsa : IRevocacionToken
 {
     public HashSet<string> Revocados { get; } = [];
+    public Dictionary<int, DateTime> UsuariosRevocados { get; } = [];
     public void Revocar(string jti, DateTime expiraEnUtc) => Revocados.Add(jti);
     public bool EstaRevocado(string jti) => Revocados.Contains(jti);
+    public void RevocarSesionesUsuario(int idUsuario, DateTime revocadoEnUtc, TimeSpan vigenciaMaxima) =>
+        UsuariosRevocados[idUsuario] = revocadoEnUtc;
+    public bool SesionUsuarioRevocada(int idUsuario, DateTime emitidoEnUtc) =>
+        UsuariosRevocados.TryGetValue(idUsuario, out var corte) && emitidoEnUtc <= corte;
 }
 
 /// <summary>Guarda los códigos "enviados" para que la prueba los lea como si abriera el correo.</summary>

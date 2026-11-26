@@ -86,6 +86,7 @@ public class UsuariosService(IAppDbContext db, IHashContrasena hash, IRevocacion
 
         if (!string.IsNullOrWhiteSpace(jtiActual) && expiraEnUtc.HasValue)
             revocacion.Revocar(jtiActual, expiraEnUtc.Value);
+        revocacion.RevocarSesionesUsuario(usuario.IdUsuario, DateTime.UtcNow, TimeSpan.FromHours(24));
     }
 
     private Task<Usuario?> CargarUsuarioCompletoAsync(int idUsuario, CancellationToken ct) =>

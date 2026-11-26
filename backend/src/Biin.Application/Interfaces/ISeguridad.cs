@@ -21,6 +21,12 @@ public interface IRevocacionToken
 
     /// <summary>Indica si el token (jti) fue revocado antes de vencer.</summary>
     bool EstaRevocado(string jti);
+
+    /// <summary>Revoca todos los tokens de un usuario emitidos hasta <paramref name="revocadoEnUtc"/>.</summary>
+    void RevocarSesionesUsuario(int idUsuario, DateTime revocadoEnUtc, TimeSpan vigenciaMaxima);
+
+    /// <summary>Indica si un token emitido en <paramref name="emitidoEnUtc"/> quedó invalidado por cierre global del usuario.</summary>
+    bool SesionUsuarioRevocada(int idUsuario, DateTime emitidoEnUtc);
 }
 
 public interface IAutorizacionOperador

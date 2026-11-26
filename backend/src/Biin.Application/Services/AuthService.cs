@@ -218,6 +218,7 @@ public class AuthService(
         await db.SaveChangesAsync(ct);
 
         CerrarSesion(jtiActual, expiraEnUtc);
+        revocacion.RevocarSesionesUsuario(usuario.IdUsuario, reloj.AhoraUtc, TimeSpan.FromHours(24));
     }
 
     private AuthResponse CrearRespuesta(Usuario usuario, IReadOnlyList<string> roles)

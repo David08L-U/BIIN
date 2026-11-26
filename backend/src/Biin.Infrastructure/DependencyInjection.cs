@@ -29,9 +29,10 @@ public static class DependencyInjection
 
         services.Configure<JwtOptions>(config.GetSection(JwtOptions.Seccion));
         services.AddMemoryCache();
+        services.AddDistributedMemoryCache();
         services.AddSingleton<IHashContrasena, BcryptHashContrasena>();
         services.AddSingleton<IGeneradorToken, JwtGeneradorToken>();
-        services.AddSingleton<IRevocacionToken, MemoriaRevocacionToken>();
+        services.AddSingleton<IRevocacionToken, DistribuidaRevocacionToken>();
         services.AddSingleton<IReloj, RelojSistema>();
         services.AddCorreo(config);
 

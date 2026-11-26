@@ -180,6 +180,7 @@ BIIN/
 - Cinco códigos incorrectos o el vencimiento anulan el pendiente. El login con un pendiente vigente avisa que falta confirmar, solo si la contraseña coincide.
 - El envío lo hace `SmtpEnvioCorreo` con la sección `Correo` (servidor, puerto, usuario, contraseña, SSL, remitente). Sin `Correo:Servidor`, en Development el código se escribe en la consola de la API (`RegistroEnvioCorreo`); en cualquier otro ambiente el registro responde 503.
 - Administradores, operadores y colaboradores no pasan por aquí: se crean con `crear_usuario.ps1` o desde `/api/admin/usuarios`.
+- **Revocación de JWT distribuible (`DistribuidaRevocacionToken`):** la revocación por `jti` y el cierre global por usuario (por `iat` al cambiar contraseña o desactivar cuenta) corren sobre `IDistributedCache`. En una sola instancia del MVP se respalda con `AddDistributedMemoryCache()` sin dependencias extra; al escalar a múltiples nodos basta registrar un `IDistributedCache` compartido (por ejemplo Redis) sin cambiar servicios ni tablas de PostgreSQL.
 - En el frontend, `RegistroPage` muestra `features/auth/components/VerificacionCorreo.tsx` después del formulario, con «Reenviar código» (cuenta regresiva) y «Volver y corregir mis datos», que conserva lo escrito.
 
 **Advertencias de un itinerario** (no bloquean, se devuelven en el detalle): `conflicto_horario`, `traslado_insuficiente`, `fuera_de_fechas`, `fuera_de_horario`, `evento_cancelado`, `contenido_no_disponible`. El traslado es una estimación (haversine × 1.3 a 40 km/h) y no sustituye horarios ni recorridos reales.
