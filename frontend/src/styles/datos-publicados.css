@@ -1,0 +1,47 @@
+/* RF03 / RF09 / RNF01 / RNF06: superficies compartidas desde 360 px. */
+.estado-consulta { padding: 16px; overflow-wrap: anywhere; }
+.estado-consulta button, .datos-publicados button, .formulario-api button, .orden-api button {
+  min-height: 44px; min-width: 44px; border: 1px solid var(--color-borde);
+  border-radius: 8px; padding: 8px 12px; background: var(--color-superficie-suave); color: var(--color-texto); font: inherit; cursor: pointer;
+}
+.foto-publicada { display: block; width: 100%; max-width: 100%; height: 180px; object-fit: cover; border-radius: 8px; }
+.foto-publicada-vacia { display: flex; align-items: center; justify-content: center; background: var(--color-superficie-acentuada); padding: 16px; color: var(--color-texto-suave); text-align: center; }
+.mapa-publicado { width: 100%; min-width: 0; position: relative; isolation: isolate; z-index: 0; }
+.mapa-publicado .leaflet-container { max-width: 100%; }
+.datos-publicados { padding: 16px; margin-top: 16px; overflow-wrap: anywhere; }
+.datos-publicados ul, .lista-viajes-api { list-style: none; margin: 0; padding: 0; }
+.datos-publicados li { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.datos-publicados small { display: block; color: var(--color-texto-suave); }
+.recorrido-opcion { display: grid; gap: 12px; padding: 12px 0; border-top: 1px solid var(--color-borde); }
+.destino-acciones-itinerario a { display: flex; justify-content: center; text-align: center; text-decoration: none; }
+.destino-valor { overflow-wrap: anywhere; }
+.formulario-api { display: grid; gap: 12px; margin: 16px 0; min-width: 0; }
+.formulario-api fieldset { min-inline-size: 0; border: 1px solid var(--color-borde); border-radius: 12px; padding: 12px; }
+.formulario-api legend { font-weight: 700; padding: 0 4px; }
+.formulario-api label, .selector-recorrido { display: grid; gap: 6px; min-width: 0; font-weight: 700; }
+.formulario-api :is(input, textarea, select), .selector-recorrido select {
+  min-inline-size: 0; max-width: 100%; width: 100%; min-height: 44px; padding: 8px; color: var(--color-texto);
+  background: var(--color-superficie-suave); border: 1px solid var(--color-borde); border-radius: 8px; font: inherit;
+}
+.formulario-api textarea { min-height: 80px; resize: vertical; }
+.formulario-api-fila { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.selector-recorrido { margin: 16px; }
+.seleccion-api { display: flex !important; gap: 8px; align-items: center; padding: 12px 0; }
+.seleccion-api input { width: 24px; height: 24px; flex: 0 0 24px; }
+.orden-api { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin-top: 12px; }
+.orden-api > span { flex: 1; min-width: 0; }
+.orden-api > div { display: flex; flex-shrink: 0; gap: 6px; }
+.lista-viajes-api { display: grid; gap: 16px; margin: 16px 0; }
+.lista-viajes-api li { display: grid; gap: 10px; }
+.plan > form > .plan-tarjeta, .plan > .plan-tarjeta { margin-top: 16px; }
+.plan button:disabled, .datos-publicados button:disabled { cursor: default; opacity: .6; }
+.rutas-tarjeta-pie { flex-wrap: wrap; }
+.rutas-metadata { flex-wrap: wrap; min-width: 0; }
+@media (max-width: 480px) {
+  .destino-metricas { grid-template-columns: minmax(0, 1fr); }
+  .plan-acciones { grid-template-columns: minmax(0, 1fr); }
+  .rutas-precio { margin-left: auto; }
+}
+@media (min-width: 600px) {
+  .formulario-api-fila { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
