@@ -174,7 +174,7 @@ BIIN/
 | `/api/itinerarios[/{id}[/actividades…]]` | Viajero | RF09: CRUD, actividades, reordenar, traslados estimados y advertencias |
 | `/api/admin/contenidos…` | Administrador | RF12: crear/editar negocios, lugares y eventos, publicar, archivar, cancelar evento, horarios, fotos |
 | `/api/admin/rutas/{idRuta}/tarifas…` | Administrador | RF12 / CU-12: listar histórico, crear, editar y cerrar vigencia de tarifas sin solapamiento + bitácora |
-| `/api/admin/{localidades,ubicaciones,bitacora}` | Administrador | Geografía para contenidos y bitácora 17.1.5 |
+| `/api/admin/{localidades,ubicaciones,bitacora}` | Administrador | Alta y edición (`PUT`) de geografía (con validación en Yucatán) y bitácora 17.1.5 |
 
 **Confirmación de correo al registrarse (solo viajeros, RF01, RNF04):**
 

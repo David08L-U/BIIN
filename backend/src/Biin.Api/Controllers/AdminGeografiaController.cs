@@ -28,6 +28,14 @@ public class AdminGeografiaController(AdminGeografiaService geografia, BitacoraC
         return Created($"/api/catalogos/localidades?idMunicipio={creada.IdMunicipio}", creada);
     }
 
+    [HttpPut("localidades/{idLocalidad:int}")]
+    [ProducesResponseType<LocalidadDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public Task<LocalidadDto> ActualizarLocalidad(int idLocalidad, ActualizarLocalidadRequest req, CancellationToken ct) =>
+        geografia.ActualizarLocalidadAsync(User.IdUsuario(), idLocalidad, req, ct);
+
     [HttpGet("localidades/{idLocalidad:int}/ubicaciones")]
     [ProducesResponseType<IReadOnlyList<UbicacionDto>>(StatusCodes.Status200OK)]
     public Task<IReadOnlyList<UbicacionDto>> ListarUbicaciones(int idLocalidad, CancellationToken ct) =>
@@ -41,6 +49,13 @@ public class AdminGeografiaController(AdminGeografiaService geografia, BitacoraC
         var creada = await geografia.CrearUbicacionAsync(User.IdUsuario(), req, ct);
         return Created($"/api/admin/localidades/{creada.IdLocalidad}/ubicaciones", creada);
     }
+
+    [HttpPut("ubicaciones/{idUbicacion:int}")]
+    [ProducesResponseType<UbicacionDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public Task<UbicacionDto> ActualizarUbicacion(int idUbicacion, ActualizarUbicacionRequest req, CancellationToken ct) =>
+        geografia.ActualizarUbicacionAsync(User.IdUsuario(), idUbicacion, req, ct);
 
     /// <summary>Bitácora de cambios administrativos, de lo más reciente a lo más antiguo.</summary>
     [HttpGet("bitacora")]

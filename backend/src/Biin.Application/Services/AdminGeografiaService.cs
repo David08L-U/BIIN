@@ -42,6 +42,44 @@ public class AdminGeografiaService(IAppDbContext db, IBitacoraAdmin bitacora)
         return new LocalidadDto(localidad.IdLocalidad, localidad.Nombre, municipio.IdMunicipio, municipio.Nombre);
     }
 
+    public async Task<LocalidadDto> ActualizarLocalidadAsync(
+        int idAdmin,
+        int idLocalidad,
+        ActualizarLocalidadRequest req,
+        CancellationToken ct = default)
+    {
+        var nombre = (req.Nombre ?? string.Empty).Trim();
+        if (nombre.Length is < 2 or > 120)
+            throw new ReglaNegocioException("El nombre debe tener entre 2 y 120 caracteres.");
+
+        var localidad = await db.Localidades
+            .Include(l => l.Municipio)
+            .SingleOrDefaultAsync(l => l.IdLocalidad == idLocalidad, ct)
+            ?? throw new NoEncontradoException("Localidad no encontrada.");
+
+        var municipio = await db.Municipios.SingleOrDefaultAsync(m => m.IdMunicipio == req.IdMunicipio, ct)
+            ?? throw new ReglaNegocioException("El municipio indicado no existe.");
+
+        var normalizado = FuncionesBd.NormalizarTexto(nombre);
+        var existeOtra = await db.Localidades.AnyAsync(
+            l => l.IdLocalidad != idLocalidad &&
+                 l.IdMunicipio == req.IdMunicipio &&
+                 FuncionesBd.Normalizar(l.Nombre) == normalizado, ct);
+        if (existeOtra)
+            throw new ConflictoException($"Ya existe la localidad «{nombre}» en {municipio.Nombre}.");
+
+        var anterior = new { localidad.Nombre, localidad.IdMunicipio };
+        localidad.Nombre = nombre;
+        localidad.IdMunicipio = municipio.IdMunicipio;
+        localidad.Municipio = municipio;
+
+        bitacora.Registrar(idAdmin, AccionesBitacora.Editar, "localidades", localidad.IdLocalidad.ToString(),
+            new { anterior, nuevo = new { nombre, idMunicipio = municipio.IdMunicipio } });
+        await db.SaveChangesAsync(ct);
+
+        return new LocalidadDto(localidad.IdLocalidad, localidad.Nombre, municipio.IdMunicipio, municipio.Nombre);
+    }
+
     public async Task<UbicacionDto> CrearUbicacionAsync(int idAdmin, CrearUbicacionRequest req, CancellationToken ct = default)
     {
         var (latitud, longitud) = ValidacionGeografia.ValidarEnYucatan(req.Latitud, req.Longitud);
@@ -65,6 +103,40 @@ public class AdminGeografiaService(IAppDbContext db, IBitacoraAdmin bitacora)
 
         bitacora.Registrar(idAdmin, AccionesBitacora.Crear, "ubicaciones", ubicacion.IdUbicacion.ToString(),
             new { localidad = localidad.Nombre, ubicacion.Latitud, ubicacion.Longitud });
+        await db.SaveChangesAsync(ct);
+
+        return ContenidosMapeo.AUbicacionDto(ubicacion);
+    }
+
+    public async Task<UbicacionDto> ActualizarUbicacionAsync(
+        int idAdmin,
+        int idUbicacion,
+        ActualizarUbicacionRequest req,
+        CancellationToken ct = default)
+    {
+        var (latitud, longitud) = ValidacionGeografia.ValidarEnYucatan(req.Latitud, req.Longitud);
+
+        var ubicacion = await db.Ubicaciones
+            .Include(u => u.Localidad).ThenInclude(l => l.Municipio)
+            .SingleOrDefaultAsync(u => u.IdUbicacion == idUbicacion, ct)
+            ?? throw new NoEncontradoException("Ubicación no encontrada.");
+
+        var localidad = await db.Localidades
+            .Include(l => l.Municipio)
+            .SingleOrDefaultAsync(l => l.IdLocalidad == req.IdLocalidad, ct)
+            ?? throw new ReglaNegocioException("La localidad indicada no existe.");
+
+        var anterior = new { ubicacion.IdLocalidad, ubicacion.DireccionReferencia, ubicacion.Latitud, ubicacion.Longitud };
+        ubicacion.IdLocalidad = localidad.IdLocalidad;
+        ubicacion.Localidad = localidad;
+        ubicacion.DireccionReferencia = string.IsNullOrWhiteSpace(req.DireccionReferencia)
+            ? null
+            : req.DireccionReferencia.Trim();
+        ubicacion.Latitud = latitud;
+        ubicacion.Longitud = longitud;
+
+        bitacora.Registrar(idAdmin, AccionesBitacora.Editar, "ubicaciones", ubicacion.IdUbicacion.ToString(),
+            new { anterior, nuevo = new { ubicacion.IdLocalidad, ubicacion.DireccionReferencia, ubicacion.Latitud, ubicacion.Longitud } });
         await db.SaveChangesAsync(ct);
 
         return ContenidosMapeo.AUbicacionDto(ubicacion);

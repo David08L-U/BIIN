@@ -258,6 +258,28 @@ Content-Type: application/json
   "longitud": -89.2851
 }
 
+### Corregir una ubicación existente (coordenadas o referencia) (CU-12)
+PUT {{api}}/api/admin/ubicaciones/1
+Authorization: Bearer PEGAR_TOKEN_ADMIN
+Content-Type: application/json
+
+{
+  "idLocalidad": 5,
+  "direccionReferencia": "Paradero frente al parque principal",
+  "latitud": 20.7391,
+  "longitud": -89.2855
+}
+
+### Editar una localidad existente (CU-12)
+PUT {{api}}/api/admin/localidades/5
+Authorization: Bearer PEGAR_TOKEN_ADMIN
+Content-Type: application/json
+
+{
+  "idMunicipio": 5,
+  "nombre": "Homún"
+}
+
 ### Crear negocio (nace pendiente)
 POST {{api}}/api/admin/contenidos/negocios
 Authorization: Bearer PEGAR_TOKEN_ADMIN
