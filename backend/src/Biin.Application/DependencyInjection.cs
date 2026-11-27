@@ -20,12 +20,15 @@ public static class DependencyInjection
         services.AddScoped<EventosService>();
         services.AddScoped<LugaresService>();
         services.AddScoped<ExplorarService>();
+        services.AddScoped<RecorridosService>();
         services.AddScoped<TarifasService>();
         services.AddScoped<UbicacionesService>();
         services.AddScoped<MapaRutaService>();
+        services.AddScoped<RutasService>();
         services.AddScoped<ItinerariosService>();
         services.AddScoped<AdminContenidosService>();
         services.AddScoped<AdminTarifasService>();
+        services.AddScoped<AdminRecorridosService>();
         services.AddScoped<AdminGeografiaService>();
         services.AddScoped<BitacoraConsultaService>();
         return services;

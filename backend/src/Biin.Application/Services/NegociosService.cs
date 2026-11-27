@@ -3,6 +3,7 @@ using Biin.Application.DTOs.Comun;
 using Biin.Application.DTOs.Contenidos;
 using Biin.Application.Interfaces;
 using Biin.Application.Mappings;
+using Biin.Application.Validators;
 using Biin.Domain.Entities;
 using Biin.Domain.Enums;
 using Biin.Domain.Exceptions;
@@ -13,10 +14,15 @@ namespace Biin.Application.Services;
 /// <summary>Consulta pública de negocios gastronómicos publicados (RF05, CU-05, HU05).</summary>
 public class NegociosService(IAppDbContext db, IReloj reloj)
 {
+    public const double RadioPorDefectoKm = 25.0;
+
     public async Task<PaginaResultado<NegocioResumenDto>> ListarAsync(
         FiltroNegociosRequest filtro,
         CancellationToken ct = default)
     {
+        var usarProximidad = ValidacionGeografia.ValidarProximidadOpcional(
+            filtro.Lat, filtro.Lng, filtro.RadioKm, RadioPorDefectoKm, out var lat, out var lng, out var radioKm);
+
         var (pagina, tamano) = Paginacion.Normalizar(filtro.Pagina, filtro.Tamano);
         var consulta = ConsultaPublicados();
 
@@ -45,6 +51,28 @@ public class NegociosService(IAppDbContext db, IReloj reloj)
                 FuncionesBd.Normalizar(n.Recurso.Descripcion ?? string.Empty).Contains(texto) ||
                 FuncionesBd.Normalizar(n.Ubicacion.Localidad.Nombre).Contains(texto));
 
+        var ahoraLocal = ZonaYucatan.ALocal(reloj.AhoraUtc);
+
+        if (usarProximidad)
+        {
+            var candidatos = await consulta.ToListAsync(ct);
+            var ordenados = candidatos
+                .Select(n => (Negocio: n, Distancia: CalculadoraTraslado.DistanciaKm(lat, lng, n.Ubicacion.Latitud, n.Ubicacion.Longitud)))
+                .Where(x => x.Distancia <= radioKm)
+                .OrderBy(x => x.Distancia)
+                .ThenBy(x => x.Negocio.Recurso.Titulo)
+                .ThenBy(x => x.Negocio.IdRecurso)
+                .ToList();
+
+            var itemsCercanos = ordenados
+                .Skip(Paginacion.Saltar(pagina, tamano))
+                .Take(tamano)
+                .Select(x => AResumen(x.Negocio, ahoraLocal, Math.Round(x.Distancia, 2)))
+                .ToList();
+
+            return new PaginaResultado<NegocioResumenDto>(itemsCercanos, ordenados.Count, pagina, tamano);
+        }
+
         var total = await consulta.CountAsync(ct);
         var negocios = await consulta
             .OrderBy(n => n.Recurso.Titulo)
@@ -53,8 +81,7 @@ public class NegociosService(IAppDbContext db, IReloj reloj)
             .Take(tamano)
             .ToListAsync(ct);
 
-        var ahoraLocal = ZonaYucatan.ALocal(reloj.AhoraUtc);
-        var items = negocios.Select(n => AResumen(n, ahoraLocal)).ToList();
+        var items = negocios.Select(n => AResumen(n, ahoraLocal, null)).ToList();
         return new PaginaResultado<NegocioResumenDto>(items, total, pagina, tamano);
     }
 
@@ -89,7 +116,7 @@ public class NegociosService(IAppDbContext db, IReloj reloj)
             .Include(n => n.Ubicacion).ThenInclude(u => u.Localidad).ThenInclude(l => l.Municipio)
             .Where(n => n.Recurso.EstadoPublicacion == EstadoPublicacion.Publicado);
 
-    private static NegocioResumenDto AResumen(Negocio n, DateTime ahoraLocal) => new(
+    private static NegocioResumenDto AResumen(Negocio n, DateTime ahoraLocal, double? distanciaKm) => new(
         n.IdRecurso,
         n.Recurso.Titulo,
         n.Recurso.Descripcion,
@@ -102,5 +129,6 @@ public class NegociosService(IAppDbContext db, IReloj reloj)
         ContenidosMapeo.NombresCategorias(n.Recurso),
         ContenidosMapeo.FotoPrincipal(n.Recurso),
         ContenidosMapeo.AbiertoAhora(n.Recurso, ahoraLocal),
-        n.Recurso.ActualizadoEn);
+        n.Recurso.ActualizadoEn,
+        distanciaKm);
 }

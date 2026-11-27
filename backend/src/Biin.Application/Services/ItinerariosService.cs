@@ -57,6 +57,133 @@ public class ItinerariosService(IAppDbContext db, IReloj reloj)
         return ADetalle(itinerario);
     }
 
+    /// <summary>
+    /// Crea un itinerario editable del viajero a partir de un recorrido sugerido publicado (CU-09, CU-13).
+    /// Solo copia etapas cuyo recurso siga publicado; si se indica <c>HoraInicioLocal</c>, escalona horarios
+    /// usando la duración sugerida de cada etapa y el tiempo estimado de traslado entre ubicaciones.
+    /// </summary>
+    public async Task<ItinerarioDetalleDto> CrearDesdeRecorridoAsync(
+        int idUsuario,
+        int idRecorrido,
+        CrearItinerarioDesdeRecorridoRequest req,
+        CancellationToken ct = default)
+    {
+        if (idRecorrido <= 0)
+            throw new ReglaNegocioException("El identificador del recorrido debe ser mayor a cero.");
+
+        var fin = req.Fin ?? req.Inicio;
+        ValidacionItinerario.ValidarFechas(req.Inicio, fin);
+        ValidacionItinerario.ValidarPresupuesto(req.PresupuestoEstimado);
+
+        // Se carga con seguimiento para que EF Core mantenga los recursos como Unchanged al guardar actividades
+        var recorrido = await db.RecorridosSugeridos
+            .Include(r => r.Etapas)
+                .ThenInclude(e => e.Recurso)
+                    .ThenInclude(rec => rec.HorariosVisita)
+            .Include(r => r.Etapas)
+                .ThenInclude(e => e.Recurso)
+                    .ThenInclude(rec => rec.Negocio!)
+                        .ThenInclude(n => n.Ubicacion)
+                            .ThenInclude(u => u.Localidad)
+            .Include(r => r.Etapas)
+                .ThenInclude(e => e.Recurso)
+                    .ThenInclude(rec => rec.Evento!)
+                        .ThenInclude(ev => ev.Ubicacion)
+                            .ThenInclude(u => u.Localidad)
+            .Include(r => r.Etapas)
+                .ThenInclude(e => e.Recurso)
+                    .ThenInclude(rec => rec.Lugar!)
+                        .ThenInclude(l => l.Ubicacion)
+                            .ThenInclude(u => u.Localidad)
+            .SingleOrDefaultAsync(r =>
+                r.IdRecorrido == idRecorrido &&
+                r.EstadoPublicacion == EstadoPublicacion.Publicado, ct)
+            ?? throw new NoEncontradoException("Recorrido sugerido no encontrado.");
+
+        var nombre = ValidacionItinerario.NormalizarNombre(
+            string.IsNullOrWhiteSpace(req.Nombre) ? recorrido.Titulo : req.Nombre);
+
+        var etapasPublicadas = recorrido.Etapas
+            .OrderBy(e => e.Orden)
+            .Where(e => e.Recurso.EstadoPublicacion == EstadoPublicacion.Publicado)
+            .ToList();
+
+        if (etapasPublicadas.Count == 0)
+            throw new ReglaNegocioException("El recorrido no tiene etapas publicadas disponibles para copiar.");
+
+        if (etapasPublicadas.Count > ValidacionItinerario.ActividadesMaximas)
+            throw new ReglaNegocioException(
+                $"Un itinerario puede tener como máximo {ValidacionItinerario.ActividadesMaximas} actividades.");
+
+        var itinerario = new Itinerario
+        {
+            IdUsuario = idUsuario,
+            Nombre = nombre,
+            Inicio = req.Inicio,
+            Fin = fin,
+            PresupuestoEstimado = req.PresupuestoEstimado,
+            FechaCreacion = reloj.AhoraUtc
+        };
+        db.Itinerarios.Add(itinerario);
+        await db.SaveChangesAsync(ct);
+
+        DateTime? cursorUtc = req.HoraInicioLocal.HasValue
+            ? ZonaYucatan.AUtc(req.Inicio, req.HoraInicioLocal.Value)
+            : null;
+        Ubicacion? ubicacionAnterior = null;
+
+        for (var i = 0; i < etapasPublicadas.Count; i++)
+        {
+            var etapa = etapasPublicadas[i];
+            var recurso = etapa.Recurso;
+            var ubicacionActual = AnalizadorItinerario.UbicacionDe(recurso);
+
+            DateTime? inicioPrevisto = null;
+            DateTime? finPrevisto = null;
+
+            if (recurso.Evento is not null)
+            {
+                inicioPrevisto = recurso.Evento.Inicio;
+                finPrevisto = recurso.Evento.Fin;
+            }
+            else if (cursorUtc.HasValue)
+            {
+                if (ubicacionAnterior is not null && ubicacionActual is not null)
+                {
+                    var km = CalculadoraTraslado.DistanciaKm(
+                        ubicacionAnterior.Latitud, ubicacionAnterior.Longitud,
+                        ubicacionActual.Latitud, ubicacionActual.Longitud);
+                    cursorUtc = cursorUtc.Value.AddMinutes(CalculadoraTraslado.MinutosEstimados(km));
+                }
+
+                var duracionMin = etapa.DuracionSugeridaMin is > 0 ? etapa.DuracionSugeridaMin.Value : 60;
+                inicioPrevisto = cursorUtc.Value;
+                finPrevisto = inicioPrevisto.Value.AddMinutes(duracionMin);
+                cursorUtc = finPrevisto;
+            }
+
+            if (ubicacionActual is not null)
+                ubicacionAnterior = ubicacionActual;
+
+            var actividad = new ActividadItinerario
+            {
+                IdItinerario = itinerario.IdItinerario,
+                Itinerario = itinerario,
+                IdRecurso = recurso.IdRecurso,
+                Recurso = recurso,
+                Orden = i + 1,
+                InicioPrevisto = inicioPrevisto,
+                FinPrevisto = finPrevisto,
+                Notas = null
+            };
+            itinerario.Actividades.Add(actividad);
+            db.ActividadesItinerario.Add(actividad);
+        }
+
+        await db.SaveChangesAsync(ct);
+        return ADetalle(itinerario);
+    }
+
     /// <summary>Cambia nombre, fechas o presupuesto. Si las nuevas fechas dejan fuera actividades, se advierte.</summary>
     public async Task<ItinerarioDetalleDto> ActualizarAsync(
         int idUsuario,

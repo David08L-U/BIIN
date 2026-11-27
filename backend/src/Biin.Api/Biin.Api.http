@@ -171,6 +171,9 @@ GET {{api}}/api/ubicaciones/cercanas?lat=20.9674&lng=-89.6237&radioKm=15&limite=
 ### Negocios gastronómicos con filtros (CU-05, RF05)
 GET {{api}}/api/negocios?busqueda=cocina&precioMaximo=150&pagina=1&tamano=20
 
+### Negocios gastronómicos cercanos por GPS opcional (CU-05, RF05, RNF05)
+GET {{api}}/api/negocios?lat=20.7392&lng=-89.2855&radioKm=15
+
 ### Ficha de un negocio (horarios, fotos, abierto ahora)
 GET {{api}}/api/negocios/1
 
@@ -180,14 +183,40 @@ GET {{api}}/api/eventos
 ### Eventos de un rango de días en hora de Yucatán, solo cancelados
 GET {{api}}/api/eventos?desde=2026-12-01&hasta=2026-12-31&estado=cancelado
 
+### Eventos cercanos por GPS opcional (CU-06, RF06, RNF05)
+GET {{api}}/api/eventos?lat=20.7392&lng=-89.2855&radioKm=20
+
 ### Lugares de interés gratuitos (CU-07, RF07)
 GET {{api}}/api/lugares?costoMaximo=0
+
+### Lugares de interés cercanos por GPS opcional (CU-07, RF07, RNF05)
+GET {{api}}/api/lugares?lat=20.7392&lng=-89.2855&radioKm=10
 
 ### Explorar por interés: todo lo publicado de una categoría (CU-14)
 GET {{api}}/api/explorar?idCategoria=9
 
 ### Explorar ordenado por cercanía GPS opcional (CU-14, RNF05)
 GET {{api}}/api/explorar?lat=20.7392&lng=-89.2855&radioKm=10
+
+### Recorridos sugeridos publicados (CU-13, M2)
+GET {{api}}/api/recorridos?busqueda=homun
+
+### Detalle de un recorrido sugerido con sus etapas ordenadas y coordenadas (CU-13)
+GET {{api}}/api/recorridos/1
+
+### ───────── Transporte intermunicipal y rutas de combis (sin sesión, RF02, RF03, CU-02, CU-03) ─────────
+
+### Buscar rutas por origen y destino sin acentos (respeta orden de paradas)
+GET {{api}}/api/rutas?origen=merida&destino=homun
+
+### Rutas activas con paradas de abordaje cercanas a la ubicación actual (GPS consentido, RNF05)
+GET {{api}}/api/rutas/cercanas?lat=20.9674&lng=-89.6237&radioKm=15&limite=10
+
+### Detalle completo de una ruta (paradas, trazo, horarios, tarifas, opciones de regreso y salidas)
+GET {{api}}/api/rutas/1
+
+### Salidas programadas de una ruta para hoy (o fecha específica) con estado de cupo (RNF07)
+GET {{api}}/api/rutas/1/salidas
 
 ### Tarifas aproximadas vigentes de una ruta publicada (CU-03, RF03, RNF07)
 GET {{api}}/api/rutas/1/tarifas
@@ -214,6 +243,18 @@ Content-Type: application/json
   "inicio": "2026-12-12",
   "fin": "2026-12-13",
   "presupuestoEstimado": 1500
+}
+
+### Crear itinerario clonando un recorrido sugerido publicado con horarios escalonados (CU-09, CU-13)
+POST {{api}}/api/itinerarios/desde-recorrido/1
+Authorization: Bearer PEGAR_TOKEN
+Content-Type: application/json
+
+{
+  "inicio": "2026-12-12",
+  "fin": "2026-12-12",
+  "presupuestoEstimado": 1200,
+  "horaInicioLocal": "09:00:00"
 }
 
 ### Agregar actividad (horas con zona; si es evento y no se indican, se usan las del evento)
@@ -410,3 +451,26 @@ Content-Type: application/json
 {
   "vigenteHasta": "2026-12-31"
 }
+
+### Admin: listar recorridos sugeridos (incluye pendientes y archivados) (CU-12, CU-13)
+GET {{api}}/api/admin/recorridos
+Authorization: Bearer PEGAR_TOKEN_ADMIN
+
+### Admin: crear recorrido sugerido con etapas iniciales (CU-12, CU-13)
+POST {{api}}/api/admin/recorridos
+Authorization: Bearer PEGAR_TOKEN_ADMIN
+Content-Type: application/json
+
+{
+  "titulo": "Recorrido cultural en Izamal",
+  "descripcion": "Plan de medio día saliendo desde Mérida.",
+  "idLocalidadBase": 5,
+  "etapas": [
+    { "idRecurso": 1, "duracionSugeridaMin": 75 },
+    { "idRecurso": 3, "duracionSugeridaMin": 90 }
+  ]
+}
+
+### Admin: publicar recorrido sugerido (requiere al menos 2 etapas publicadas)
+POST {{api}}/api/admin/recorridos/1/publicar
+Authorization: Bearer PEGAR_TOKEN_ADMIN

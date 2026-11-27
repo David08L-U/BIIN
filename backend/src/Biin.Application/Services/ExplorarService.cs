@@ -27,7 +27,8 @@ public class ExplorarService(IAppDbContext db, IReloj reloj)
         if (filtro.Tipo == TipoRecurso.Ruta)
             throw new ReglaNegocioException("Las rutas se consultan en la búsqueda de transporte, no en explorar.");
 
-        var usarProximidad = ValidarProximidad(filtro, out var lat, out var lng, out var radioKm);
+        var usarProximidad = ValidacionGeografia.ValidarProximidadOpcional(
+            filtro.Lat, filtro.Lng, filtro.RadioKm, RadioPorDefectoKm, out var lat, out var lng, out var radioKm);
 
         var (pagina, tamano) = Paginacion.Normalizar(filtro.Pagina, filtro.Tamano);
         var ahora = reloj.AhoraUtc;
@@ -124,30 +125,5 @@ public class ExplorarService(IAppDbContext db, IReloj reloj)
             x.DistanciaKm)).ToList();
 
         return new PaginaResultado<RecursoExploradoDto>(items, total, pagina, tamano);
-    }
-
-    private static bool ValidarProximidad(
-        FiltroExplorarRequest filtro,
-        out decimal lat,
-        out decimal lng,
-        out double radioKm)
-    {
-        lat = 0;
-        lng = 0;
-        radioKm = RadioPorDefectoKm;
-
-        if (!filtro.Lat.HasValue && !filtro.Lng.HasValue)
-        {
-            if (filtro.RadioKm.HasValue)
-                throw new ReglaNegocioException("Para usar radioKm debes indicar lat y lng.");
-            return false;
-        }
-
-        if (!filtro.Lat.HasValue || !filtro.Lng.HasValue)
-            throw new ReglaNegocioException("Indica tanto latitud como longitud para filtrar por cercanía.");
-
-        (lat, lng) = ValidacionGeografia.ValidarGlobales(filtro.Lat.Value, filtro.Lng.Value);
-        radioKm = ValidacionGeografia.ValidarRadioKm(filtro.RadioKm ?? RadioPorDefectoKm);
-        return true;
     }
 }

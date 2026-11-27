@@ -31,7 +31,10 @@ public record FiltroNegociosRequest(
     /// <summary>Presupuesto por persona: excluye negocios cuyo precio mínimo lo supera.</summary>
     decimal? PrecioMaximo = null,
     int Pagina = 1,
-    int Tamano = 20);
+    int Tamano = 20,
+    decimal? Lat = null,
+    decimal? Lng = null,
+    double? RadioKm = null);
 
 /// <summary><c>AbiertoAhora</c> es null cuando el negocio no tiene horarios registrados (dato no confirmado, RNF07).</summary>
 public record NegocioResumenDto(
@@ -47,7 +50,8 @@ public record NegocioResumenDto(
     IReadOnlyList<string> Categorias,
     string? FotoPrincipal,
     bool? AbiertoAhora,
-    DateTime ActualizadoEn);
+    DateTime ActualizadoEn,
+    double? DistanciaKm = null);
 
 public record NegocioDetalleDto(
     int IdRecurso,
@@ -78,7 +82,10 @@ public record FiltroEventosRequest(
     DateOnly? Hasta = null,
     EstadoEvento? Estado = null,
     int Pagina = 1,
-    int Tamano = 20);
+    int Tamano = 20,
+    decimal? Lat = null,
+    decimal? Lng = null,
+    double? RadioKm = null);
 
 public record EventoResumenDto(
     int IdRecurso,
@@ -94,7 +101,8 @@ public record EventoResumenDto(
     decimal Longitud,
     IReadOnlyList<string> Categorias,
     string? FotoPrincipal,
-    DateTime ActualizadoEn);
+    DateTime ActualizadoEn,
+    double? DistanciaKm = null);
 
 public record EventoDetalleDto(
     int IdRecurso,
@@ -120,7 +128,10 @@ public record FiltroLugaresRequest(
     /// <summary>Costo de acceso máximo; 0 devuelve solo lugares gratuitos.</summary>
     decimal? CostoMaximo = null,
     int Pagina = 1,
-    int Tamano = 20);
+    int Tamano = 20,
+    decimal? Lat = null,
+    decimal? Lng = null,
+    double? RadioKm = null);
 
 public record LugarResumenDto(
     int IdRecurso,
@@ -134,7 +145,8 @@ public record LugarResumenDto(
     IReadOnlyList<string> Categorias,
     string? FotoPrincipal,
     bool? AbiertoAhora,
-    DateTime ActualizadoEn);
+    DateTime ActualizadoEn,
+    double? DistanciaKm = null);
 
 public record LugarDetalleDto(
     int IdRecurso,

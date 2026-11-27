@@ -38,6 +38,22 @@ public class ItinerariosController(ItinerariosService itinerarios) : ControllerB
         return CreatedAtAction(nameof(Obtener), new { id = creado.IdItinerario }, creado);
     }
 
+    /// <summary>Crea un itinerario editable copiando las etapas publicadas de un recorrido sugerido (CU-09, CU-13).</summary>
+    [HttpPost("desde-recorrido/{idRecorrido:int}")]
+    [ProducesResponseType<ItinerarioDetalleDto>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ItinerarioDetalleDto>> CrearDesdeRecorrido(
+        int idRecorrido,
+        CrearItinerarioDesdeRecorridoRequest req,
+        CancellationToken ct)
+    {
+        var creado = await itinerarios.CrearDesdeRecorridoAsync(User.IdUsuario(), idRecorrido, req, ct);
+        return CreatedAtAction(nameof(Obtener), new { id = creado.IdItinerario }, creado);
+    }
+
     [HttpPut("{id:int}")]
     [ProducesResponseType<ItinerarioDetalleDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

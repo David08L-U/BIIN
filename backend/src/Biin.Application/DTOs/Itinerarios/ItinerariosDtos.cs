@@ -14,6 +14,17 @@ public record CrearItinerarioRequest(
     [Range(0, 9_999_999, ErrorMessage = "El presupuesto no puede ser negativo.")]
     decimal? PresupuestoEstimado = null);
 
+/// <summary>Parámetros para clonar un recorrido sugerido publicado en un itinerario editable del viajero (CU-09, CU-13).</summary>
+public record CrearItinerarioDesdeRecorridoRequest(
+    DateOnly Inicio,
+    DateOnly? Fin = null,
+    [StringLength(120, MinimumLength = 2, ErrorMessage = "El nombre debe tener entre 2 y 120 caracteres.")]
+    string? Nombre = null,
+    [Range(0, 9_999_999, ErrorMessage = "El presupuesto no puede ser negativo.")]
+    decimal? PresupuestoEstimado = null,
+    /// <summary>Hora local de inicio en Yucatán (ej. 09:00:00) para escalonar horarios con duraciones sugeridas y traslados.</summary>
+    TimeOnly? HoraInicioLocal = null);
+
 public record ActualizarItinerarioRequest(
     [Required(ErrorMessage = "El nombre es obligatorio.")]
     [StringLength(120, MinimumLength = 2, ErrorMessage = "El nombre debe tener entre 2 y 120 caracteres.")]

@@ -49,4 +49,36 @@ public static class ValidacionGeografia
 
         return radioKm;
     }
+
+    /// <summary>
+    /// Valida el trío opcional (lat, lng, radioKm) para filtros de proximidad por GPS consentido (RNF05).
+    /// Devuelve <c>true</c> cuando se deben filtrar y ordenar resultados por distancia, o <c>false</c> si no hay GPS.
+    /// </summary>
+    public static bool ValidarProximidadOpcional(
+        decimal? latitud,
+        decimal? longitud,
+        double? radioKm,
+        double radioPorDefectoKm,
+        out decimal lat,
+        out decimal lng,
+        out double radioValidadoKm)
+    {
+        lat = 0;
+        lng = 0;
+        radioValidadoKm = radioPorDefectoKm;
+
+        if (!latitud.HasValue && !longitud.HasValue)
+        {
+            if (radioKm.HasValue)
+                throw new ReglaNegocioException("Para usar radioKm debes indicar lat y lng.");
+            return false;
+        }
+
+        if (!latitud.HasValue || !longitud.HasValue)
+            throw new ReglaNegocioException("Indica tanto latitud como longitud para filtrar por cercanía.");
+
+        (lat, lng) = ValidarGlobales(latitud.Value, longitud.Value);
+        radioValidadoKm = ValidarRadioKm(radioKm ?? radioPorDefectoKm);
+        return true;
+    }
 }

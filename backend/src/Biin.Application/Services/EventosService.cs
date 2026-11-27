@@ -3,6 +3,7 @@ using Biin.Application.DTOs.Comun;
 using Biin.Application.DTOs.Contenidos;
 using Biin.Application.Interfaces;
 using Biin.Application.Mappings;
+using Biin.Application.Validators;
 using Biin.Domain.Entities;
 using Biin.Domain.Enums;
 using Biin.Domain.Exceptions;
@@ -10,15 +11,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Biin.Application.Services;
 
-/// <summary>Consulta pública de eventos por localidad, fecha o categoría, con su estado (RF06, CU-06, HU06).</summary>
+/// <summary>Consulta pública de eventos por localidad, fecha, categoría o cercanía GPS, con su estado (RF06, CU-06, HU06).</summary>
 public class EventosService(IAppDbContext db, IReloj reloj)
 {
+    public const double RadioPorDefectoKm = 25.0;
+
     public async Task<PaginaResultado<EventoResumenDto>> ListarAsync(
         FiltroEventosRequest filtro,
         CancellationToken ct = default)
     {
         if (filtro.Desde.HasValue && filtro.Hasta.HasValue && filtro.Hasta < filtro.Desde)
             throw new ReglaNegocioException("La fecha 'hasta' no puede ser anterior a 'desde'.");
+
+        var usarProximidad = ValidacionGeografia.ValidarProximidadOpcional(
+            filtro.Lat, filtro.Lng, filtro.RadioKm, RadioPorDefectoKm, out var lat, out var lng, out var radioKm);
 
         var (pagina, tamano) = Paginacion.Normalizar(filtro.Pagina, filtro.Tamano);
         var consulta = ConsultaPublicados();
@@ -52,6 +58,26 @@ public class EventosService(IAppDbContext db, IReloj reloj)
                 FuncionesBd.Normalizar(e.Recurso.Descripcion ?? string.Empty).Contains(texto) ||
                 FuncionesBd.Normalizar(e.Ubicacion.Localidad.Nombre).Contains(texto));
 
+        if (usarProximidad)
+        {
+            var candidatos = await consulta.ToListAsync(ct);
+            var ordenados = candidatos
+                .Select(e => (Evento: e, Distancia: CalculadoraTraslado.DistanciaKm(lat, lng, e.Ubicacion.Latitud, e.Ubicacion.Longitud)))
+                .Where(x => x.Distancia <= radioKm)
+                .OrderBy(x => x.Distancia)
+                .ThenBy(x => x.Evento.Inicio)
+                .ThenBy(x => x.Evento.IdRecurso)
+                .ToList();
+
+            var itemsCercanos = ordenados
+                .Skip(Paginacion.Saltar(pagina, tamano))
+                .Take(tamano)
+                .Select(x => AResumen(x.Evento, Math.Round(x.Distancia, 2)))
+                .ToList();
+
+            return new PaginaResultado<EventoResumenDto>(itemsCercanos, ordenados.Count, pagina, tamano);
+        }
+
         var total = await consulta.CountAsync(ct);
         var eventos = await consulta
             .OrderBy(e => e.Inicio)
@@ -60,7 +86,7 @@ public class EventosService(IAppDbContext db, IReloj reloj)
             .Take(tamano)
             .ToListAsync(ct);
 
-        return new PaginaResultado<EventoResumenDto>(eventos.Select(AResumen).ToList(), total, pagina, tamano);
+        return new PaginaResultado<EventoResumenDto>(eventos.Select(e => AResumen(e, null)).ToList(), total, pagina, tamano);
     }
 
     /// <summary>Ficha de un evento publicado, aunque ya haya pasado o esté cancelado.</summary>
@@ -92,7 +118,7 @@ public class EventosService(IAppDbContext db, IReloj reloj)
             .Include(e => e.Ubicacion).ThenInclude(u => u.Localidad).ThenInclude(l => l.Municipio)
             .Where(e => e.Recurso.EstadoPublicacion == EstadoPublicacion.Publicado);
 
-    private static EventoResumenDto AResumen(Evento e) => new(
+    private static EventoResumenDto AResumen(Evento e, double? distanciaKm) => new(
         e.IdRecurso,
         e.Recurso.Titulo,
         e.Recurso.Descripcion,
@@ -106,5 +132,6 @@ public class EventosService(IAppDbContext db, IReloj reloj)
         e.Ubicacion.Longitud,
         ContenidosMapeo.NombresCategorias(e.Recurso),
         ContenidosMapeo.FotoPrincipal(e.Recurso),
-        e.Recurso.ActualizadoEn);
+        e.Recurso.ActualizadoEn,
+        distanciaKm);
 }

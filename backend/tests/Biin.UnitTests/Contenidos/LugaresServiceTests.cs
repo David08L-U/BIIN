@@ -63,4 +63,38 @@ public class LugaresServiceTests
     {
         await Assert.ThrowsAsync<NoEncontradoException>(() => _servicio.ObtenerAsync(_datos.CenoteArchivado.IdRecurso));
     }
+
+    [Fact]
+    public async Task Listar_con_gps_calcula_distancia_y_filtra_por_radio()
+    {
+        var cercano = await _servicio.ListarAsync(new FiltroLugaresRequest(
+            Lat: 20.7392m,
+            Lng: -89.2855m,
+            RadioKm: 5));
+
+        var lugar = Assert.Single(cercano.Items);
+        Assert.Equal("Cenote Santa Rosa", lugar.Titulo);
+        Assert.NotNull(lugar.DistanciaKm);
+        Assert.InRange(lugar.DistanciaKm!.Value, 1.5, 3.0);
+
+        // Desde Mérida con radio 10 km no entra el cenote de Homún
+        var lejos = await _servicio.ListarAsync(new FiltroLugaresRequest(
+            Lat: 20.9674m,
+            Lng: -89.6237m,
+            RadioKm: 10));
+        Assert.Empty(lejos.Items);
+
+        // Sin GPS la distancia es null
+        var sinGps = await _servicio.ListarAsync(new FiltroLugaresRequest());
+        Assert.Null(Assert.Single(sinGps.Items).DistanciaKm);
+    }
+
+    [Fact]
+    public async Task Listar_con_gps_invalido_lanza_ReglaNegocio()
+    {
+        await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.ListarAsync(new FiltroLugaresRequest(Lat: 20.73m)));
+        await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.ListarAsync(new FiltroLugaresRequest(Lat: 20.73m, Lng: -89.28m, RadioKm: 500)));
+    }
 }
