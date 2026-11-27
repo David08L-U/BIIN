@@ -158,7 +158,10 @@ public record FiltroExplorarRequest(
     int? IdMunicipio = null,
     int? IdLocalidad = null,
     int Pagina = 1,
-    int Tamano = 20);
+    int Tamano = 20,
+    decimal? Lat = null,
+    decimal? Lng = null,
+    double? RadioKm = null);
 
 public record RecursoExploradoDto(
     int IdRecurso,
@@ -170,4 +173,5 @@ public record RecursoExploradoDto(
     decimal? Latitud,
     decimal? Longitud,
     IReadOnlyList<string> Categorias,
-    DateTime ActualizadoEn);
+    DateTime ActualizadoEn,
+    double? DistanciaKm = null);

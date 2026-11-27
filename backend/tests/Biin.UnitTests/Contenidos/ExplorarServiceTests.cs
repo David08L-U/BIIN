@@ -74,4 +74,33 @@ public class ExplorarServiceTests
         await Assert.ThrowsAsync<ReglaNegocioException>(() =>
             _servicio.ExplorarAsync(new FiltroExplorarRequest(Tipo: TipoRecurso.Ruta)));
     }
+
+    [Fact]
+    public async Task Filtra_y_ordena_por_proximidad_cuando_se_indican_coordenadas()
+    {
+        // Punto junto al cenote de Homún (~0 km del cenote, ~2 km de la plaza, ~43 km de Mérida)
+        var cercanos = await _servicio.ExplorarAsync(
+            new FiltroExplorarRequest(Lat: 20.7220m, Lng: -89.2920m, RadioKm: 10));
+
+        Assert.Equal(3, cercanos.Total);
+        Assert.Equal("Cenote Santa Rosa", cercanos.Items[0].Titulo);
+        Assert.Equal(0, cercanos.Items[0].DistanciaKm);
+        Assert.All(cercanos.Items, i => Assert.NotNull(i.DistanciaKm));
+        Assert.True(cercanos.Items[0].DistanciaKm <= cercanos.Items[1].DistanciaKm);
+
+        // Sin coordenadas, DistanciaKm es null
+        var sinGps = await _servicio.ExplorarAsync(new FiltroExplorarRequest());
+        Assert.All(sinGps.Items, i => Assert.Null(i.DistanciaKm));
+    }
+
+    [Fact]
+    public async Task Proximidad_incompleta_o_radio_invalido_lanza_ReglaNegocio()
+    {
+        await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.ExplorarAsync(new FiltroExplorarRequest(Lat: 20.7m)));
+        await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.ExplorarAsync(new FiltroExplorarRequest(RadioKm: 10)));
+        await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.ExplorarAsync(new FiltroExplorarRequest(Lat: 20.7m, Lng: -89.2m, RadioKm: 0.1)));
+    }
 }

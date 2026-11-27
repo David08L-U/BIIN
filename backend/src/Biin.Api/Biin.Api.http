@@ -186,6 +186,9 @@ GET {{api}}/api/lugares?costoMaximo=0
 ### Explorar por interés: todo lo publicado de una categoría (CU-14)
 GET {{api}}/api/explorar?idCategoria=9
 
+### Explorar ordenado por cercanía GPS opcional (CU-14, RNF05)
+GET {{api}}/api/explorar?lat=20.7392&lng=-89.2855&radioKm=10
+
 ### Tarifas aproximadas vigentes de una ruta publicada (CU-03, RF03, RNF07)
 GET {{api}}/api/rutas/1/tarifas
 

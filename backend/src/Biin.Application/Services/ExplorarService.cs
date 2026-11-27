@@ -2,8 +2,11 @@ using Biin.Application.Consultas;
 using Biin.Application.DTOs.Comun;
 using Biin.Application.DTOs.Contenidos;
 using Biin.Application.Interfaces;
+using Biin.Application.Validators;
+using Biin.Domain.Entities;
 using Biin.Domain.Enums;
 using Biin.Domain.Exceptions;
+using Biin.Domain.Vistas;
 using Microsoft.EntityFrameworkCore;
 
 namespace Biin.Application.Services;
@@ -11,15 +14,20 @@ namespace Biin.Application.Services;
 /// <summary>
 /// Explorar turismo por interés (CU-14): negocios, eventos y lugares de una categoría en una sola lista.
 /// Parte de la vista v_recursos_publicados, así que nunca devuelve contenido pendiente o archivado.
+/// Soporta filtrado y ordenamiento opcional por proximidad cuando el viajero consiente GPS (RNF05).
 /// </summary>
 public class ExplorarService(IAppDbContext db, IReloj reloj)
 {
+    public const double RadioPorDefectoKm = 25.0;
+
     public async Task<PaginaResultado<RecursoExploradoDto>> ExplorarAsync(
         FiltroExplorarRequest filtro,
         CancellationToken ct = default)
     {
         if (filtro.Tipo == TipoRecurso.Ruta)
             throw new ReglaNegocioException("Las rutas se consultan en la búsqueda de transporte, no en explorar.");
+
+        var usarProximidad = ValidarProximidad(filtro, out var lat, out var lng, out var radioKm);
 
         var (pagina, tamano) = Paginacion.Normalizar(filtro.Pagina, filtro.Tamano);
         var ahora = reloj.AhoraUtc;
@@ -55,15 +63,44 @@ public class ExplorarService(IAppDbContext db, IReloj reloj)
                 FuncionesBd.Normalizar(v.Titulo).Contains(texto) ||
                 FuncionesBd.Normalizar(v.Descripcion ?? string.Empty).Contains(texto));
 
-        var total = await consulta.CountAsync(ct);
-        var recursos = await consulta
-            .OrderBy(v => v.Titulo)
-            .ThenBy(v => v.IdRecurso)
-            .Skip(Paginacion.Saltar(pagina, tamano))
-            .Take(tamano)
-            .ToListAsync(ct);
+        int total;
+        List<(VRecursoPublicado Recurso, double? DistanciaKm)> seleccionados;
 
-        var ids = recursos.Select(r => r.IdRecurso).ToList();
+        if (usarProximidad)
+        {
+            var candidatos = await consulta
+                .Where(v => v.Latitud != null && v.Longitud != null)
+                .ToListAsync(ct);
+
+            var ordenados = candidatos
+                .Select(v => (Recurso: v, Distancia: CalculadoraTraslado.DistanciaKm(lat, lng, v.Latitud!.Value, v.Longitud!.Value)))
+                .Where(x => x.Distancia <= radioKm)
+                .OrderBy(x => x.Distancia)
+                .ThenBy(x => x.Recurso.Titulo)
+                .ThenBy(x => x.Recurso.IdRecurso)
+                .ToList();
+
+            total = ordenados.Count;
+            seleccionados = ordenados
+                .Skip(Paginacion.Saltar(pagina, tamano))
+                .Take(tamano)
+                .Select(x => (x.Recurso, (double?)Math.Round(x.Distancia, 2)))
+                .ToList();
+        }
+        else
+        {
+            total = await consulta.CountAsync(ct);
+            var recursos = await consulta
+                .OrderBy(v => v.Titulo)
+                .ThenBy(v => v.IdRecurso)
+                .Skip(Paginacion.Saltar(pagina, tamano))
+                .Take(tamano)
+                .ToListAsync(ct);
+
+            seleccionados = recursos.Select(r => (r, (double?)null)).ToList();
+        }
+
+        var ids = seleccionados.Select(x => x.Recurso.IdRecurso).ToList();
         var categorias = await db.RecursoCategorias
             .AsNoTracking()
             .Where(rc => ids.Contains(rc.IdRecurso))
@@ -73,18 +110,44 @@ public class ExplorarService(IAppDbContext db, IReloj reloj)
             .GroupBy(c => c.IdRecurso)
             .ToDictionary(g => g.Key, g => (IReadOnlyList<string>)g.Select(c => c.Nombre).OrderBy(n => n).ToList());
 
-        var items = recursos.Select(r => new RecursoExploradoDto(
-            r.IdRecurso,
-            r.Tipo,
-            r.Titulo,
-            r.Descripcion,
-            r.Localidad,
-            r.Municipio,
-            r.Latitud,
-            r.Longitud,
-            categoriasPorRecurso.GetValueOrDefault(r.IdRecurso, []),
-            r.ActualizadoEn)).ToList();
+        var items = seleccionados.Select(x => new RecursoExploradoDto(
+            x.Recurso.IdRecurso,
+            x.Recurso.Tipo,
+            x.Recurso.Titulo,
+            x.Recurso.Descripcion,
+            x.Recurso.Localidad,
+            x.Recurso.Municipio,
+            x.Recurso.Latitud,
+            x.Recurso.Longitud,
+            categoriasPorRecurso.GetValueOrDefault(x.Recurso.IdRecurso, []),
+            x.Recurso.ActualizadoEn,
+            x.DistanciaKm)).ToList();
 
         return new PaginaResultado<RecursoExploradoDto>(items, total, pagina, tamano);
+    }
+
+    private static bool ValidarProximidad(
+        FiltroExplorarRequest filtro,
+        out decimal lat,
+        out decimal lng,
+        out double radioKm)
+    {
+        lat = 0;
+        lng = 0;
+        radioKm = RadioPorDefectoKm;
+
+        if (!filtro.Lat.HasValue && !filtro.Lng.HasValue)
+        {
+            if (filtro.RadioKm.HasValue)
+                throw new ReglaNegocioException("Para usar radioKm debes indicar lat y lng.");
+            return false;
+        }
+
+        if (!filtro.Lat.HasValue || !filtro.Lng.HasValue)
+            throw new ReglaNegocioException("Indica tanto latitud como longitud para filtrar por cercanía.");
+
+        (lat, lng) = ValidacionGeografia.ValidarGlobales(filtro.Lat.Value, filtro.Lng.Value);
+        radioKm = ValidacionGeografia.ValidarRadioKm(filtro.RadioKm ?? RadioPorDefectoKm);
+        return true;
     }
 }
