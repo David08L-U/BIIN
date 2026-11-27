@@ -258,7 +258,7 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
   })
 
   it('ofrece el enlace reproducible si compartir falla y comunica fallos de descarga', async () => {
-    vi.spyOn(acciones, 'compartirValladolid').mockResolvedValue({ estado: 'manual', mensaje: 'No se pudo compartir ni copiar automáticamente. Copia el enlace.' })
+    vi.stubGlobal('navigator', { share: vi.fn().mockRejectedValue(new Error('Compartir bloqueado')) })
     vi.spyOn(acciones, 'descargarValladolid').mockImplementation(() => { throw new Error('Descarga bloqueada') })
     montar(`/rutas/valladolid/itinerario?${configuracion}&generado=1`)
     await userEvent.click(screen.getByRole('button', { name: 'Compartir' }))

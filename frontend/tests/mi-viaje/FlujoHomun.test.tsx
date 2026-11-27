@@ -254,7 +254,7 @@ describe('Flujo de Homún CU-09 / RF09', () => {
     expect(screen.queryByText('Vista previa compartida.')).not.toBeInTheDocument()
   })
   it('ofrece copia manual reproducible y comunica fallos de descarga', async () => {
-    vi.spyOn(acciones, 'compartirHomun').mockResolvedValue({ estado: 'manual', mensaje: 'Copia este enlace manualmente.' })
+    vi.stubGlobal('navigator', { share: vi.fn().mockRejectedValue(new Error('Compartir bloqueado')) })
     vi.spyOn(acciones, 'descargarHomun').mockImplementation(() => { throw new Error('Bloqueado') })
     montar(`/rutas/homun/itinerario?${finde}&generado=1`)
     await userEvent.click(screen.getByRole('button', { name: 'Compartir' }))

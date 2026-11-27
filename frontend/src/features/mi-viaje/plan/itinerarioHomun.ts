@@ -15,8 +15,8 @@ export interface BorradorHomun extends BorradorJornadas { destino: 'homun' }
 const datosHomun = { lugares: lugaresHomun, regreso: REGRESO_HOMUN, margen: MARGEN_HOMUN, tituloRegreso: 'Regreso final estimado (supuesto de 5 min; medio por confirmar)' }
 
 export function resumirJornadaHomun(ids: string[], incluirRegreso = true) { return resumirJornada(ids, datosHomun, incluirRegreso) }
-export function calcularPlanHomun(borrador: BorradorHomun) {
-  const resultado = calcularPlanJornadas(borrador, datosHomun)
+export function calcularPlanHomun(borrador: BorradorHomun, hoy?: string) {
+  const resultado = calcularPlanJornadas(borrador, datosHomun, hoy)
   // Conserva el medio de cada traslado también en el archivo descargado.
   for (const dia of resultado.plan?.jornadas ?? []) for (const bloque of dia.bloques) {
     if (bloque.tipo === 'traslado' && bloque.lugarId) {

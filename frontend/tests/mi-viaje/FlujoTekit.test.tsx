@@ -285,7 +285,7 @@ describe('Flujo de Tekit CU-09 / RF09', () => {
   })
 
   it('ofrece enlace reproducible manual y comunica fallo de descarga', async () => {
-    vi.spyOn(acciones, 'compartirTekit').mockResolvedValue({ estado: 'manual', mensaje: 'Copia este enlace manualmente.' })
+    vi.stubGlobal('navigator', { share: vi.fn().mockRejectedValue(new Error('Compartir bloqueado')) })
     vi.spyOn(acciones, 'descargarTekit').mockImplementation(() => { throw new Error('Descarga bloqueada') })
     montar(`/rutas/tekit/itinerario?${config}&generado=1`)
     await userEvent.click(screen.getByRole('button', { name: 'Compartir' }))

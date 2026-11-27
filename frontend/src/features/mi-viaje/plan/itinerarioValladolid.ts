@@ -46,4 +46,4 @@ export function ventanasValladolid(config: ConfiguracionValladolid): VentanaVall
 export function validarConfiguracionValladolid(config: ConfiguracionValladolid): string[] { return validarConfiguracionJornadas(config) }
 export function resumirJornadaValladolid(ids: string[], incluirRegreso = true) { return resumirJornada(ids, datosValladolid, incluirRegreso) }
 export function recomendarValladolid(ventanas: VentanaValladolid[]): VisitaValladolid[] | null { return recomendarJornadas(ventanas, datosValladolid) }
-export function calcularPlanValladolid(borrador: BorradorValladolid): ResultadoValladolid { return calcularPlanJornadas(borrador, datosValladolid) }
+export function calcularPlanValladolid(borrador: BorradorValladolid, hoy?: string): ResultadoValladolid { return calcularPlanJornadas(borrador, datosValladolid, hoy) }

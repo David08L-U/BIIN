@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
+import { useNavigate, useParams, useSearchParams } from 'react-router'
+import RutaNoEncontrada from '../components/RutaNoEncontrada'
 import DetalleDestino from '../components/DetalleDestino'
 import { detalleParaEstancia, obtenerDestino } from '../../destinos/registroDestinos'
 
@@ -11,15 +12,7 @@ export default function DetalleRutaPage() {
   const navegar = useNavigate()
   const [mostrarReferencia, setMostrarReferencia] = useState(false)
 
-  if (!destino) {
-    return (
-      <section className="pagina" aria-labelledby="ruta-no-encontrada">
-        <h1 id="ruta-no-encontrada">Ruta no encontrada</h1>
-        <p>No encontramos ese destino en el catálogo de BIIN.</p>
-        <Link to="/rutas">Volver al catálogo de rutas</Link>
-      </section>
-    )
-  }
+  if (!destino) return <RutaNoEncontrada />
 
   const estancia = destino.leerEstancia(parametros)
   const detalle = detalleParaEstancia(destino, estancia)

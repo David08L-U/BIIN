@@ -11,21 +11,13 @@ import RegistroPage from '../features/auth/pages/RegistroPage'
 import InicioPage from '../features/transporte/pages/InicioPage'
 import RutasPage from '../features/transporte/pages/RutasPage'
 import DetalleRutaPage from '../features/transporte/pages/DetalleRutaPage'
+import ItinerarioPage from '../features/mi-viaje/pages/ItinerarioPage'
+import PersonalizarPage from '../features/mi-viaje/pages/PersonalizarPage'
 
-import ItinerarioIzamalPage from '../features/mi-viaje/pages/ItinerarioIzamalPage'
-import PersonalizarIzamalPage from '../features/mi-viaje/pages/PersonalizarIzamalPage'
 
-import ItinerarioValladolidPage from '../features/mi-viaje/pages/ItinerarioValladolidPage'
-import PersonalizarValladolidPage from '../features/mi-viaje/pages/PersonalizarValladolidPage'
 
-import ItinerarioTekitPage from '../features/mi-viaje/pages/ItinerarioTekitPage'
-import PersonalizarTekitPage from '../features/mi-viaje/pages/PersonalizarTekitPage'
 
-import ItinerarioHomunPage from '../features/mi-viaje/pages/ItinerarioHomunPage'
-import PersonalizarHomunPage from '../features/mi-viaje/pages/PersonalizarHomunPage'
 
-import ItinerarioTiculPage from '../features/mi-viaje/pages/ItinerarioTiculPage'
-import PersonalizarTiculPage from '../features/mi-viaje/pages/PersonalizarTiculPage'
 
 import MiViajePage from '../features/mi-viaje/pages/MiViajePage'
 import PerfilPage from '../features/perfil/pages/PerfilPage'
@@ -55,46 +47,8 @@ export const router = createBrowserRouter([
         path: 'rutas/:id',
         element: <DetalleRutaPage />,
       },
-      {
-        path: 'rutas/izamal/itinerario',
-        element: <ItinerarioIzamalPage />,
-      },
-      {
-        path: 'rutas/izamal/personalizar',
-        element: <PersonalizarIzamalPage />,
-      },
-      {
-        path: 'rutas/valladolid/itinerario',
-        element: <ItinerarioValladolidPage />,
-      },
-      {
-        path: 'rutas/valladolid/personalizar',
-        element: <PersonalizarValladolidPage />,
-      },
-      {
-        path: 'rutas/tekit/itinerario',
-        element: <ItinerarioTekitPage />,
-      },
-      {
-        path: 'rutas/tekit/personalizar',
-        element: <PersonalizarTekitPage />,
-      },
-      {
-        path: 'rutas/homun/itinerario',
-        element: <ItinerarioHomunPage />,
-      },
-      {
-        path: 'rutas/homun/personalizar',
-        element: <PersonalizarHomunPage />,
-      },
-      {
-        path: 'rutas/ticul/itinerario',
-        element: <ItinerarioTiculPage />,
-      },
-      {
-        path: 'rutas/ticul/personalizar',
-        element: <PersonalizarTiculPage />,
-      },
+      { path: 'rutas/:id/itinerario', element: <ItinerarioPage /> },
+      { path: 'rutas/:id/personalizar', element: <PersonalizarPage /> },
       {
         path: 'login',
         element: <LoginPage />,

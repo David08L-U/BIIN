@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Layout from '../src/components/layout/Layout'
 import DetalleRutaPage from '../src/features/transporte/pages/DetalleRutaPage'
 import RutasPage from '../src/features/transporte/pages/RutasPage'
-import ItinerarioValladolidPage from '../src/features/mi-viaje/pages/ItinerarioValladolidPage'
+import ItinerarioPage from '../src/features/mi-viaje/pages/ItinerarioPage'
 
 vi.mock('../src/features/auth/useAuth', () => ({
   useAuth: () => ({ usuario: null, cargando: false, cerrarSesion: vi.fn(), tieneRol: () => false }),
@@ -22,7 +22,7 @@ function montar(url = '/rutas/valladolid') {
       children: [
         { path: 'rutas', element: <RutasPage /> },
         { path: 'rutas/:id', element: <DetalleRutaPage /> },
-        { path: 'rutas/valladolid/itinerario', element: <ItinerarioValladolidPage /> },
+        { path: 'rutas/:id/itinerario', element: <ItinerarioPage /> },
       ],
     }],
     { initialEntries: [url] },

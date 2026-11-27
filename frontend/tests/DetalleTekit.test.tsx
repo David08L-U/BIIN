@@ -7,8 +7,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Layout from '../src/components/layout/Layout'
 import DetalleRutaPage from '../src/features/transporte/pages/DetalleRutaPage'
 import RutasPage from '../src/features/transporte/pages/RutasPage'
-import ItinerarioTekitPage from '../src/features/mi-viaje/pages/ItinerarioTekitPage'
-import PersonalizarTekitPage from '../src/features/mi-viaje/pages/PersonalizarTekitPage'
+import ItinerarioPage from '../src/features/mi-viaje/pages/ItinerarioPage'
+import PersonalizarPage from '../src/features/mi-viaje/pages/PersonalizarPage'
 
 vi.mock('../src/features/auth/useAuth', () => ({
   useAuth: () => ({ usuario: null, cargando: false, cerrarSesion: vi.fn(), tieneRol: () => false }),
@@ -23,8 +23,8 @@ function montar(url = '/rutas/tekit') {
       children: [
         { path: 'rutas', element: <RutasPage /> },
         { path: 'rutas/:id', element: <DetalleRutaPage /> },
-        { path: 'rutas/tekit/itinerario', element: <ItinerarioTekitPage /> },
-        { path: 'rutas/tekit/personalizar', element: <PersonalizarTekitPage /> },
+        { path: 'rutas/:id/itinerario', element: <ItinerarioPage /> },
+        { path: 'rutas/:id/personalizar', element: <PersonalizarPage /> },
       ],
     }],
     { initialEntries: [url] },

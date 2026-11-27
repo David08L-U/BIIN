@@ -33,9 +33,10 @@ export default function PresentacionJornadas({ destino, jornadas, lugares, filtr
     </section>
     {jornadas.map(jornada => {
       const visitas = jornada.bloques.filter(bloque => bloque.tipo === 'visita')
-      const visibles = visitas.filter(bloque => {
+      const visibles = visitas.flatMap((bloque, indice) => {
         const lugar = lugares.find(opcion => opcion.id === bloque.lugarId)
-        return lugar && (filtro === 'todas' || categoriaDeLugar?.(lugar) === filtro)
+        return lugar && (filtro === 'todas' || (categoriaDeLugar?.(lugar) ?? lugar.categoria) === filtro)
+          ? [{ bloque, indice, lugar }] : []
       })
       const cierre = jornada.bloques.filter(bloque => bloque.tipo === 'margen' || (bloque.tipo === 'traslado' && !bloque.lugarId))
       return <section key={jornada.dia} className="iz-plan-jornada iz-plan-tarjeta" aria-labelledby={`jornada-${jornada.dia}-titulo`}>
@@ -44,11 +45,10 @@ export default function PresentacionJornadas({ destino, jornadas, lugares, filtr
         <p>{duracionPlan(jornada.visitasMinutos)} de visitas + {duracionPlan(jornada.trasladosMinutos)} de traslados locales{jornada.dia === jornadas.length ? ' y traslado final' : ''} + {duracionPlan(jornada.margenMinutos)} de margen. Libres: {duracionPlan(jornada.libresMinutos)}.</p>
         {jornada.dia === 2 && <p className="iz-plan-nota">Los traslados locales parten de una referencia en la zona central del poblado; ajústala si comienzas en otro punto.</p>}
         <ol className="iz-plan-linea iz-plan-jornada-visitas" aria-label={`Visitas del Día ${jornada.dia}`}>
-          {visibles.map((bloque, indice) => {
-            const lugar = lugares.find(opcion => opcion.id === bloque.lugarId)!
+          {visibles.map(({ bloque, indice, lugar }) => {
             const traslado = jornada.bloques.find(opcion => opcion.tipo === 'traslado' && opcion.lugarId === lugar.id)
             const imagen = fotografiaLugar(destino, lugar.id)
-            return <li key={lugar.id}>
+            return <li key={lugar.id} value={indice + 1}>
               <span className="iz-plan-orden" aria-hidden="true">{indice + 1}</span>
               <article className="iz-plan-paso iz-plan-tarjeta">
                 <p className="iz-plan-paso-hora"><time>{horaLocal(jornada, bloque.inicio)}</time> – <time>{horaLocal(jornada, bloque.fin)}</time>{lugar.etiqueta && <span className="iz-plan-insignia">{lugar.etiqueta}</span>}</p>
