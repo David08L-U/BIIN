@@ -1,5 +1,7 @@
 # Itinerarios estimados de Ticul · CU-09 / RF09
 
+> Documento histórico del prototipo anterior. La implementación vigente en `feature/aaron-mejoras` se describe en [FRONTEND_DINAMICO_API.md](FRONTEND_DINAMICO_API.md); sus catálogos locales y páginas por pueblo ya no se utilizan.
+
 El detalle, el recorrido y la personalización usan la composición visual de
 Izamal con las referencias artesanales, fotografías y mapa de Ticul. Día
 completo (Ruta Puuc) y Tour de Compras empiezan con ambos campos vacíos.

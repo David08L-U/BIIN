@@ -1,5 +1,7 @@
 # Itinerarios de Tekit — CU-09 / RF09, HU09
 
+> Documento histórico del prototipo anterior. La implementación vigente en `feature/aaron-mejoras` se describe en [FRONTEND_DINAMICO_API.md](FRONTEND_DINAMICO_API.md); sus catálogos locales y páginas por pueblo ya no se utilizan.
+
 El detalle, el recorrido y la personalización usan la composición visual de
 Izamal con el contenido textil y el circuito ilustrativo de Tekit. Ruta Textil
 · Compras empieza con ambos campos vacíos.

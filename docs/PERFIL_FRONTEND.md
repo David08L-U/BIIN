@@ -1,5 +1,7 @@
 # Perfil de usuario — frontend
 
+> Documento histórico del prototipo anterior. La implementación vigente en `feature/aaron-mejoras` se describe en [FRONTEND_DINAMICO_API.md](FRONTEND_DINAMICO_API.md); sus catálogos locales y páginas por pueblo ya no se utilizan.
+
 ## Alcance
 
 CU-01 / CU-09 / RNF02 / RNF06. La pantalla reproduce la composición de `biin_mi_perfil_de_usuario/code.html` del prototipo de Melanie: cabecera, identidad, tres métricas, último trayecto, dos itinerarios recientes y acciones de cuenta. Conserva los colores y las familias tipográficas del frontend.
