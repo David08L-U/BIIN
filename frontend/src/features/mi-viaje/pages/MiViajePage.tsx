@@ -14,10 +14,10 @@ export default function MiViajePage() {
 }
 function MisViajes({ idUsuario, nombre }: { idUsuario: number; nombre: string }) {
   const consulta = useConsultaApi(`mis-viajes:${idUsuario}`, signal => itinerariosApi.listar(signal))
-  return <section className="iz-plan iz-plan-mis-viajes"><h1>Mis itinerarios</h1><p>Guardados en la cuenta de {nombre}.</p><EstadoConsulta consulta={consulta} />
+  return <section className="plan plan-mis-viajes"><h1>Mis itinerarios</h1><p>Guardados en la cuenta de {nombre}.</p><EstadoConsulta consulta={consulta} />
     {consulta.datos?.length === 0 && <p role="status">Todavía no tienes itinerarios guardados en tu cuenta.</p>}
-    <ul className="lista-viajes-api">{consulta.datos?.map(item => <li key={item.idItinerario} className="iz-plan-tarjeta"><h2>{item.nombre}</h2><p>{item.inicio} → {item.fin} · {item.totalActividades} actividades</p><p>Presupuesto: {moneda(item.presupuestoEstimado)}</p><p>Creado: {fechaHora(item.fechaCreacion)}</p><Link to={`/mi-viaje/${item.idItinerario}`}>Abrir y editar itinerario</Link><EliminarItinerario item={item} actualizar={consulta.reintentar} /></li>)}</ul>
-    <Link className="iz-plan-primario" to="/recorridos">Preparar otro itinerario</Link><p className="iz-plan-nota">Los planes antiguos guardados únicamente en este navegador no se han eliminado. Esta lista muestra los itinerarios del servidor.</p>
+    <ul className="lista-viajes-api">{consulta.datos?.map(item => <li key={item.idItinerario} className="plan-tarjeta"><h2>{item.nombre}</h2><p>{item.inicio} → {item.fin} · {item.totalActividades} actividades</p><p>Presupuesto: {moneda(item.presupuestoEstimado)}</p><p>Creado: {fechaHora(item.fechaCreacion)}</p><Link to={`/mi-viaje/${item.idItinerario}`}>Abrir y editar itinerario</Link><EliminarItinerario item={item} actualizar={consulta.reintentar} /></li>)}</ul>
+    <Link className="plan-primario" to="/recorridos">Preparar otro itinerario</Link><p className="plan-nota">Los planes antiguos guardados únicamente en este navegador no se han eliminado. Esta lista muestra los itinerarios del servidor.</p>
   </section>
 }
 function EliminarItinerario({ item, actualizar }: { item: ItinerarioResumenDto; actualizar: () => void }) {

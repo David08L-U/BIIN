@@ -21,7 +21,7 @@ export default function PlanificadorPage({ modo }: { modo: 'recomendado' | 'pers
   const { usuario } = useAuth()
   const consulta = useContextoPlanApi(id, idRecorrido, params.get('recorrido'))
   const contexto = consulta.datos
-  if (!contexto?.recorrido) return <section className="iz-plan"><h1>Planifica tu visita</h1><EstadoConsulta consulta={consulta} />{contexto && <p role="status">No hay recorridos publicados para este destino.</p>}<Link to="/rutas">Volver al catálogo de rutas</Link></section>
+  if (!contexto?.recorrido) return <section className="plan"><h1>Planifica tu visita</h1><EstadoConsulta consulta={consulta} />{contexto && <p role="status">No hay recorridos publicados para este destino.</p>}<Link to="/rutas">Volver al catálogo de rutas</Link></section>
   const base = contexto.ruta ? `/rutas/${contexto.ruta.idRuta}` : `/recorridos/${contexto.recorrido.idRecorrido}`
   return <>
     {contexto.opciones.length > 1 && <label className="selector-recorrido">Recorrido sugerido<select value={contexto.recorrido.idRecorrido} onChange={e => { const nuevos = new URLSearchParams(params); nuevos.set('recorrido', e.target.value); nuevos.delete('seleccion'); setParams(nuevos, { replace: true }) }}>{contexto.opciones.map(r => <option key={r.idRecorrido} value={r.idRecorrido}>{r.titulo}</option>)}</select></label>}
@@ -60,21 +60,21 @@ function PlanificadorContenido({ recorrido, base, modo }: { recorrido: Recorrido
     if (resultado) navegar(`/mi-viaje/${resultado.idItinerario}`, { replace: true })
   }
   const query = params.toString() ? `?${params}` : ''
-  return <article className="iz-plan iz-itinerario" aria-labelledby="plan-titulo">
-    <header className="iz-plan-cabecera"><Link to={base.startsWith('/rutas/') ? base : '/recorridos'} aria-label="Volver al destino">← Volver</Link><div className="iz-plan-titulo"><p className="iz-plan-ceja">{recorrido.localidadBase}</p><h1 id="plan-titulo">{personalizado ? 'Personalizar itinerario' : 'Tu itinerario recomendado'}</h1></div></header>
+  return <article className="plan plan-itinerario" aria-labelledby="plan-titulo">
+    <header className="plan-cabecera"><Link to={base.startsWith('/rutas/') ? base : '/recorridos'} aria-label="Volver al destino">← Volver</Link><div className="plan-titulo"><p className="plan-ceja">{recorrido.localidadBase}</p><h1 id="plan-titulo">{personalizado ? 'Personalizar itinerario' : 'Tu itinerario recomendado'}</h1></div></header>
     <ModosPlan modo={modo} recomendado={`${base}/itinerario${query}`} personalizado={`${base}/personalizar${query}`} />
-    <h2>{recorrido.titulo}</h2><p>{recorrido.descripcion}</p><p className="iz-plan-nota">Información publicada · Actualizada: {fechaHora(recorrido.actualizadoEn)}</p>
+    <h2>{recorrido.titulo}</h2><p>{recorrido.descripcion}</p><p className="plan-nota">Información publicada · Actualizada: {fechaHora(recorrido.actualizadoEn)}</p>
     <form onSubmit={e => void guardar(e)} noValidate>
       <FormularioPlanApi config={config} personalizado={personalizado} disabled={bloqueado} cambiar={c => { setConfig(c); setErrores([]); sincronizar(c) }} />
       <EtapasRecorridoApi etapas={recorrido.etapas} seleccion={seleccion} personalizado={personalizado} disabled={bloqueado} cambiar={ids => { setSeleccion(ids); setErrores([]); sincronizar(config, ids) }} />
-      <section className="iz-plan-tarjeta"><h2>Resumen de tu visita</h2><p>{elegidas.length} actividades seleccionadas</p><p>{duracionPlan(etapas.reduce((total, etapa) => total + (etapa.duracionSugeridaMin ?? 0), 0))} de visitas con duración publicada; no incluye traslados.</p>{etapas.some(etapa => etapa.duracionSugeridaMin === null) && <p>Hay actividades con duración sin confirmar.</p>}<p>{personalizado ? 'Podrás editar los horarios después de guardar.' : 'Al guardar, el servidor asignará horarios y traslados estimados. Una actividad sin duración publicada usará la estimación de 60 minutos del planificador.'} Confirma aperturas, transporte y costos antes de viajar.</p></section>
-      {!!errores.length && <div role="alert" className="iz-plan-error">{errores.map(error => <p key={error}>{error}</p>)}</div>}
-      {guardado.error && <p role="alert" className="iz-plan-error">{guardado.error}</p>}
+      <section className="plan-tarjeta"><h2>Resumen de tu visita</h2><p>{elegidas.length} actividades seleccionadas</p><p>{duracionPlan(etapas.reduce((total, etapa) => total + (etapa.duracionSugeridaMin ?? 0), 0))} de visitas con duración publicada; no incluye traslados.</p>{etapas.some(etapa => etapa.duracionSugeridaMin === null) && <p>Hay actividades con duración sin confirmar.</p>}<p>{personalizado ? 'Podrás editar los horarios después de guardar.' : 'Al guardar, el servidor asignará horarios y traslados estimados. Una actividad sin duración publicada usará la estimación de 60 minutos del planificador.'} Confirma aperturas, transporte y costos antes de viajar.</p></section>
+      {!!errores.length && <div role="alert" className="plan-error">{errores.map(error => <p key={error}>{error}</p>)}</div>}
+      {guardado.error && <p role="alert" className="plan-error">{guardado.error}</p>}
       {guardado.parcial !== null && <Link to={`/mi-viaje/${guardado.parcial}`}>Abrir itinerario parcialmente guardado</Link>}
       {!usuario && <p>Para guardar en tu cuenta, inicia sesión. Conservaremos la configuración de esta visita.</p>}
-      <button type="submit" className="iz-plan-primario" disabled={bloqueado || cargando || !elegidas.length}>{guardado.guardando ? 'Guardando…' : usuario ? 'Guardar itinerario en mi cuenta' : 'Iniciar sesión para guardar'}</button>
+      <button type="submit" className="plan-primario" disabled={bloqueado || cargando || !elegidas.length}>{guardado.guardando ? 'Guardando…' : usuario ? 'Guardar itinerario en mi cuenta' : 'Iniciar sesión para guardar'}</button>
     </form>
-    <section className="iz-plan-mapa iz-plan-tarjeta"><h2>Ubicaciones de la visita</h2><MapaRecorrido paradas={etapas.flatMap(e => e.latitud !== null && e.longitud !== null ? [{ latitud: e.latitud, longitud: e.longitud, nombre: e.titulo }] : [])} /></section>
+    <section className="plan-mapa plan-tarjeta"><h2>Ubicaciones de la visita</h2><MapaRecorrido paradas={etapas.flatMap(e => e.latitud !== null && e.longitud !== null ? [{ latitud: e.latitud, longitud: e.longitud, nombre: e.titulo }] : [])} /></section>
     <Link to="/mi-viaje">Ver mis itinerarios</Link>
   </article>
 }
