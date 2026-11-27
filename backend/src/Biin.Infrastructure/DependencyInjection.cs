@@ -1,5 +1,6 @@
 using Biin.Application.Interfaces;
 using Biin.Application.Services;
+using Biin.Infrastructure.BackgroundServices;
 using Biin.Infrastructure.ExternalServices.Correo;
 using Biin.Infrastructure.Persistence;
 using Biin.Infrastructure.Security;
@@ -28,9 +29,11 @@ public static class DependencyInjection
 
         services.Configure<JwtOptions>(config.GetSection(JwtOptions.Seccion));
         services.AddMemoryCache();
+        services.AddDistributedMemoryCache();
         services.AddSingleton<IHashContrasena, BcryptHashContrasena>();
         services.AddSingleton<IGeneradorToken, JwtGeneradorToken>();
-        services.AddSingleton<IRevocacionToken, MemoriaRevocacionToken>();
+        services.AddSingleton<IRevocacionToken, DistribuidaRevocacionToken>();
+        services.AddSingleton<IAlmacenRecuperacionContrasena, DistribuidaAlmacenRecuperacionContrasena>();
         services.AddSingleton<IReloj, RelojSistema>();
         services.AddCorreo(config);
 
@@ -62,7 +65,9 @@ public static class DependencyInjection
             Retries = 1,
             UseCache = true
         }));
+        services.AddSingleton<IDiagnosticoCorreo, DiagnosticoCorreoService>();
         services.AddSingleton<IValidadorDominioCorreo, DnsValidadorDominioCorreo>();
+        services.AddHostedService<LimpiezaRegistrosPendientesHostedService>();
 
         return services;
     }

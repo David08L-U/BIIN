@@ -49,6 +49,34 @@ public class AdminGeografiaYBitacoraTests
     }
 
     [Fact]
+    public async Task Actualizar_localidad_y_ubicacion_guarda_cambios_y_registra_bitacora()
+    {
+        var editada = await _geografia.ActualizarLocalidadAsync(
+            _d.Creador.IdUsuario,
+            _d.LocHomun.IdLocalidad,
+            new ActualizarLocalidadRequest(_d.Homun.IdMunicipio, "Homún Cabecera"));
+        Assert.Equal("Homún Cabecera", editada.Nombre);
+
+        var ubEditada = await _geografia.ActualizarUbicacionAsync(
+            _d.Creador.IdUsuario,
+            _d.UbHomun.IdUbicacion,
+            new ActualizarUbicacionRequest(_d.LocHomun.IdLocalidad, "Paradero corregido", 20.7395555m, -89.2851111m));
+        Assert.Equal("Paradero corregido", ubEditada.DireccionReferencia);
+        Assert.Equal(20.739556m, ubEditada.Latitud);
+        Assert.Equal(-89.285111m, ubEditada.Longitud);
+
+        Assert.Equal([AccionesBitacora.Editar, AccionesBitacora.Editar],
+            _db.BitacoraAdminSet.Items.Select(b => b.Accion).ToList());
+
+        await Assert.ThrowsAsync<NoEncontradoException>(() =>
+            _geografia.ActualizarLocalidadAsync(_d.Creador.IdUsuario, 999, new ActualizarLocalidadRequest(_d.Homun.IdMunicipio, "Otra")));
+        await Assert.ThrowsAsync<NoEncontradoException>(() =>
+            _geografia.ActualizarUbicacionAsync(_d.Creador.IdUsuario, 999, new ActualizarUbicacionRequest(_d.LocHomun.IdLocalidad, "Ref", 20.7m, -89.2m)));
+        await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _geografia.ActualizarUbicacionAsync(_d.Creador.IdUsuario, _d.UbHomun.IdUbicacion, new ActualizarUbicacionRequest(_d.LocHomun.IdLocalidad, "Invertida", -89.2m, 20.7m)));
+    }
+
+    [Fact]
     public async Task Bitacora_se_lista_reciente_primero_y_filtra_por_accion_y_tabla()
     {
         _db.BitacoraAdminSet.Items.AddRange(

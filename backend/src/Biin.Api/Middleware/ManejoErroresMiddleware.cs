@@ -36,6 +36,8 @@ public class ManejoErroresMiddleware(RequestDelegate next, ILogger<ManejoErrores
                     (StatusCodes.Status400BadRequest, "Referencia inválida"),
                 PostgresException { SqlState: PostgresErrorCodes.UniqueViolation } =>
                     (StatusCodes.Status409Conflict, "Registro duplicado"),
+                PostgresException { SqlState: PostgresErrorCodes.ExclusionViolation } =>
+                    (StatusCodes.Status409Conflict, "Conflicto de vigencia"),
                 _ => (StatusCodes.Status500InternalServerError, "Error interno")
             };
 

@@ -22,6 +22,30 @@ public class UsuariosService(IAppDbContext db, IHashContrasena hash, IRevocacion
         return MapearPerfil(usuario);
     }
 
+    public async Task<ResumenPerfilDto> ObtenerResumenPerfilAsync(int idUsuario, CancellationToken ct = default)
+    {
+        var usuario = await CargarUsuarioCompletoAsync(idUsuario, ct)
+            ?? throw new NoEncontradoException("Usuario no encontrado.");
+
+        if (!usuario.Activo)
+            throw new NoAutenticadoException("La cuenta está desactivada.");
+
+        var perfil = MapearPerfil(usuario);
+        var itinerarios = await db.Itinerarios.CountAsync(i => i.IdUsuario == idUsuario, ct);
+        var favoritos = await db.Favoritos.CountAsync(f => f.IdUsuario == idUsuario, ct);
+
+        return new ResumenPerfilDto(
+            perfil.IdUsuario,
+            perfil.Nombre,
+            perfil.Correo,
+            perfil.Activo,
+            perfil.FechaRegistro,
+            perfil.Roles,
+            perfil.RutasOperadas,
+            itinerarios,
+            favoritos);
+    }
+
     public async Task<PerfilUsuarioDto> ActualizarPerfilAsync(
         int idUsuario,
         ActualizarPerfilRequest req,
@@ -86,6 +110,7 @@ public class UsuariosService(IAppDbContext db, IHashContrasena hash, IRevocacion
 
         if (!string.IsNullOrWhiteSpace(jtiActual) && expiraEnUtc.HasValue)
             revocacion.Revocar(jtiActual, expiraEnUtc.Value);
+        revocacion.RevocarSesionesUsuario(usuario.IdUsuario, DateTime.UtcNow, TimeSpan.FromHours(24));
     }
 
     private Task<Usuario?> CargarUsuarioCompletoAsync(int idUsuario, CancellationToken ct) =>

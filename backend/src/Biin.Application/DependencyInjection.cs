@@ -10,6 +10,7 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddScoped<AuthService>();
+        services.AddScoped<LimpiezaRegistrosPendientesService>();
         services.AddScoped<UsuariosService>();
         services.AddScoped<AdminUsuariosService>();
         services.AddScoped<IAutorizacionOperador, AutorizacionOperadorService>();
@@ -19,8 +20,12 @@ public static class DependencyInjection
         services.AddScoped<EventosService>();
         services.AddScoped<LugaresService>();
         services.AddScoped<ExplorarService>();
+        services.AddScoped<TarifasService>();
+        services.AddScoped<UbicacionesService>();
+        services.AddScoped<MapaRutaService>();
         services.AddScoped<ItinerariosService>();
         services.AddScoped<AdminContenidosService>();
+        services.AddScoped<AdminTarifasService>();
         services.AddScoped<AdminGeografiaService>();
         services.AddScoped<BitacoraConsultaService>();
         return services;

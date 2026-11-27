@@ -17,6 +17,7 @@ public class AuthService(
     IHashContrasena hash,
     IGeneradorToken tokens,
     IRevocacionToken revocacion,
+    IAlmacenRecuperacionContrasena recuperacion,
     IReloj reloj,
     IEnvioCorreo envioCorreo,
     IValidadorDominioCorreo validadorDominio,
@@ -218,6 +219,108 @@ public class AuthService(
         await db.SaveChangesAsync(ct);
 
         CerrarSesion(jtiActual, expiraEnUtc);
+        revocacion.RevocarSesionesUsuario(usuario.IdUsuario, reloj.AhoraUtc, TimeSpan.FromHours(24));
+    }
+
+    /// <summary>
+    /// Paso 1 de recuperación de contraseña olvidada (RF01, CU-01): siempre devuelve un mensaje uniforme
+    /// para no revelar qué correos existen registrados en la plataforma.
+    /// </summary>
+    public async Task<RecuperacionIniciadaResponse> SolicitarRecuperacionContrasenaAsync(
+        SolicitarRecuperacionRequest req,
+        CancellationToken ct = default)
+    {
+        var correo = ValidacionUsuario.NormalizarCorreo(req.Correo);
+        var respuestaUniforme = new RecuperacionIniciadaResponse(
+            "Si existe una cuenta activa con ese correo, te enviamos un código para restablecer tu contraseña.",
+            _verificacion.MinutosVigencia);
+
+        var usuario = await db.Usuarios.SingleOrDefaultAsync(u => u.Correo.ToLower() == correo, ct);
+        if (usuario is null || !usuario.Activo)
+            return respuestaUniforme;
+
+        var ahora = reloj.AhoraUtc;
+        var existente = await recuperacion.ObtenerAsync(correo, ct);
+        if (existente is not null &&
+            existente.ExpiraEnUtc > ahora &&
+            ahora < existente.EnviadoEnUtc.AddSeconds(_verificacion.SegundosEntreEnvios))
+            return respuestaUniforme;
+
+        var codigo = RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
+        var expiraEn = ahora.AddMinutes(_verificacion.MinutosVigencia);
+        var pendiente = new RecuperacionPendiente(
+            usuario.IdUsuario,
+            correo,
+            hash.Generar(codigo),
+            Intentos: 0,
+            EnviadoEnUtc: ahora,
+            ExpiraEnUtc: expiraEn);
+
+        await recuperacion.GuardarAsync(pendiente, ct);
+
+        try
+        {
+            await envioCorreo.EnviarCodigoRecuperacionAsync(correo, usuario.Nombre, codigo, expiraEn, ct);
+        }
+        catch (InvalidOperationException)
+        {
+            await recuperacion.EliminarAsync(correo, ct);
+            throw new ServicioNoDisponibleException(
+                "No pudimos enviar el código de recuperación en este momento. Inténtalo de nuevo en unos minutos.");
+        }
+
+        return respuestaUniforme;
+    }
+
+    /// <summary>
+    /// Paso 2 de recuperación de contraseña: valida el código, cambia la contraseña y revoca sesiones previas.
+    /// </summary>
+    public async Task ConfirmarRecuperacionContrasenaAsync(
+        ConfirmarRecuperacionRequest req,
+        CancellationToken ct = default)
+    {
+        var correo = ValidacionUsuario.NormalizarCorreo(req.Correo);
+        var codigo = (req.Codigo ?? string.Empty).Trim();
+        ValidacionUsuario.ValidarContrasena(req.ContrasenaNueva);
+        var ahora = reloj.AhoraUtc;
+
+        var pendiente = await recuperacion.ObtenerAsync(correo, ct);
+        if (pendiente is null || pendiente.ExpiraEnUtc <= ahora)
+        {
+            if (pendiente is not null)
+                await recuperacion.EliminarAsync(correo, ct);
+            throw new ReglaNegocioException("El código de recuperación es inválido o venció. Solicita uno nuevo.");
+        }
+
+        if (!hash.Verificar(codigo, pendiente.HashCodigo))
+        {
+            var intentos = pendiente.Intentos + 1;
+            var restantes = _verificacion.IntentosMaximos - intentos;
+            if (restantes <= 0)
+                await recuperacion.EliminarAsync(correo, ct);
+            else
+                await recuperacion.GuardarAsync(pendiente with { Intentos = intentos }, ct);
+
+            throw new ReglaNegocioException(restantes <= 0
+                ? "Escribiste un código incorrecto demasiadas veces. Solicita un nuevo código de recuperación."
+                : $"El código no es correcto. Te quedan {restantes} {(restantes == 1 ? "intento" : "intentos")}.");
+        }
+
+        var usuario = await db.Usuarios.SingleOrDefaultAsync(u => u.IdUsuario == pendiente.IdUsuario, ct);
+        if (usuario is null || !usuario.Activo)
+        {
+            await recuperacion.EliminarAsync(correo, ct);
+            throw new NoAutenticadoException("La cuenta está desactivada.");
+        }
+
+        if (hash.Verificar(req.ContrasenaNueva, usuario.HashContrasena))
+            throw new ReglaNegocioException("La nueva contraseña debe ser diferente a la actual.");
+
+        usuario.HashContrasena = hash.Generar(req.ContrasenaNueva);
+        await db.SaveChangesAsync(ct);
+
+        await recuperacion.EliminarAsync(correo, ct);
+        revocacion.RevocarSesionesUsuario(usuario.IdUsuario, ahora, TimeSpan.FromHours(24));
     }
 
     private AuthResponse CrearRespuesta(Usuario usuario, IReadOnlyList<string> roles)

@@ -15,6 +15,7 @@ public class AuthServiceTests
     private readonly HashFalso _hash = new();
     private readonly GeneradorTokenFalso _tokens = new();
     private readonly RevocacionFalsa _revocacion = new();
+    private readonly AlmacenRecuperacionFalso _recuperacion = new();
     private readonly RelojFijo _reloj = new();
     private readonly CorreoFalso _correo = new();
     private readonly ValidadorDominioFalso _dominios = new();
@@ -29,7 +30,7 @@ public class AuthServiceTests
             new Rol { IdRol = 2, Nombre = Roles.Operador },
             new Rol { IdRol = 3, Nombre = Roles.Administrador }
         ]);
-        _servicio = new AuthService(_db, _hash, _tokens, _revocacion, _reloj, _correo, _dominios,
+        _servicio = new AuthService(_db, _hash, _tokens, _revocacion, _recuperacion, _reloj, _correo, _dominios,
             Options.Create(_opciones));
     }
 
@@ -412,6 +413,84 @@ public class AuthServiceTests
 
         Assert.True(_hash.Verificar("ClaveActual1", usuario.HashContrasena));
         Assert.Empty(_revocacion.Revocados);
+    }
+
+    [Fact]
+    public async Task RecuperarContrasena_flujo_completo_cambia_hash_y_revoca_sesiones_previas()
+    {
+        var usuario = AgregarUsuario(1, "Ana", "ana@biin.test", "ClaveActual1", true, Roles.Viajero);
+
+        var resp = await _servicio.SolicitarRecuperacionContrasenaAsync(new SolicitarRecuperacionRequest("  ANA@BIIN.TEST  "));
+        Assert.Equal(15, resp.MinutosVigencia);
+        var codigo = _correo.UltimoCodigoRecuperacion("ana@biin.test");
+        Assert.Matches(@"^\d{6}$", codigo);
+
+        await _servicio.ConfirmarRecuperacionContrasenaAsync(
+            new ConfirmarRecuperacionRequest("ana@biin.test", $" {codigo} ", "ClaveRecuperada99"));
+
+        Assert.True(_hash.Verificar("ClaveRecuperada99", usuario.HashContrasena));
+        Assert.False(_hash.Verificar("ClaveActual1", usuario.HashContrasena));
+        Assert.Empty(_recuperacion.Registros);
+        Assert.True(_revocacion.SesionUsuarioRevocada(1, _reloj.AhoraUtc.AddMinutes(-1)));
+    }
+
+    [Fact]
+    public async Task RecuperarContrasena_no_revela_si_el_correo_existe_o_esta_inactivo()
+    {
+        AgregarUsuario(1, "Inactivo", "inactivo@biin.test", "ClaveActual1", false, Roles.Viajero);
+
+        var respInexistente = await _servicio.SolicitarRecuperacionContrasenaAsync(new SolicitarRecuperacionRequest("nadie@biin.test"));
+        var respInactivo = await _servicio.SolicitarRecuperacionContrasenaAsync(new SolicitarRecuperacionRequest("inactivo@biin.test"));
+
+        Assert.Equal(respInexistente.Mensaje, respInactivo.Mensaje);
+        Assert.Empty(_correo.RecuperacionesEnviadas);
+        Assert.Empty(_recuperacion.Registros);
+    }
+
+    [Fact]
+    public async Task RecuperarContrasena_respeta_espera_entre_envios_y_limita_intentos_y_vencimiento()
+    {
+        AgregarUsuario(1, "Ana", "ana@biin.test", "ClaveActual1", true, Roles.Viajero);
+
+        await _servicio.SolicitarRecuperacionContrasenaAsync(new SolicitarRecuperacionRequest("ana@biin.test"));
+        _reloj.AhoraUtc = _reloj.AhoraUtc.AddSeconds(20);
+        // Dentro de 60 s no vuelve a enviar correo
+        await _servicio.SolicitarRecuperacionContrasenaAsync(new SolicitarRecuperacionRequest("ana@biin.test"));
+        Assert.Single(_correo.RecuperacionesEnviadas);
+
+        var codigo = _correo.UltimoCodigoRecuperacion("ana@biin.test");
+        var malo = codigo == "000000" ? "111111" : "000000";
+
+        // 5 intentos fallidos anulan el código
+        for (var i = 0; i < 4; i++)
+            await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+                _servicio.ConfirmarRecuperacionContrasenaAsync(new ConfirmarRecuperacionRequest("ana@biin.test", malo, "NuevaClave99")));
+        var ultimo = await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.ConfirmarRecuperacionContrasenaAsync(new ConfirmarRecuperacionRequest("ana@biin.test", malo, "NuevaClave99")));
+
+        Assert.Contains("demasiadas veces", ultimo.Message);
+        Assert.Empty(_recuperacion.Registros);
+
+        // Solicitar de nuevo tras pasar el tiempo y dejarlo vencer
+        _reloj.AhoraUtc = _reloj.AhoraUtc.AddMinutes(2);
+        await _servicio.SolicitarRecuperacionContrasenaAsync(new SolicitarRecuperacionRequest("ana@biin.test"));
+        var codigo2 = _correo.UltimoCodigoRecuperacion("ana@biin.test");
+        _reloj.AhoraUtc = _reloj.AhoraUtc.AddMinutes(16);
+
+        await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.ConfirmarRecuperacionContrasenaAsync(new ConfirmarRecuperacionRequest("ana@biin.test", codigo2, "NuevaClave99")));
+        Assert.Empty(_recuperacion.Registros);
+    }
+
+    [Fact]
+    public async Task RecuperarContrasena_si_falla_SMTP_lanza_503_y_no_deja_pendiente()
+    {
+        AgregarUsuario(1, "Ana", "ana@biin.test", "ClaveActual1", true, Roles.Viajero);
+        _correo.Fallar = true;
+
+        await Assert.ThrowsAsync<ServicioNoDisponibleException>(() =>
+            _servicio.SolicitarRecuperacionContrasenaAsync(new SolicitarRecuperacionRequest("ana@biin.test")));
+        Assert.Empty(_recuperacion.Registros);
     }
 
     private async Task<string> RegistrarYLeerCodigoAsync(string nombre, string correo, string contrasena)

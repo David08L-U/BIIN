@@ -34,5 +34,30 @@ public class MemoriaRevocacionToken(IMemoryCache cache) : IRevocacionToken
     public bool EstaRevocado(string jti) =>
         !string.IsNullOrWhiteSpace(jti) && cache.TryGetValue(Clave(jti), out _);
 
+    public void RevocarSesionesUsuario(int idUsuario, DateTime revocadoEnUtc, TimeSpan vigenciaMaxima)
+    {
+        if (idUsuario <= 0 || vigenciaMaxima <= TimeSpan.Zero)
+            return;
+
+        var corteUtc = DateTime.SpecifyKind(revocadoEnUtc, DateTimeKind.Utc);
+        cache.Set(
+            ClaveUsuario(idUsuario),
+            corteUtc.Ticks,
+            new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = vigenciaMaxima.Add(MargenReloj)
+            });
+    }
+
+    public bool SesionUsuarioRevocada(int idUsuario, DateTime emitidoEnUtc)
+    {
+        if (idUsuario <= 0 || !cache.TryGetValue<long>(ClaveUsuario(idUsuario), out var corteTicks))
+            return false;
+
+        var emitidoUtc = DateTime.SpecifyKind(emitidoEnUtc, DateTimeKind.Utc);
+        return emitidoUtc.Ticks <= corteTicks;
+    }
+
     private static string Clave(string jti) => Prefijo + jti.Trim();
+    private static string ClaveUsuario(int idUsuario) => $"jwt:usuario:{idUsuario}:desde";
 }

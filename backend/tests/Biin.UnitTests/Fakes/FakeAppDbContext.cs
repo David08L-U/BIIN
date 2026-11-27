@@ -129,6 +129,10 @@ public sealed class FakeAppDbContext : IAppDbContext
         foreach (var p in pendientes.Where(p => p.IdRegistro == 0))
             p.IdRegistro = pendientes.Max(x => x.IdRegistro) + 1;
 
+        var tarifas = Set<Tarifa>().Items;
+        foreach (var t in tarifas.Where(t => t.IdTarifa == 0))
+            t.IdTarifa = tarifas.Max(x => x.IdTarifa) + 1;
+
         foreach (var b in BitacoraAdminSet.Items)
         {
             if (b.IdBitacora == 0)
@@ -235,23 +239,58 @@ public sealed class RelojFijo(DateTime? ahoraUtc = null) : IReloj
 public sealed class RevocacionFalsa : IRevocacionToken
 {
     public HashSet<string> Revocados { get; } = [];
+    public Dictionary<int, DateTime> UsuariosRevocados { get; } = [];
     public void Revocar(string jti, DateTime expiraEnUtc) => Revocados.Add(jti);
     public bool EstaRevocado(string jti) => Revocados.Contains(jti);
+    public void RevocarSesionesUsuario(int idUsuario, DateTime revocadoEnUtc, TimeSpan vigenciaMaxima) =>
+        UsuariosRevocados[idUsuario] = revocadoEnUtc;
+    public bool SesionUsuarioRevocada(int idUsuario, DateTime emitidoEnUtc) =>
+        UsuariosRevocados.TryGetValue(idUsuario, out var corte) && emitidoEnUtc <= corte;
 }
 
 /// <summary>Guarda los códigos "enviados" para que la prueba los lea como si abriera el correo.</summary>
 public sealed class CorreoFalso : IEnvioCorreo
 {
     public List<(string Correo, string Nombre, string Codigo, DateTime ExpiraEn)> Enviados { get; } = [];
+    public List<(string Correo, string Nombre, string Codigo, DateTime ExpiraEn)> RecuperacionesEnviadas { get; } = [];
     public bool Fallar { get; set; }
 
     public string UltimoCodigo(string correo) => Enviados.Last(e => e.Correo == correo).Codigo;
+    public string UltimoCodigoRecuperacion(string correo) => RecuperacionesEnviadas.Last(e => e.Correo == correo).Codigo;
 
     public Task EnviarCodigoVerificacionAsync(
         string correo, string nombre, string codigo, DateTime expiraEnUtc, CancellationToken ct = default)
     {
         if (Fallar) throw new InvalidOperationException("SMTP caído (prueba)");
         Enviados.Add((correo, nombre, codigo, expiraEnUtc));
+        return Task.CompletedTask;
+    }
+
+    public Task EnviarCodigoRecuperacionAsync(
+        string correo, string nombre, string codigo, DateTime expiraEnUtc, CancellationToken ct = default)
+    {
+        if (Fallar) throw new InvalidOperationException("SMTP caído (prueba)");
+        RecuperacionesEnviadas.Add((correo, nombre, codigo, expiraEnUtc));
+        return Task.CompletedTask;
+    }
+}
+
+public sealed class AlmacenRecuperacionFalso : IAlmacenRecuperacionContrasena
+{
+    public Dictionary<string, RecuperacionPendiente> Registros { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+    public Task<RecuperacionPendiente?> ObtenerAsync(string correoNormalizado, CancellationToken ct = default) =>
+        Task.FromResult(Registros.TryGetValue(correoNormalizado, out var p) ? p : null);
+
+    public Task GuardarAsync(RecuperacionPendiente pendiente, CancellationToken ct = default)
+    {
+        Registros[pendiente.Correo] = pendiente;
+        return Task.CompletedTask;
+    }
+
+    public Task EliminarAsync(string correoNormalizado, CancellationToken ct = default)
+    {
+        Registros.Remove(correoNormalizado);
         return Task.CompletedTask;
     }
 }

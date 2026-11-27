@@ -19,6 +19,13 @@ public class UsuariosController(UsuariosService usuarios) : ControllerBase
     public Task<PerfilUsuarioDto> ObtenerPerfil(CancellationToken ct) =>
         usuarios.ObtenerPerfilAsync(User.IdUsuario(), ct);
 
+    /// <summary>Devuelve el perfil del usuario junto con los conteos reales de itinerarios y favoritos guardados.</summary>
+    [HttpGet("perfil/resumen")]
+    [ProducesResponseType<ResumenPerfilDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public Task<ResumenPerfilDto> ObtenerResumenPerfil(CancellationToken ct) =>
+        usuarios.ObtenerResumenPerfilAsync(User.IdUsuario(), ct);
+
     /// <summary>Actualiza el nombre y correo del usuario autenticado.</summary>
     [HttpPut("perfil")]
     [ProducesResponseType<PerfilUsuarioDto>(StatusCodes.Status200OK)]

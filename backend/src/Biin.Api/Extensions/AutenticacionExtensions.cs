@@ -51,22 +51,26 @@ public static class AutenticacionExtensions
                             return;
                         }
 
+                        var revocacion = context.HttpContext.RequestServices
+                            .GetRequiredService<IRevocacionToken>();
                         var jti = principal.Jti();
-                        if (!string.IsNullOrWhiteSpace(jti))
+                        if (!string.IsNullOrWhiteSpace(jti) && revocacion.EstaRevocado(jti))
                         {
-                            var revocacion = context.HttpContext.RequestServices
-                                .GetRequiredService<IRevocacionToken>();
-                            if (revocacion.EstaRevocado(jti))
-                            {
-                                context.Fail(new NoAutenticadoException("La sesión fue cerrada. Inicia sesión nuevamente."));
-                                return;
-                            }
+                            context.Fail(new NoAutenticadoException("La sesión fue cerrada. Inicia sesión nuevamente."));
+                            return;
                         }
 
                         var sub = principal.FindFirstValue(JwtRegisteredClaimNames.Sub);
                         if (!int.TryParse(sub, out var idUsuario))
                         {
                             context.Fail(new NoAutenticadoException("Token sin identificador de usuario."));
+                            return;
+                        }
+
+                        var emitidoEnUtc = principal.EmitidoEnUtc();
+                        if (emitidoEnUtc.HasValue && revocacion.SesionUsuarioRevocada(idUsuario, emitidoEnUtc.Value))
+                        {
+                            context.Fail(new NoAutenticadoException("La sesión fue cerrada. Inicia sesión nuevamente."));
                             return;
                         }
 
@@ -147,6 +151,12 @@ public static class AutenticacionExtensions
     /// <summary>Fecha de expiración UTC del token (claim "exp").</summary>
     public static DateTime? ExpiraEnUtc(this ClaimsPrincipal user) =>
         long.TryParse(user.FindFirstValue(JwtRegisteredClaimNames.Exp), out var unixSeconds)
+            ? DateTimeOffset.FromUnixTimeSeconds(unixSeconds).UtcDateTime
+            : null;
+
+    /// <summary>Fecha de emisión UTC del token (claim "iat"), usada para revocación global por usuario.</summary>
+    public static DateTime? EmitidoEnUtc(this ClaimsPrincipal user) =>
+        long.TryParse(user.FindFirstValue(JwtRegisteredClaimNames.Iat), out var unixSeconds)
             ? DateTimeOffset.FromUnixTimeSeconds(unixSeconds).UtcDateTime
             : null;
 

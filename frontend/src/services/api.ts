@@ -69,5 +69,5 @@ export const api = {
   get: <T>(ruta: string) => solicitar<T>('GET', ruta),
   post: <T>(ruta: string, cuerpo?: unknown) => solicitar<T>('POST', ruta, cuerpo),
   put: <T>(ruta: string, cuerpo?: unknown) => solicitar<T>('PUT', ruta, cuerpo),
-  delete: <T>(ruta: string) => solicitar<T>('DELETE', ruta),
+  delete: <T>(ruta: string, cuerpo?: unknown) => solicitar<T>('DELETE', ruta, cuerpo),
 }

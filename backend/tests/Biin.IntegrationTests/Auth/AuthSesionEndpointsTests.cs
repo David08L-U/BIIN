@@ -80,6 +80,19 @@ public class AuthSesionEndpointsTests : IClassFixture<AuthSesionEndpointsTests.S
     }
 
     [Fact]
+    public async Task Recuperacion_con_datos_invalidos_devuelve_400_sin_tocar_la_base()
+    {
+        using var client = _factory.CreateClient();
+
+        var sol = await client.PostAsJsonAsync("/api/auth/recuperar-contrasena", new { correo = "invalido" });
+        var conf = await client.PostAsJsonAsync("/api/auth/recuperar-contrasena/confirmar",
+            new { correo = "ana@biin.test", codigo = "abc", contrasenaNueva = "corta" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, sol.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, conf.StatusCode);
+    }
+
+    [Fact]
     public async Task Logout_devuelve_204_e_invalida_el_mismo_token_en_la_siguiente_peticion()
     {
         var usuario = new Usuario { IdUsuario = 1, Nombre = "Viajero", Correo = "viajero@biin.test" };

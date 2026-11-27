@@ -90,6 +90,26 @@ public class JwtPipelineTests : IClassFixture<JwtPipelineTests.ApiPruebasFactory
     }
 
     [Fact]
+    public async Task Endpoint_protegido_con_sesion_global_revocada_por_usuario_devuelve_401()
+    {
+        using var client = _factory.CreateClient();
+        var emitido = DateTime.UtcNow.AddMinutes(-3);
+        var expira = DateTime.UtcNow.AddMinutes(30);
+        var token = CrearToken("77", Guid.NewGuid().ToString(), expira, emitido);
+
+        var revocacion = _factory.Services.GetRequiredService<IRevocacionToken>();
+        revocacion.RevocarSesionesUsuario(77, DateTime.UtcNow.AddMinutes(-1), TimeSpan.FromHours(2));
+
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var respuesta = await client.GetAsync("/api/auth/yo");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, respuesta.StatusCode);
+        var problem = await respuesta.Content.ReadFromJsonAsync<ProblemDetails>();
+        Assert.NotNull(problem);
+        Assert.Contains("cerrada", problem.Detail, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task Login_superando_limite_devuelve_429_ProblemDetails()
     {
         // Fábrica aislada con límite bajo para probar 429 sin afectar otras pruebas
@@ -113,15 +133,17 @@ public class JwtPipelineTests : IClassFixture<JwtPipelineTests.ApiPruebasFactory
         Assert.Equal("Demasiadas solicitudes", problem.Title);
     }
 
-    private static string CrearToken(string sub, string jti, DateTime expiraUtc)
+    private static string CrearToken(string sub, string jti, DateTime expiraUtc, DateTime? emitidoUtc = null)
     {
-        var notBefore = expiraUtc < DateTime.UtcNow ? expiraUtc.AddMinutes(-10) : DateTime.UtcNow.AddMinutes(-1);
+        var notBefore = expiraUtc < DateTime.UtcNow ? expiraUtc.AddMinutes(-10) : DateTime.UtcNow.AddMinutes(-5);
+        var iat = new DateTimeOffset(emitidoUtc ?? DateTime.UtcNow).ToUnixTimeSeconds();
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, sub),
             new Claim(JwtRegisteredClaimNames.Email, "prueba@biin.test"),
             new Claim(JwtRegisteredClaimNames.Name, "Prueba"),
             new Claim(JwtRegisteredClaimNames.Jti, jti),
+            new Claim(JwtRegisteredClaimNames.Iat, iat.ToString(), ClaimValueTypes.Integer64),
             new Claim(ClaimTypes.Role, Roles.Viajero)
         };
 

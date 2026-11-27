@@ -163,14 +163,20 @@ BIIN/
 | `POST /api/auth/registro/verificar` | Público | RF01, paso 2: con el código correcto crea la cuenta como viajero e inicia sesión (201) |
 | `POST /api/auth/registro/reenviar` | Público | Manda otro código si ya pasaron 60 s; el anterior deja de servir (202) |
 | `POST /api/auth/login`, `GET /api/auth/yo`, `POST /api/auth/logout`, `PUT /api/auth/contrasena` | Público / Sesión | CU-01: sesión JWT con revocación |
+| `POST /api/auth/recuperar-contrasena`, `POST /api/auth/recuperar-contrasena/confirmar` | Público | CU-01 / RF01: restablecimiento de contraseña por código al correo (anti-enumeración) y cierre de sesiones previas |
+| `GET/PUT/DELETE /api/usuarios/perfil`, `GET /api/usuarios/perfil/resumen` | Sesión | CU-01: consulta/edición de perfil propio, conteos reales de itinerarios/favoritos y desactivación lógica |
 | `GET /api/catalogos/{categorias,municipios,localidades}` | Público | Filtros; localidades buscan sin acentos |
+| `GET /api/ubicaciones/cercanas` | Público | RF02 / RNF05: localidades y paradas de abordaje cercanas ordenadas por distancia (GPS opcional) |
 | `GET /api/negocios`, `/api/negocios/{id}` | Público | RF05: localidad, municipio, categoría, presupuesto, texto; horarios y «abierto ahora» |
 | `GET /api/eventos`, `/api/eventos/{id}` | Público | RF06: próximos por defecto, rango de días en hora de Yucatán, estado (incluye cancelados) |
 | `GET /api/lugares`, `/api/lugares/{id}` | Público | RF07: categoría, costo máximo, condiciones de acceso |
-| `GET /api/explorar` | Público | CU-14: todo lo publicado de una categoría, sin rutas ni eventos terminados |
+| `GET /api/explorar` | Público | CU-14 / RNF05: todo lo publicado de una categoría (sin rutas ni eventos terminados), con proximidad GPS opcional (`lat`, `lng`, `radioKm`) |
+| `GET /api/rutas/{idRuta}/tarifas` | Público | RF03 / RNF07: tarifas aproximadas vigentes por ruta o tramo (fecha local Yucatán) |
+| `GET /api/rutas/{idRuta}/mapa` | Público | RF03 / CU-03: paradas ordenadas con coordenadas y trazo `puntos_recorrido` para Leaflet |
 | `/api/itinerarios[/{id}[/actividades…]]` | Viajero | RF09: CRUD, actividades, reordenar, traslados estimados y advertencias |
 | `/api/admin/contenidos…` | Administrador | RF12: crear/editar negocios, lugares y eventos, publicar, archivar, cancelar evento, horarios, fotos |
-| `/api/admin/{localidades,ubicaciones,bitacora}` | Administrador | Geografía para contenidos y bitácora 17.1.5 |
+| `/api/admin/rutas/{idRuta}/tarifas…` | Administrador | RF12 / CU-12: listar histórico, crear, editar y cerrar vigencia de tarifas sin solapamiento + bitácora |
+| `/api/admin/{localidades,ubicaciones,bitacora}` | Administrador | Alta y edición (`PUT`) de geografía (con validación en Yucatán) y bitácora 17.1.5 |
 
 **Confirmación de correo al registrarse (solo viajeros, RF01, RNF04):**
 
@@ -180,6 +186,7 @@ BIIN/
 - Cinco códigos incorrectos o el vencimiento anulan el pendiente. El login con un pendiente vigente avisa que falta confirmar, solo si la contraseña coincide.
 - El envío lo hace `SmtpEnvioCorreo` con la sección `Correo` (servidor, puerto, usuario, contraseña, SSL, remitente). Sin `Correo:Servidor`, en Development el código se escribe en la consola de la API (`RegistroEnvioCorreo`); en cualquier otro ambiente el registro responde 503.
 - Administradores, operadores y colaboradores no pasan por aquí: se crean con `crear_usuario.ps1` o desde `/api/admin/usuarios`.
+- **Revocación de JWT distribuible (`DistribuidaRevocacionToken`):** la revocación por `jti` y el cierre global por usuario (por `iat` al cambiar contraseña o desactivar cuenta) corren sobre `IDistributedCache`. En una sola instancia del MVP se respalda con `AddDistributedMemoryCache()` sin dependencias extra; al escalar a múltiples nodos basta registrar un `IDistributedCache` compartido (por ejemplo Redis) sin cambiar servicios ni tablas de PostgreSQL.
 - En el frontend, `RegistroPage` muestra `features/auth/components/VerificacionCorreo.tsx` después del formulario, con «Reenviar código» (cuenta regresiva) y «Volver y corregir mis datos», que conserva lo escrito.
 
 **Advertencias de un itinerario** (no bloquean, se devuelven en el detalle): `conflicto_horario`, `traslado_insuficiente`, `fuera_de_fechas`, `fuera_de_horario`, `evento_cancelado`, `contenido_no_disponible`. El traslado es una estimación (haversine × 1.3 a 40 km/h) y no sustituye horarios ni recorridos reales.
@@ -401,6 +408,8 @@ Todos leen las conexiones de `appsettings.Development.json`; ninguna contraseña
 | Recorrido | «Un día de cenotes en Homún» con 5 etapas (CU-13) |
 
 Reglas para quien agregue datos demo: título con `[DEMO]`, códigos con `DEMO-`, autor `demo@biin.test` (cuenta inactiva sin acceso), y que `999_borrar_demo.sql` los pueda quitar. Las salidas se fijan al día de la carga: si ya pasaron, borrar y volver a cargar.
+
+`database/seed/demo/002_rutas_tarifas_referencia.sql` complementa la demo con rutas ida/regreso y tarifas aproximadas de referencia (`DEMO-MER-IZA`, `DEMO-MER-VAL`, `DEMO-MER-TEK`, `DEMO-MER-TIC`) para poder probar y ajustar montos y vigencias desde `/api/admin/rutas/{idRuta}/tarifas` antes de la validación final con operadores.
 
 ## 5. Diagramas de clases (Unidad 2)
 

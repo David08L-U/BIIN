@@ -86,7 +86,22 @@ public record CrearLocalidadRequest(
     [StringLength(120, MinimumLength = 2, ErrorMessage = "El nombre debe tener entre 2 y 120 caracteres.")]
     string Nombre);
 
+public record ActualizarLocalidadRequest(
+    int IdMunicipio,
+    [Required(ErrorMessage = "El nombre es obligatorio.")]
+    [StringLength(120, MinimumLength = 2, ErrorMessage = "El nombre debe tener entre 2 y 120 caracteres.")]
+    string Nombre);
+
 public record CrearUbicacionRequest(
+    int IdLocalidad,
+    [StringLength(255, ErrorMessage = "La referencia no puede pasar de 255 caracteres.")]
+    string? DireccionReferencia,
+    [Range(-90, 90, ErrorMessage = "La latitud debe estar entre -90 y 90.")]
+    decimal Latitud,
+    [Range(-180, 180, ErrorMessage = "La longitud debe estar entre -180 y 180.")]
+    decimal Longitud);
+
+public record ActualizarUbicacionRequest(
     int IdLocalidad,
     [StringLength(255, ErrorMessage = "La referencia no puede pasar de 255 caracteres.")]
     string? DireccionReferencia,

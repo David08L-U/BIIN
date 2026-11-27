@@ -14,14 +14,16 @@ public class JwtGeneradorToken(IOptions<JwtOptions> opciones) : IGeneradorToken
 
     public (string Token, DateTime ExpiraEn) Generar(Usuario usuario, IEnumerable<string> roles)
     {
-        var expira = DateTime.UtcNow.AddMinutes(_opt.MinutosExpiracion);
+        var ahora = DateTime.UtcNow;
+        var expira = ahora.AddMinutes(_opt.MinutosExpiracion);
 
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, usuario.IdUsuario.ToString()),
             new(JwtRegisteredClaimNames.Email, usuario.Correo),
             new(JwtRegisteredClaimNames.Name, usuario.Nombre),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Iat, new DateTimeOffset(ahora).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
         };
         claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
