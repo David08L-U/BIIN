@@ -113,6 +113,7 @@ Abrir http://localhost:5173. Las llamadas a `/api` se reenvían al backend.
 | [docs/REQUERIMIENTOS.md](docs/REQUERIMIENTOS.md) | RF01–RF12, RNF01–RNF08, HU01–HU12, CU-01–CU-14, trazabilidad, alcance del MVP, restricciones y supuestos |
 | [docs/PLAN_Y_SPRINTS.md](docs/PLAN_Y_SPRINTS.md) | Metodología Cascada + Scrum, EDT, 15 hitos, 9 sprints, **responsables y MoSCoW por actividad** y Definición de Terminado |
 | [docs/CONVENCIONES.md](docs/CONVENCIONES.md) | Git, código, pruebas, checklist de tarea y **reglas para asistentes de IA** |
+| [docs/ENTREGA_FRONTEND_DINAMICO.md](docs/ENTREGA_FRONTEND_DINAMICO.md) | Rutas dinámicas, contratos de destinos, validación y continuidad |
 
 **¿Por dónde empiezo?**
 - ¿Vas a programar? → `ARQUITECTURA.md` + `CONVENCIONES.md`

@@ -1,5 +1,7 @@
 # Itinerarios de Homún — CU-09 / RF09, HU09
 
+> Documento histórico del prototipo. La composición y persistencia vigentes se describen en [Entrega del frontend dinámico](ENTREGA_FRONTEND_DINAMICO.md).
+
 El detalle, el recorrido y la personalización usan la composición visual de
 Izamal con sus cenotes, traslados en mototaxi y configuración por jornada.
 

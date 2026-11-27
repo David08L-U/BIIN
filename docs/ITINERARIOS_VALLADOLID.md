@@ -1,5 +1,7 @@
 # Itinerarios de Valladolid — CU-09 / RF09
 
+> Documento histórico del prototipo. La composición y persistencia vigentes se describen en [Entrega del frontend dinámico](ENTREGA_FRONTEND_DINAMICO.md).
+
 El detalle y el planificador usan la composición de Izamal con los datos de
 Valladolid. Cada jornada conserva sus propios campos de Horas y Minutos.
 

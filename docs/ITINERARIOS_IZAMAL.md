@@ -1,5 +1,7 @@
 # Itinerarios de Izamal — CU-09 / RF09
 
+> Documento histórico del prototipo. La composición y persistencia vigentes se describen en [Entrega del frontend dinámico](ENTREGA_FRONTEND_DINAMICO.md).
+
 El detalle de Izamal define la plantilla común de rutas. El itinerario y la
 personalización comparten la cabecera, los controles de modo y los estilos de
 configuración, filtros, recorrido y acciones con los otros destinos.
