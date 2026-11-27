@@ -62,7 +62,7 @@ function EditarItinerario({ inicial, recargar }: { inicial: ItinerarioDetalleDto
     <AgregarActividadApi disabled={operacion.ocupado || actividades.length >= 50} usados={actividades.map(a => a.idRecurso)} agregar={idRecurso => void operacion.ejecutar(() => itinerariosApi.agregarActividad(id, { idRecurso }))} />
     <section className="plan-tarjeta"><h2>Ubicaciones del itinerario</h2><MapaRecorrido paradas={actividades.flatMap(a => a.latitud !== null && a.longitud !== null ? [{ latitud: a.latitud, longitud: a.longitud, nombre: a.titulo }] : [])} /></section>
     <button type="button" disabled={operacion.ocupado} onClick={() => {
-      const archivo = new Blob([JSON.stringify(itinerario, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(archivo); const enlace = document.createElement('a'); enlace.href = url; enlace.download = `BIIN-itinerario-${id}.json`; enlace.click(); window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+      const archivo = new Blob([JSON.stringify({ descargadoEn: new Date().toISOString(), itinerario }, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(archivo); const enlace = document.createElement('a'); enlace.href = url; enlace.download = `BIIN-itinerario-${id}.json`; enlace.click(); window.setTimeout(() => URL.revokeObjectURL(url), 1000)
     }}>Descargar itinerario</button><p className="plan-nota">La descarga conserva las fechas de creación y las advertencias de esta consulta. Los horarios y el cupo pueden cambiar.</p>
   </>
 }

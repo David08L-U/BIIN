@@ -18,7 +18,7 @@ export default function MapaRecorrido({ paradas, trazo = [] }: {
   const linea = trazo.filter(valida).map(p => [p.latitud, p.longitud] as [number, number])
   const puntos = [...marcadores.map(p => [p.latitud, p.longitud] as [number, number]), ...linea]
   if (!puntos.length) return <p role="status">No hay coordenadas publicadas para mostrar el mapa.</p>
-  return <div className="mapa-publicado" aria-label="Mapa de ubicaciones publicadas">
+  return <div className="mapa-publicado" role="region" aria-label="Mapa de ubicaciones publicadas">
     <MapaBase centro={puntos[0]} alto="280px" zoom={10}>
       <Encuadre puntos={puntos} />
       {linea.length > 1 && <Polyline positions={linea} pathOptions={{ color: '#805638' }} />}
