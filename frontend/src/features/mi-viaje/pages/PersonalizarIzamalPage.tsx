@@ -44,7 +44,6 @@ export default function PersonalizarIzamalPage() {
     <article className="iz-plan iz-personalizar" aria-labelledby="iz-personalizar-titulo">
       <CabeceraPlan id="iz-personalizar-titulo" titulo="Personalizar Itinerario" subtitulo="Izamal · Pueblo Mágico" volver={urlBorrador('detalle', borrador)} personalizar acciones={<>
           <button type="button" className="iz-plan-icono-boton" aria-label="Reiniciar selección" onClick={restablecer}><Icono nombre="restart_alt" tamano={22} /></button>
-          <span className="iz-plan-avatar" aria-hidden="true"><Icono nombre="person" tamano={18} /></span>
         </>} />
       <ModosPlan
         modo={borrador.modo}

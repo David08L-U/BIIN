@@ -178,7 +178,6 @@
 .iz-personalizar-cabecera .iz-plan-icono-boton { width: 44px; height: 44px; border: 0; border-radius: 8px; background: transparent; }
 .iz-personalizar-cabecera > div:first-of-type { flex: 1; }
 .iz-personalizar-utilidades { display: flex; align-items: center; flex-shrink: 0; gap: 4px; }
-.iz-plan-avatar { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--color-primario); color: var(--color-superficie); }
 .iz-personalizar-cabecera h1 { font-weight: 700; }
 .iz-personalizar .iz-plan-ceja { color: var(--color-acento-texto); }
 .iz-plan-contexto { position: relative; margin-top: 16px; border-radius: 12px; padding: 16px; background: var(--color-superficie-suave); box-shadow: 0 1px 2px #0000000d; }

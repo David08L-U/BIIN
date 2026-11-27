@@ -37,7 +37,6 @@ export default function PersonalizarValladolidPage() {
   return <article className="iz-plan iz-personalizar" aria-labelledby="va-personalizar-titulo">
     <CabeceraPlan id="va-personalizar-titulo" titulo="Personalizar Itinerario" subtitulo="Valladolid · La Sultana del Oriente" volver={urlBorradorValladolid('detalle', borrador)} personalizar acciones={<>
           <button type="button" className="iz-plan-icono-boton" aria-label="Reiniciar selección" onClick={restablecer}><Icono nombre="restart_alt" tamano={22} /></button>
-          <span className="iz-plan-avatar" aria-hidden="true"><Icono nombre="person" tamano={18} /></span>
         </>} />
       <ModosPlan modo={borrador.modo} recomendado={urlBorradorValladolid('itinerario', { ...borrador, modo: 'recomendado', generado: false })} personalizado={urlBorradorValladolid('personalizar', { ...borrador, modo: 'personalizado', generado: false })} />
     <form noValidate onSubmit={generar}>
