@@ -71,13 +71,17 @@ describe('Catálogo de rutas de Melanie CU-02', () => {
     ).toHaveLength(1)
   })
 
-  it('muestra fotografías locales verificadas y marca los destinos pendientes', () => {
+  it('conserva los iconos propios del catálogo sin añadir fotografías a las rutas', () => {
     montar()
-    expect(screen.getByRole('img', { name: /Arcadas del convento.*Izamal/ })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: /San Bernardino.*Valladolid/ })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: /Parroquia.*Ticul/ })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: /pendiente de verificar de Tekit/ })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: /pendiente de verificar de Homún/ })).toBeInTheDocument()
+    expect(screen.getByText('temple_buddhist')).toBeInTheDocument()
+    expect(screen.getByText('church')).toBeInTheDocument()
+    expect(screen.getByText('checkroom')).toBeInTheDocument()
+    expect(screen.getByText('water_drop')).toBeInTheDocument()
+    expect(screen.getByText('diagnosis')).toBeInTheDocument()
+    for (const enlace of screen.getAllByRole('link', { name: /^Ver ruta a / })) {
+      expect(enlace.querySelector('img')).toBeNull()
+      expect(enlace).toHaveTextContent(/Desde/)
+    }
   })
 
   it('recibe la selección de una tarjeta de inicio', () => {
