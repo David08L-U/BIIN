@@ -170,6 +170,7 @@ BIIN/
 | `GET /api/eventos`, `/api/eventos/{id}` | Público | RF06: próximos por defecto, rango de días en hora de Yucatán, estado (incluye cancelados) |
 | `GET /api/lugares`, `/api/lugares/{id}` | Público | RF07: categoría, costo máximo, condiciones de acceso |
 | `GET /api/explorar` | Público | CU-14: todo lo publicado de una categoría, sin rutas ni eventos terminados |
+| `GET /api/rutas/{idRuta}/tarifas` | Público | RF03 / RNF07: tarifas aproximadas vigentes por ruta o tramo (fecha local Yucatán) |
 | `/api/itinerarios[/{id}[/actividades…]]` | Viajero | RF09: CRUD, actividades, reordenar, traslados estimados y advertencias |
 | `/api/admin/contenidos…` | Administrador | RF12: crear/editar negocios, lugares y eventos, publicar, archivar, cancelar evento, horarios, fotos |
 | `/api/admin/{localidades,ubicaciones,bitacora}` | Administrador | Geografía para contenidos y bitácora 17.1.5 |

@@ -183,6 +183,12 @@ GET {{api}}/api/lugares?costoMaximo=0
 ### Explorar por interés: todo lo publicado de una categoría (CU-14)
 GET {{api}}/api/explorar?idCategoria=9
 
+### Tarifas aproximadas vigentes de una ruta publicada (CU-03, RF03, RNF07)
+GET {{api}}/api/rutas/1/tarifas
+
+### Tarifa vigente de un tramo específico (parada 1 a parada 5)
+GET {{api}}/api/rutas/1/tarifas?ordenOrigen=1&ordenDestino=5
+
 ### ───────── Mi Viaje: itinerarios (viajero, CU-09, RF09) ─────────
 
 ### Mis itinerarios

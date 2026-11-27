@@ -20,6 +20,7 @@ public static class DependencyInjection
         services.AddScoped<EventosService>();
         services.AddScoped<LugaresService>();
         services.AddScoped<ExplorarService>();
+        services.AddScoped<TarifasService>();
         services.AddScoped<ItinerariosService>();
         services.AddScoped<AdminContenidosService>();
         services.AddScoped<AdminGeografiaService>();
