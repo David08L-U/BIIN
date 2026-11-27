@@ -205,6 +205,20 @@
   z-index: 0;
 }
 
+.melanie-mapa-espera {
+  position: absolute;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #fbf8f3;
+  color: var(--color-texto);
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+}
+
 .melanie-mapa button:focus-visible {
   outline: 3px solid var(--color-secundario);
   outline-offset: -3px;

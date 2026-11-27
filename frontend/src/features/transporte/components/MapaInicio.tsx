@@ -15,17 +15,22 @@ const marquesita = icon({
 
 function ContenidoMapa({ fallo }: { fallo: boolean }) {
   const mapa = useMap()
-  const { posicion, estado, usarUbicacion, mostrarInvitacion, ahoraNo } = useUbicacionInicio(({ punto }) => encuadrarUbicacion(mapa, punto))
+  const { posicion, estado, permiso, usarUbicacion, mostrarInvitacion, ahoraNo } = useUbicacionInicio(({ punto }) => encuadrarUbicacion(mapa, punto))
+  const obteniendoPrimeraPosicion = !posicion && (permiso === 'consultando' || estado.tipo === 'solicitando')
   const desactualizada = posicion !== null && estado.tipo !== 'vigente'
   const color = desactualizada ? '#625954' : '#1769aa'
   const controles = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    const elemento = controles.current!
+    const elemento = controles.current
+    if (!elemento) return
     DomEvent.disableClickPropagation(elemento)
     DomEvent.disableScrollPropagation(elemento)
     return () => { DomEvent.off(elemento) }
   }, [])
   return <>
+    {obteniendoPrimeraPosicion && <div className="melanie-mapa-espera" role="status" aria-live="polite">
+      <span>Obteniendo tu ubicación…</span>
+    </div>}
     {posicion && <>
       <Circle center={posicion.punto} radius={posicion.precision} pathOptions={{ color, fillOpacity: 0.15, weight: 2, interactive: false }} />
       <Marker position={posicion.punto} icon={marquesita} alt="" keyboard={false} interactive={false} opacity={desactualizada ? 0.65 : 1}>
@@ -53,12 +58,12 @@ function ContenidoMapa({ fallo }: { fallo: boolean }) {
       <button type="button" onClick={ahoraNo}>Ahora no</button>
     </section>}
     <div className="melanie-mapa-nota">
-      {!posicion && <div>Vista general de Mérida · Referencia</div>}
+      {!posicion && !obteniendoPrimeraPosicion && <div>Vista general de Mérida · Referencia</div>}
       <div aria-live="polite" aria-atomic="true">
         {posicion && <div>
           {desactualizada ? 'Última ubicación desactualizada' : 'Tu ubicación aproximada'} · Precisión estimada de {Math.ceil(posicion.precision)} m
         </div>}
-        {estado.tipo === 'solicitando' && <div>Solicitando ubicación…</div>}
+        {estado.tipo === 'solicitando' && !obteniendoPrimeraPosicion && <div>Solicitando ubicación…</div>}
         {estado.tipo === 'error' && <div>{estado.mensaje}</div>}
       </div>
       {fallo && <div role="status">No se pudo cargar parte del mapa.</div>}
