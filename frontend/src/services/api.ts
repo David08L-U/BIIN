@@ -34,7 +34,7 @@ export const tokenAlmacenado = {
   },
 }
 
-async function solicitar<T>(metodo: string, ruta: string, cuerpo?: unknown): Promise<T> {
+async function solicitar<T>(metodo: string, ruta: string, cuerpo?: unknown, signal?: AbortSignal): Promise<T> {
   const headers: Record<string, string> = { Accept: 'application/json' }
   const token = tokenAlmacenado.leer()
   if (token) headers.Authorization = `Bearer ${token}`
@@ -46,8 +46,10 @@ async function solicitar<T>(metodo: string, ruta: string, cuerpo?: unknown): Pro
       method: metodo,
       headers,
       body: cuerpo === undefined ? undefined : JSON.stringify(cuerpo),
+      signal,
     })
-  } catch {
+  } catch (error) {
+    if (signal?.aborted) throw error
     throw new ApiError(0, 'No hay conexión con el servidor. Revisa tu internet.')
   }
 
@@ -62,11 +64,12 @@ async function solicitar<T>(metodo: string, ruta: string, cuerpo?: unknown): Pro
       'Ocurrió un error inesperado.'
     throw new ApiError(respuesta.status, mensaje)
   }
+  if (datos === null) throw new ApiError(502, 'El servidor no devolvió una respuesta válida.')
   return datos as T
 }
 
 export const api = {
-  get: <T>(ruta: string) => solicitar<T>('GET', ruta),
+  get: <T>(ruta: string, signal?: AbortSignal) => solicitar<T>('GET', ruta, undefined, signal),
   post: <T>(ruta: string, cuerpo?: unknown) => solicitar<T>('POST', ruta, cuerpo),
   put: <T>(ruta: string, cuerpo?: unknown) => solicitar<T>('PUT', ruta, cuerpo),
   delete: <T>(ruta: string, cuerpo?: unknown) => solicitar<T>('DELETE', ruta, cuerpo),
