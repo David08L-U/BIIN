@@ -193,7 +193,9 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     expect(await screen.findByText('Itinerario guardado en tu cuenta')).toBeInTheDocument()
     await user.click(screen.getByRole('link', { name: 'Ver mis itinerarios guardados' }))
     expect(router.state.location.pathname).toBe('/mi-viaje')
-    expect(await screen.findAllByRole('link', { name: 'Abrir itinerario de Izamal' })).toHaveLength(1)
+    const abrirGuardado = await screen.findByRole('link', { name: 'Abrir itinerario de Izamal' })
+    expect(screen.queryByText('Foto pendiente')).not.toBeInTheDocument()
+    expect(abrirGuardado.closest('li')?.querySelector('img')).toBeNull()
     await user.click(screen.getByRole('link', { name: 'Abrir itinerario de Izamal' }))
     expect(screen.getByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
   })
@@ -219,6 +221,10 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     expect(screen.getByRole('heading', { name: 'Crear un itinerario' })).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: /^Crear itinerario para / })).toHaveLength(5)
     expect(screen.getAllByRole('link', { name: /^Crear itinerario para / })[0]).toHaveAttribute('href', '/rutas/izamal')
+    expect(screen.queryByText('Foto pendiente')).not.toBeInTheDocument()
+    for (const enlace of screen.getAllByRole('link', { name: /^Crear itinerario para / })) {
+      expect(enlace.closest('li')?.querySelector('img')).toBeNull()
+    }
   })
 
   it('edita un guardado sin alterarlo hasta confirmar y conserva el original al cancelar', async () => {

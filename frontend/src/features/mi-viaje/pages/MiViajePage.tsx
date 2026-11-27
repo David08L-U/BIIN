@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router'
-import { fotografiasRepresentativasDestino } from '../../explorar/data/lugaresExplorar'
-import FotografiaDestino from '../../../components/ui/FotografiaDestino'
 import { ApiError } from '../../../services/api'
 import { useAuth } from '../../auth/useAuth'
 import { duracionPlan } from '../plan/duracion'
@@ -198,9 +196,7 @@ function MiViajeContenido({ idUsuario, cerrarSesion }: { idUsuario: number; cerr
     {!cargando && elementos.length > 0 && <ul>{elementos.map(item => {
       const destino = nombreDestino(item)
       const local = !item.id.startsWith('servidor:')
-      const foto = item.destino ? fotografiasRepresentativasDestino[item.destino] : undefined
       return <li key={item.id} className="iz-plan-tarjeta iz-plan-guardado">
-        <FotografiaDestino foto={foto} destino={destino} className="iz-plan-destino-miniatura" />
         <div className="iz-plan-guardado-contenido">
           <h2>{destino} · {item.borrador.modo}</h2>
           {resumen(item).map((linea, index) => <p key={`${item.id}-${index}`}>{linea}</p>)}
@@ -232,9 +228,7 @@ function MiViajeContenido({ idUsuario, cerrarSesion }: { idUsuario: number; cerr
           ['homun', 'Homún'],
           ['ticul', 'Ticul'],
         ].map(([destino, nombre]) => {
-          const foto = fotografiasRepresentativasDestino[destino]
           return <li className="iz-plan-tarjeta" key={destino}>
-          <FotografiaDestino foto={foto} destino={nombre} className="iz-plan-destino-miniatura" />
           <h3>{nombre}</h3>
           <Link to={`/rutas/${destino}`} aria-label={`Crear itinerario para ${nombre}`}>Crear itinerario</Link>
         </li>})}
