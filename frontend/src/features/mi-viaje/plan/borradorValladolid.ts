@@ -5,7 +5,7 @@ import type { BorradorValladolid } from './itinerarioValladolid'
 
 export function crearBorradorValladolid(estancia: EstanciaValladolid = 'medio-dia', modo: ModoItinerario = 'recomendado'): BorradorValladolid {
   const valores = estanciasValladolid[estancia]
-  return { destino: 'valladolid', configuracion: { estancia, fecha: '', horaInicio: valores.hora, minutosDisponibles: valores.minutos, horaInicioDia2: '09:00', minutosDia2: '270' }, modo, seleccion: [], generado: false }
+  return { destino: 'valladolid', configuracion: { estancia, fecha: '', horaInicio: valores.hora, minutosDisponibles: valores.minutos, horaInicioDia2: '09:00', minutosDia2: '540' }, modo, seleccion: [], generado: false }
 }
 
 export function leerBorradorValladolid(parametros: URLSearchParams, modoInicial: ModoItinerario = 'recomendado'): BorradorValladolid {
@@ -52,7 +52,7 @@ export function cambiarEstanciaValladolid(borrador: BorradorValladolid, estancia
   const valores = estanciasValladolid[estancia]
   return {
     ...borrador, generado: false,
-    configuracion: { ...borrador.configuracion, estancia, horaInicio: valores.hora, minutosDisponibles: valores.minutos, horaInicioDia2: borrador.configuracion.horaInicioDia2 || '09:00', minutosDia2: borrador.configuracion.minutosDia2 || '270' },
+    configuracion: { ...borrador.configuracion, estancia, horaInicio: valores.hora, minutosDisponibles: valores.minutos, horaInicioDia2: '09:00', minutosDia2: '540' },
     seleccion: estancia === 'fin-de-semana' ? borrador.seleccion : borrador.seleccion.map(s => ({ ...s, dia: 1 })),
   }
 }

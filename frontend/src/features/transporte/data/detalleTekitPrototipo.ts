@@ -20,8 +20,9 @@ export const detalleTekitPrototipo = {
     { nombre: 'Tekit Centro', descripcion: 'Frente a la Parroquia de San Antonio de Padua', tipo: 'destino', etiqueta: 'Destino' },
   ],
   opciones: [
-    { id: 'medio-dia', nombre: 'Medio día', detalle: '3–4 horas' },
-    { id: 'dia-completo', nombre: 'Día completo', detalle: '6 horas' },
+    { id: 'medio-dia', nombre: 'Medio día', detalle: '4 h 30 min' },
+    { id: 'dia-completo', nombre: 'Día completo', detalle: '9 h' },
+    { id: 'fin-de-semana', nombre: 'Fin de semana', detalle: '2 días · 9 h por jornada' },
     // Modalidad de visita; no representa una duración numérica.
     { id: 'ruta-textil', nombre: 'Ruta Textil', detalle: 'Compras' },
   ],

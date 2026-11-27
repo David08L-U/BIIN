@@ -101,8 +101,8 @@ describe('Detalle propio de Homún CU-03 / RF03', () => {
   it('selecciona las tres estancias con teclado y conserva el foco', async () => {
     montar()
     const user = userEvent.setup()
-    const medio = screen.getByRole('radio', { name: /Medio día.*4–5 horas/ })
-    const completo = screen.getByRole('radio', { name: /Día completo.*8–10 horas/ })
+    const medio = screen.getByRole('radio', { name: /Medio día/ })
+    const completo = screen.getByRole('radio', { name: /Día completo/ })
     const fin = screen.getByRole('radio', { name: /Fin de semana.*2 días/ })
     expect(screen.getByRole('group', { name: 'Tiempo disponible estimado' })).toBeInTheDocument()
     expect(medio).toBeChecked()
@@ -196,7 +196,7 @@ describe('Detalle propio de Homún CU-03 / RF03', () => {
     expect(screen.getByRole('radio', { name: /Fin de semana/ })).toBeInTheDocument()
   })
 
-  it.each([['Medio día', 'medio-dia', 270], ['Día completo', 'dia-completo', 540], ['Fin de semana', 'fin-de-semana', 270]] as const)('abre el planificador desde %s conservando estancia y retorno', async (nombre, estancia, minutos) => {
+  it.each([['Medio día', 'medio-dia', 270], ['Día completo', 'dia-completo', 540], ['Fin de semana', 'fin-de-semana', 540]] as const)('abre el planificador desde %s conservando estancia y retorno', async (nombre, estancia, minutos) => {
     const { router } = montar()
     await userEvent.click(screen.getByRole('radio', { name: new RegExp(nombre) }))
     await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Homún' }))
@@ -204,8 +204,8 @@ describe('Detalle propio de Homún CU-03 / RF03', () => {
     expect(screen.getByLabelText('Estancia')).toHaveValue(estancia)
     expect(screen.getByLabelText('Horas del Día 1')).toHaveValue(minutos === null ? null : Math.floor(minutos / 60))
     expect(screen.getByLabelText('Minutos del Día 1')).toHaveValue(minutos === null ? null : minutos % 60)
-    if (estancia === 'fin-de-semana') expect(screen.getByLabelText('Horas del Día 2')).toHaveValue(4)
-    if (estancia === 'fin-de-semana') expect(screen.getByLabelText('Minutos del Día 2')).toHaveValue(30)
+    if (estancia === 'fin-de-semana') expect(screen.getByLabelText('Horas del Día 2')).toHaveValue(9)
+    if (estancia === 'fin-de-semana') expect(screen.getByLabelText('Minutos del Día 2')).toHaveValue(0)
     expect(screen.queryByRole('heading', { name: 'Paso a paso en mototaxi y a pie' })).not.toBeInTheDocument()
     expect(localStorage.length).toBe(0)
     expect(screen.queryByRole('heading', { name: 'Tu Itinerario en Izamal' })).not.toBeInTheDocument()

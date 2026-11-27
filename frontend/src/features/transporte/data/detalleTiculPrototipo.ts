@@ -22,9 +22,10 @@ export const detalleTiculPrototipo = {
     { nombre: 'Ticul Centro', descripcion: 'Frente al Mercado Municipal y Plaza de Armas', tipo: 'destino', etiqueta: 'Destino' },
   ],
   estancias: [
-    { id: 'medio-dia', nombre: 'Medio día (3–4 horas)' },
+    { id: 'medio-dia', nombre: 'Medio día', duracion: '4 h 30 min' },
     // Modalidades de referencia, sin convertirlas en duraciones numéricas.
-    { id: 'dia-completo', nombre: 'Día completo (Ruta Puuc)' },
+    { id: 'dia-completo', nombre: 'Día completo', duracion: '9 h' },
+    { id: 'fin-de-semana', nombre: 'Fin de semana', duracion: '2 días · 9 h por jornada' },
     { id: 'tour-compras', nombre: 'Tour de Compras' },
   ],
   lugares: [

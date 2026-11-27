@@ -30,7 +30,7 @@ export function bloquesRecorrido(lugares: readonly ParadaEstimada[], seleccion: 
     agregar('traslado', `Desplazamiento estimado a ${lugar.nombre}`, lugar.trasladoMinutos, id)
     agregar('visita', lugar.nombre, lugar.visitaMinutos, id)
   }
-  agregar('traslado', 'Desplazamiento final estimado al punto de regreso', regreso)
-  agregar('margen', 'Margen final para preparar el regreso', margen)
+  if (regreso > 0) agregar('traslado', 'Desplazamiento final estimado al punto de regreso', regreso)
+  agregar('margen', regreso > 0 ? 'Margen final para preparar el regreso' : 'Margen de tiempo de la jornada', margen)
   return bloques
 }

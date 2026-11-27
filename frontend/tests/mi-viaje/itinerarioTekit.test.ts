@@ -13,7 +13,7 @@ describe('Cálculo de Tekit CU-09 / RF09', () => {
   it('usa los cuatro lugares del HTML y suma visitas, traslados, regreso y margen', () => {
     expect(lugaresTekit.map(l => [l.visitaMinutos, l.trasladoMinutos])).toEqual([[65, 2], [45, 3], [50, 4], [30, 2]])
     const plan = calcularPlanTekit(base()).plan!
-    expect(plan).toMatchObject({ visitasMinutos: 190, trasladosMinutos: 14, margenMinutos: 15, totalMinutos: 219, libresMinutos: 21 })
+    expect(plan).toMatchObject({ visitasMinutos: 190, trasladosMinutos: 14, margenMinutos: 15, totalMinutos: 219, libresMinutos: 51 })
     expect(plan.bloques.slice(-2)).toEqual([
       expect.objectContaining({ tipo: 'traslado', inicio: 201, fin: 204 }),
       expect.objectContaining({ tipo: 'margen', inicio: 204, fin: 219 }),
@@ -28,7 +28,7 @@ describe('Cálculo de Tekit CU-09 / RF09', () => {
       expect(b.inicio).toBe(i ? plan.bloques[i - 1].fin : 0)
     }
     expect(plan.bloques.reduce((s, b) => s + b.fin - b.inicio, 0)).toBe(plan.totalMinutos)
-    expect(plan.bloques.at(-1)!.fin + plan.libresMinutos).toBe(240)
+    expect(plan.bloques.at(-1)!.fin + plan.libresMinutos).toBe(270)
     expect(new Set(plan.seleccion).size).toBe(plan.seleccion.length)
   })
 
@@ -57,10 +57,10 @@ describe('Cálculo de Tekit CU-09 / RF09', () => {
 
   it('deja el tiempo sobrante libre en día completo y no inventa más negocios', () => {
     const b = cambiarModalidadTekit(base(), 'dia-completo')
-    expect(b.configuracion.minutosDisponibles).toBe('360')
+    expect(b.configuracion.minutosDisponibles).toBe('540')
     const plan = calcularPlanTekit({ ...b, modo: 'recomendado' }).plan!
     expect(plan.totalMinutos).toBe(219)
-    expect(plan.libresMinutos).toBe(141)
+    expect(plan.libresMinutos).toBe(321)
     expect(plan.seleccion).toEqual(lugaresTekit.map(l => l.id))
   })
 
@@ -104,14 +104,14 @@ describe('Cálculo de Tekit CU-09 / RF09', () => {
 
 describe('Borrador reproducible de Tekit', () => {
   it('inicia sin fecha ni resultado, con 240/360 minutos o tiempo pendiente en Compras', () => {
-    expect(leerBorradorTekit(new URLSearchParams())).toEqual(crearBorradorTekit())
-    expect(crearBorradorTekit('dia-completo').configuracion.minutosDisponibles).toBe('360')
+    expect(leerBorradorTekit(new URLSearchParams())).toMatchObject(crearBorradorTekit())
+    expect(crearBorradorTekit('dia-completo').configuracion.minutosDisponibles).toBe('540')
     expect(crearBorradorTekit('ruta-textil').configuracion.minutosDisponibles).toBe('')
     expect(crearBorradorTekit('medio-dia', 'personalizado').seleccion).toEqual([])
     expect(crearBorradorTekit().generado).toBe(false)
   })
   it('recupera configuración, modo, orden y resultado mediante URL', () => {
-    expect(leerBorradorTekit(parametrosBorradorTekit(base()))).toEqual(base())
+    expect(leerBorradorTekit(parametrosBorradorTekit(base()))).toMatchObject(base())
     const cambiado = cambiarModalidadTekit(base(), 'ruta-textil')
     expect(cambiado.generado).toBe(false)
     expect(cambiado.configuracion.fecha).toBe(base().configuracion.fecha)

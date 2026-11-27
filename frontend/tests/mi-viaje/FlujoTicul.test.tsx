@@ -40,7 +40,7 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
     expect(within(nav).getByRole('link', { name: 'Rutas' })).toHaveAttribute('aria-current', 'page')
     expect(container.querySelector('.biin-cabecera-simple')).not.toBeInTheDocument()
     expect(screen.getByLabelText('Horas')).toHaveValue(4)
-    expect(screen.getByLabelText('Minutos')).toHaveValue(0)
+    expect(screen.getByLabelText('Minutos')).toHaveValue(30)
     expect(screen.queryByRole('heading', { name: 'Paso a paso a pie & mototaxi' })).not.toBeInTheDocument()
   })
   it('comienza personalizado vacío y valida fecha y selección antes de generar', async () => {
@@ -98,23 +98,23 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
     expect(screen.getAllByText(/Visita estimada:/)).toHaveLength(4)
     expect(screen.getByText(/4 h 2 min estimadas/)).toBeInTheDocument()
   })
-  it.each(['dia-completo', 'tour-compras'])('%s solicita minutos sin duración inventada y limita el recomendado a Ticul', async modalidad => {
+  it.each(['dia-completo', 'tour-compras'])('%s conserva estancia común o preferencia temática sin alterar el presupuesto', async modalidad => {
     montar('/rutas/ticul/itinerario?' + config)
-    await userEvent.selectOptions(screen.getByLabelText('Estancia o modalidad'), modalidad)
-    expect(screen.getByLabelText('Horas')).toHaveValue(null)
-    expect(screen.getByLabelText('Minutos')).toHaveValue(null)
+    if (modalidad === 'dia-completo') {
+      await userEvent.selectOptions(screen.getByLabelText('Estancia o modalidad'), modalidad)
+      expect(screen.getByLabelText('Horas')).toHaveValue(9)
+      expect(screen.getByLabelText('Minutos')).toHaveValue(0)
+    } else {
+      await userEvent.selectOptions(screen.getByLabelText('Preferencia temática'), modalidad)
+      expect(screen.getByLabelText('Horas')).toHaveValue(4)
+      expect(screen.getByLabelText('Minutos')).toHaveValue(0)
+    }
     await userEvent.click(screen.getByRole('button', { name: 'Generar itinerario recomendado' }))
-    expect(screen.getByRole('alert')).toHaveTextContent('no tiene duración fija')
-    expect(screen.getByRole('button', { name: 'Guardar itinerario' })).toBeDisabled()
-    fireEvent.change(screen.getByLabelText('Horas'), { target: { value: '5' } })
-    fireEvent.change(screen.getByLabelText('Minutos'), { target: { value: '0' } })
-    await userEvent.click(screen.getByRole('button', { name: 'Generar itinerario recomendado' }))
-    expect(screen.getAllByText(/Visita estimada:/)).toHaveLength(modalidad === 'tour-compras' ? 2 : 4)
     if (modalidad === 'tour-compras') {
+      expect(screen.getAllByText(/Visita estimada:/)).toHaveLength(2)
       expect(screen.queryByRole('heading', { name: 'Poc Chuc Ticuleño y Panuchos de Pavo' })).not.toBeInTheDocument()
       expect(screen.queryByRole('heading', { name: 'Ex Convento e Iglesia de San Antonio de Padua' })).not.toBeInTheDocument()
-      expect(screen.getByText(/2 h 26 min estimadas/)).toBeInTheDocument()
-    } else expect(screen.getByText(/esta propuesta incluye solo las referencias de Ticul, sin excursiones/)).toBeInTheDocument()
+    } else expect(screen.getAllByText(/Visita estimada:/)).toHaveLength(4)
   })
   it.each([
     ['Fecha de visita', '', 'fecha válida'], ['Hora de inicio', '25:00', 'hora de inicio válida'],
@@ -151,7 +151,7 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
     expect(screen.queryByRole('heading', { name: 'Paso a paso a pie & mototaxi' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Guardar itinerario' })).toBeDisabled()
     await userEvent.click(screen.getByRole('link', { name: 'Volver a detalle de ruta' }))
-    expect(screen.getByRole('radio', { name: 'Medio día (3–4 horas)' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: /Medio día/ })).toBeChecked()
     await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Ticul' }))
     expect(screen.getByLabelText('Hora de inicio')).toHaveValue('10:00')
   })
@@ -248,9 +248,9 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
   })
   it('mantiene cronología, tipos de traslado y acciones si fallan las cinco imágenes originales', () => {
     const { container } = montar('/rutas/ticul/itinerario?' + amplio + '&generado=1')
-    expect(screen.getAllByRole('img')).toHaveLength(5)
+    expect(screen.getAllByRole('img')).toHaveLength(4)
     for (const img of screen.getAllByRole('img')) fireEvent.error(img)
-    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(2)
+    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(1)
     expect(screen.getAllByText('Fotografía pendiente de verificación')).toHaveLength(3)
     const visitas = screen.getByRole('list', { name: 'Recorrido de Ticul' })
     expect(within(visitas).getByText(/Mototaxi · 3 min estimados/)).toBeInTheDocument()
@@ -288,7 +288,7 @@ describe('Flujo de Ticul CU-09 / RF09', () => {
     const primera = montar('/rutas/ticul/itinerario?' + config + '&generado=1')
     await userEvent.click(screen.getByRole('link', { name: 'Ver detalle de ruta' }))
     expect(primera.router.state.location.pathname).toBe('/rutas/ticul')
-    expect(screen.getByRole('radio', { name: 'Medio día (3–4 horas)' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: /Medio día/ })).toBeChecked()
     primera.unmount()
     const segunda = montar('/mi-viaje')
     expect(await screen.findByRole('heading', { name: 'Ingresa a tu cuenta' })).toBeInTheDocument()

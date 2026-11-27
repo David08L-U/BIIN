@@ -77,7 +77,7 @@ describe('Detalle de Izamal CU-03 / RF03', () => {
     const user = userEvent.setup()
     const medioDia = screen.getByRole('radio', { name: /Medio día/ })
     const diaCompleto = screen.getByRole('radio', { name: /Día completo/ })
-    const tarde = screen.getByRole('radio', { name: /Tarde mágica/ })
+    const fin = screen.getByRole('radio', { name: /Fin de semana/ })
 
     expect(screen.getByRole('group', { name: 'Tiempo de estancia:' })).toBeInTheDocument()
     expect(medioDia).toBeChecked()
@@ -86,8 +86,8 @@ describe('Detalle de Izamal CU-03 / RF03', () => {
     expect(medioDia).not.toBeChecked()
 
     await user.keyboard('{ArrowRight}')
-    expect(tarde).toBeChecked()
-    expect(tarde).toHaveFocus()
+    expect(fin).toBeChecked()
+    expect(fin).toHaveFocus()
     expect(diaCompleto).not.toBeChecked()
   })
 
@@ -165,7 +165,7 @@ describe('Detalle de Izamal CU-03 / RF03', () => {
     await user.click(screen.getByRole('button', { name: boton }))
     expect(router.state.location.pathname).toBe(`/rutas/izamal/${destino}`)
     expect(screen.getByRole('heading', { name: titulo, level: 1 })).toBeInTheDocument()
-    expect(screen.getByLabelText('Horas')).toHaveValue(8)
+    expect(screen.getByLabelText('Horas')).toHaveValue(9)
     expect(screen.getByLabelText('Minutos')).toHaveValue(0)
     expect(screen.queryByRole('heading', { name: 'Paso a paso a pie' })).not.toBeInTheDocument()
     await user.click(screen.getByRole('link', { name: 'Volver a detalle de ruta' }))

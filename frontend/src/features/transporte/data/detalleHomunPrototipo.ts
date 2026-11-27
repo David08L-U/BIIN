@@ -21,10 +21,10 @@ export const detalleHomunPrototipo = {
     { nombre: 'Homún Centro', descripcion: 'Frente al Palacio Municipal', tipo: 'destino', etiqueta: 'Destino' },
   ],
   estancias: [
-    { id: 'medio-dia', nombre: 'Medio día', duracion: '4–5 horas' },
-    { id: 'dia-completo', nombre: 'Día completo', duracion: '8–10 horas' },
+    { id: 'medio-dia', nombre: 'Medio día', duracion: '4 h 30 min' },
+    { id: 'dia-completo', nombre: 'Día completo', duracion: '9 h' },
     // Dos días de visita, sin convertirlos en horas continuas de actividades.
-    { id: 'fin-de-semana', nombre: 'Fin de semana', duracion: '2 días' },
+    { id: 'fin-de-semana', nombre: 'Fin de semana', duracion: '2 días · 9 h por jornada' },
   ],
   lugares: ['Cenote Santa Rosa', 'Cenote Tza Ujun Kat'],
 } as const

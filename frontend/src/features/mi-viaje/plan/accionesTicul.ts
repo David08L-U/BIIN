@@ -1,6 +1,6 @@
 import { duracionPlan } from './duracion'
 import { avisoTrasladoComidaTicul } from '../data/lugaresTicul'
-import { compartirPlan, descargarTextoPlan } from './accionesPlan'
+import { compartirPlan, descargarTextoPlan, textoJornadas } from './accionesPlan'
 import { esModalidadTicul, modalidadesTicul } from './itinerarioTicul'
 import type { BorradorTicul, PlanTicul } from './itinerarioTicul'
 import { horaLocal } from './tiempoLocal'
@@ -8,6 +8,15 @@ import { horaLocal } from './tiempoLocal'
 export function compartirTicul(url: string) { return compartirPlan(url, 'Tu Itinerario BIIN en Ticul') }
 export function textoPlanTicul(b: BorradorTicul, plan: PlanTicul): string {
   const c = b.configuracion
+  if (plan.jornadas) return [
+    'BIIN · Itinerario estimado en Ticul', `Fecha de visita: ${c.fecha} · Modo: ${b.modo}`,
+    `Estancia: ${esModalidadTicul(c.estancia) ? modalidadesTicul[c.estancia].nombre : c.estancia}`,
+    `Preferencia temática: ${c.preferencia || 'ninguna'}`,
+    'Datos e imágenes demostrativos sin fecha de validación. Traslados locales estimados; precios, aperturas, acceso y transporte por confirmar.',
+    avisoTrasladoComidaTicul,
+    'Horas en la zona local del navegador que genera este archivo. No incluye mapas offline ni reservas.',
+    ...textoJornadas(plan.jornadas),
+  ].join('\n')
   return [
     'BIIN · Itinerario estimado en Ticul', `Fecha de visita: ${c.fecha} · Modo: ${b.modo}`,
     `Modalidad: ${esModalidadTicul(c.estancia) ? modalidadesTicul[c.estancia].nombre : c.estancia}`,

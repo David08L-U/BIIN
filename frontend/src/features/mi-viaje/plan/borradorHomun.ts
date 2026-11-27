@@ -5,7 +5,7 @@ import type { BorradorHomun } from './itinerarioHomun'
 
 export function crearBorradorHomun(estancia: EstanciaHomun = 'medio-dia', modo: ModoItinerario = 'recomendado'): BorradorHomun {
   const v = estanciasHomun[estancia]
-  return { destino: 'homun', configuracion: { estancia, fecha: '', horaInicio: v.hora, minutosDisponibles: v.minutos, horaInicioDia2: '09:00', minutosDia2: '270' }, modo, seleccion: [], generado: false }
+  return { destino: 'homun', configuracion: { estancia, fecha: '', horaInicio: v.hora, minutosDisponibles: v.minutos, horaInicioDia2: '09:00', minutosDia2: '540' }, modo, seleccion: [], generado: false }
 }
 
 /** La URL conserva cada jornada. No completa silenciosamente una configuración parcial. */
@@ -44,5 +44,5 @@ export function urlBorradorHomun(pantalla: 'detalle' | 'itinerario' | 'personali
 export function cambiarEstanciaHomun(b: BorradorHomun, estancia: EstanciaHomun): BorradorHomun {
   if (!esEstanciaHomun(estancia)) return b
   const v = estanciasHomun[estancia]
-  return { ...b, generado: false, configuracion: { ...b.configuracion, estancia, horaInicio: b.configuracion.horaInicio || v.hora, minutosDisponibles: v.minutos, horaInicioDia2: b.configuracion.horaInicioDia2 || '09:00', minutosDia2: b.configuracion.minutosDia2 || '270' }, seleccion: estancia === 'fin-de-semana' ? b.seleccion : b.seleccion.map(s => ({ ...s, dia: 1 })) }
+  return { ...b, generado: false, configuracion: { ...b.configuracion, estancia, horaInicio: v.hora, minutosDisponibles: v.minutos, horaInicioDia2: '09:00', minutosDia2: '540' }, seleccion: estancia === 'fin-de-semana' ? b.seleccion : b.seleccion.map(s => ({ ...s, dia: 1 })) }
 }

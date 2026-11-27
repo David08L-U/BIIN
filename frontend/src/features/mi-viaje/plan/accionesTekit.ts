@@ -1,13 +1,21 @@
 import { duracionPlan } from './duracion'
 import type { BorradorTekit, PlanTekit } from './itinerarioTekit'
 import { esModalidadTekit, modalidadesTekit } from './itinerarioTekit'
-import { compartirPlan, descargarTextoPlan } from './accionesPlan'
+import { compartirPlan, descargarTextoPlan, textoJornadas } from './accionesPlan'
 import { horaLocal } from './tiempoLocal'
 
 export function compartirTekit(url: string) { return compartirPlan(url, 'Tu Itinerario BIIN en Tekit') }
 
 export function textoPlanTekit(b: BorradorTekit, plan: PlanTekit): string {
   const c = b.configuracion
+  if (plan.jornadas) return [
+    'BIIN · Itinerario estimado en Tekit', `Fecha de visita: ${c.fecha} · Modo: ${b.modo}`,
+    `Estancia: ${esModalidadTekit(c.estancia) ? modalidadesTekit[c.estancia].nombre : c.estancia}`,
+    `Preferencia temática: ${c.preferencia || 'ninguna'}`,
+    'Referencias demostrativas sin fecha de validación. Traslados locales estimados; horarios y transporte por confirmar.',
+    'Horas en la zona local del navegador que genera este archivo. No incluye mapas offline ni reservas.',
+    ...textoJornadas(plan.jornadas),
+  ].join('\n')
   return [
     'BIIN · Itinerario estimado en Tekit', `Fecha de visita: ${c.fecha} · Modo: ${b.modo}`,
     `Modalidad: ${esModalidadTekit(c.estancia) ? modalidadesTekit[c.estancia].nombre : c.estancia}`,

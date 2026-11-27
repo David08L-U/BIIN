@@ -43,7 +43,7 @@ export default function PersonalizarHomunPage() {
       <form noValidate onSubmit={generar}>
         <section className="iz-plan-contexto"><h2><Icono nombre="water_drop" tamano={20} />Elige tu circuito en Homún</h2><p>Selecciona tus lugares por categoría. Para fin de semana, asigna cada visita a una jornada. El orden sigue tu selección dentro de cada día.</p>
           {ventanas.map(v => {
-            const r = resumirJornadaHomun(borrador.seleccion.filter(s => s.dia === v.dia).map(s => s.lugarId))
+            const r = resumirJornadaHomun(borrador.seleccion.filter(s => s.dia === v.dia).map(s => s.lugarId), v.dia === ventanas.length)
             const disponibles = leerDuracion(v.minutosDisponibles)
             return <div className="iz-plan-presupuesto iz-plan-tarjeta" key={v.dia} role="status" aria-label={`Resumen del Día ${v.dia}`}>
               <div><span>Día {v.dia} · Tiempo acumulado</span><strong>{duracionPlan(r.totalMinutos)} / {disponibles === null ? 'Sin configurar' : duracionPlan(disponibles)}</strong></div>

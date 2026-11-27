@@ -98,9 +98,9 @@ describe('Detalle propio de Ticul CU-03 / RF03', () => {
   it('selecciona las tres opciones con flechas y mantiene el foco en el radio elegido', async () => {
     montar()
     const user = userEvent.setup()
-    const medio = screen.getByRole('radio', { name: 'Medio día (3–4 horas)' })
-    const completo = screen.getByRole('radio', { name: 'Día completo (Ruta Puuc)' })
-    const compras = screen.getByRole('radio', { name: 'Tour de Compras' })
+    const medio = screen.getByRole('radio', { name: /Medio día/ })
+    const completo = screen.getByRole('radio', { name: /Día completo/ })
+    const fin = screen.getByRole('radio', { name: /Fin de semana/ })
     expect(screen.getByRole('group', { name: 'Estancia o modalidad' })).toBeInTheDocument()
     expect(medio).toBeChecked()
     medio.focus()
@@ -109,23 +109,23 @@ describe('Detalle propio de Ticul CU-03 / RF03', () => {
     expect(completo).toHaveFocus()
     expect(medio).not.toBeChecked()
     await user.keyboard('{ArrowRight}')
-    expect(compras).toBeChecked()
-    expect(compras).toHaveFocus()
+    expect(fin).toBeChecked()
+    expect(fin).toHaveFocus()
     expect(completo).not.toBeChecked()
     await user.keyboard('{ArrowRight}')
     expect(medio).toBeChecked()
     expect(medio).toHaveFocus()
-    expect(compras).not.toBeChecked()
+    expect(fin).not.toBeChecked()
   })
 
-  it('permite elegir modalidades por ratón sin asignarles horas inventadas', async () => {
+  it('permite elegir las estancias compartidas por ratón', async () => {
     montar()
-    const completo = screen.getByRole('radio', { name: 'Día completo (Ruta Puuc)' })
-    const compras = screen.getByRole('radio', { name: 'Tour de Compras' })
+    const completo = screen.getByRole('radio', { name: /Día completo/ })
+    const fin = screen.getByRole('radio', { name: /Fin de semana/ })
     await userEvent.click(completo)
     expect(completo).toBeChecked()
-    await userEvent.click(compras)
-    expect(compras).toBeChecked()
+    await userEvent.click(fin)
+    expect(fin).toBeChecked()
     expect(completo).not.toBeChecked()
     expect(screen.getByRole('group', { name: 'Estancia o modalidad' })).not.toHaveTextContent(/6\s*horas|8\s*horas|48\s*horas/)
   })
@@ -188,12 +188,12 @@ describe('Detalle propio de Ticul CU-03 / RF03', () => {
     montar()
     expect(screen.getByRole('heading', { name: 'Ticul', level: 1 })).toBeInTheDocument()
     expect(screen.getByText(/No se pudo acceder al almacenamiento del navegador/)).toBeInTheDocument()
-    expect(screen.getByRole('radio', { name: 'Tour de Compras' })).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: /Fin de semana/ })).toBeInTheDocument()
   })
 
   it('conserva imágenes alternativas, recorrido y selección al fallar las imágenes originales', async () => {
     montar()
-    await userEvent.click(screen.getByRole('radio', { name: 'Tour de Compras' }))
+    await userEvent.click(screen.getByRole('radio', { name: /Fin de semana/ }))
     fireEvent.error(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Ticul' }))
     fireEvent.error(screen.getByRole('img', { name: 'Parroquia de San Antonio de Padua en Ticul' }))
     expect(screen.getAllByText('Imagen no disponible')).toHaveLength(2)
@@ -201,18 +201,23 @@ describe('Detalle propio de Ticul CU-03 / RF03', () => {
     expect(screen.getByRole('img', { name: 'Parroquia de San Antonio de Padua en Ticul' })).toBeInTheDocument()
     expect(screen.getByRole('list', { name: 'Recorrido ilustrativo a Ticul' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Descubre Ticul a tu ritmo' })).toBeInTheDocument()
-    expect(screen.getByRole('radio', { name: 'Tour de Compras' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: /Fin de semana/ })).toBeChecked()
     expect(screen.getByRole('button', { name: 'Itinerario recomendado en Ticul' })).toBeInTheDocument()
   })
 
-  it.each([['Medio día (3–4 horas)', 'medio-dia', 240], ['Día completo (Ruta Puuc)', 'dia-completo', null], ['Tour de Compras', 'tour-compras', null]] as const)('abre el planificador desde %s conservando modalidad y retorno', async (opcion, modalidad, minutos) => {
+  it.each([['Medio día', 'medio-dia', 270], ['Día completo', 'dia-completo', 540], ['Fin de semana', 'fin-de-semana', 540]] as const)('abre el planificador desde %s conservando modalidad y retorno', async (opcion, modalidad, minutos) => {
     const { router } = montar()
-    await userEvent.click(screen.getByRole('radio', { name: opcion }))
+    await userEvent.click(screen.getByRole('radio', { name: new RegExp(opcion) }))
     await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Ticul' }))
     expect(router.state.location.pathname).toBe('/rutas/ticul/itinerario')
     expect(screen.getByLabelText('Estancia o modalidad')).toHaveValue(modalidad)
-    expect(screen.getByLabelText('Horas')).toHaveValue(minutos === null ? null : Math.floor(minutos / 60))
-    expect(screen.getByLabelText('Minutos')).toHaveValue(minutos === null ? null : minutos % 60)
+    if (modalidad === 'fin-de-semana') {
+      expect(screen.getByLabelText('Horas del Día 1')).toHaveValue(9)
+      expect(screen.getByLabelText('Horas del Día 2')).toHaveValue(9)
+    } else {
+      expect(screen.getByLabelText('Horas')).toHaveValue(Math.floor(minutos / 60))
+      expect(screen.getByLabelText('Minutos')).toHaveValue(minutos % 60)
+    }
     expect(screen.queryByRole('heading', { name: 'Paso a paso a pie & mototaxi' })).not.toBeInTheDocument()
     expect(localStorage.length).toBe(0)
     expect(screen.queryByRole('heading', { name: 'Tu Itinerario en Izamal' })).not.toBeInTheDocument()
@@ -220,7 +225,7 @@ describe('Detalle propio de Ticul CU-03 / RF03', () => {
     expect(screen.getByText('0 lugares seleccionados')).toBeInTheDocument()
     expect(screen.getByLabelText('Estancia o modalidad')).toHaveValue(modalidad)
     await userEvent.click(screen.getByRole('link', { name: 'Volver a detalle de ruta' }))
-    expect(screen.getByRole('radio', { name: opcion })).toBeChecked()
+    expect(screen.getByRole('radio', { name: new RegExp(opcion) })).toBeChecked()
   })
 
   it('no afirma GPS, tráfico, horarios, medios de pago ni disponibilidad en tiempo real', () => {

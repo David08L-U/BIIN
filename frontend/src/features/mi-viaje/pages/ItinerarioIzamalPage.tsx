@@ -10,6 +10,7 @@ import Icono from '../components/IconoItinerario'
 import ImagenItinerario from '../components/ImagenItinerario'
 import ConsejosItinerario from '../components/ConsejosItinerario'
 import EnlaceDetalleRuta from '../components/EnlaceDetalleRuta'
+import PresentacionJornadas from '../components/PresentacionJornadas'
 import { fotografiaLugar } from '../../explorar/data/lugaresExplorar'
 import { filtrosRecorridoIzamal, lugaresIzamal } from '../data/lugaresIzamal'
 import type { CategoriaIzamal } from '../data/lugaresIzamal'
@@ -29,11 +30,12 @@ export default function ItinerarioIzamalPage() {
   const [mostrarEnlace, setMostrarEnlace] = useState(false)
   const resultado = borrador.generado ? calcularPlan(borrador) : null
   const plan = resultado?.plan ?? null
+  const vigente = plan ? { ...borrador, seleccion: plan.seleccion, seleccionDia2: plan.jornadas?.[1]?.seleccion ?? [] } : borrador
   const errores = resultado?.errores ?? erroresIntento
-  const urlActual = urlBorrador('itinerario', borrador)
+  const urlActual = urlBorrador('itinerario', vigente)
   const claveGuardado = `${usuario?.idUsuario ?? 'visitante'}:${urlActual}`
   const avisoGuardado = guardado?.clave === claveGuardado ? guardado : null
-  const urlPersonalizar = urlBorrador('personalizar', { ...borrador, modo: 'personalizado', generado: false })
+  const urlPersonalizar = urlBorrador('personalizar', { ...vigente, modo: 'personalizado', generado: false })
 
   function generar(evento: FormEvent) {
     evento.preventDefault()
@@ -48,18 +50,18 @@ export default function ItinerarioIzamalPage() {
       return
     }
     if (borrador.editarId && !window.confirm(`¿Guardar cambios en el itinerario de Izamal del ${borrador.configuracion.fecha || 'fecha sin confirmar'}?`)) return
-    const respuesta = await guardarEnServidor({ ...borrador, generado: true })
+    const respuesta = await guardarEnServidor({ ...vigente, generado: true })
     if (!respuesta.itinerario) {
       setGuardado({ clave: claveGuardado, error: true, mensaje: respuesta.error ?? 'No se pudo confirmar el guardado en el servidor.' })
       return
     }
-    const actualizado = { ...borrador, generado: true, editarId: respuesta.itinerario.id }
+    const actualizado = { ...vigente, generado: true, editarId: respuesta.itinerario.id }
     actualizar({ editarId: respuesta.itinerario.id, generado: true })
     setGuardado({ clave: `${usuario.idUsuario}:${urlBorrador('itinerario', actualizado)}`, error: false, mensaje: borrador.editarId ? 'Cambios guardados en tu cuenta' : 'Itinerario guardado en tu cuenta' })
   }
 
   return (
-    <article className="iz-plan iz-itinerario" aria-labelledby="iz-itinerario-titulo">
+    <article className="iz-plan iz-itinerario" data-estancia={borrador.configuracion.estancia} aria-labelledby="iz-itinerario-titulo">
       <CabeceraPlan id="iz-itinerario-titulo" titulo="Tu Itinerario en Izamal" subtitulo="BIIN Escapadas" volver={urlBorrador('detalle', borrador)} acciones={<>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando || guardando} onClick={guardar} aria-busy={guardando} aria-label={guardando ? 'Guardando itinerario' : borrador.editarId ? 'Guardar cambios' : 'Guardar itinerario'}><Icono nombre="bookmark" tamano={16} /></button>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan} aria-label="Mostrar enlace del plan" onClick={() => setMostrarEnlace(valor => !valor)}><Icono nombre="share" tamano={16} /></button>
@@ -79,7 +81,7 @@ export default function ItinerarioIzamalPage() {
       {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}
       {!borrador.generado && <p className="iz-plan-vacio" role="status">Aún no hay un plan vigente. Si cambiaste la configuración, genera de nuevo.{borrador.modo === 'personalizado' && ' Puedes cambiar los lugares en Personalizar.'}</p>}
       {plan && <>
-        <section className="iz-plan-conexion iz-plan-tarjeta" aria-labelledby="iz-plan-conexion-titulo">
+        <section hidden={borrador.configuracion.estancia === 'fin-de-semana'} style={borrador.configuracion.estancia === 'fin-de-semana' ? { display: 'none' } : undefined} className="iz-plan-conexion iz-plan-tarjeta" aria-labelledby="iz-plan-conexion-titulo">
           <div className="iz-plan-conexion-titulo"><h2 id="iz-plan-conexion-titulo">Conexión Van BIIN</h2><span>Ruta Mérida · Izamal</span></div>
           <div className="iz-plan-conexion-fila"><Icono nombre="directions_bus" tamano={14} /><div><p className="iz-plan-ceja">Inicio elegido</p><strong>{horaPlan(borrador.configuracion, 0)} · Izamal Centro</strong><p>Punto de inicio ilustrativo. Llegada de la van sin confirmar.</p></div></div>
           <p className="iz-plan-conexion-margen"><Icono nombre="swap_vert" tamano={14} />{duracionPlan(Number(borrador.configuracion.minutosDisponibles))} disponibles · {duracionPlan(plan.libresMinutos)} libres</p>
@@ -87,7 +89,8 @@ export default function ItinerarioIzamalPage() {
           <p className="iz-plan-nota">Visitas {duracionPlan(plan.visitasMinutos)} + desplazamientos estimados {duracionPlan(plan.trasladosMinutos)} + margen final {duracionPlan(plan.margenMinutos)} = {duracionPlan(plan.totalMinutos)}.</p>
         </section>
         <FiltrosPlan etiqueta="Filtrar recorrido" opciones={[{ id: 'todas', nombre: 'Ruta Sugerida' }, ...filtrosRecorridoIzamal]} activo={filtro} seleccionar={setFiltro} />
-        <section className="iz-plan-recorrido" aria-labelledby="iz-plan-pasos">
+        {plan.jornadas && <PresentacionJornadas destino="izamal" jornadas={plan.jornadas} lugares={lugaresIzamal} filtro={filtro} categoriaDeLugar={lugar => lugar.categoria ?? ''} />}
+        <section hidden={borrador.configuracion.estancia === 'fin-de-semana'} style={borrador.configuracion.estancia === 'fin-de-semana' ? { display: 'none' } : undefined} className="iz-plan-recorrido" aria-labelledby="iz-plan-pasos">
           <div className="iz-plan-categoria-titulo"><h2 id="iz-plan-pasos">Paso a paso a pie</h2><span>{plan.seleccion.length} lugares</span></div>
           <ol className="iz-plan-linea">
             {plan.bloques.filter(bloque => bloque.tipo === 'visita').map((bloque, indice) => {

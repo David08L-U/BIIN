@@ -27,7 +27,7 @@ export default function DetalleTekitPage({ ruta }: { ruta: RutaPrototipo }) {
     referenciaSalida={referenciaSalida}
     detalle={{
       ...detalle,
-      opciones: detalle.opciones.map(opcion => ({ ...opcion, duracion: opcion.detalle })),
+      opciones: detalle.opciones.filter(opcion => opcion.id !== 'ruta-textil' || borrador.configuracion.estancia === 'ruta-textil').map(opcion => ({ ...opcion, duracion: opcion.detalle })),
       corredor: detalle.carretera,
       tiempo: `Tiempo estimado de viaje · ~${ruta.tiempo}`,
       referenciaCultural: 'Ruta Textil · Talleres de Bordado · Gastronomía Local',

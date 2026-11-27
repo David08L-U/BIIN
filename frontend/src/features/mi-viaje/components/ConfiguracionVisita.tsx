@@ -26,7 +26,7 @@ export default function ConfiguracionVisita({ estancia, opciones, etiqueta = 'Es
   const errorFecha = fechaPasadaLocal(fecha) ? 'La fecha ya pasó. Elige hoy o un día futuro para generar tu itinerario.' : ''
   return <fieldset className="iz-plan-config">
     <legend><Icono nombre="edit_calendar" tamano={20} />Configura tu visita</legend>
-    <p>Plan estimado · Fecha y hora en la zona local de este navegador.</p>
+    <p>Plan estimado · El tiempo disponible es un presupuesto de visita, no un horario confirmado de transporte o apertura.</p>
     <div className="iz-plan-campos">
       <label>{etiqueta}<select required value={estancia} onChange={e => cambiarEstancia(e.target.value)}>
         {!Object.hasOwn(opciones, estancia) && <option value={estancia} disabled>Selecciona una opción válida</option>}

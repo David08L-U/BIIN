@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router'
 import ConfiguracionTekit from '../components/ConfiguracionTekit'
 import ModosTekit from '../components/ModosTekit'
 import Icono from '../components/IconoItinerario'
-import { categoriasTekit, lugaresTekit } from '../data/lugaresTekit'
+import { categoriasTekit, lugaresTekit, REGRESO_TEKIT, MARGEN_TEKIT } from '../data/lugaresTekit'
 import type { CategoriaTekit } from '../data/lugaresTekit'
 import { useBorradorTekit } from '../hooks/useBorradorTekit'
 import { parametrosBorradorTekit, urlBorradorTekit } from '../plan/borradorTekit'
@@ -13,6 +13,7 @@ import { calcularPlanTekit, resumirSeleccionTekit } from '../plan/itinerarioTeki
 import { duracionPlan, leerDuracion } from '../plan/duracion'
 import LugaresSeleccionados from '../components/LugaresSeleccionados'
 import CancelarEdicion from '../components/CancelarEdicion'
+import { resumirRecorrido } from '../plan/recorridoSecuencial'
 
 export default function PersonalizarTekitPage() {
   const { borrador, actualizar } = useBorradorTekit('personalizado')
@@ -21,15 +22,20 @@ export default function PersonalizarTekitPage() {
   const clave = parametrosBorradorTekit(borrador).toString()
   const [intento, setIntento] = useState<{ clave: string; errores: string[] } | null>(null)
   const resumen = resumirSeleccionTekit(borrador.seleccion)
+  const finDeSemana = borrador.configuracion.estancia === 'fin-de-semana'
   const disponibles = leerDuracion(borrador.configuracion.minutosDisponibles)
   const contador = (id: CategoriaTekit) => lugaresTekit.filter(l => l.categoria === id && borrador.seleccion.includes(l.id)).length
   const errores = borrador.generado ? calcularPlanTekit(borrador).errores : intento?.clave === clave ? intento.errores : []
-  function restablecer() { actualizar({ seleccion: [], generado: false }); setIntento(null) }
+  function restablecer() { actualizar({ seleccion: [], seleccionDia2: [], generado: false }); setIntento(null) }
+  function seleccionar(id: string) {
+    const esta = borrador.seleccion.includes(id)
+    actualizar({ seleccion: esta ? borrador.seleccion.filter(x => x !== id) : [...borrador.seleccion, id], seleccionDia2: esta ? borrador.seleccionDia2?.filter(x => x !== id) : borrador.seleccionDia2 })
+  }
   function generar(e: FormEvent) {
     e.preventDefault()
     const resultado = calcularPlanTekit(borrador)
     setIntento({ clave, errores: resultado.errores })
-    if (resultado.plan) navegar(urlBorradorTekit('itinerario', { ...borrador, generado: true, seleccion: resultado.plan.seleccion }))
+    if (resultado.plan) navegar(urlBorradorTekit('itinerario', { ...borrador, generado: true, seleccion: resultado.plan.seleccion, seleccionDia2: resultado.plan.jornadas?.[1]?.seleccion }))
   }
   return <article className="iz-plan iz-personalizar" aria-labelledby="tk-personalizar-titulo">
     <CabeceraPlan id="tk-personalizar-titulo" titulo="Personalizar Itinerario" subtitulo="Tekit · Tradición textil" volver={urlBorradorTekit('detalle', borrador)} personalizar acciones={<>
@@ -42,24 +48,24 @@ export default function PersonalizarTekitPage() {
         <section className="iz-plan-contexto">
           <h2><Icono nombre="styler" tamano={20} />Teje tu recorrido por Tekit</h2>
           <p>Elige tus paradas por categoría. El orden seguirá tu selección; confirma las condiciones de visita con cada lugar.</p>
-          <div className="iz-plan-presupuesto iz-plan-tarjeta" role="status" aria-label="Resumen de selección" aria-live="polite">
+          {finDeSemana ? [1, 2].map(dia => { const ids = borrador.seleccion.filter(id => borrador.seleccionDia2?.includes(id) === (dia === 2)); const r = resumirRecorrido(lugaresTekit, ids, dia === 2 ? REGRESO_TEKIT : 0, MARGEN_TEKIT); const minutos = leerDuracion(dia === 1 ? borrador.configuracion.minutosDisponibles : borrador.configuracion.minutosDia2 ?? ''); return <div className="iz-plan-presupuesto iz-plan-tarjeta" role="status" aria-label={`Resumen del Día ${dia}`} key={dia}><div><span>Tiempo acumulado · Día {dia}</span><strong>{duracionPlan(r.totalMinutos)} / {minutos === null ? 'Sin configurar' : duracionPlan(minutos)}</strong></div><progress aria-label={`Tiempo utilizado del Día ${dia}`} value={Math.min(r.totalMinutos, minutos ?? 1)} max={minutos ?? 1} /><p>{duracionPlan(r.visitasMinutos)} de visitas + {duracionPlan(r.trasladosMinutos)} de traslados locales{dia === 2 ? ' y traslado final' : ''} + {duracionPlan(r.margenMinutos)} de margen.</p></div> }) : <div className="iz-plan-presupuesto iz-plan-tarjeta" role="status" aria-label="Resumen de selección" aria-live="polite">
             <div><span>Tiempo acumulado</span><strong>{duracionPlan(resumen.totalMinutos)} / {disponibles === null ? 'Sin configurar' : duracionPlan(disponibles)}</strong></div>
             <progress aria-label="Tiempo utilizado" value={Math.min(resumen.totalMinutos, disponibles ?? 1)} max={disponibles ?? 1} />
             <p>{duracionPlan(resumen.visitasMinutos)} de visitas + {duracionPlan(resumen.trasladosMinutos)} de desplazamientos con regreso + {duracionPlan(resumen.margenMinutos)} de margen reservado.</p>
             {disponibles !== null && <p>{resumen.totalMinutos > disponibles ? `Excede el tiempo disponible por ${duracionPlan(resumen.totalMinutos - disponibles)}.` : `Tiempo libre: ${duracionPlan(disponibles - resumen.totalMinutos)}`}</p>}
-          </div>
+          </div>}
         </section>
-        <ConfiguracionTekit borrador={borrador} onChange={actualizar} />
+        <ConfiguracionTekit borrador={borrador} onChange={nuevo => actualizar({ ...nuevo, ...((nuevo.configuracion.estancia !== 'fin-de-semana') ? { seleccionDia2: [] } : {}) })} />
         <p className="iz-plan-nota">Información por confirmar. Traslados estimados, no geográficos. Aperturas, precios y visitas guiadas pendientes.</p>
         <FiltrosPlan etiqueta="Categorías de lugares" opciones={categoriasTekit} activo={categoria} seleccionar={setCategoria} contador={contador} />
         <section aria-labelledby="tk-categoria-titulo" className="iz-plan-selector">
           <div className="iz-plan-categoria-titulo"><h2 id="tk-categoria-titulo">{categoriasTekit.find(c => c.id === categoria)!.nombre}</h2><span>{contador(categoria)} seleccionados</span></div>
           {lugaresTekit.filter(l => l.categoria === categoria).map(lugar => <article className="iz-plan-lugar iz-plan-tarjeta" key={lugar.id}>
-            <label className="iz-plan-lugar-seleccion"><input type="checkbox" aria-label={lugar.nombre} checked={borrador.seleccion.includes(lugar.id)} onChange={() => actualizar({ seleccion: borrador.seleccion.includes(lugar.id) ? borrador.seleccion.filter(id => id !== lugar.id) : [...borrador.seleccion, lugar.id] })} /><span className="iz-plan-lugar-textos"><strong className="iz-plan-lugar-titulo">{lugar.nombre}</strong><span className="iz-plan-insignia"><Icono nombre={lugar.icono} tamano={13} />{lugar.etiqueta}</span></span></label>
+            <label className="iz-plan-lugar-seleccion"><input type="checkbox" aria-label={lugar.nombre} checked={borrador.seleccion.includes(lugar.id)} onChange={() => seleccionar(lugar.id)} /><span className="iz-plan-lugar-textos"><strong className="iz-plan-lugar-titulo">{lugar.nombre}</strong><span className="iz-plan-insignia"><Icono nombre={lugar.icono} tamano={13} />{lugar.etiqueta}</span></span></label>
             <p>{lugar.descripcion}</p><p className="iz-plan-nota">Visita: {duracionPlan(lugar.visitaMinutos)} · Traslado previo: {duracionPlan(lugar.trasladoMinutos)} estimados</p>
           </article>)}
         </section>
-        <LugaresSeleccionados lugares={borrador.seleccion.map(id => ({ id, nombre: lugaresTekit.find(l => l.id === id)?.nombre ?? id }))} onQuitar={id => actualizar({ seleccion: borrador.seleccion.filter(elegido => elegido !== id) })} />
+        <LugaresSeleccionados jornadas={finDeSemana ? 2 : 1} lugares={borrador.seleccion.map(id => ({ id, nombre: lugaresTekit.find(l => l.id === id)?.nombre ?? id, dia: borrador.seleccionDia2?.includes(id) ? 2 : 1 }))} onCambiarDia={(id, dia) => actualizar({ seleccionDia2: dia === 2 ? [...new Set([...(borrador.seleccionDia2 ?? []), id])] : (borrador.seleccionDia2 ?? []).filter(x => x !== id) })} onQuitar={id => actualizar({ seleccion: borrador.seleccion.filter(elegido => elegido !== id), seleccionDia2: (borrador.seleccionDia2 ?? []).filter(x => x !== id) })} />
         <div className="iz-plan-resumen-final">
           <p role="status">{borrador.seleccion.length} lugares seleccionados</p>
           {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}

@@ -2,12 +2,11 @@ import { lugaresValladolid, MARGEN_VALLADOLID, TRASLADO_FINAL_VALLADOLID } from 
 import type { BloquePlan } from './itinerarioIzamal'
 import type { EstanciaValladolid } from '../../transporte/data/detalleValladolidPrototipo'
 import { calcularPlanJornadas, recomendarJornadas, resumirJornada, validarConfiguracionJornadas, ventanasJornadas } from './recorridoJornadas'
+import { estanciasCompartidas } from './estanciasCompartidas'
 export { esModoItinerario } from './recorridoJornadas'
 
 export const estanciasValladolid = {
-  'medio-dia': { nombre: 'Medio día', minutos: '270', hora: '10:40' },
-  'dia-completo': { nombre: 'Día completo', minutos: '540', hora: '09:00' },
-  'fin-de-semana': { nombre: 'Fin de semana', minutos: '270', hora: '09:00' },
+  ...estanciasCompartidas,
 } as const
 // Los valores de URL se conservan como texto para validar también parámetros manipulados.
 export interface ConfiguracionValladolid {
@@ -45,6 +44,6 @@ const datosValladolid = { lugares: lugaresValladolid, regreso: TRASLADO_FINAL_VA
 export function esEstanciaValladolid(valor: string): valor is EstanciaValladolid { return Object.hasOwn(estanciasValladolid, valor) }
 export function ventanasValladolid(config: ConfiguracionValladolid): VentanaValladolid[] { return ventanasJornadas(config) }
 export function validarConfiguracionValladolid(config: ConfiguracionValladolid): string[] { return validarConfiguracionJornadas(config) }
-export function resumirJornadaValladolid(ids: string[]) { return resumirJornada(ids, datosValladolid) }
+export function resumirJornadaValladolid(ids: string[], incluirRegreso = true) { return resumirJornada(ids, datosValladolid, incluirRegreso) }
 export function recomendarValladolid(ventanas: VentanaValladolid[]): VisitaValladolid[] | null { return recomendarJornadas(ventanas, datosValladolid) }
 export function calcularPlanValladolid(borrador: BorradorValladolid): ResultadoValladolid { return calcularPlanJornadas(borrador, datosValladolid) }

@@ -68,18 +68,20 @@ describe('Cálculo de Homún por jornadas CU-09 / RF09', () => {
     expect(plan.jornadas.map(d => d.fecha)).toEqual(['2026-12-31', '2027-01-01'])
     expect(plan.jornadas.map(d => d.margenMinutos)).toEqual([15, 15])
     expect(new Set(plan.seleccion.map(s => s.lugarId)).size).toBe(4)
-    expect(plan.jornadas.reduce((s, d) => s + d.totalMinutos, 0)).toBe(289)
+    expect(plan.jornadas.reduce((s, d) => s + d.totalMinutos, 0)).toBe(284)
     for (const d of plan.jornadas) {
       expect(d.seleccion.length).toBeGreaterThan(0)
       expect(d.totalMinutos).toBeLessThanOrEqual(Number(d.minutosDisponibles))
-      expect(d.bloques.at(-2)!.fin - d.bloques.at(-2)!.inicio).toBe(5)
+      const regresoFinal = d.dia === 2 ? d.bloques.find(b => b.tipo === 'traslado' && !b.lugarId) : undefined
+      expect(regresoFinal ? regresoFinal.fin - regresoFinal.inicio : 0).toBe(d.dia === 2 ? 5 : 0)
+      expect(d.dia === 1 && d.bloques.some(b => b.tipo === 'traslado' && !b.lugarId)).toBe(false)
     }
   })
   it('valida cada jornada sin compensar el exceso con tiempo del otro día', () => {
     const b = visita('fin-de-semana')
     b.configuracion.minutosDisponibles = '120'; b.configuracion.minutosDia2 = '540'
     b.seleccion[3].dia = 2
-    expect(calcularPlanHomun(b).errores).toEqual([expect.stringContaining('Día 1: la selección excede el tiempo disponible por 1 h 52 min')])
+    expect(calcularPlanHomun(b).errores).toEqual([expect.stringContaining('Día 1: la selección excede el tiempo disponible por 1 h 47 min')])
     expect(b.seleccion).toHaveLength(4)
   })
   it('encuentra combinaciones para ventanas asimétricas o pide ampliar la jornada insuficiente', () => {
@@ -122,7 +124,7 @@ describe('Borrador de Homún en URL', () => {
   it('inicia vacío, con 270/540 minutos y dos ventanas para fin de semana', () => {
     expect(crearBorradorHomun()).toMatchObject({ generado: false, seleccion: [], configuracion: { fecha: '', minutosDisponibles: '270' } })
     expect(crearBorradorHomun('dia-completo').configuracion.minutosDisponibles).toBe('540')
-    expect(crearBorradorHomun('fin-de-semana').configuracion).toMatchObject({ minutosDisponibles: '270', minutosDia2: '270' })
+    expect(crearBorradorHomun('fin-de-semana').configuracion).toMatchObject({ minutosDisponibles: '540', minutosDia2: '540' })
   })
   it('conserva el borrador al recargar y las visitas al pasar a una sola jornada', () => {
     const b = visita('fin-de-semana'); b.seleccion[2].dia = 2; b.seleccion[3].dia = 2

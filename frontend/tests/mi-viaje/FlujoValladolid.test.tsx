@@ -29,7 +29,7 @@ afterEach(() => { routers.splice(0).forEach(r => r.dispose()); vi.restoreAllMock
 afterAll(() => routerAplicacion.dispose())
 
 describe('Flujo de Valladolid CU-09 / RF09', () => {
-  it.each([['Medio día', 'medio-dia', 270], ['Día completo', 'dia-completo', 540], ['Fin de semana', 'fin-de-semana', 270]] as const)('conserva %s desde el detalle, al personalizar y al volver', async (nombre, estancia, minutos) => {
+  it.each([['Medio día', 'medio-dia', 270], ['Día completo', 'dia-completo', 540], ['Fin de semana', 'fin-de-semana', 540]] as const)('conserva %s desde el detalle, al personalizar y al volver', async (nombre, estancia, minutos) => {
     const { router } = montar('/rutas/valladolid')
     await userEvent.click(screen.getByRole('radio', { name: new RegExp(nombre) }))
     await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Valladolid' }))
@@ -79,7 +79,7 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
     expect(screen.getByText('2 lugares seleccionados')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Gastronomía.*1/ })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Cenotes.*1/ })).toBeInTheDocument()
-    expect(screen.getByRole('status', { name: 'Resumen del Día 1' })).toHaveTextContent('2 h 15 min de visitas + 11 min de desplazamientos')
+    expect(screen.getByRole('status', { name: 'Resumen del Día 1' })).toHaveTextContent('2 h 15 min de visitas + 11 min de traslados estimados y traslado final')
     await user.click(screen.getByRole('button', { name: /Gastronomía/ }))
     expect(screen.getByRole('checkbox', { name: 'Mercado Municipal Donato Bates' })).toBeChecked()
     await user.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
@@ -106,12 +106,12 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
     expect(screen.getByRole('status', { name: 'Resumen del Día 1' })).toHaveTextContent('1 h de visitas')
     expect(screen.getByRole('status', { name: 'Resumen del Día 2' })).toHaveTextContent('1 h 15 min de visitas')
     await user.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
-    const dia1 = screen.getByRole('region', { name: 'Día 1 · 2026-11-30' })
-    const dia2 = screen.getByRole('region', { name: 'Día 2 · 2026-12-01' })
+    const dia1 = screen.getByRole('region', { name: /Día 1/ })
+    const dia2 = screen.getByRole('region', { name: /Día 2/ })
     expect(within(dia1).getByRole('heading', { name: 'Cenote Zací y Parque Principal' })).toBeInTheDocument()
     expect(within(dia1).queryByRole('heading', { name: 'Mercado Municipal Donato Bates' })).not.toBeInTheDocument()
     expect(within(dia2).getByRole('heading', { name: 'Mercado Municipal Donato Bates' })).toBeInTheDocument()
-    expect(screen.getAllByText(/Margen final para preparar el regreso: 15 min/)).toHaveLength(2)
+    expect(screen.getByText(/Un único regreso final al terminar el Día 2/)).toBeInTheDocument()
   })
 
   it('rechaza un exceso del primer día, aunque el segundo tenga tiempo, sin borrar la selección', async () => {
@@ -121,7 +121,7 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
     fireEvent.change(screen.getByLabelText('Horas del Día 2'), { target: { value: '9' } })
     fireEvent.change(screen.getByLabelText('Minutos del Día 2'), { target: { value: '0' } })
     await userEvent.click(screen.getByRole('button', { name: 'Generar mi itinerario' }))
-    expect(screen.getByRole('alert')).toHaveTextContent('Día 1: la selección excede el tiempo disponible por 1 h 52 min')
+    expect(screen.getByRole('alert')).toHaveTextContent('Día 1: la selección excede el tiempo disponible por 1 h 47 min')
     expect(screen.getByText('4 lugares seleccionados')).toBeInTheDocument()
     expect(screen.getByRole('checkbox', { name: 'Mercado Municipal Donato Bates' })).toBeChecked()
     expect(screen.queryByRole('heading', { name: 'Paso a paso a pie' })).not.toBeInTheDocument()
@@ -169,11 +169,11 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
   it('genera, conserva al recargar y alterna modos; editar invalida el plan anterior', async () => {
     const primera = montar(`/rutas/valladolid/itinerario?${finSemana}`)
     await userEvent.click(screen.getByRole('button', { name: 'Generar itinerario recomendado' }))
-    expect(screen.getByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Día 1' })).toBeInTheDocument()
     const url = primera.router.state.location.pathname + primera.router.state.location.search
     primera.unmount()
     montar(url)
-    expect(screen.getByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Día 1' })).toBeInTheDocument()
     await userEvent.click(screen.getByRole('link', { name: 'Personalizado' }))
     expect(screen.getByText('4 lugares seleccionados')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('link', { name: 'Recomendado' }))
@@ -218,7 +218,7 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
     await user.type(screen.getByLabelText('Correo electrónico'), 'ana@biin.test')
     await user.type(screen.getByLabelText('Contraseña'), 'ejemplo')
     await user.click(screen.getByRole('button', { name: 'Entrar' }))
-    expect(await screen.findByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Día 2' })).toBeInTheDocument()
     expect(screen.getByLabelText('Fecha de visita')).toHaveValue('2026-11-30')
     expect(screen.getByLabelText(/Fecha del Día 2/)).toHaveValue('2026-12-01')
     await user.click(screen.getByRole('button', { name: 'Guardar itinerario' }))
@@ -226,7 +226,7 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
     await user.click(screen.getByRole('link', { name: 'Ver mis itinerarios guardados' }))
     expect(await screen.findAllByRole('link', { name: 'Abrir itinerario de Valladolid' })).toHaveLength(1)
     await user.click(screen.getByRole('link', { name: 'Abrir itinerario de Valladolid' }))
-    expect(screen.getByRole('heading', { name: 'Día 2 · 2026-12-01' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Día 2' })).toBeInTheDocument()
   })
 
   it('lista y abre Valladolid e Izamal antiguo con enlaces propios, sin mezclar cuentas', async () => {
@@ -273,7 +273,7 @@ describe('Flujo de Valladolid CU-09 / RF09', () => {
   it('mantiene las acciones cuando fallan las imágenes y no simula servicios', () => {
     const { container } = montar(`/rutas/valladolid/itinerario?${completo}&generado=1`)
     for (const imagen of screen.getAllByRole('img')) fireEvent.error(imagen)
-    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(5)
+    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(4)
     expect(screen.getByRole('link', { name: 'Personalizar' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Ver detalle de ruta' })).toBeInTheDocument()
     expect(container).not.toHaveTextContent(/Apartando asiento|Abrir vista en vivo|Acceso libre|Entrada \$30|marcadas con GPS|salidas frecuentes cada|2[.,]4 km totales/i)

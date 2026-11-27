@@ -93,9 +93,9 @@ describe('Detalle propio de Tekit CU-03 / RF03', () => {
   it('selecciona las tres opciones con teclado y mantiene el foco', async () => {
     montar()
     const user = userEvent.setup()
-    const medio = screen.getByRole('radio', { name: /Medio día.*3–4 horas/ })
-    const completo = screen.getByRole('radio', { name: /Día completo.*6 horas/ })
-    const textil = screen.getByRole('radio', { name: /Ruta Textil.*Compras/ })
+    const medio = screen.getByRole('radio', { name: /Medio día/ })
+    const completo = screen.getByRole('radio', { name: /Día completo/ })
+    const fin = screen.getByRole('radio', { name: /Fin de semana/ })
     expect(screen.getByRole('group', { name: 'Estancia o modalidad de visita' })).toBeInTheDocument()
     expect(medio).toBeChecked()
     medio.focus()
@@ -104,22 +104,21 @@ describe('Detalle propio de Tekit CU-03 / RF03', () => {
     expect(completo).toHaveFocus()
     expect(medio).not.toBeChecked()
     await user.keyboard('{ArrowRight}')
-    expect(textil).toBeChecked()
-    expect(textil).toHaveFocus()
+    expect(fin).toBeChecked()
+    expect(fin).toHaveFocus()
     expect(completo).not.toBeChecked()
     await user.keyboard('{ArrowRight}')
     expect(medio).toBeChecked()
     expect(medio).toHaveFocus()
-    expect(textil).not.toBeChecked()
+    expect(fin).not.toBeChecked()
   })
 
-  it('permite elegir Compras por ratón como modalidad sin horas inventadas', async () => {
+  it('permite elegir fin de semana y conserva sus dos presupuestos editables', async () => {
     montar()
-    await userEvent.click(screen.getByRole('radio', { name: /Ruta Textil.*Compras/ }))
-    expect(screen.getByRole('radio', { name: /Ruta Textil.*Compras/ })).toBeChecked()
-    const grupo = screen.getByRole('group', { name: 'Estancia o modalidad de visita' })
-    expect(within(grupo).getByText('Compras')).toBeInTheDocument()
-    expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('radio', { name: /Fin de semana/ }))
+    await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Tekit' }))
+    expect(screen.getByLabelText('Horas del Día 1')).toHaveValue(9)
+    expect(screen.getByLabelText('Horas del Día 2')).toHaveValue(9)
   })
 
   it('mantiene el favorito independiente de Izamal y Valladolid al navegar entre destinos', async () => {
@@ -188,17 +187,22 @@ describe('Detalle propio de Tekit CU-03 / RF03', () => {
     expect(screen.getByRole('img', { name: 'Fotografía representativa de Tekit pendiente de verificar' })).toHaveTextContent('Fotografía pendiente de verificación')
     expect(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Tekit' })).toBeInTheDocument()
     expect(screen.getByRole('list', { name: 'Recorrido ilustrativo a Tekit' })).toBeInTheDocument()
-    expect(screen.getByRole('radio', { name: /Ruta Textil.*Compras/ })).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: /Fin de semana/ })).toBeInTheDocument()
   })
 
-  it.each([['Medio día', 'medio-dia', 240], ['Día completo', 'dia-completo', 360], ['Ruta Textil', 'ruta-textil', null]])('abre el planificador desde %s y conserva su opción al volver', async (nombre, modalidad, minutos) => {
+  it.each([['Medio día', 'medio-dia', 270], ['Día completo', 'dia-completo', 540], ['Fin de semana', 'fin-de-semana', 540]])('abre el planificador desde %s y conserva su opción al volver', async (nombre, modalidad, minutos) => {
     const { router } = montar()
     await userEvent.click(screen.getByRole('radio', { name: new RegExp(nombre as string) }))
     await userEvent.click(screen.getByRole('button', { name: 'Itinerario recomendado en Tekit' }))
     expect(router.state.location.pathname).toBe('/rutas/tekit/itinerario')
     expect(screen.getByLabelText('Estancia o modalidad')).toHaveValue(modalidad)
-    expect(screen.getByLabelText('Horas')).toHaveValue(minutos === null ? null : Math.floor(minutos / 60))
-    expect(screen.getByLabelText('Minutos')).toHaveValue(minutos === null ? null : minutos % 60)
+    if (modalidad === 'fin-de-semana') {
+      expect(screen.getByLabelText('Horas del Día 1')).toHaveValue(9)
+      expect(screen.getByLabelText('Horas del Día 2')).toHaveValue(9)
+    } else {
+      expect(screen.getByLabelText('Horas')).toHaveValue(Math.floor(minutos / 60))
+      expect(screen.getByLabelText('Minutos')).toHaveValue(minutos % 60)
+    }
     expect(screen.queryByRole('heading', { name: 'Paso a paso a pie' })).not.toBeInTheDocument()
     expect(localStorage.length).toBe(0)
     expect(screen.queryByRole('heading', { name: 'Tu Itinerario en Izamal' })).not.toBeInTheDocument()

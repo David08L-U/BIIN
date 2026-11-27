@@ -1,11 +1,18 @@
 import { duracionPlan } from './duracion'
 import { avisoRegresoHomun } from '../data/lugaresHomun'
-import { compartirPlan, descargarTextoPlan } from './accionesPlan'
+import { compartirPlan, descargarTextoPlan, textoJornadas } from './accionesPlan'
 import type { BorradorHomun, PlanHomun } from './itinerarioHomun'
 import { horaLocal } from './tiempoLocal'
 
 export function compartirHomun(url: string) { return compartirPlan(url, 'Tu Itinerario BIIN en Homún') }
 export function textoPlanHomun(b: BorradorHomun, plan: PlanHomun): string {
+  if (b.configuracion.estancia === 'fin-de-semana') return [
+    'BIIN · Itinerario estimado en Homún', `Estancia: ${b.configuracion.estancia} · Modo: ${b.modo}`,
+    'Referencias demostrativas sin fecha de validación. Visitas y traslados locales estimados; aperturas, precios y acceso por confirmar; mototaxi no contratado.',
+    avisoRegresoHomun,
+    'Horas en la zona local del navegador que genera este archivo. No incluye mapas offline ni reservas.',
+    ...textoJornadas(plan.jornadas),
+  ].join('\n')
   return [
     'BIIN · Itinerario estimado en Homún', `Estancia: ${b.configuracion.estancia} · Modo: ${b.modo}`,
     `Archivo generado: ${new Date().toLocaleString()}`,

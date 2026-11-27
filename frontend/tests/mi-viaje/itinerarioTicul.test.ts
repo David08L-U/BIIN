@@ -52,10 +52,13 @@ describe('Cálculo de Ticul CU-09 / RF09', () => {
     expect(p.seleccion.length).toBeLessThanOrEqual(4)
     expect(p.seleccion.every(id => lugaresTicul.some(l => l.id === id))).toBe(true)
   })
-  it.each(['dia-completo', 'tour-compras'] as const)('%s no inventa duración y exige minutos', estancia => {
+  it.each(['dia-completo', 'tour-compras'] as const)('%s conserva el presupuesto común o la modalidad histórica pendiente', estancia => {
     const b = cambiarModalidadTicul(visita(), estancia)
-    expect(b.configuracion.minutosDisponibles).toBe('')
-    expect(calcularPlanTicul(b).errores.join()).toContain('no tiene duración fija')
+    if (estancia === 'dia-completo') expect(b.configuracion.minutosDisponibles).toBe('540')
+    else {
+      expect(b.configuracion.minutosDisponibles).toBe('')
+      expect(calcularPlanTicul(b).errores.join()).toContain('no tiene duración fija')
+    }
     b.configuracion.minutosDisponibles = '300'; b.modo = 'recomendado'
     expect(calcularPlanTicul(b).plan).not.toBeNull()
     expect(calcularPlanTicul(b).plan!.seleccion.every(id => lugaresTicul.some(l => l.id === id))).toBe(true)
@@ -96,14 +99,14 @@ describe('Cálculo de Ticul CU-09 / RF09', () => {
 
 describe('Borrador reproducible de Ticul', () => {
   it('inicia sin selección, fecha ni resultado y con minutos pendientes en las dos modalidades especiales', () => {
-    expect(leerBorradorTicul(new URLSearchParams())).toEqual(crearBorradorTicul())
-    expect(crearBorradorTicul()).toMatchObject({ seleccion: [], generado: false, configuracion: { minutosDisponibles: '240', fecha: '' } })
-    expect(crearBorradorTicul('dia-completo').configuracion.minutosDisponibles).toBe('')
+    expect(leerBorradorTicul(new URLSearchParams())).toMatchObject(crearBorradorTicul())
+    expect(crearBorradorTicul()).toMatchObject({ seleccion: [], generado: false, configuracion: { minutosDisponibles: '270', fecha: '' } })
+    expect(crearBorradorTicul('dia-completo').configuracion.minutosDisponibles).toBe('540')
     expect(crearBorradorTicul('tour-compras').configuracion.minutosDisponibles).toBe('')
   })
   it('recarga configuración y orden de selección; cambiar modalidad conserva fecha y selección e invalida', () => {
     const b = visita(); b.seleccion.reverse()
-    expect(leerBorradorTicul(parametrosBorradorTicul(b))).toEqual(b)
+    expect(leerBorradorTicul(parametrosBorradorTicul(b))).toMatchObject(b)
     expect(cambiarModalidadTicul(b, 'tour-compras')).toMatchObject({ generado: false, seleccion: b.seleccion, configuracion: { fecha: b.configuracion.fecha, minutosDisponibles: '' } })
   })
   it.each(['fecha=2026-11-30&generado=1', 'estancia=dia-completo&generado=1', 'modo=otro', 'generado=si', 'inicio=09:00&inicio=10:00&generado=1', 'lugares=corredor-calzado&lugares=comida-mercado', 'destino=tekit&generado=1'])('rechaza parámetros incompletos o manipulados: %s', p => {

@@ -23,7 +23,7 @@ export default function DetalleIzamalPage({ ruta }: { ruta: RutaPrototipo }) {
 
   return <DetalleDestino ruta={ruta} estancia={estancia} cambiarEstancia={cambiarEstancia} abrirItinerario={abrirItinerario} detalle={{
     ...detalle,
-    opciones: detalle.estancias,
+    opciones: detalle.estancias.filter(opcion => opcion.id !== 'tarde-magica' || estancia === 'tarde-magica'),
     etiqueta: 'Ruta Directa Van',
     puebloMagico: true,
     descripcion: 'La Ciudad de las Tres Culturas · Yucatán',

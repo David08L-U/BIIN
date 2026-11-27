@@ -13,7 +13,7 @@ describe('Cálculo de Valladolid CU-09 / RF09', () => {
   it('inicia con 270 o 540 minutos y dos ventanas separadas para fin de semana', () => {
     expect(crearBorradorValladolid().configuracion.minutosDisponibles).toBe('270')
     expect(crearBorradorValladolid('dia-completo').configuracion.minutosDisponibles).toBe('540')
-    expect(crearBorradorValladolid('fin-de-semana').configuracion).toMatchObject({ minutosDisponibles: '270', minutosDia2: '270' })
+    expect(crearBorradorValladolid('fin-de-semana').configuracion).toMatchObject({ minutosDisponibles: '540', minutosDia2: '540' })
     expect(crearBorradorValladolid('fin-de-semana', 'personalizado')).toMatchObject({ seleccion: [], generado: false })
   })
 
@@ -62,7 +62,9 @@ describe('Cálculo de Valladolid CU-09 / RF09', () => {
       expect(dia.seleccion.length).toBeGreaterThan(0)
       expect(dia.totalMinutos).toBeLessThanOrEqual(Number(dia.minutosDisponibles))
       expect(dia.margenMinutos).toBe(15)
-      expect(dia.bloques.at(-2)!.fin - dia.bloques.at(-2)!.inicio).toBe(5)
+      const regresoFinal = dia.dia === 2 ? dia.bloques.find(b => b.tipo === 'traslado' && !b.lugarId) : undefined
+      expect(regresoFinal ? regresoFinal.fin - regresoFinal.inicio : 0).toBe(dia.dia === 2 ? 5 : 0)
+      expect(dia.dia === 1 && dia.bloques.some(b => b.tipo === 'traslado' && !b.lugarId)).toBe(false)
       dia.bloques.forEach((bloque, i) => {
         expect(Number.isInteger(bloque.inicio) && Number.isInteger(bloque.fin)).toBe(true)
         expect(bloque.fin).toBeGreaterThan(bloque.inicio)
@@ -78,7 +80,7 @@ describe('Cálculo de Valladolid CU-09 / RF09', () => {
     b.configuracion.minutosDia2 = '540'
     b.seleccion[3].dia = 2
     expect(calcularPlanValladolid(b).plan).toBeNull()
-    expect(calcularPlanValladolid(b).errores).toEqual(['Día 1: la selección excede el tiempo disponible por 1 h 52 min. Modifica esa jornada; no se ha eliminado ninguna visita.'])
+    expect(calcularPlanValladolid(b).errores).toEqual(['Día 1: la selección excede el tiempo disponible por 1 h 47 min. Modifica esa jornada; no se ha eliminado ninguna visita.'])
   })
 
   it('encuentra una recomendación con ventanas asimétricas y explica cuándo no caben ambas jornadas', () => {

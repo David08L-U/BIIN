@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../../auth/useAuth'
 import ConsejosItinerario from '../components/ConsejosItinerario'
 import EnlaceDetalleRuta from '../components/EnlaceDetalleRuta'
+import PresentacionJornadas from '../components/PresentacionJornadas'
 import ConfiguracionValladolid from '../components/ConfiguracionValladolid'
 import Icono from '../components/IconoItinerario'
 import ImagenItinerario from '../components/ImagenItinerario'
@@ -89,7 +90,7 @@ export default function ItinerarioValladolidPage() {
     } catch { setAviso({ clave: claveCuenta, error: true, mensaje: 'No se pudo descargar el plan. Inténtalo de nuevo desde un navegador que permita descargar archivos.' }) }
   }
 
-  return <article className="iz-plan iz-itinerario" aria-labelledby="va-itinerario-titulo">
+  return <article className="iz-plan iz-itinerario" data-estancia={borrador.configuracion.estancia} aria-labelledby="va-itinerario-titulo">
     <CabeceraPlan id="va-itinerario-titulo" titulo="Tu Itinerario en Valladolid" subtitulo="BIIN Escapadas" volver={urlBorradorValladolid('detalle', borradorVigente)} acciones={<>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando || guardando} onClick={guardar} aria-busy={guardando} aria-label={guardando ? 'Guardando itinerario' : borrador.editarId ? 'Guardar cambios' : 'Guardar itinerario'}><Icono nombre="bookmark" tamano={20} /></button>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan || compartiendo} onClick={compartir} aria-label="Compartir"><Icono nombre="share" tamano={20} /></button>
@@ -103,13 +104,14 @@ export default function ItinerarioValladolidPage() {
       {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}
       {!borrador.generado && <p className="iz-plan-vacio" role="status">Aún no hay un plan vigente. Si cambiaste configuración o selección, genera de nuevo.</p>}
       {plan && <>
-        {plan.jornadas.map(dia => <Conexion dia={dia} key={dia.dia} />)}
+        {borrador.configuracion.estancia !== 'fin-de-semana' && plan.jornadas.map(dia => <Conexion dia={dia} key={dia.dia} />)}
         <FiltrosPlan etiqueta="Filtrar recorrido" opciones={[
             { id: 'todas', nombre: 'Ruta Sugerida' },
             { id: 'cultural-cenotes', nombre: 'Cultural & Cenotes' },
             { id: 'gastronomia', nombre: 'Gastronomía' },
           ]} activo={filtro} seleccionar={setFiltro} />
-        <section className="iz-plan-recorrido" aria-labelledby="va-pasos-titulo">
+        {borrador.configuracion.estancia === 'fin-de-semana' && <PresentacionJornadas destino="valladolid" jornadas={plan.jornadas} lugares={lugaresValladolid} filtro={filtro} categoriaDeLugar={lugar => lugar.categoria === 'gastronomia' ? 'gastronomia' : 'cultural-cenotes'} />}
+        <section hidden={borrador.configuracion.estancia === 'fin-de-semana'} style={borrador.configuracion.estancia === 'fin-de-semana' ? { display: 'none' } : undefined} className="iz-plan-recorrido" aria-labelledby="va-pasos-titulo">
           <div className="iz-plan-categoria-titulo"><h2 id="va-pasos-titulo">Paso a paso a pie</h2><span>{plan.seleccion.length} lugares</span></div>
           {plan.jornadas.map(dia => {
             const visitas = dia.bloques.filter(b => b.tipo === 'visita')

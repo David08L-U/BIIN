@@ -23,7 +23,7 @@ describe.each(['itinerario', 'personalizar'])('configuración compartida en %s',
     const { unmount } = render(<RouterProvider router={router} />)
     try {
       const config = within(screen.getByRole('group', { name: 'Configura tu visita' }))
-      expect(config.getByRole('combobox')).toHaveValue(estancia)
+      expect(config.getByLabelText(/^Estancia/)).toHaveValue(estancia)
       expect(config.getByLabelText('Fecha de visita')).toHaveValue('2026-12-01')
       expect(config.getByLabelText('Fecha de visita')).toHaveAttribute('min', hoyLocal())
       const jornadas = config.getAllByRole('group', { name: /^Día \d/ })

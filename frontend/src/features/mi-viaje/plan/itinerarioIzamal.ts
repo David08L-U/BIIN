@@ -2,14 +2,19 @@ import { duracionPlan, leerDuracion } from './duracion'
 import { lugaresIzamal, MARGEN_FINAL_MINUTOS, ordenRecomendadoIzamal, TRASLADO_FINAL_MINUTOS } from '../data/lugaresIzamal'
 import { fechaHoyOFutura, inicioLocal as construirInicioLocal, instanteLocal, horaLocal, hoyLocal } from './tiempoLocal'
 import { bloquesRecorrido, recomendarRecorrido, resumirRecorrido } from './recorridoSecuencial'
+import { estanciasCompartidas, type EstanciaCompartida } from './estanciasCompartidas'
+import { calcularPlanJornadas, resumenPlanJornadas, validarConfiguracionJornadas } from './recorridoJornadas'
+import type { DatosJornadas, VisitaJornada } from './recorridoJornadas'
 
-export type EstanciaIzamal = 'medio-dia' | 'dia-completo' | 'tarde-magica'
+export type EstanciaIzamal = EstanciaCompartida | 'tarde-magica'
 export type ModoItinerario = 'recomendado' | 'personalizado'
 export interface ConfiguracionViaje {
   estancia: EstanciaIzamal
   fecha: string
   horaInicio: string
   minutosDisponibles: string
+  horaInicioDia2?: string
+  minutosDia2?: string
 }
 export interface BorradorIzamal {
   configuracion: ConfiguracionViaje
@@ -17,6 +22,7 @@ export interface BorradorIzamal {
   seleccion: string[]
   generado: boolean
   editarId?: string
+  seleccionDia2?: string[]
 }
 export interface BloquePlan {
   tipo: 'traslado' | 'visita' | 'margen'
@@ -34,12 +40,12 @@ export interface PlanIzamal {
   margenMinutos: number
   totalMinutos: number
   libresMinutos: number
+  jornadas?: import('./recorridoJornadas').JornadaPlan[]
 }
 export type ResultadoPlan = { plan: PlanIzamal; errores: [] } | { plan: null; errores: string[] }
 
 export const estanciasIzamal = {
-  'medio-dia': { nombre: 'Medio día', minutos: '240', hora: '11:30' },
-  'dia-completo': { nombre: 'Día completo', minutos: '480', hora: '09:00' },
+  ...estanciasCompartidas,
   'tarde-magica': { nombre: 'Tarde mágica', minutos: '180', hora: '16:00' },
 } as const
 
@@ -49,6 +55,7 @@ export function inicioLocal(config: ConfiguracionViaje): Date | null {
 }
 
 export function validarConfiguracion(config: ConfiguracionViaje, hoy = hoyLocal()): string[] {
+  if (config.estancia === 'fin-de-semana') return validarConfiguracionJornadas({ ...config, horaInicioDia2: config.horaInicioDia2 ?? '', minutosDia2: config.minutosDia2 ?? '' }, hoy)
   const errores: string[] = []
   const soloFecha = inicioLocal({ ...config, horaInicio: '12:00' })
   if (!soloFecha) errores.push('Elige una fecha válida para la visita.')
@@ -68,6 +75,13 @@ export function recomendarLugares(minutos: number): string[] {
 }
 
 export function calcularPlan(borrador: BorradorIzamal, hoy = hoyLocal()): ResultadoPlan {
+  if (borrador.configuracion.estancia === 'fin-de-semana') {
+    const configuracion = { ...borrador.configuracion, horaInicioDia2: borrador.configuracion.horaInicioDia2 ?? '', minutosDia2: borrador.configuracion.minutosDia2 ?? '' }
+    const seleccion: VisitaJornada[] = borrador.seleccion.map(lugarId => ({ lugarId, dia: borrador.seleccionDia2?.includes(lugarId) ? 2 : 1 }))
+    const datos: DatosJornadas = { lugares: lugaresIzamal, regreso: TRASLADO_FINAL_MINUTOS, margen: MARGEN_FINAL_MINUTOS }
+    const resultado = calcularPlanJornadas({ configuracion, modo: borrador.modo, seleccion, generado: borrador.generado }, datos, hoy)
+    return resultado.plan ? { plan: resumenPlanJornadas(resultado.plan), errores: [] } : { plan: null, errores: resultado.errores }
+  }
   const errores = validarConfiguracion(borrador.configuracion, hoy)
   if (errores.length) return { plan: null, errores }
   const disponibles = Number(borrador.configuracion.minutosDisponibles)

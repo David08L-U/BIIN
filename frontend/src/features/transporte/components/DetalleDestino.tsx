@@ -206,6 +206,7 @@ export default function DetalleDestino<Id extends string>({ ruta, detalle, estan
               ))}
             </div>
           </fieldset>
+          <p className="izamal-estancia-nota">El tiempo es tu presupuesto de visita; no confirma horarios de transporte ni de apertura.</p>
           <div className="izamal-lugares">
             <p className="izamal-sobretitulo">Lugares destacados:</p>
             <ul aria-label={detalle.etiquetaLugares}>

@@ -70,9 +70,9 @@ describe('Cálculo de itinerarios de demostración CU-09 / RF09', () => {
   })
 
   it('recupera la configuración de la URL y sus duraciones iniciales sin generar un plan', () => {
-    expect(leerBorradorIzamal(new URLSearchParams('estancia=dia-completo')).configuracion.minutosDisponibles).toBe('480')
+    expect(leerBorradorIzamal(new URLSearchParams('estancia=dia-completo')).configuracion.minutosDisponibles).toBe('540')
     expect(leerBorradorIzamal(new URLSearchParams('estancia=tarde-magica')).configuracion.minutosDisponibles).toBe('180')
     expect(leerBorradorIzamal(new URLSearchParams()).generado).toBe(false)
-    expect(leerBorradorIzamal(parametrosBorrador(base))).toEqual(base)
+    expect(leerBorradorIzamal(parametrosBorrador(base))).toMatchObject(base)
   })
 })

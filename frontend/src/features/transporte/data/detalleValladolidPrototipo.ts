@@ -20,10 +20,10 @@ export const detalleValladolidPrototipo = {
     { nombre: 'Valladolid Centro', descripcion: 'Frente al Parque Principal Francisco Cantón', tipo: 'destino', etiqueta: 'Destino' },
   ],
   estancias: [
-    { id: 'medio-dia', nombre: 'Medio día', duracion: '4–5 horas' },
-    { id: 'dia-completo', nombre: 'Día completo', duracion: '8–10 horas' },
+    { id: 'medio-dia', nombre: 'Medio día', duracion: '4 h 30 min' },
+    { id: 'dia-completo', nombre: 'Día completo', duracion: '9 h' },
     // Representa dos días de visita, sin convertirlos en horas continuas.
-    { id: 'fin-de-semana', nombre: 'Fin de semana', duracion: '2 días' },
+    { id: 'fin-de-semana', nombre: 'Fin de semana', duracion: '2 días · 9 h por jornada' },
   ],
   lugares: ['Convento San Bernardino', 'Cenote Zací', 'Calzada de los Frailes', 'Mercado Municipal Bazar'],
 } as const

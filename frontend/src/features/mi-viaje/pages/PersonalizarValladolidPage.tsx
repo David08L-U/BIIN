@@ -44,13 +44,13 @@ export default function PersonalizarValladolidPage() {
         <div className="iz-plan-transito"><Icono nombre="directions_bus" /><strong>BIIN · Ruta Mérida-Valladolid</strong><span>Sin confirmar</span></div>
         <p>Elige tus lugares por categoría. Para fin de semana, asigna cada visita a una jornada.</p>
         {ventanas.map(v => {
-          const resumen = resumirJornadaValladolid(borrador.seleccion.filter(s => s.dia === v.dia).map(s => s.lugarId))
+          const resumen = resumirJornadaValladolid(borrador.seleccion.filter(s => s.dia === v.dia).map(s => s.lugarId), v.dia === ventanas.length)
           const disponibles = leerDuracion(v.minutosDisponibles)
           const restante = disponibles === null ? null : disponibles - resumen.totalMinutos
           return <div className="iz-plan-presupuesto" role="status" aria-label={`Resumen del Día ${v.dia}`} key={v.dia}>
             <div><span><Icono nombre="schedule" />Día {v.dia} · Tiempo acumulado</span><strong>{duracionPlan(resumen.totalMinutos)} / {disponibles ? duracionPlan(disponibles) : 'Sin configurar'}</strong></div>
             <progress aria-label={`Tiempo utilizado del Día ${v.dia}`} value={Math.min(resumen.totalMinutos, disponibles ?? 1)} max={disponibles ?? 1} />
-            <p>{duracionPlan(resumen.visitasMinutos)} de visitas + {duracionPlan(resumen.trasladosMinutos)} de desplazamientos (incluye traslado final) + 15 min de margen final.</p>
+            <p>{duracionPlan(resumen.visitasMinutos)} de visitas + {duracionPlan(resumen.trasladosMinutos)} de traslados estimados{v.dia === ventanas.length ? ' y traslado final' : ' locales'} + 15 min de margen.</p>
             <p>{restante === null ? 'Configura el tiempo de esta jornada.' : restante >= 0 ? `Tiempo libre: ${duracionPlan(restante)}` : `Excede el tiempo disponible por ${duracionPlan(Math.abs(restante))}.`}</p>
           </div>
         })}

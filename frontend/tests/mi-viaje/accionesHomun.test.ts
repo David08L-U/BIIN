@@ -43,7 +43,7 @@ describe('Acciones reales de Homún', () => {
   it('descarga un archivo legible con las dos fechas, tipos de traslado y supuestos', () => {
     const b = visita(), plan = calcularPlanHomun(b).plan!
     const texto = textoPlanHomun(b, plan)
-    for (const s of ['Día 1 · 2026-12-31', 'Día 2 · 2027-01-01', 'Mototaxi estimado', 'Traslado entre senderos estimado', 'A pie estimado', '15 min de margen', 'supuesto de 5 min', 'Tiempo libre:', 'no es una salida confirmada', 'No incluye mapas offline ni reservas']) expect(texto).toContain(s)
+    for (const s of ['Llegada al destino el Día 1', 'único regreso al final del último día', 'Día 1 · 2026-12-31', 'Día 2 · 2027-01-01', 'Mototaxi estimado', 'Traslado entre senderos estimado', 'A pie estimado', '15 min de margen', 'supuesto de 5 min', 'Libres:', 'no es una salida confirmada', 'No incluye mapas offline ni reservas']) expect(texto).toContain(s)
     for (const d of plan.jornadas) for (const bloque of d.bloques) expect(texto).toContain(bloque.titulo)
     const createObjectURL = vi.fn().mockReturnValue('blob:homun'), revokeObjectURL = vi.fn()
     vi.stubGlobal('URL', { createObjectURL, revokeObjectURL })

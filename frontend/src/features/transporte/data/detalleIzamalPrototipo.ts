@@ -41,8 +41,9 @@ export const detalleIzamalPrototipo = {
     },
   ],
   estancias: [
-    { id: 'medio-dia', nombre: 'Medio día', duracion: '3 - 4 hrs' },
-    { id: 'dia-completo', nombre: 'Día completo', duracion: '6 - 8 hrs' },
+    { id: 'medio-dia', nombre: 'Medio día', duracion: '4 h 30 min' },
+    { id: 'dia-completo', nombre: 'Día completo', duracion: '9 h' },
+    { id: 'fin-de-semana', nombre: 'Fin de semana', duracion: '2 días · 9 h por jornada' },
     { id: 'tarde-magica', nombre: 'Tarde mágica', duracion: 'Atardecer' },
   ],
   lugares: [

@@ -1,7 +1,7 @@
 import { duracionPlan } from './duracion'
 import type { BorradorValladolid, PlanValladolid } from './itinerarioValladolid'
 import { horaLocal } from './tiempoLocal'
-import { compartirPlan, descargarTextoPlan } from './accionesPlan'
+import { compartirPlan, descargarTextoPlan, textoJornadas } from './accionesPlan'
 export type { AvisoCompartir } from './accionesPlan'
 
 export function compartirValladolid(url: string) {
@@ -9,6 +9,12 @@ export function compartirValladolid(url: string) {
 }
 
 export function textoPlanValladolid(borrador: BorradorValladolid, plan: PlanValladolid): string {
+  if (borrador.configuracion.estancia === 'fin-de-semana') return [
+    'BIIN · Itinerario estimado en Valladolid', `Modo: ${borrador.modo}`,
+    'Información por confirmar, sin fecha de validación. Visitas y traslados locales estimados; aperturas, tarifas y transporte sin confirmar.',
+    'Horas en la zona local del navegador que genera este archivo. No incluye mapas offline ni reservas.',
+    ...textoJornadas(plan.jornadas),
+  ].join('\n')
   return [
     'BIIN · Itinerario estimado en Valladolid', `Modo: ${borrador.modo}`,
     'Información por confirmar, sin fecha de validación. Visitas y traslados estimados; aperturas, tarifas y transporte sin confirmar.',

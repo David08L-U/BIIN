@@ -165,6 +165,20 @@
 .iz-plan-consejos article > .biin-icon { color: var(--color-acento-texto); }
 .iz-plan-consejos h3 { font-family: var(--fuente-aplicacion); font-size: 14px; line-height: 20px; }
 .iz-plan-consejos p { color: var(--color-texto-suave); font-size: 13px; line-height: 19px; }
+.iz-plan-viaje-jornadas { display: grid; gap: 16px; margin-top: 20px; }
+.iz-plan [hidden] { display: none !important; }
+.iz-plan[data-estancia='fin-de-semana'] > .iz-plan-conexion,
+.iz-plan[data-estancia='fin-de-semana'] > .iz-plan-contenido > .iz-plan-conexion { display: none; }
+.iz-plan[data-estancia='fin-de-semana'] .iz-plan-recorrido { display: none; }
+.iz-plan-viaje-jornadas > .iz-plan-conexion { margin: 0; padding: 16px; }
+.iz-plan-viaje-jornadas > .iz-plan-conexion h2 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.iz-plan-viaje-jornadas > .iz-plan-conexion p + p { margin-top: 6px; }
+.iz-plan-jornada { min-width: 0; padding: 14px; }
+.iz-plan-jornada > header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+.iz-plan-jornada > header h2 { font-size: 18px; }
+.iz-plan-jornada-resumen { margin-top: 8px; font-weight: 700; }
+.iz-plan-jornada-visitas { margin-top: 12px; }
+.iz-plan-jornada .iz-plan-cierre { margin-top: 12px; }
 .iz-plan-resumen-final { display: grid; gap: 12px; margin: 24px -16px 0; padding: 16px; border-top: 1px solid #d3c3be4d; background: #ffffffed; font-size: 12px; line-height: 16px; }
 .iz-plan-acciones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .iz-plan-acciones > :is(button, a) { display: flex; align-items: center; justify-content: center; gap: 6px; min-width: 0; min-height: 44px; border: 1px solid var(--color-accion); border-radius: 8px; background: var(--color-superficie); padding: 8px; color: var(--color-accion-texto); text-decoration: none; font-size: 12px; line-height: 16px; }

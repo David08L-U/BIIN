@@ -6,6 +6,7 @@ import { useAuth } from '../../auth/useAuth'
 import ConfiguracionTicul from '../components/ConfiguracionTicul'
 import ConsejosItinerario from '../components/ConsejosItinerario'
 import EnlaceDetalleRuta from '../components/EnlaceDetalleRuta'
+import PresentacionJornadas from '../components/PresentacionJornadas'
 import ModosTicul from '../components/ModosTicul'
 import ImagenItinerario from '../components/ImagenItinerario'
 import { fotografiaLugar } from '../../explorar/data/lugaresExplorar'
@@ -33,7 +34,7 @@ export default function ItinerarioTiculPage() {
   const [compartiendo, setCompartiendo] = useState(false)
   const resultado = borrador.generado ? calcularPlanTicul(borrador) : null
   const plan = resultado?.plan ?? null
-  const vigente = plan ? { ...borrador, seleccion: plan.seleccion } : borrador
+  const vigente = plan ? { ...borrador, seleccion: plan.seleccion, seleccionDia2: plan.jornadas?.[1]?.seleccion ?? [] } : borrador
   const c = borrador.configuracion
   const errores = resultado?.errores ?? (intento?.clave === clave ? intento.errores : [])
   const urlActual = urlBorradorTicul('itinerario', vigente)
@@ -45,7 +46,7 @@ export default function ItinerarioTiculPage() {
     e.preventDefault()
     const r = calcularPlanTicul(borrador)
     setIntento({ clave, errores: r.errores })
-    if (r.plan) actualizar({ generado: true, seleccion: r.plan.seleccion })
+    if (r.plan) actualizar({ generado: true, seleccion: r.plan.seleccion, seleccionDia2: r.plan.jornadas?.[1]?.seleccion ?? [] })
   }
   async function guardar() {
     if (!plan || cargando || guardando) return
@@ -68,7 +69,7 @@ export default function ItinerarioTiculPage() {
     try { descargarTicul(vigente, plan); setAviso({ clave: cuenta, error: false, mensaje: 'Se solicitó la descarga del plan en texto.' }) }
     catch { setAviso({ clave: cuenta, error: true, mensaje: 'No se pudo descargar el plan. Revisa si el navegador permite descargar archivos.' }) }
   }
-  return <article className="iz-plan iz-itinerario" aria-labelledby="ti-itinerario-titulo">
+  return <article className="iz-plan iz-itinerario" data-estancia={c.estancia} aria-labelledby="ti-itinerario-titulo">
     <CabeceraPlan id="ti-itinerario-titulo" titulo="Tu Itinerario en Ticul" subtitulo="BIIN Escapadas" volver={urlBorradorTicul('detalle', vigente)} acciones={<>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando || guardando} onClick={guardar} aria-busy={guardando} aria-label={guardando ? 'Guardando itinerario' : borrador.editarId ? 'Guardar cambios' : 'Guardar itinerario'}><Icono nombre="bookmark" tamano={20} /></button>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan || compartiendo} onClick={compartir} aria-label="Compartir itinerario"><Icono nombre="share" tamano={20} /></button>
@@ -83,7 +84,7 @@ export default function ItinerarioTiculPage() {
       {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}
       {!borrador.generado && <p className="iz-plan-vacio" role="status">Aún no hay un plan vigente. Si cambiaste configuración o selección, genera de nuevo.</p>}
       {plan && <>
-        <section className="iz-plan-conexion iz-plan-tarjeta" aria-labelledby="ti-conexion-titulo">
+        <section hidden={c.estancia === 'fin-de-semana'} style={c.estancia === 'fin-de-semana' ? { display: 'none' } : undefined} className="iz-plan-conexion iz-plan-tarjeta" aria-labelledby="ti-conexion-titulo">
           <header className="iz-plan-conexion-titulo"><h2 id="ti-conexion-titulo">Conexión Van BIIN</h2><span>Ruta Mérida · Ticul</span><Icono nombre="directions_bus" tamano={20} /></header>
           <div className="iz-plan-conexion-fila"><span className="iz-plan-punto" aria-hidden="true" /><div><p className="iz-plan-ceja">Inicio elegido · {horaLocal(c, 0)}</p><strong>Ticul Centro (Frente al Mercado Municipal)</strong><p>Referencia de inicio; llegada del transporte sin confirmar.</p></div></div>
           <p className="iz-plan-conexion-margen"><Icono nombre="schedule" tamano={16} />{duracionPlan(Number(c.minutosDisponibles))} disponibles · {duracionPlan(plan.libresMinutos)} libres</p>
@@ -95,7 +96,8 @@ export default function ItinerarioTiculPage() {
             { id: 'artesanias', nombre: 'Alfarería & Zapaterías' },
             { id: 'gastronomia', nombre: 'Gastronomía' },
           ]} activo={filtro} seleccionar={setFiltro} />
-        <section className="iz-plan-recorrido" aria-labelledby="ti-pasos-titulo">
+        {plan.jornadas && <PresentacionJornadas destino="ticul" jornadas={plan.jornadas} lugares={lugaresTicul} filtro={filtro} categoriaDeLugar={lugar => lugar.categoria ?? ''} />}
+        <section hidden={c.estancia === 'fin-de-semana'} style={c.estancia === 'fin-de-semana' ? { display: 'none' } : undefined} className="iz-plan-recorrido" aria-labelledby="ti-pasos-titulo">
           <div className="iz-plan-categoria-titulo"><h2 id="ti-pasos-titulo">Paso a paso a pie &amp; mototaxi</h2><span>{plan.seleccion.length} lugares</span></div>
           <ol className="iz-plan-linea" aria-label="Recorrido de Ticul">
             {plan.bloques.filter(b => b.tipo === 'visita').map((bloque, i) => {

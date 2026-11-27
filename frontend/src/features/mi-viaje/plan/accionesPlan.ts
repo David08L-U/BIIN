@@ -1,5 +1,24 @@
 export interface AvisoCompartir { estado: 'compartido' | 'copiado' | 'manual' | 'cancelado'; mensaje: string }
 
+import { duracionPlan } from './duracion'
+import type { JornadaPlan } from './recorridoJornadas'
+import { horaLocal } from './tiempoLocal'
+
+export function textoJornadas(jornadas: readonly JornadaPlan[]): string[] {
+  if (!jornadas.length) return []
+  const ultima = jornadas.at(-1)!
+  return [
+    'Llegada al destino el Día 1 y un único regreso al final del último día. Transporte y horarios por confirmar.',
+    'El Día 2 parte de una referencia en la zona central del poblado; no incluye hospedaje ni traslados nocturnos.',
+    ...jornadas.flatMap(dia => [
+      '', `Día ${dia.dia} · ${dia.fecha}`, `Inicio elegido: ${horaLocal(dia, 0)} · ${duracionPlan(Number(dia.minutosDisponibles))} disponibles`,
+      ...dia.bloques.map(b => `${horaLocal(dia, b.inicio)} – ${horaLocal(dia, b.fin)} · ${b.titulo} · ${duracionPlan(b.fin - b.inicio)}`),
+      `Resumen: ${duracionPlan(dia.visitasMinutos)} de visitas + ${duracionPlan(dia.trasladosMinutos)} de traslados${dia.dia === ultima.dia ? ' y traslado local final' : ' locales'} + ${duracionPlan(dia.margenMinutos)} de margen. Libres: ${duracionPlan(dia.libresMinutos)}.`,
+      ...(dia.dia === ultima.dia ? [`Hora objetivo de regreso: ${horaLocal(dia, Number(dia.minutosDisponibles))}; no es una salida confirmada.`] : []),
+    ]),
+  ]
+}
+
 export async function compartirPlan(url: string, title: string): Promise<AvisoCompartir> {
   if (typeof navigator.share === 'function') {
     try {

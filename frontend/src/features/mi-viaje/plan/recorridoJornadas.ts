@@ -4,7 +4,7 @@ import { fechaHoyOFutura, fechaLocal, inicioLocal, instanteLocal, hoyLocal, sigu
 import { bloquesRecorrido, resumirRecorrido } from './recorridoSecuencial'
 import type { ParadaEstimada } from './recorridoSecuencial'
 
-export interface DatosJornadas { lugares: readonly ParadaEstimada[]; regreso: number; margen: number; tituloRegreso?: string }
+export interface DatosJornadas { lugares: readonly ParadaEstimada[]; regreso: number; margen: number; tituloRegreso?: string; ordenRecomendado?: readonly string[] }
 export function esEstanciaJornadas(valor: string): valor is 'medio-dia' | 'dia-completo' | 'fin-de-semana' {
   return valor === 'medio-dia' || valor === 'dia-completo' || valor === 'fin-de-semana'
 }
@@ -40,6 +40,11 @@ export interface JornadaPlan extends VentanaJornada {
 export interface PlanJornadas { jornadas: JornadaPlan[]; seleccion: VisitaJornada[] }
 export type ResultadoJornadas = { plan: PlanJornadas | null; errores: string[] }
 
+export function resumenPlanJornadas(plan: PlanJornadas) {
+  const total = (campo: 'visitasMinutos' | 'trasladosMinutos' | 'margenMinutos' | 'totalMinutos' | 'libresMinutos') => plan.jornadas.reduce((suma, jornada) => suma + jornada[campo], 0)
+  return { seleccion: plan.jornadas.flatMap(j => j.seleccion), bloques: plan.jornadas[0]?.bloques ?? [], visitasMinutos: total('visitasMinutos'), trasladosMinutos: total('trasladosMinutos'), margenMinutos: total('margenMinutos'), totalMinutos: total('totalMinutos'), libresMinutos: total('libresMinutos'), jornadas: plan.jornadas }
+}
+
 export function ventanasJornadas(config: ConfiguracionJornadas): VentanaJornada[] {
   const ventanas = [{ dia: 1, fecha: config.fecha, horaInicio: config.horaInicio, minutosDisponibles: config.minutosDisponibles }]
   if (config.estancia === 'fin-de-semana') ventanas.push({ dia: 2, fecha: siguienteFechaLocal(config.fecha), horaInicio: config.horaInicioDia2, minutosDisponibles: config.minutosDia2 })
@@ -66,27 +71,28 @@ export function validarConfiguracionJornadas(config: ConfiguracionJornadas, hoy 
   }
   return errores
 }
-export function resumirJornada(ids: string[], datos: DatosJornadas) {
-  return resumirRecorrido(datos.lugares, ids, datos.regreso, datos.margen)
+export function resumirJornada(ids: string[], datos: DatosJornadas, incluirRegreso = true) {
+  return resumirRecorrido(datos.lugares, ids, incluirRegreso ? datos.regreso : 0, datos.margen)
 }
 
 /** Solo cuatro lugares: evaluar asignaciones evita dejar una jornada vacía
  * cuando otra combinación cabe. No se modelan geografía, distancias ni aperturas.
  */
 export function recomendarJornadas(ventanas: VentanaJornada[], datos: DatosJornadas): VisitaJornada[] | null {
+  const candidatos = datos.ordenRecomendado?.map(id => datos.lugares.find(l => l.id === id)).filter((l): l is ParadaEstimada => l !== undefined) ?? datos.lugares
   let mejor: VisitaJornada[] | null = null
   let mejorPuntuacion = -1
   function buscar(indice: number, seleccion: VisitaJornada[]) {
-    const resumenes = ventanas.map(v => resumirJornada(seleccion.filter(s => s.dia === v.dia).map(s => s.lugarId), datos))
+    const resumenes = ventanas.map((v, i) => resumirJornada(seleccion.filter(s => s.dia === v.dia).map(s => s.lugarId), datos, i === ventanas.length - 1))
     if (resumenes.some((r, i) => r.totalMinutos > Number(ventanas[i].minutosDisponibles))) return
-    if (indice === datos.lugares.length) {
+    if (indice === candidatos.length) {
       const cantidades = ventanas.map(v => seleccion.filter(s => s.dia === v.dia).length)
       if (cantidades.some(n => n === 0)) return
       const puntuacion = seleccion.length * 10000 + Math.min(...cantidades) * 1000 + resumenes.reduce((s, r) => s + r.visitasMinutos, 0)
       if (puntuacion > mejorPuntuacion) { mejor = [...seleccion]; mejorPuntuacion = puntuacion }
       return
     }
-    for (const ventana of ventanas) buscar(indice + 1, [...seleccion, { lugarId: datos.lugares[indice].id, dia: ventana.dia }])
+    for (const ventana of ventanas) buscar(indice + 1, [...seleccion, { lugarId: candidatos[indice].id, dia: ventana.dia }])
     buscar(indice + 1, seleccion)
   }
   buscar(0, [])
@@ -105,16 +111,18 @@ export function calcularPlanJornadas(borrador: BorradorJornadas, datos: DatosJor
   for (const ventana of ventanas) {
     const elegidos = seleccion.filter(s => s.dia === ventana.dia).map(s => s.lugarId)
     if (!elegidos.length) errores.push(`Día ${ventana.dia}: selecciona al menos un lugar para generar el itinerario.`)
-    const resumen = resumirJornada(elegidos, datos)
+    const resumen = resumirJornada(elegidos, datos, ventana.dia === ventanas.at(-1)!.dia)
     const exceso = resumen.totalMinutos - Number(ventana.minutosDisponibles)
     if (exceso > 0) errores.push(`Día ${ventana.dia}: la selección excede el tiempo disponible por ${duracionPlan(exceso)}. Modifica esa jornada; no se ha eliminado ninguna visita.`)
   }
   if (errores.length) return { plan: null, errores }
   const jornadas = ventanas.map(ventana => {
     const elegidos = seleccion.filter(s => s.dia === ventana.dia).map(s => s.lugarId)
-    const bloques = bloquesRecorrido(datos.lugares, elegidos, datos.regreso, datos.margen)
-    if (datos.tituloRegreso) bloques.at(-2)!.titulo = datos.tituloRegreso
-    const resumen = resumirJornada(elegidos, datos)
+    const incluirRegreso = ventana.dia === ventanas.at(-1)!.dia
+    const bloques = bloquesRecorrido(datos.lugares, elegidos, incluirRegreso ? datos.regreso : 0, datos.margen)
+    const trasladoFinal = bloques.find(b => b.tipo === 'traslado' && !b.lugarId)
+    if (datos.tituloRegreso && trasladoFinal) trasladoFinal.titulo = datos.tituloRegreso
+    const resumen = resumirJornada(elegidos, datos, incluirRegreso)
     return { ...ventana, seleccion: elegidos, bloques, ...resumen, libresMinutos: Number(ventana.minutosDisponibles) - resumen.totalMinutos }
   })
   return { plan: { jornadas, seleccion: [...seleccion] }, errores: [] }

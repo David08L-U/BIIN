@@ -16,7 +16,7 @@ export default function DetalleTiculPage({ ruta }: { ruta: RutaPrototipo }) {
     abrirItinerario={modo => navegar(urlBorradorTicul(modo === 'recomendado' ? 'itinerario' : 'personalizar', { ...borrador, modo, generado: false }))}
     detalle={{
       ...detalle,
-      opciones: detalle.estancias,
+      opciones: detalle.estancias.filter(opcion => opcion.id !== 'tour-compras' || borrador.configuracion.estancia === 'tour-compras'),
       corredor: detalle.referenciaMapa,
       tiempo: `Duración aproximada · ~${ruta.tiempo}`,
       notaRecorrido: detalle.corredor,

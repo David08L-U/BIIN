@@ -6,6 +6,7 @@ import { useAuth } from '../../auth/useAuth'
 import ConfiguracionHomun from '../components/ConfiguracionHomun'
 import ConsejosItinerario from '../components/ConsejosItinerario'
 import EnlaceDetalleRuta from '../components/EnlaceDetalleRuta'
+import PresentacionJornadas from '../components/PresentacionJornadas'
 import ModosHomun from '../components/ModosHomun'
 import ImagenItinerario from '../components/ImagenItinerario'
 import { fotografiaLugar } from '../../explorar/data/lugaresExplorar'
@@ -80,7 +81,7 @@ export default function ItinerarioHomunPage() {
     try { descargarHomun(vigente, plan); setAviso({ clave: cuenta, error: false, mensaje: 'Se solicitó la descarga del plan en texto.' }) }
     catch { setAviso({ clave: cuenta, error: true, mensaje: 'No se pudo descargar el plan. Revisa si el navegador permite descargar archivos.' }) }
   }
-  return <article className="iz-plan iz-itinerario" aria-labelledby="hm-itinerario-titulo">
+  return <article className="iz-plan iz-itinerario" data-estancia={borrador.configuracion.estancia} aria-labelledby="hm-itinerario-titulo">
     <CabeceraPlan id="hm-itinerario-titulo" titulo="Tu Itinerario en Homún" subtitulo="BIIN Escapadas" volver={urlBorradorHomun('detalle', vigente)} acciones={<>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando || guardando} onClick={guardar} aria-busy={guardando} aria-label={guardando ? 'Guardando itinerario' : borrador.editarId ? 'Guardar cambios' : 'Guardar itinerario'}><Icono nombre="bookmark" tamano={20} /></button>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan || compartiendo} onClick={compartir} aria-label="Compartir"><Icono nombre="share" tamano={20} /></button>
@@ -95,13 +96,14 @@ export default function ItinerarioHomunPage() {
       {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}
       {!borrador.generado && <p className="iz-plan-vacio" role="status">Aún no hay un plan vigente. Si cambiaste configuración o selección, genera de nuevo.</p>}
       {plan && <>
-        {plan.jornadas.map(d => <ConexionHomun key={d.dia} dia={d} />)}
+        {estancia !== 'fin-de-semana' && plan.jornadas.map(d => <ConexionHomun key={d.dia} dia={d} />)}
         <FiltrosPlan etiqueta="Filtrar recorrido" opciones={[
             { id: 'todas', nombre: 'Ruta Sugerida' },
             { id: 'cenotes', nombre: 'Cenotes & Cavernas' },
             { id: 'gastronomia', nombre: 'Gastronomía' },
           ]} activo={filtro} seleccionar={setFiltro} />
-        <section className="iz-plan-recorrido" aria-labelledby="hm-pasos-titulo">
+        {borrador.configuracion.estancia === 'fin-de-semana' && <PresentacionJornadas destino="homun" jornadas={plan.jornadas} lugares={lugaresHomun} filtro={filtro} categoriaDeLugar={lugar => lugar.categoria ?? ''} />}
+        <section hidden={estancia === 'fin-de-semana'} style={estancia === 'fin-de-semana' ? { display: 'none' } : undefined} className="iz-plan-recorrido" aria-labelledby="hm-pasos-titulo">
           <div className="iz-plan-categoria-titulo"><h2 id="hm-pasos-titulo"><Icono nombre="timeline" tamano={16} />Paso a paso en mototaxi y a pie</h2><span>{plan.seleccion.length} lugares</span></div>
           {plan.jornadas.map(d => {
             const visitas = d.bloques.filter(b => b.tipo === 'visita')

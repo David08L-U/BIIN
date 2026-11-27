@@ -6,6 +6,7 @@ import { useAuth } from '../../auth/useAuth'
 import ConfiguracionTekit from '../components/ConfiguracionTekit'
 import ConsejosItinerario from '../components/ConsejosItinerario'
 import EnlaceDetalleRuta from '../components/EnlaceDetalleRuta'
+import PresentacionJornadas from '../components/PresentacionJornadas'
 import ModosTekit from '../components/ModosTekit'
 import Icono from '../components/IconoItinerario'
 import { lugaresTekit } from '../data/lugaresTekit'
@@ -31,7 +32,7 @@ export default function ItinerarioTekitPage() {
   const [compartiendo, setCompartiendo] = useState(false)
   const resultado = borrador.generado ? calcularPlanTekit(borrador) : null
   const plan = resultado?.plan ?? null
-  const vigente = plan ? { ...borrador, seleccion: plan.seleccion } : borrador
+  const vigente = plan ? { ...borrador, seleccion: plan.seleccion, seleccionDia2: plan.jornadas?.[1]?.seleccion ?? [] } : borrador
   const c = borrador.configuracion
   const errores = resultado?.errores ?? (intento?.clave === clave ? intento.errores : [])
   const urlActual = urlBorradorTekit('itinerario', vigente)
@@ -43,7 +44,7 @@ export default function ItinerarioTekitPage() {
     e.preventDefault()
     const r = calcularPlanTekit(borrador)
     setIntento({ clave, errores: r.errores })
-    if (r.plan) actualizar({ generado: true, seleccion: r.plan.seleccion })
+    if (r.plan) actualizar({ generado: true, seleccion: r.plan.seleccion, seleccionDia2: r.plan.jornadas?.[1]?.seleccion ?? [] })
   }
   async function guardar() {
     if (!plan || cargando || guardando) return
@@ -68,7 +69,7 @@ export default function ItinerarioTekitPage() {
       setAviso({ clave: cuenta, error: false, mensaje: 'Se solicitó la descarga del plan en texto.' })
     } catch { setAviso({ clave: cuenta, error: true, mensaje: 'No se pudo descargar el plan. Revisa si el navegador permite descargar archivos.' }) }
   }
-  return <article className="iz-plan iz-itinerario" aria-labelledby="tk-itinerario-titulo">
+  return <article className="iz-plan iz-itinerario" data-estancia={c.estancia} aria-labelledby="tk-itinerario-titulo">
     <CabeceraPlan id="tk-itinerario-titulo" titulo="Tu Itinerario en Tekit" subtitulo="BIIN Escapadas" volver={urlBorradorTekit('detalle', vigente)} acciones={<>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan || cargando || guardando} onClick={guardar} aria-busy={guardando} aria-label={guardando ? 'Guardando itinerario' : borrador.editarId ? 'Guardar cambios' : 'Guardar itinerario'}><Icono nombre="bookmark" tamano={20} /></button>
           <button type="button" className="iz-plan-icono-boton" disabled={!plan || compartiendo} onClick={compartir} aria-label="Compartir"><Icono nombre="share" tamano={20} /></button>
@@ -83,7 +84,7 @@ export default function ItinerarioTekitPage() {
       {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}
       {!borrador.generado && <p className="iz-plan-vacio" role="status">Aún no hay un plan vigente. Si cambiaste configuración o selección, genera de nuevo.</p>}
       {plan && <>
-        <section className="iz-plan-conexion iz-plan-tarjeta" aria-labelledby="tk-conexion-titulo">
+        <section hidden={c.estancia === 'fin-de-semana'} style={c.estancia === 'fin-de-semana' ? { display: 'none' } : undefined} className="iz-plan-conexion iz-plan-tarjeta" aria-labelledby="tk-conexion-titulo">
           <header className="iz-plan-conexion-titulo"><h2 id="tk-conexion-titulo">Conexión Van BIIN</h2><span>Ruta Mérida · Tekit</span><Icono nombre="directions_bus" tamano={20} /></header>
           <div className="iz-plan-conexion-tramo">
             <div><p className="iz-plan-ceja">Inicio elegido · <strong>{horaLocal(c, 0)}</strong></p><p>Tekit Centro, frente a la Parroquia de San Antonio. Punto de referencia ilustrativo; llegada sin confirmar.</p></div>
@@ -97,7 +98,8 @@ export default function ItinerarioTekitPage() {
             { id: 'textil', nombre: 'Ruta Textil & Talleres' },
             { id: 'gastronomia', nombre: 'Gastronomía' },
           ]} activo={filtro} seleccionar={setFiltro} />
-        <section className="iz-plan-recorrido" aria-labelledby="tk-pasos-titulo">
+        {plan.jornadas && <PresentacionJornadas destino="tekit" jornadas={plan.jornadas} lugares={lugaresTekit} filtro={filtro} categoriaDeLugar={lugar => lugar.categoria ?? ''} />}
+        <section hidden={c.estancia === 'fin-de-semana'} style={c.estancia === 'fin-de-semana' ? { display: 'none' } : undefined} className="iz-plan-recorrido" aria-labelledby="tk-pasos-titulo">
           <div className="iz-plan-categoria-titulo"><h2 id="tk-pasos-titulo"><Icono nombre="footprint" tamano={18} />Paso a paso a pie</h2><span>{plan.seleccion.length} lugares</span></div>
           <ol className="iz-plan-linea" aria-label="Visitas de Tekit">
             {plan.bloques.filter(b => b.tipo === 'visita').map((bloque, indice) => {
