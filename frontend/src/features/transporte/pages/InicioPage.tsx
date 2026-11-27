@@ -2,66 +2,9 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useOutletContext } from 'react-router'
 import MapaInicio from '../components/MapaInicio'
 
-// Valores del prototipo, pendientes de validar con operadores.
-const destinos = [
-  {
-    id: 'izamal',
-    nombre: 'Izamal',
-    descripcion: 'Ciudad de las Tres Culturas',
-    tiempo: '1 h 15 min',
-    precio: '$50',
-    icono: 'temple_buddhist',
-    directo: true,
-    cenotes: false,
-  },
-  {
-    id: 'valladolid',
-    nombre: 'Valladolid',
-    descripcion: 'Centro histórico y cenotes',
-    tiempo: '2 h 10 min',
-    precio: '$120',
-    icono: 'church',
-    directo: true,
-    cenotes: true,
-  },
-  {
-    id: 'tekit',
-    nombre: 'Tekit',
-    descripcion: 'Capital de la Guayabera',
-    tiempo: '1 h 05 min',
-    precio: '$45',
-    icono: 'checkroom',
-    directo: true,
-    cenotes: false,
-  },
-  {
-    id: 'homun',
-    nombre: 'Homún',
-    descripcion: 'Ruta de cenotes',
-    tiempo: '55 min',
-    precio: '$38',
-    icono: 'water_drop',
-    directo: false,
-    cenotes: true,
-  },
-  {
-    id: 'ticul',
-    nombre: 'Ticul',
-    descripcion: 'La Perla del Sur',
-    tiempo: '1 h 30 min',
-    precio: '$60',
-    icono: 'museum',
-    directo: true,
-    cenotes: false,
-  },
-]
-
-const normalizar = (texto: string) =>
-  texto
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim()
+import EstadoConsulta from '../../../components/ui/EstadoConsulta'
+import { useCatalogoRutasApi } from '../hooks/useCatalogoRutasApi'
+import { fechaHora, moneda } from '../../../utils/formatoDatos'
 
 export default function InicioPage() {
   const { abrirMenu } = useOutletContext<{
@@ -75,14 +18,8 @@ export default function InicioPage() {
     'todas' | 'directos' | 'cenotes'
   >('todas')
 
-  const lista = destinos.filter(
-    destino =>
-      normalizar(
-        `${destino.nombre} ${destino.descripcion}`,
-      ).includes(normalizar(busqueda)) &&
-      (filtro !== 'directos' || destino.directo) &&
-      (filtro !== 'cenotes' || destino.cenotes),
-  )
+  const consulta = useCatalogoRutasApi(busqueda, filtro)
+  const lista = (consulta.datos ?? []).map(r => ({ id: r.idRuta, nombre: r.destino, descripcion: r.titulo, tiempo: r.proximaSalida ? `Salida: ${fechaHora(r.proximaSalida)}` : 'Salida sin confirmar', precio: moneda(r.tarifaAproximada), icono: 'directions_bus' }))
 
   function buscar(evento: FormEvent) {
     evento.preventDefault()
@@ -176,7 +113,7 @@ export default function InicioPage() {
 
       <section className="melanie-rutas-inicio">
         <div className="melanie-rutas-titulo">
-          <h2>Rutas desde Mérida</h2>
+          <h2>Rutas publicadas</h2>
           <Link to="/rutas">Ver todas</Link>
         </div>
 
@@ -202,7 +139,7 @@ export default function InicioPage() {
                 {opcion === 'todas'
                   ? 'Todas'
                   : opcion === 'directos'
-                    ? 'Directos'
+                    ? 'Sin paradas intermedias'
                     : 'Cenotes'}
               </button>
             ),
@@ -210,15 +147,15 @@ export default function InicioPage() {
         </div>
 
         <p className="melanie-datos-aviso">
-          Tarifas y tiempos del prototipo, pendientes de
-          validar.
+          Información publicada. Confirma horarios y tarifas antes de viajar.
         </p>
 
+        <EstadoConsulta consulta={consulta} />
         <div className="melanie-lista-rutas">
           {lista.map(destino => (
             <Link
               key={destino.id}
-              to={`/rutas?destino=${destino.id}`}
+              to={`/rutas/${destino.id}`}
               aria-label={`Ver ruta a ${destino.nombre}`}
               className="melanie-ruta-card"
             >
@@ -251,7 +188,7 @@ export default function InicioPage() {
           ))}
         </div>
 
-        {!lista.length && (
+        {consulta.datos?.length === 0 && (
           <p className="melanie-sin-rutas" role="status">
             No hay rutas para esta búsqueda y filtro.
           </p>
