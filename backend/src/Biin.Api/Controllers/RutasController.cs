@@ -28,4 +28,20 @@ public class RutasController(RutasService rutas) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public Task<IReadOnlyList<RutaCercanaDto>> Cercanas([FromQuery] FiltroRutasCercanasRequest filtro, CancellationToken ct) =>
         rutas.BuscarCercanasAsync(filtro, ct);
+
+    /// <summary>Detalle completo de una ruta publicada: paradas, trazo, horarios, tarifas, regreso y salidas (RF03, CU-03).</summary>
+    [HttpGet("{idRuta:int}")]
+    [ProducesResponseType<RutaDetalleDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public Task<RutaDetalleDto> Detalle(int idRuta, [FromQuery] short? diaSemana = null, CancellationToken ct = default) =>
+        rutas.ObtenerDetalleAsync(idRuta, diaSemana, ct);
+
+    /// <summary>Salidas programadas de una ruta para una fecha (hoy en Yucatán por defecto) con estado de cupo (RF03, RF04, RNF07).</summary>
+    [HttpGet("{idRuta:int}/salidas")]
+    [ProducesResponseType<SalidasRutaResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public Task<SalidasRutaResponse> Salidas(int idRuta, [FromQuery] DateOnly? fecha = null, CancellationToken ct = default) =>
+        rutas.ObtenerSalidasAsync(idRuta, fecha, ct);
 }

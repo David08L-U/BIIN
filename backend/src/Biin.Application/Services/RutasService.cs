@@ -1,5 +1,6 @@
 using Biin.Application.Consultas;
 using Biin.Application.DTOs.Comun;
+using Biin.Application.DTOs.Contenidos;
 using Biin.Application.DTOs.Transporte;
 using Biin.Application.Interfaces;
 using Biin.Application.Validators;
@@ -181,6 +182,251 @@ public class RutasService(IAppDbContext db, IReloj reloj)
                 CalculadoraTraslado.MinutosEstimados(x.Distancia),
                 tarifa?.Monto,
                 ruta?.Recurso.ActualizadoEn ?? reloj.AhoraUtc);
+        }).ToList();
+    }
+
+    public async Task<RutaDetalleDto> ObtenerDetalleAsync(
+        int idRuta,
+        short? diaSemana = null,
+        CancellationToken ct = default)
+    {
+        if (idRuta <= 0)
+            throw new ReglaNegocioException("El identificador de la ruta debe ser mayor a cero.");
+        if (diaSemana is < 0 or > 6)
+            throw new ReglaNegocioException("El día de la semana debe estar entre 0 (domingo) y 6 (sábado).");
+
+        var ahoraUtc = reloj.AhoraUtc;
+        var hoyLocal = DateOnly.FromDateTime(ZonaYucatan.ALocal(ahoraUtc));
+
+        var ruta = await db.Rutas
+            .AsNoTracking()
+            .Include(r => r.Recurso)
+                .ThenInclude(rec => rec.Fotografias)
+            .Include(r => r.Paradas)
+                .ThenInclude(p => p.Ubicacion)
+                    .ThenInclude(u => u.Localidad)
+                        .ThenInclude(l => l.Municipio)
+            .Include(r => r.Puntos)
+            .Include(r => r.Horarios)
+            .Include(r => r.Tarifas)
+            .SingleOrDefaultAsync(r =>
+                r.IdRecurso == idRuta &&
+                r.Activa &&
+                r.Recurso.EstadoPublicacion == EstadoPublicacion.Publicado, ct)
+            ?? throw new NoEncontradoException("Ruta no encontrada.");
+
+        var paradasOrdenadas = ruta.Paradas.OrderBy(p => p.Orden).ToList();
+        var paradasDto = paradasOrdenadas.Select(p => new ParadaMapaDto(
+            p.Orden,
+            p.IdUbicacion,
+            p.Ubicacion?.DireccionReferencia,
+            p.Ubicacion?.Latitud ?? 0m,
+            p.Ubicacion?.Longitud ?? 0m,
+            p.Ubicacion?.IdLocalidad ?? 0,
+            NombreLocalidad(p),
+            p.Ubicacion?.Localidad?.IdMunicipio ?? 0,
+            p.Ubicacion?.Localidad?.Municipio?.Nombre ?? string.Empty,
+            p.PermiteAbordar,
+            p.PermiteDescender)).ToList();
+
+        var puntosDto = ruta.Puntos.Count > 0
+            ? ruta.Puntos
+                .OrderBy(pt => pt.Orden)
+                .Select(pt => new PuntoMapaDto(pt.Orden, pt.Latitud, pt.Longitud))
+                .ToList()
+            : paradasDto
+                .Select((p, idx) => new PuntoMapaDto(idx + 1, p.Latitud, p.Longitud))
+                .ToList();
+
+        var horariosDto = ruta.Horarios
+            .Where(h => EsHorarioVigente(h, hoyLocal) && (!diaSemana.HasValue || h.DiaSemana == diaSemana.Value))
+            .OrderBy(h => h.DiaSemana)
+            .ThenBy(h => h.HoraSalida)
+            .Select(h => new HorarioRutaDto(h.IdHorario, h.DiaSemana, h.HoraSalida, h.VigenteDesde, h.VigenteHasta))
+            .ToList();
+
+        var localidadesPorOrden = paradasOrdenadas.ToDictionary(p => p.Orden, NombreLocalidad);
+        var tarifasDto = ruta.Tarifas
+            .Where(t => t.EsVigente(hoyLocal))
+            .OrderBy(t => t.OrdenOrigen)
+            .ThenBy(t => t.OrdenDestino)
+            .Select(t => new TarifaVigenteDto(
+                t.IdTarifa,
+                t.IdRuta,
+                t.OrdenOrigen,
+                localidadesPorOrden.GetValueOrDefault(t.OrdenOrigen, $"Parada {t.OrdenOrigen}"),
+                t.OrdenDestino,
+                localidadesPorOrden.GetValueOrDefault(t.OrdenDestino, $"Parada {t.OrdenDestino}"),
+                t.Monto,
+                t.VigenteDesde,
+                t.VigenteHasta))
+            .ToList();
+
+        var fotosDto = ruta.Recurso.Fotografias
+            .OrderBy(f => f.Orden)
+            .Select(f => new FotografiaDto(f.IdFotografia, f.UrlArchivo, f.TextoAlternativo, f.Orden))
+            .ToList();
+
+        var regresoDto = await BuscarRutasRegresoAsync(ruta, paradasOrdenadas, hoyLocal, ct);
+        var proximasSalidas = await CargarSalidasConCupoAsync(
+            idRuta,
+            desdeUtc: ahoraUtc,
+            hastaUtcExclusivo: null,
+            soloPendientesOEnCurso: true,
+            limite: 10,
+            ct);
+
+        return new RutaDetalleDto(
+            ruta.IdRecurso,
+            ruta.Codigo,
+            ruta.Recurso.Titulo,
+            ruta.Recurso.Descripcion,
+            ruta.Recurso.ActualizadoEn,
+            TarifasService.NotaTarifaAproximada,
+            fotosDto,
+            paradasDto,
+            puntosDto,
+            horariosDto,
+            tarifasDto,
+            regresoDto,
+            proximasSalidas);
+    }
+
+    public async Task<SalidasRutaResponse> ObtenerSalidasAsync(
+        int idRuta,
+        DateOnly? fecha = null,
+        CancellationToken ct = default)
+    {
+        if (idRuta <= 0)
+            throw new ReglaNegocioException("El identificador de la ruta debe ser mayor a cero.");
+
+        var ruta = await db.Rutas
+            .AsNoTracking()
+            .Include(r => r.Recurso)
+            .SingleOrDefaultAsync(r =>
+                r.IdRecurso == idRuta &&
+                r.Activa &&
+                r.Recurso.EstadoPublicacion == EstadoPublicacion.Publicado, ct)
+            ?? throw new NoEncontradoException("Ruta no encontrada.");
+
+        var fechaDia = fecha ?? DateOnly.FromDateTime(ZonaYucatan.ALocal(reloj.AhoraUtc));
+        var inicioUtc = ZonaYucatan.InicioDelDiaUtc(fechaDia);
+        var finUtc = ZonaYucatan.InicioDelDiaUtc(fechaDia.AddDays(1));
+
+        var salidas = await CargarSalidasConCupoAsync(
+            idRuta,
+            desdeUtc: inicioUtc,
+            hastaUtcExclusivo: finUtc,
+            soloPendientesOEnCurso: false,
+            limite: 100,
+            ct);
+
+        return new SalidasRutaResponse(ruta.IdRecurso, ruta.Codigo, ruta.Recurso.Titulo, fechaDia, salidas);
+    }
+
+    private async Task<IReadOnlyList<RutaRegresoDto>> BuscarRutasRegresoAsync(
+        Ruta rutaIda,
+        IReadOnlyList<RutaParada> paradasIda,
+        DateOnly hoyLocal,
+        CancellationToken ct)
+    {
+        if (paradasIda.Count < 2)
+            return [];
+
+        var idLocInicioIda = paradasIda[0].Ubicacion?.IdLocalidad;
+        var idLocFinIda = paradasIda[^1].Ubicacion?.IdLocalidad;
+        if (!idLocInicioIda.HasValue || !idLocFinIda.HasValue || idLocInicioIda == idLocFinIda)
+            return [];
+
+        var candidatas = await db.Rutas
+            .AsNoTracking()
+            .Include(r => r.Recurso)
+            .Include(r => r.Paradas)
+                .ThenInclude(p => p.Ubicacion)
+                    .ThenInclude(u => u.Localidad)
+            .Include(r => r.Tarifas)
+            .Where(r => r.IdRecurso != rutaIda.IdRecurso &&
+                        r.Activa &&
+                        r.Recurso.EstadoPublicacion == EstadoPublicacion.Publicado)
+            .ToListAsync(ct);
+
+        var resultado = new List<RutaRegresoDto>();
+        foreach (var candidata in candidatas)
+        {
+            var paradas = candidata.Paradas.OrderBy(p => p.Orden).ToList();
+            var paradaOrigenReg = paradas.FirstOrDefault(p =>
+                p.PermiteAbordar && p.Ubicacion?.IdLocalidad == idLocFinIda.Value);
+            if (paradaOrigenReg is null)
+                continue;
+
+            var paradaDestinoReg = paradas.FirstOrDefault(p =>
+                p.Orden > paradaOrigenReg.Orden &&
+                p.PermiteDescender &&
+                p.Ubicacion?.IdLocalidad == idLocInicioIda.Value);
+            if (paradaDestinoReg is null)
+                continue;
+
+            var tarifa = BuscarTarifaVigente(candidata.Tarifas, paradaOrigenReg.Orden, paradaDestinoReg.Orden, hoyLocal);
+            resultado.Add(new RutaRegresoDto(
+                candidata.IdRecurso,
+                candidata.Codigo,
+                candidata.Recurso.Titulo,
+                NombreLocalidad(paradaOrigenReg),
+                NombreLocalidad(paradaDestinoReg),
+                tarifa?.Monto));
+        }
+
+        return resultado.OrderBy(r => r.Titulo).ThenBy(r => r.Codigo).ToList();
+    }
+
+    private async Task<IReadOnlyList<SalidaConCupoDto>> CargarSalidasConCupoAsync(
+        int idRuta,
+        DateTime desdeUtc,
+        DateTime? hastaUtcExclusivo,
+        bool soloPendientesOEnCurso,
+        int limite,
+        CancellationToken ct)
+    {
+        var consultaSalidas = db.Salidas
+            .AsNoTracking()
+            .Include(s => s.Unidad)
+            .Where(s => s.IdRuta == idRuta && s.SalidaProgramada >= desdeUtc);
+
+        if (hastaUtcExclusivo.HasValue)
+            consultaSalidas = consultaSalidas.Where(s => s.SalidaProgramada < hastaUtcExclusivo.Value);
+
+        if (soloPendientesOEnCurso)
+            consultaSalidas = consultaSalidas.Where(s =>
+                s.Estado != EstadoSalida.Cancelada && s.Estado != EstadoSalida.Finalizada);
+
+        var salidas = await consultaSalidas
+            .OrderBy(s => s.SalidaProgramada)
+            .Take(limite)
+            .ToListAsync(ct);
+
+        if (salidas.Count == 0)
+            return [];
+
+        var idsSalida = salidas.Select(s => s.IdSalida).ToList();
+        var cuposPorSalida = await db.VCupoVigente
+            .AsNoTracking()
+            .Where(v => idsSalida.Contains(v.IdSalida))
+            .ToDictionaryAsync(v => v.IdSalida, ct);
+
+        return salidas.Select(s =>
+        {
+            cuposPorSalida.TryGetValue(s.IdSalida, out var cupo);
+            return new SalidaConCupoDto(
+                s.IdSalida,
+                s.IdRuta,
+                s.Unidad?.Identificador ?? $"Unidad {s.IdUnidad}",
+                s.SalidaProgramada,
+                s.CapacidadHabilitada,
+                s.Estado,
+                cupo?.EstadoCupo ?? VCupoVigente.EstadoNoConfirmado,
+                cupo?.AsientosDisponibles,
+                cupo?.RegistradoEn,
+                cupo?.ValidoHasta);
         }).ToList();
     }
 

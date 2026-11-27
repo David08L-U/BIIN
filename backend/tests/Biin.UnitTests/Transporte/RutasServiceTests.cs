@@ -84,6 +84,58 @@ public class RutasServiceTests
         Assert.Equal(25m, cercanas[1].TarifaAproximada);
     }
 
+    [Fact]
+    public async Task ObtenerDetalle_devuelve_paradas_trazo_horarios_tarifas_regreso_y_proximas_salidas()
+    {
+        var detalle = await _servicio.ObtenerDetalleAsync(1);
+
+        Assert.Equal("DEMO-MER-HOM", detalle.Codigo);
+        Assert.Equal(["Mérida", "Acanceh", "Homún"], detalle.Paradas.Select(p => p.Localidad).ToList());
+        Assert.Equal(3, detalle.PuntosRecorrido.Count); // fallback de paradas
+        Assert.Single(detalle.Horarios);
+        Assert.Equal(2, detalle.Tarifas.Count);
+
+        // Detecta automáticamente la ruta de regreso DEMO-HOM-MER
+        var regreso = Assert.Single(detalle.RutasRegreso);
+        Assert.Equal("DEMO-HOM-MER", regreso.Codigo);
+        Assert.Equal("Homún", regreso.Origen);
+        Assert.Equal("Mérida", regreso.Destino);
+        Assert.Equal(45m, regreso.TarifaAproximada);
+
+        // Próximas salidas con cupo vigente
+        var salida = Assert.Single(detalle.ProximasSalidas);
+        Assert.Equal("DEMO-COMBI-01", salida.Unidad);
+        Assert.Equal(VCupoVigente.EstadoVigente, salida.EstadoCupo);
+        Assert.Equal(6, salida.AsientosDisponibles);
+
+        // Filtro por día sin horarios devuelve horarios vacíos sin fallar
+        var detalleDomingo = await _servicio.ObtenerDetalleAsync(1, diaSemana: 0);
+        Assert.Empty(detalleDomingo.Horarios);
+
+        // Rutas ocultas o inexistentes devuelven 404
+        await Assert.ThrowsAsync<NoEncontradoException>(() => _servicio.ObtenerDetalleAsync(4));
+        await Assert.ThrowsAsync<NoEncontradoException>(() => _servicio.ObtenerDetalleAsync(5));
+        await Assert.ThrowsAsync<ReglaNegocioException>(() => _servicio.ObtenerDetalleAsync(1, diaSemana: 9));
+    }
+
+    [Fact]
+    public async Task ObtenerSalidas_filtra_por_dia_en_hora_Yucatan_y_muestra_estado_de_cupo()
+    {
+        var hoy = await _servicio.ObtenerSalidasAsync(1);
+        Assert.Equal(new DateOnly(2026, 12, 7), hoy.Fecha);
+        var salidaHoy = Assert.Single(hoy.Salidas);
+        Assert.Equal(VCupoVigente.EstadoVigente, salidaHoy.EstadoCupo);
+        Assert.Equal(6, salidaHoy.AsientosDisponibles);
+
+        var hoyRegreso = await _servicio.ObtenerSalidasAsync(2);
+        var salidaRegreso = Assert.Single(hoyRegreso.Salidas);
+        Assert.Equal(VCupoVigente.EstadoNoConfirmado, salidaRegreso.EstadoCupo);
+        Assert.Null(salidaRegreso.AsientosDisponibles);
+
+        var otroDia = await _servicio.ObtenerSalidasAsync(1, new DateOnly(2026, 12, 8));
+        Assert.Empty(otroDia.Salidas);
+    }
+
     private void SembrarEscenario()
     {
         var munMer = new Municipio { IdMunicipio = 1, Codigo = "050", Nombre = "Mérida" };
@@ -156,7 +208,26 @@ public class RutasServiceTests
             }
         }
 
-        // Vista v_cupo_vigente
+        // Salidas reales y vista v_cupo_vigente
+        var unidad1 = new Unidad { IdUnidad = 1, Identificador = "DEMO-COMBI-01", Capacidad = 15, Activa = true };
+        var unidad2 = new Unidad { IdUnidad = 2, Identificador = "DEMO-COMBI-02", Capacidad = 18, Activa = true };
+        _db.Set<Unidad>().Items.AddRange([unidad1, unidad2]);
+        _db.Set<Salida>().Items.AddRange(
+        [
+            new Salida
+            {
+                IdSalida = 100, IdRuta = 1, IdUnidad = 1, Unidad = unidad1,
+                SalidaProgramada = _reloj.AhoraUtc.AddHours(2),
+                CapacidadHabilitada = 15, Estado = EstadoSalida.Programada
+            },
+            new Salida
+            {
+                IdSalida = 101, IdRuta = 2, IdUnidad = 2, Unidad = unidad2,
+                SalidaProgramada = _reloj.AhoraUtc.AddHours(3),
+                CapacidadHabilitada = 18, Estado = EstadoSalida.Programada
+            }
+        ]);
+
         _db.Set<VCupoVigente>().Items.AddRange(
         [
             new VCupoVigente
