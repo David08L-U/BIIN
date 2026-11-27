@@ -13,6 +13,8 @@ export default function Layout() {
   const { pathname } = location
   const borradorFuente = /^\/rutas\/(izamal|valladolid|tekit|homun|ticul)(?:\/(?:itinerario|personalizar))?$/.test(pathname)
     ? `${pathname}${location.search}` : undefined
+  const borradorRecuperable = /^\/rutas\/(?:izamal|valladolid|tekit|homun|ticul)\/(?:itinerario|personalizar)$/.test(pathname)
+    ? `${pathname}${location.search}` : undefined
   const menu = useRef<HTMLDialogElement>(null)
 
   const abrirMenu = () => menu.current?.showModal()
@@ -92,11 +94,8 @@ export default function Layout() {
           <span>Inicio</span>
         </NavLink>
 
-        <Link
-          to="/rutas"
-          className={pathname === '/recorridos' || /^\/rutas(?:\/|$)/.test(pathname) ? 'active' : undefined}
-          aria-current={pathname === '/recorridos' || /^\/rutas(?:\/|$)/.test(pathname) ? 'page' : undefined}
-        >
+        <Link to="/rutas" className={/^\/rutas(?:\/|$)/.test(pathname) ? 'active' : undefined}
+          aria-current={/^\/rutas(?:\/|$)/.test(pathname) ? 'page' : undefined}>
           <span aria-hidden="true" className="biin-icon">
             route
           </span>
@@ -110,12 +109,17 @@ export default function Layout() {
           <span>Explorar</span>
         </NavLink>
 
-        <NavLink to="/mi-viaje">
+        <Link
+          to="/recorridos"
+          state={borradorRecuperable ? { borradorFuente: borradorRecuperable } : undefined}
+          className={pathname.startsWith('/recorridos') || pathname === '/mi-viaje' ? 'active' : undefined}
+          aria-current={pathname.startsWith('/recorridos') || pathname === '/mi-viaje' ? 'page' : undefined}
+        >
           <span aria-hidden="true" className="biin-icon">
             event_note
           </span>
           <span>Mi viaje</span>
-        </NavLink>
+        </Link>
 
         <NavLink to={esVistaPreviaPerfil ? '/vista-previa/perfil' : '/perfil'}>
           <span aria-hidden="true" className="biin-icon">
@@ -157,8 +161,8 @@ export default function Layout() {
           <Link to="/">Inicio / mapa</Link>
           <Link to="/rutas">Explorar rutas</Link>
           <Link to="/explorar">Explorar Yucatán</Link>
-          <Link to="/recorridos">Recorridos sugeridos</Link>
-          <Link to="/mi-viaje">Mi viaje</Link>
+          <Link to="/recorridos/crear">Crear itinerario</Link>
+          <Link to="/recorridos">Mi viaje</Link>
           <Link to="/perfil">Mi perfil</Link>
           <Link to="/asistente">Asistente BIIN</Link>
 

@@ -102,13 +102,13 @@ function EliminarViaje({ item, alEliminar }: { item: ItinerarioGuardado; alElimi
   </>
 }
 
-export default function MiViajePage() {
+export default function MiViajePage({ borradorFuente }: { borradorFuente?: string } = {}) {
   const { usuario, cerrarSesion } = useAuth()
   if (!usuario) return null
-  return <MiViajeContenido key={usuario.idUsuario} idUsuario={usuario.idUsuario} cerrarSesion={cerrarSesion} />
+  return <MiViajeContenido key={usuario.idUsuario} idUsuario={usuario.idUsuario} cerrarSesion={cerrarSesion} borradorFuente={borradorFuente} />
 }
 
-function MiViajeContenido({ idUsuario, cerrarSesion }: { idUsuario: number; cerrarSesion: () => void }) {
+function MiViajeContenido({ idUsuario, cerrarSesion, borradorFuente }: { idUsuario: number; cerrarSesion: () => void; borradorFuente?: string }) {
   const [locales, setLocales] = useState(() => leerItinerariosLocales(idUsuario))
   const [servidor, setServidor] = useState<ItinerarioGuardado[]>([])
   const [anteriores, setAnteriores] = useState<ItinerarioAnteriorApiDto[]>([])
@@ -182,6 +182,11 @@ function MiViajeContenido({ idUsuario, cerrarSesion }: { idUsuario: number; cerr
 
   return <section className="iz-plan iz-plan-mis-viajes" aria-labelledby="mis-viajes-titulo">
     <h1 ref={headingRef} id="mis-viajes-titulo" tabIndex={-1}>Mi viaje</h1>
+    {borradorFuente && <section className="iz-plan-mis-viajes-seccion" aria-label="Borrador recuperable">
+      <h2>Continuar borrador</h2>
+      <p>Tu configuración sigue disponible.</p>
+      <Link className="iz-plan-primario" to={borradorFuente}>Continuar borrador</Link>
+    </section>}
     <section className="iz-plan-mis-viajes-seccion" aria-labelledby="mis-itinerarios-guardados-titulo">
       <h2 id="mis-itinerarios-guardados-titulo">Mis itinerarios guardados</h2>
     {cargando && <p role="status">Cargando itinerarios de tu cuenta…</p>}
@@ -220,19 +225,8 @@ function MiViajeContenido({ idUsuario, cerrarSesion }: { idUsuario: number; cerr
     </section>
     <section className="iz-plan-mis-viajes-seccion" aria-labelledby="crear-itinerario-titulo">
       <h2 id="crear-itinerario-titulo">Crear un itinerario</h2>
-      <ul className="iz-plan-destinos-crear">
-        {[
-          ['izamal', 'Izamal'],
-          ['valladolid', 'Valladolid'],
-          ['tekit', 'Tekit'],
-          ['homun', 'Homún'],
-          ['ticul', 'Ticul'],
-        ].map(([destino, nombre]) => {
-          return <li className="iz-plan-tarjeta" key={destino}>
-          <h3>{nombre}</h3>
-          <Link to={`/rutas/${destino}`} aria-label={`Crear itinerario para ${nombre}`}>Crear itinerario</Link>
-        </li>})}
-      </ul>
+      <p>Elige un destino y cómo quieres planear tu visita.</p>
+      <Link className="iz-plan-primario" to="/recorridos/crear">Crear itinerario</Link>
     </section>
   </section>
 }

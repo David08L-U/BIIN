@@ -6,11 +6,11 @@ import Layout from '../src/components/layout/Layout'
 import RutaProtegida from '../src/features/auth/RutaProtegida'
 import { AuthContext, type AuthContextValor } from '../src/features/auth/authContextValor'
 import PerfilPage from '../src/features/perfil/pages/PerfilPage'
+import EntradaItinerariosPage from '../src/features/mi-viaje/pages/EntradaItinerariosPage'
 import VistaPreviaPerfilPage from '../src/features/perfil/pages/VistaPreviaPerfilPage'
 import { type ItinerarioGuardado } from '../src/features/mi-viaje/storage/itinerariosLocales'
 import type { BorradorIzamal } from '../src/features/mi-viaje/plan/itinerarioIzamal'
 import MiViajePage from '../src/features/mi-viaje/pages/MiViajePage'
-import ElegirItinerarioPage from '../src/features/explorar/pages/ElegirItinerarioPage'
 import { sembrarItinerariosServidorPrueba } from './setup'
 
 const borrador: BorradorIzamal = { configuracion: { estancia: 'medio-dia', fecha: '2026-11-30', horaInicio: '11:30', minutosDisponibles: '240' }, modo: 'personalizado', seleccion: ['convento', 'kinich'], generado: true }
@@ -49,7 +49,7 @@ function montar(opciones: { sesion?: boolean; cargando?: boolean; previa?: boole
       { element: <RutaProtegida />, children: [{ path: '/perfil', element: <PerfilPage /> }] },
       { path: '/login', element: <h1>Acceso de prueba</h1> },
       { path: '/', element: <h1>Inicio de prueba</h1> },
-      { path: '/recorridos', element: <ElegirItinerarioPage /> },
+      { path: '/recorridos', element: <EntradaItinerariosPage /> },
       { element: <RutaProtegida />, children: [{ path: '/mi-viaje', element: <MiViajePage /> }] },
       { path: '/rutas/:destino/itinerario', element: <h1>Plan abierto</h1> },
     ],
@@ -119,10 +119,14 @@ describe('Perfil de referencia CU-01 / CU-09 / RNF06', () => {
     expect(router.state.location.state).toEqual({ desde: '/mi-viaje' })
   })
 
-  it('marca Rutas como sección activa al elegir planificador desde recorridos', () => {
+  it('reutiliza Mi viaje como entrada a los guardados y la creación', async () => {
     montar({ ruta: '/recorridos' })
-    expect(screen.getByRole('heading', { name: 'Elige tu destino' })).toBeInTheDocument()
-    expect(within(screen.getByRole('navigation', { name: 'Navegación principal' })).getByRole('link', { name: 'Rutas' })).toHaveAttribute('aria-current', 'page')
+    expect(await screen.findByRole('heading', { name: 'Mis itinerarios guardados' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Crear un itinerario' })).toBeInTheDocument()
+    const nav = within(screen.getByRole('navigation', { name: 'Navegación principal' }))
+    expect(nav.getByRole('link', { name: 'Mi viaje' })).toHaveAttribute('aria-current', 'page')
+    expect(nav.getByRole('link', { name: 'Perfil' })).toBeInTheDocument()
+    expect(nav.getByRole('link', { name: 'Rutas' })).not.toHaveAttribute('aria-current', 'page')
   })
 
   it('lee solo los guardados de la cuenta actual y no reescribe ninguna cuenta', async () => {

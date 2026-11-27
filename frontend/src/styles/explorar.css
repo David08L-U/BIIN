@@ -25,6 +25,25 @@
 .explorar-volver { min-height: 44px; margin-bottom: 12px; border: 0; background: transparent; color: var(--color-primario); font: inherit; font-weight: 700; }
 .explorar-acciones { display: grid; gap: 10px; }
 .explorar-acciones > a:not(.iz-plan-primario) { display: grid; place-items: center; min-height: 44px; border: 1px solid var(--color-borde-tarjeta); border-radius: 8px; text-align: center; }
+.selector-itinerarios { padding-bottom: 40px; }
+.selector-itinerarios-volver { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: 10px; color: var(--color-texto); font-weight: 700; text-decoration: none; }
+.itinerarios-destino { display: grid; grid-template-columns: 44px minmax(0, 1fr) 24px; align-items: center; gap: 12px; min-height: 72px; padding: 10px 12px; color: var(--color-texto); text-decoration: none; }
+.itinerarios-destino-icono { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--color-borde-tarjeta); border-radius: 8px; background: var(--color-superficie-suave); color: var(--color-primario); }
+.itinerarios-destino-icono .biin-icon { font-size: 24px; }
+.itinerarios-destino-contenido { display: grid; gap: 2px; min-width: 0; }
+.itinerarios-destino-contenido strong { font-size: 16px; line-height: 22px; }
+.itinerarios-destino-contenido > span { color: var(--color-texto-suave); font-size: 12px; line-height: 16px; }
+.itinerarios-destino-flecha { justify-self: end; color: var(--color-acento-texto); font-size: 22px; }
+.itinerarios-modos { align-items: stretch; }
+.itinerarios-modos .explorar-card { min-width: 0; grid-template-rows: auto auto 1fr auto; gap: 10px; }
+.itinerarios-modos .explorar-card p { color: var(--color-texto-suave); }
+.itinerarios-modo-icono { color: var(--color-acento-texto); font-size: 24px; }
+.itinerarios-modos .explorar-acciones,
+.itinerarios-modos > .explorar-card > a { display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 12px; border: 1px solid var(--color-borde-tarjeta); border-radius: 8px; color: var(--color-texto); font-weight: 700; text-align: center; text-decoration: none; }
+.itinerarios-modos > .explorar-card > a.iz-plan-primario { border-color: var(--color-accion); color: var(--color-superficie); }
+.entrada-itinerarios-acceso { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; }
+.entrada-itinerarios-acceso > a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px 12px; border-radius: 8px; background: var(--color-superficie-suave); color: var(--color-texto); font-weight: 700; text-decoration: none; }
+.entrada-itinerarios-acceso > a:hover { background: var(--color-superficie-acentuada); }
 @media (min-width: 560px) { .explorar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .explorar-candidato { display: grid; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--borde-tarjeta); }
 .explorar-candidato label { display: flex; align-items: center; justify-content: space-between; gap: 12px; }

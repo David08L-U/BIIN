@@ -3,6 +3,8 @@ import { createMemoryRouter, Outlet, RouterProvider } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
 import ExplorarPage, { ExplorarDetallePage } from '../src/features/explorar/pages/ExplorarPage'
 import ElegirItinerarioPage from '../src/features/explorar/pages/ElegirItinerarioPage'
+import ElegirModoItinerarioPage from '../src/features/explorar/pages/ElegirModoItinerarioPage'
+import EntradaItinerariosPage from '../src/features/mi-viaje/pages/EntradaItinerariosPage'
 import { buscarLugares, lugaresExplorar } from '../src/features/explorar/data/lugaresExplorar'
 import InicioPage from '../src/features/transporte/pages/InicioPage'
 
@@ -115,18 +117,54 @@ describe('Explorar', () => {
 })
 
 describe('Acceso al planificador desde Inicio', () => {
-  it('Itinerario abre selector con recomendado y personalizado por destino', () => {
+  it('Inicio abre Mi viaje y permite crear para visitante sin mostrar guardados ajenos', () => {
     const router = createMemoryRouter([
       { element: <Outlet context={{ abrirMenu: () => {} }} />, children: [
         { path: '/', element: <InicioPage /> },
-        { path: '/recorridos', element: <ElegirItinerarioPage /> },
-        { path: '/rutas/:destino/:modo', element: <p>Planificador</p> },
+        { path: '/recorridos', element: <EntradaItinerariosPage /> },
+        { path: '/recorridos/crear', element: <ElegirItinerarioPage /> },
+        { path: '/recorridos/crear/:destino', element: <ElegirModoItinerarioPage /> },
+        { path: '/login', element: <h1>Iniciar sesión</h1> },
+        { path: '/rutas/:destino/:pantalla', element: <p>Planificador</p> },
       ] },
     ], { initialEntries: ['/'] })
     render(<RouterProvider router={router} />)
     fireEvent.click(screen.getByRole('link', { name: /Itinerario/ }))
+    expect(router.state.location.pathname).toBe('/recorridos')
+    expect(screen.getByRole('heading', { name: 'Mis itinerarios guardados' })).toBeInTheDocument()
+    expect(screen.getByText(/Inicia sesión para consultar los itinerarios de tu cuenta/)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('link', { name: 'Crear itinerario' }))
     expect(screen.getByRole('heading', { name: 'Elige tu destino' })).toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: 'Itinerario recomendado' })[0]).toHaveAttribute('href', expect.stringContaining('/rutas/izamal/itinerario'))
-    expect(screen.getAllByRole('link', { name: 'Personalizar itinerario', exact: false })).toHaveLength(5)
+    expect(screen.getAllByRole('link').filter(link => /recorridos\/crear\//.test(link.getAttribute('href') ?? ''))).toHaveLength(5)
+    expect(screen.getByText('temple_buddhist')).toBeInTheDocument()
+    expect(screen.getByText('water_drop')).toBeInTheDocument()
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+  })
+
+  it('selecciona destino, modalidad y regresa al paso anterior conservando el planificador', () => {
+    const router = createMemoryRouter([
+      { path: '/recorridos', element: <EntradaItinerariosPage /> },
+      { path: '/recorridos/crear', element: <ElegirItinerarioPage /> },
+      { path: '/recorridos/crear/:destino', element: <ElegirModoItinerarioPage /> },
+      { path: '/rutas/:destino/:pantalla', element: <p>Planificador</p> },
+    ], { initialEntries: ['/recorridos/crear'] })
+    render(<RouterProvider router={router} />)
+    fireEvent.click(screen.getByRole('link', { name: /Izamal/ }))
+    expect(screen.getByRole('heading', { name: '¿Cómo quieres planear tu visita?' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Usar recomendado' })).toHaveAttribute('href', expect.stringContaining('/rutas/izamal/itinerario'))
+    fireEvent.click(screen.getByRole('link', { name: 'Personalizar itinerario' }))
+    expect(router.state.location.pathname).toBe('/rutas/izamal/personalizar')
+    expect(router.state.location.state).toEqual({ volverPlan: '/recorridos/crear/izamal' })
+  })
+
+  it('conserva Mi viaje como destino de retorno al solicitar acceso a los guardados', () => {
+    const router = createMemoryRouter([
+      { path: '/recorridos', element: <EntradaItinerariosPage /> },
+      { path: '/login', element: <h1>Iniciar sesión</h1> },
+    ], { initialEntries: ['/recorridos'] })
+    render(<RouterProvider router={router} />)
+    fireEvent.click(screen.getByRole('link', { name: 'Iniciar sesión' }))
+    expect(router.state.location.pathname).toBe('/login')
+    expect(router.state.location.state).toEqual({ desde: '/recorridos' })
   })
 })

@@ -204,6 +204,28 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     expect(screen.getByRole('heading', { name: 'Paso a paso a pie' })).toBeInTheDocument()
   })
 
+  it('continúa por separado un borrador abierto al entrar a Mi viaje', async () => {
+    sesion.usuario = { idUsuario: 7, nombre: 'Ana', correo: 'ana@biin.test', roles: ['viajero'] }
+    const url = `/rutas/izamal/personalizar?${configuracion}&lugares=kinich`
+    const { router } = montar(url)
+    await userEvent.click(screen.getByRole('link', { name: 'Mi viaje' }))
+    const continuar = await screen.findByRole('link', { name: 'Continuar borrador' })
+    expect(continuar).toHaveAttribute('href', url)
+    expect(screen.getByRole('heading', { name: 'Mis itinerarios guardados' })).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/recorridos')
+    expect(screen.getByRole('navigation', { name: 'Navegación principal' }).querySelector('[aria-current="page"]')).toHaveTextContent('Mi viaje')
+  })
+
+  it('regresa desde el planificador al paso de modalidad y conserva el borrador', async () => {
+    const { router } = montar('/recorridos/crear/izamal')
+    await userEvent.click(screen.getByRole('link', { name: 'Personalizar itinerario' }))
+    expect(router.state.location.pathname).toBe('/rutas/izamal/personalizar')
+    expect(screen.getByRole('button', { name: 'Reiniciar selección' })).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('link', { name: 'Volver a elegir modalidad' }))
+    expect(router.state.location.pathname).toBe('/recorridos/crear/izamal')
+    expect(screen.getByRole('link', { name: 'Personalizar itinerario' })).toBeInTheDocument()
+  })
+
   it('muestra el fallo de guardado sin mensaje de éxito', async () => {
     sesion.usuario = { idUsuario: 7, nombre: 'Ana', correo: 'ana@biin.test', roles: ['viajero'] }
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ detail: 'No se pudo guardar' }), { status: 500 })))
@@ -223,12 +245,8 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(/bloqueado o dañado/)
     expect(screen.queryByRole('link', { name: 'Abrir itinerario de Izamal' })).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Crear un itinerario' })).toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: /^Crear itinerario para / })).toHaveLength(5)
-    expect(screen.getAllByRole('link', { name: /^Crear itinerario para / })[0]).toHaveAttribute('href', '/rutas/izamal')
+    expect(screen.getByRole('link', { name: 'Crear itinerario' })).toHaveAttribute('href', '/recorridos/crear')
     expect(screen.queryByText('Foto pendiente')).not.toBeInTheDocument()
-    for (const enlace of screen.getAllByRole('link', { name: /^Crear itinerario para / })) {
-      expect(enlace.closest('li')?.querySelector('img')).toBeNull()
-    }
   })
 
   it('edita un guardado sin alterarlo hasta confirmar y conserva el original al cancelar', async () => {

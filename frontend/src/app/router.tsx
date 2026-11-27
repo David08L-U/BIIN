@@ -32,6 +32,8 @@ import PerfilPage from '../features/perfil/pages/PerfilPage'
 import VistaPreviaPerfilPage from '../features/perfil/pages/VistaPreviaPerfilPage'
 import ExplorarPage, { ExplorarDetallePage } from '../features/explorar/pages/ExplorarPage'
 import ElegirItinerarioPage from '../features/explorar/pages/ElegirItinerarioPage'
+import EntradaItinerariosPage from '../features/mi-viaje/pages/EntradaItinerariosPage'
+import ElegirModoItinerarioPage from '../features/explorar/pages/ElegirModoItinerarioPage'
 
 export const router = createBrowserRouter([
   {
@@ -105,7 +107,15 @@ export const router = createBrowserRouter([
       { path: 'explorar', element: <ExplorarPage /> },
       {
         path: 'recorridos',
+        element: <EntradaItinerariosPage />,
+      },
+      {
+        path: 'recorridos/crear',
         element: <ElegirItinerarioPage />,
+      },
+      {
+        path: 'recorridos/crear/:destino',
+        element: <ElegirModoItinerarioPage />,
       },
       {
         path: 'asistente',
