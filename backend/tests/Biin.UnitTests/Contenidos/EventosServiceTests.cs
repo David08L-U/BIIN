@@ -82,4 +82,37 @@ public class EventosServiceTests
     {
         await Assert.ThrowsAsync<NoEncontradoException>(() => _servicio.ObtenerAsync(_datos.CocinaHomun.IdRecurso));
     }
+
+    [Fact]
+    public async Task Listar_con_gps_filtra_por_radio_y_ordena_por_distancia()
+    {
+        // Desde Homún plaza: Vaquería está a ~0 km y Concierto en Mérida a ~43 km
+        var enHomun = await _servicio.ListarAsync(new FiltroEventosRequest(
+            Lat: 20.7392m,
+            Lng: -89.2855m,
+            RadioKm: 10));
+
+        var unico = Assert.Single(enHomun.Items);
+        Assert.Equal("Vaquería en la plaza", unico.Titulo);
+        Assert.NotNull(unico.DistanciaKm);
+        Assert.InRange(unico.DistanciaKm!.Value, 0, 0.1);
+
+        var amplio = await _servicio.ListarAsync(new FiltroEventosRequest(
+            Lat: 20.7392m,
+            Lng: -89.2855m,
+            RadioKm: 80));
+
+        // Sin GPS el concierto en Mérida iba primero por fecha; con GPS la vaquería en Homún va primero por cercanía
+        Assert.Equal(["Vaquería en la plaza", "Concierto en Mérida"], amplio.Items.Select(e => e.Titulo));
+        Assert.True(amplio.Items[0].DistanciaKm < amplio.Items[1].DistanciaKm);
+    }
+
+    [Fact]
+    public async Task Listar_con_parametros_gps_incompletos_lanza_ReglaNegocio()
+    {
+        await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.ListarAsync(new FiltroEventosRequest(Lng: -89.2855m)));
+        await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.ListarAsync(new FiltroEventosRequest(RadioKm: 15)));
+    }
 }

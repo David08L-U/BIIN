@@ -167,9 +167,9 @@ BIIN/
 | `GET/PUT/DELETE /api/usuarios/perfil`, `GET /api/usuarios/perfil/resumen` | Sesión | CU-01: consulta/edición de perfil propio, conteos reales de itinerarios/favoritos y desactivación lógica |
 | `GET /api/catalogos/{categorias,municipios,localidades}` | Público | Filtros; localidades buscan sin acentos |
 | `GET /api/ubicaciones/cercanas` | Público | RF02 / RNF05: localidades y paradas de abordaje cercanas ordenadas por distancia (GPS opcional) |
-| `GET /api/negocios`, `/api/negocios/{id}` | Público | RF05: localidad, municipio, categoría, presupuesto, texto; horarios y «abierto ahora» |
-| `GET /api/eventos`, `/api/eventos/{id}` | Público | RF06: próximos por defecto, rango de días en hora de Yucatán, estado (incluye cancelados) |
-| `GET /api/lugares`, `/api/lugares/{id}` | Público | RF07: categoría, costo máximo, condiciones de acceso |
+| `GET /api/negocios`, `/api/negocios/{id}` | Público | RF05 / RNF05: localidad, municipio, categoría, presupuesto, texto y proximidad GPS opcional (`lat`, `lng`, `radioKm`); horarios y «abierto ahora» |
+| `GET /api/eventos`, `/api/eventos/{id}` | Público | RF06 / RNF05: próximos por defecto, rango de días en hora de Yucatán, estado (incluye cancelados) y proximidad GPS opcional |
+| `GET /api/lugares`, `/api/lugares/{id}` | Público | RF07 / RNF05: categoría, costo máximo, condiciones de acceso y proximidad GPS opcional |
 | `GET /api/explorar` | Público | CU-14 / RNF05: todo lo publicado de una categoría (sin rutas ni eventos terminados), con proximidad GPS opcional (`lat`, `lng`, `radioKm`) |
 | `GET /api/recorridos`, `GET /api/recorridos/{id}` | Público | CU-13: recorridos sugeridos publicados con etapas ordenadas, coordenadas para mapa y avisos de disponibilidad |
 | `GET /api/rutas`, `GET /api/rutas/cercanas` | Público | RF02 / CU-02 / RNF05: búsqueda origen→destino respetando orden de paradas y rutas cercanas por GPS |

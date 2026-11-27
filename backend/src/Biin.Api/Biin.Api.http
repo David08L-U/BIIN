@@ -171,6 +171,9 @@ GET {{api}}/api/ubicaciones/cercanas?lat=20.9674&lng=-89.6237&radioKm=15&limite=
 ### Negocios gastronómicos con filtros (CU-05, RF05)
 GET {{api}}/api/negocios?busqueda=cocina&precioMaximo=150&pagina=1&tamano=20
 
+### Negocios gastronómicos cercanos por GPS opcional (CU-05, RF05, RNF05)
+GET {{api}}/api/negocios?lat=20.7392&lng=-89.2855&radioKm=15
+
 ### Ficha de un negocio (horarios, fotos, abierto ahora)
 GET {{api}}/api/negocios/1
 
@@ -180,8 +183,14 @@ GET {{api}}/api/eventos
 ### Eventos de un rango de días en hora de Yucatán, solo cancelados
 GET {{api}}/api/eventos?desde=2026-12-01&hasta=2026-12-31&estado=cancelado
 
+### Eventos cercanos por GPS opcional (CU-06, RF06, RNF05)
+GET {{api}}/api/eventos?lat=20.7392&lng=-89.2855&radioKm=20
+
 ### Lugares de interés gratuitos (CU-07, RF07)
 GET {{api}}/api/lugares?costoMaximo=0
+
+### Lugares de interés cercanos por GPS opcional (CU-07, RF07, RNF05)
+GET {{api}}/api/lugares?lat=20.7392&lng=-89.2855&radioKm=10
 
 ### Explorar por interés: todo lo publicado de una categoría (CU-14)
 GET {{api}}/api/explorar?idCategoria=9

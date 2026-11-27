@@ -12,7 +12,7 @@ namespace Biin.Api.Controllers;
 [AllowAnonymous]
 public class NegociosController(NegociosService negocios) : ControllerBase
 {
-    /// <summary>Lista negocios publicados filtrando por localidad, municipio, tipo de comida, presupuesto o texto.</summary>
+    /// <summary>Lista negocios publicados filtrando por localidad, municipio, tipo de comida, presupuesto, texto o cercanía GPS opcional.</summary>
     [HttpGet]
     [ProducesResponseType<PaginaResultado<NegocioResumenDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

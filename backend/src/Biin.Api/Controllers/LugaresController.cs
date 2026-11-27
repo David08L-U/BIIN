@@ -12,7 +12,7 @@ namespace Biin.Api.Controllers;
 [AllowAnonymous]
 public class LugaresController(LugaresService lugares) : ControllerBase
 {
-    /// <summary>Lista lugares publicados por localidad, municipio, categoría, costo máximo o texto.</summary>
+    /// <summary>Lista lugares publicados por localidad, municipio, categoría, costo máximo, texto o cercanía GPS opcional.</summary>
     [HttpGet]
     [ProducesResponseType<PaginaResultado<LugarResumenDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

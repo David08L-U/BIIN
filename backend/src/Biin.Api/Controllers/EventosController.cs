@@ -14,7 +14,7 @@ public class EventosController(EventosService eventos) : ControllerBase
 {
     /// <summary>
     /// Lista eventos publicados. Fechas <c>desde</c>/<c>hasta</c> en formato yyyy-MM-dd (hora de Yucatán);
-    /// <c>estado</c> acepta programado, cancelado o finalizado.
+    /// <c>estado</c> acepta programado, cancelado o finalizado; <c>lat</c>/<c>lng</c>/<c>radioKm</c> filtran y ordenan por cercanía GPS opcional.
     /// </summary>
     [HttpGet]
     [ProducesResponseType<PaginaResultado<EventoResumenDto>>(StatusCodes.Status200OK)]

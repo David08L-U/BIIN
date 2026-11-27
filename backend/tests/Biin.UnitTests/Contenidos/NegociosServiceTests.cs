@@ -107,4 +107,39 @@ public class NegociosServiceTests
         // Un lugar publicado no es un negocio
         await Assert.ThrowsAsync<NoEncontradoException>(() => _servicio.ObtenerAsync(_datos.CenotePublicado.IdRecurso));
     }
+
+    [Fact]
+    public async Task Listar_con_gps_filtra_por_radio_y_ordena_por_distancia()
+    {
+        // Desde Mérida centro: la marisquería está a ~0 km y la cocina de Homún a ~43 km
+        var cercanos = await _servicio.ListarAsync(new FiltroNegociosRequest(
+            Lat: 20.9674m,
+            Lng: -89.6237m,
+            RadioKm: 10));
+
+        var soloMerida = Assert.Single(cercanos.Items);
+        Assert.Equal("Marisquería del Centro", soloMerida.Titulo);
+        Assert.NotNull(soloMerida.DistanciaKm);
+        Assert.InRange(soloMerida.DistanciaKm!.Value, 0, 0.1);
+
+        var amplio = await _servicio.ListarAsync(new FiltroNegociosRequest(
+            Lat: 20.9674m,
+            Lng: -89.6237m,
+            RadioKm: 80));
+
+        Assert.Equal(["Marisquería del Centro", "Cocina económica Doña Mary"], amplio.Items.Select(n => n.Titulo));
+        Assert.True(amplio.Items[0].DistanciaKm < amplio.Items[1].DistanciaKm);
+
+        var sinGps = await _servicio.ListarAsync(new FiltroNegociosRequest());
+        Assert.All(sinGps.Items, n => Assert.Null(n.DistanciaKm));
+    }
+
+    [Fact]
+    public async Task Listar_con_parametros_gps_incompletos_lanza_ReglaNegocio()
+    {
+        await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.ListarAsync(new FiltroNegociosRequest(Lat: 20.96m)));
+        await Assert.ThrowsAsync<ReglaNegocioException>(() =>
+            _servicio.ListarAsync(new FiltroNegociosRequest(RadioKm: 10)));
+    }
 }
