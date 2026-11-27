@@ -7,7 +7,7 @@ import { useCatalogoRutasApi } from '../hooks/useCatalogoRutasApi'
 import { fechaHora, moneda } from '../../../utils/formatoDatos'
 
 export default function InicioPage() {
-  const { abrirMenu } = useOutletContext<{
+  const contexto = useOutletContext<{
     abrirMenu: () => void
   }>()
 
@@ -45,7 +45,7 @@ export default function InicioPage() {
           <button
             className="biin-icon-button"
             type="button"
-            onClick={abrirMenu}
+            onClick={contexto?.abrirMenu}
             aria-label="Abrir menú"
           >
             <span aria-hidden="true" className="biin-icon">
