@@ -80,7 +80,13 @@ export function adaptarPlanificador<D extends BorradorGuardable, P>(datos: Datos
         configuracion: (actualizar: (parametros: URLSearchParams) => void): ReactNode =>
           createElement(adaptador.Configuracion, {
             borrador,
-            onChange: nuevo => actualizar(adaptador.serializar({ ...nuevo, generado: false })),
+            onChange: nuevo => {
+              const pasaAUnaJornada = borrador.configuracion.estancia === 'fin-de-semana' && nuevo.configuracion.estancia !== 'fin-de-semana'
+              const vigente = pasaAUnaJornada
+                ? adaptador.cambiarSeleccion(nuevo, adaptador.seleccion(nuevo).map(visita => ({ ...visita, dia: 1 })))
+                : nuevo
+              actualizar(adaptador.serializar({ ...vigente, generado: false }))
+            },
           }),
         urlDetalle: adaptador.url('detalle', borrador),
         recomendado: adaptador.url('itinerario', seleccionarModo('recomendado')),

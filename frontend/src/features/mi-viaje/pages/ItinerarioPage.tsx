@@ -103,10 +103,10 @@ function Itinerario({ destino }: { destino: DestinoId }) {
       <div className="iz-plan-estancia"><span><Icono nombre={datos.icono} tamano={16} />{datos.tituloEstancia ? `${datos.tituloEstancia} · ${duracionEstimada}` : estancia}</span><span className="iz-plan-insignia">Plan estimado</span></div>
       {datos.tituloEstancia && <p className="iz-plan-nota">{estancia}</p>}
       <ModosPlan modo={borrador.modo} recomendado={sesion.recomendado} personalizado={plan?.editar ?? sesion.personalizar} />
-      <form className="iz-plan-formulario" noValidate onSubmit={sesion.generar}>
+      {!historico && <form className="iz-plan-formulario" noValidate onSubmit={sesion.generar}>
         {sesion.configuracion(actualizar)}
         <button type="submit" className="iz-plan-primario">Generar itinerario {borrador.modo === 'personalizado' ? 'personalizado' : 'recomendado'}<Icono nombre="arrow_forward" tamano={18} /></button>
-      </form>
+      </form>}
       <p className="iz-plan-nota">{datos.nota}</p>
       {historico && <p className="iz-plan-nota" role="status">Vista de un itinerario con fecha pasada. Puedes consultarlo y descargarlo.</p>}
       {errores.length > 0 && <div className="iz-plan-error" role="alert">{errores.map(error => <p key={error}>{error}</p>)}</div>}

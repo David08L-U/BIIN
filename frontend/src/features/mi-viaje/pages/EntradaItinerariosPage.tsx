@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router'
 import { useAuth } from '../../auth/useAuth'
 import MiViajePage from './MiViajePage'
-import '../../../styles/itinerario-izamal.css'
+import '../../../styles/planificador.css'
 
 const rutaBorrador = /^\/rutas\/(?:izamal|valladolid|tekit|homun|ticul)\/(?:itinerario|personalizar)(?:\?.*)?$/
 

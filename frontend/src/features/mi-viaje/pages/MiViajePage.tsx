@@ -20,7 +20,7 @@ import type { BorradorTicul } from '../plan/itinerarioTicul'
 import { calcularPlanTicul } from '../plan/itinerarioTicul'
 import { itinerariosApi, claveBorradorItinerario, type BorradorGuardable, type ItinerarioAnteriorApiDto } from '../api/itinerariosApi'
 import { eliminarItinerarioLocal, leerItinerariosLocales, type ItinerarioGuardado } from '../storage/itinerariosLocales'
-import '../../../styles/itinerario-izamal.css'
+import '../../../styles/planificador.css'
 
 function nombreDestino(item: ItinerarioGuardado) {
   return item.destino === 'valladolid' ? 'Valladolid' : item.destino === 'tekit' ? 'Tekit' : item.destino === 'homun' ? 'Homún' : item.destino === 'ticul' ? 'Ticul' : 'Izamal'

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link, useLocation } from 'react-router'
 import Icono from './IconoItinerario'
-import '../../../styles/itinerario-izamal.css'
+import '../../../styles/planificador.css'
 
 export default function CabeceraPlan({ id, titulo, subtitulo, volver, acciones, personalizar = false }: {
   id: string

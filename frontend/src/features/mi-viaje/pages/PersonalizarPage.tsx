@@ -70,8 +70,13 @@ function Personalizar({ destino }: { destino: DestinoId }) {
                 <input type="checkbox" aria-label={lugar.nombre} checked={elegida} onChange={() => elegida ? quitar(lugar.id) : actualizar(cambiarSeleccion([...seleccion, { lugarId: lugar.id, dia: 1 }]))} />
                 <span className="iz-plan-lugar-textos"><strong className="iz-plan-lugar-titulo">{lugar.nombre}</strong><span className="iz-plan-insignia">{lugar.icono && <Icono nombre={lugar.icono} tamano={13} />}{lugar.etiqueta}</span></span>
               </label>
-              <p>{lugar.descripcion}</p>
-              <p className="iz-plan-nota">Visita: {duracionPlan(lugar.visitaMinutos)} · {lugar.trasladoTexto ?? `Traslado previo: ${duracionPlan(lugar.trasladoMinutos)} estimados`}</p>
+              <div className="iz-plan-lugar-detalle">
+                <p>{lugar.descripcion}</p>
+                <div className="iz-plan-metadatos">
+                  <span><Icono nombre="timer" tamano={14} />Visita: {duracionPlan(lugar.visitaMinutos)}</span>
+                  <span><Icono nombre={lugar.trasladoIcono ?? 'directions_walk'} tamano={14} />{lugar.trasladoTexto ?? `Traslado previo: ${duracionPlan(lugar.trasladoMinutos)} estimados`}</span>
+                </div>
+              </div>
             </article>
           })}
         </section>
