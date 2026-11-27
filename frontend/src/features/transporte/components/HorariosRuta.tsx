@@ -1,7 +1,6 @@
 import type { HorarioRuta } from '../types'
-import { hoyYucatan } from '../../../utils/formatoDatos'
+import { diasSemana, hoyYucatan } from '../../../utils/formatoDatos'
 
-export const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
 export default function HorariosRuta({ horarios }: { horarios: HorarioRuta[] }) {
   const hoy = hoyYucatan()
   const vigentes = horarios.filter(h => h.vigenteDesde <= hoy && (!h.vigenteHasta || h.vigenteHasta >= hoy))

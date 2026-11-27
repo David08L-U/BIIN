@@ -1,5 +1,6 @@
 /** El transporte y los itinerarios se muestran en hora de Yucatán. RF03 / RF09. */
 const zona = 'America/Merida'
+export const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
 export const moneda = (valor: number | null | undefined) => valor == null ? 'Sin confirmar' :
   new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 2 }).format(valor)
 export function fechaHora(valor: string | null | undefined): string {
