@@ -407,6 +407,8 @@ Todos leen las conexiones de `appsettings.Development.json`; ninguna contraseña
 
 Reglas para quien agregue datos demo: título con `[DEMO]`, códigos con `DEMO-`, autor `demo@biin.test` (cuenta inactiva sin acceso), y que `999_borrar_demo.sql` los pueda quitar. Las salidas se fijan al día de la carga: si ya pasaron, borrar y volver a cargar.
 
+`database/seed/demo/002_rutas_tarifas_referencia.sql` complementa la demo con rutas ida/regreso y tarifas aproximadas de referencia (`DEMO-MER-IZA`, `DEMO-MER-VAL`, `DEMO-MER-TEK`, `DEMO-MER-TIC`) para poder probar y ajustar montos y vigencias desde `/api/admin/rutas/{idRuta}/tarifas` antes de la validación final con operadores.
+
 ## 5. Diagramas de clases (Unidad 2)
 
 Tres áreas del dominio (ver FigJam → Zona 2 → Versión 2 → Diagramas de clases):
