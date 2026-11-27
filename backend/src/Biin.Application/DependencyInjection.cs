@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped<TarifasService>();
         services.AddScoped<UbicacionesService>();
         services.AddScoped<MapaRutaService>();
+        services.AddScoped<RutasService>();
         services.AddScoped<ItinerariosService>();
         services.AddScoped<AdminContenidosService>();
         services.AddScoped<AdminTarifasService>();
