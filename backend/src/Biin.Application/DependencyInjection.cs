@@ -28,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<ItinerariosService>();
         services.AddScoped<AdminContenidosService>();
         services.AddScoped<AdminTarifasService>();
+        services.AddScoped<AdminRecorridosService>();
         services.AddScoped<AdminGeografiaService>();
         services.AddScoped<BitacoraConsultaService>();
         return services;

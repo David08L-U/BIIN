@@ -133,6 +133,10 @@ public sealed class FakeAppDbContext : IAppDbContext
         foreach (var t in tarifas.Where(t => t.IdTarifa == 0))
             t.IdTarifa = tarifas.Max(x => x.IdTarifa) + 1;
 
+        var recorridos = Set<RecorridoSugerido>().Items;
+        foreach (var rec in recorridos.Where(r => r.IdRecorrido == 0))
+            rec.IdRecorrido = recorridos.Max(x => x.IdRecorrido) + 1;
+
         foreach (var b in BitacoraAdminSet.Items)
         {
             if (b.IdBitacora == 0)
