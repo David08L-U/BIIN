@@ -343,3 +343,39 @@ Content-Type: application/json
 {
   "correoDestino": "tu.correo@ejemplo.com"
 }
+
+### Admin: listar tarifas de una ruta (histórico + vigentes) (RF12, CU-12)
+GET {{api}}/api/admin/rutas/1/tarifas
+Authorization: Bearer PEGAR_TOKEN_ADMIN
+
+### Admin: registrar nueva tarifa para un tramo (CU-12)
+POST {{api}}/api/admin/rutas/1/tarifas
+Authorization: Bearer PEGAR_TOKEN_ADMIN
+Content-Type: application/json
+
+{
+  "ordenOrigen": 1,
+  "ordenDestino": 5,
+  "monto": 48.00,
+  "vigenteDesde": "2027-01-01"
+}
+
+### Admin: actualizar monto o vigencia de una tarifa (CU-12)
+PUT {{api}}/api/admin/rutas/1/tarifas/1
+Authorization: Bearer PEGAR_TOKEN_ADMIN
+Content-Type: application/json
+
+{
+  "monto": 50.00,
+  "vigenteDesde": "2026-01-01",
+  "vigenteHasta": "2026-12-31"
+}
+
+### Admin: cerrar vigencia de una tarifa sin borrar histórico (CU-12)
+PATCH {{api}}/api/admin/rutas/1/tarifas/1/cerrar-vigencia
+Authorization: Bearer PEGAR_TOKEN_ADMIN
+Content-Type: application/json
+
+{
+  "vigenteHasta": "2026-12-31"
+}
