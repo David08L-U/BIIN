@@ -189,6 +189,12 @@ GET {{api}}/api/explorar?idCategoria=9
 ### Explorar ordenado por cercanía GPS opcional (CU-14, RNF05)
 GET {{api}}/api/explorar?lat=20.7392&lng=-89.2855&radioKm=10
 
+### Recorridos sugeridos publicados (CU-13, M2)
+GET {{api}}/api/recorridos?busqueda=homun
+
+### Detalle de un recorrido sugerido con sus etapas ordenadas y coordenadas (CU-13)
+GET {{api}}/api/recorridos/1
+
 ### ───────── Transporte intermunicipal y rutas de combis (sin sesión, RF02, RF03, CU-02, CU-03) ─────────
 
 ### Buscar rutas por origen y destino sin acentos (respeta orden de paradas)
@@ -424,3 +430,26 @@ Content-Type: application/json
 {
   "vigenteHasta": "2026-12-31"
 }
+
+### Admin: listar recorridos sugeridos (incluye pendientes y archivados) (CU-12, CU-13)
+GET {{api}}/api/admin/recorridos
+Authorization: Bearer PEGAR_TOKEN_ADMIN
+
+### Admin: crear recorrido sugerido con etapas iniciales (CU-12, CU-13)
+POST {{api}}/api/admin/recorridos
+Authorization: Bearer PEGAR_TOKEN_ADMIN
+Content-Type: application/json
+
+{
+  "titulo": "Recorrido cultural en Izamal",
+  "descripcion": "Plan de medio día saliendo desde Mérida.",
+  "idLocalidadBase": 5,
+  "etapas": [
+    { "idRecurso": 1, "duracionSugeridaMin": 75 },
+    { "idRecurso": 3, "duracionSugeridaMin": 90 }
+  ]
+}
+
+### Admin: publicar recorrido sugerido (requiere al menos 2 etapas publicadas)
+POST {{api}}/api/admin/recorridos/1/publicar
+Authorization: Bearer PEGAR_TOKEN_ADMIN

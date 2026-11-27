@@ -171,6 +171,7 @@ BIIN/
 | `GET /api/eventos`, `/api/eventos/{id}` | Público | RF06: próximos por defecto, rango de días en hora de Yucatán, estado (incluye cancelados) |
 | `GET /api/lugares`, `/api/lugares/{id}` | Público | RF07: categoría, costo máximo, condiciones de acceso |
 | `GET /api/explorar` | Público | CU-14 / RNF05: todo lo publicado de una categoría (sin rutas ni eventos terminados), con proximidad GPS opcional (`lat`, `lng`, `radioKm`) |
+| `GET /api/recorridos`, `GET /api/recorridos/{id}` | Público | CU-13: recorridos sugeridos publicados con etapas ordenadas, coordenadas para mapa y avisos de disponibilidad |
 | `GET /api/rutas`, `GET /api/rutas/cercanas` | Público | RF02 / CU-02 / RNF05: búsqueda origen→destino respetando orden de paradas y rutas cercanas por GPS |
 | `GET /api/rutas/{idRuta}`, `GET /api/rutas/{idRuta}/salidas` | Público | RF03 / CU-03 / RNF07: detalle completo (paradas, trazo, horarios, tarifas, opciones de regreso) y salidas con estado de cupo |
 | `GET /api/rutas/{idRuta}/tarifas` | Público | RF03 / RNF07: tarifas aproximadas vigentes por ruta o tramo (fecha local Yucatán) |
@@ -178,6 +179,7 @@ BIIN/
 | `/api/itinerarios[/{id}[/actividades…]]` | Viajero | RF09: CRUD, actividades, reordenar, traslados estimados y advertencias |
 | `/api/admin/contenidos…` | Administrador | RF12: crear/editar negocios, lugares y eventos, publicar, archivar, cancelar evento, horarios, fotos |
 | `/api/admin/rutas/{idRuta}/tarifas…` | Administrador | RF12 / CU-12: listar histórico, crear, editar y cerrar vigencia de tarifas sin solapamiento + bitácora |
+| `/api/admin/recorridos…` | Administrador | RF12 / CU-12 / CU-13: crear/editar recorridos sugeridos, reemplazar etapas, publicar y archivar + bitácora |
 | `/api/admin/{localidades,ubicaciones,bitacora}` | Administrador | Alta y edición (`PUT`) de geografía (con validación en Yucatán) y bitácora 17.1.5 |
 
 **Confirmación de correo al registrarse (solo viajeros, RF01, RNF04):**
