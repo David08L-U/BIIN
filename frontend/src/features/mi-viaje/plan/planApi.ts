@@ -10,6 +10,7 @@ export function validarPlanApi(config: ConfiguracionPlanApi): string[] {
   if (config.nombre.trim().length < 2 || config.nombre.trim().length > 120) errores.push('El nombre debe tener entre 2 y 120 caracteres.')
   if (!fechaValida(config.inicio) || !fechaValida(config.fin)) errores.push('Indica fechas válidas.')
   else if (config.fin < config.inicio) errores.push('La fecha final no puede ser anterior al inicio.')
+  else if ((Date.parse(`${config.fin}T12:00:00Z`) - Date.parse(`${config.inicio}T12:00:00Z`)) / 86400000 >= 60) errores.push('El itinerario puede durar como máximo 60 días.')
   if (config.presupuesto !== '' && (!/^\d+(\.\d{1,2})?$/.test(config.presupuesto) || Number(config.presupuesto) > 9999999)) errores.push('El presupuesto debe ser un monto válido entre 0 y 9,999,999 MXN.')
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(config.horaInicio)) errores.push('Indica una hora válida.')
   return errores

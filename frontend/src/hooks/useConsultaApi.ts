@@ -11,7 +11,7 @@ export function useConsultaApi<T>(clave: string, consultar: (signal: AbortSignal
   useEffect(() => {
     const controlador = new AbortController()
     // La clave incluye todos los parámetros de la consulta; la función puede cambiar de identidad.
-    void consultar(controlador.signal).then(datos => {
+    void Promise.resolve().then(() => consultar(controlador.signal)).then(datos => {
       if (!controlador.signal.aborted) setEstado({ clave, intento, datos, error: null })
     }).catch(error => {
       if (!controlador.signal.aborted) setEstado({ clave, intento, datos: null, error: error instanceof Error ? error.message : 'No se pudo cargar la información.' })
