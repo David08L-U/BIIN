@@ -104,8 +104,8 @@ export interface ReordenarActividadesRequest {
 }
 
 export const itinerariosApi = {
-  listar: () => api.get<ItinerarioResumenDto[]>('/itinerarios'),
-  obtener: (id: number) => api.get<ItinerarioDetalleDto>(`/itinerarios/${id}`),
+  listar: (signal?: AbortSignal) => api.get<ItinerarioResumenDto[]>('/itinerarios', signal),
+  obtener: (id: number, signal?: AbortSignal) => api.get<ItinerarioDetalleDto>(`/itinerarios/${id}`, signal),
   crear: (datos: CrearItinerarioRequest) => api.post<ItinerarioDetalleDto>('/itinerarios', datos),
   crearDesdeRecorrido: (idRecorrido: number, datos: CrearItinerarioDesdeRecorridoRequest) =>
     api.post<ItinerarioDetalleDto>(`/itinerarios/desde-recorrido/${idRecorrido}`, datos),
