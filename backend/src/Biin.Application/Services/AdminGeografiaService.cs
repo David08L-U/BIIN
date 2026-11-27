@@ -4,6 +4,7 @@ using Biin.Application.DTOs.Catalogos;
 using Biin.Application.DTOs.Contenidos;
 using Biin.Application.Interfaces;
 using Biin.Application.Mappings;
+using Biin.Application.Validators;
 using Biin.Domain.Entities;
 using Biin.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
@@ -43,8 +44,7 @@ public class AdminGeografiaService(IAppDbContext db, IBitacoraAdmin bitacora)
 
     public async Task<UbicacionDto> CrearUbicacionAsync(int idAdmin, CrearUbicacionRequest req, CancellationToken ct = default)
     {
-        if (req.Latitud is < -90 or > 90 || req.Longitud is < -180 or > 180)
-            throw new ReglaNegocioException("Coordenadas fuera de rango (latitud ±90, longitud ±180).");
+        var (latitud, longitud) = ValidacionGeografia.ValidarEnYucatan(req.Latitud, req.Longitud);
 
         var localidad = await db.Localidades
             .Include(l => l.Municipio)
@@ -57,8 +57,8 @@ public class AdminGeografiaService(IAppDbContext db, IBitacoraAdmin bitacora)
             Localidad = localidad,
             DireccionReferencia = string.IsNullOrWhiteSpace(req.DireccionReferencia) ? null : req.DireccionReferencia.Trim(),
             // numeric(9, 6) en la base
-            Latitud = Math.Round(req.Latitud, 6),
-            Longitud = Math.Round(req.Longitud, 6)
+            Latitud = latitud,
+            Longitud = longitud
         };
         db.Ubicaciones.Add(ubicacion);
         await db.SaveChangesAsync(ct);
