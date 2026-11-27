@@ -189,6 +189,20 @@ GET {{api}}/api/explorar?idCategoria=9
 ### Explorar ordenado por cercanía GPS opcional (CU-14, RNF05)
 GET {{api}}/api/explorar?lat=20.7392&lng=-89.2855&radioKm=10
 
+### ───────── Transporte intermunicipal y rutas de combis (sin sesión, RF02, RF03, CU-02, CU-03) ─────────
+
+### Buscar rutas por origen y destino sin acentos (respeta orden de paradas)
+GET {{api}}/api/rutas?origen=merida&destino=homun
+
+### Rutas activas con paradas de abordaje cercanas a la ubicación actual (GPS consentido, RNF05)
+GET {{api}}/api/rutas/cercanas?lat=20.9674&lng=-89.6237&radioKm=15&limite=10
+
+### Detalle completo de una ruta (paradas, trazo, horarios, tarifas, opciones de regreso y salidas)
+GET {{api}}/api/rutas/1
+
+### Salidas programadas de una ruta para hoy (o fecha específica) con estado de cupo (RNF07)
+GET {{api}}/api/rutas/1/salidas
+
 ### Tarifas aproximadas vigentes de una ruta publicada (CU-03, RF03, RNF07)
 GET {{api}}/api/rutas/1/tarifas
 
