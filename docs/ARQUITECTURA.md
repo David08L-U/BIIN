@@ -413,6 +413,8 @@ Reglas para quien agregue datos demo: título con `[DEMO]`, códigos con `DEMO-`
 
 `database/seed/demo/002_rutas_tarifas_referencia.sql` complementa la demo con rutas ida/regreso y tarifas aproximadas de referencia (`DEMO-MER-IZA`, `DEMO-MER-VAL`, `DEMO-MER-TEK`, `DEMO-MER-TIC`) para poder probar y ajustar montos y vigencias desde `/api/admin/rutas/{idRuta}/tarifas` antes de la validación final con operadores.
 
+`database/seed/demo/003_recorridos_referencia.sql` agrega recorridos sugeridos `[DEMO]` para Izamal, Valladolid, Tekit y Ticul (complementando Homún) editables desde `/api/admin/recorridos`.
+
 ## 5. Diagramas de clases (Unidad 2)
 
 Tres áreas del dominio (ver FigJam → Zona 2 → Versión 2 → Diagramas de clases):
