@@ -245,6 +245,18 @@ Content-Type: application/json
   "presupuestoEstimado": 1500
 }
 
+### Crear itinerario clonando un recorrido sugerido publicado con horarios escalonados (CU-09, CU-13)
+POST {{api}}/api/itinerarios/desde-recorrido/1
+Authorization: Bearer PEGAR_TOKEN
+Content-Type: application/json
+
+{
+  "inicio": "2026-12-12",
+  "fin": "2026-12-12",
+  "presupuestoEstimado": 1200,
+  "horaInicioLocal": "09:00:00"
+}
+
 ### Agregar actividad (horas con zona; si es evento y no se indican, se usan las del evento)
 POST {{api}}/api/itinerarios/1/actividades
 Authorization: Bearer PEGAR_TOKEN

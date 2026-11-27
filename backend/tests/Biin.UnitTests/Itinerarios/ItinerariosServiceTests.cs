@@ -1,6 +1,7 @@
 using Biin.Application.DTOs.Itinerarios;
 using Biin.Application.Services;
 using Biin.Domain.Entities;
+using Biin.Domain.Enums;
 using Biin.Domain.Exceptions;
 using Biin.UnitTests.Fakes;
 
@@ -174,5 +175,127 @@ public class ItinerariosServiceTests
         await _servicio.EliminarAsync(Viajera, it.IdItinerario);
         Assert.Empty(await _servicio.ListarAsync(Viajera));
         Assert.Empty(_db.Set<ActividadItinerario>().Items);
+    }
+
+    [Fact]
+    public async Task CrearDesdeRecorrido_clona_etapas_publicadas_con_horarios_secuenciales_y_traslados()
+    {
+        var recorrido = SembrarRecorrido(
+            id: 50,
+            titulo: "Un día en Homún",
+            estado: EstadoPublicacion.Publicado,
+            (_d.CocinaHomun, 1, 60),
+            (_d.CenotePublicado, 2, 90));
+
+        var detalle = await _servicio.CrearDesdeRecorridoAsync(
+            Viajera,
+            recorrido.IdRecorrido,
+            new CrearItinerarioDesdeRecorridoRequest(
+                Inicio: new DateOnly(2026, 12, 12),
+                Fin: null,
+                Nombre: null,
+                PresupuestoEstimado: 800,
+                HoraInicioLocal: new TimeOnly(9, 0)));
+
+        Assert.Equal("Un día en Homún", detalle.Nombre);
+        Assert.Equal(new DateOnly(2026, 12, 12), detalle.Inicio);
+        Assert.Equal(new DateOnly(2026, 12, 12), detalle.Fin);
+        Assert.Equal(800, detalle.PresupuestoEstimado);
+        Assert.Equal([1, 2], detalle.Actividades.Select(a => a.Orden));
+        Assert.Equal([_d.CocinaHomun.IdRecurso, _d.CenotePublicado.IdRecurso], detalle.Actividades.Select(a => a.IdRecurso));
+
+        // Primera actividad: 09:00 a 10:00 Yucatán (15:00 a 16:00 UTC)
+        Assert.Equal(SabadoUtc(9), detalle.Actividades[0].InicioPrevisto);
+        Assert.Equal(SabadoUtc(10), detalle.Actividades[0].FinPrevisto);
+
+        // Segunda actividad respeta traslado estimado y duración de 90 min (sin traslado insuficiente ni conflicto)
+        var traslado = Assert.IsType<TrasladoEstimadoDto>(detalle.Actividades[1].TrasladoDesdeAnterior);
+        Assert.Equal(SabadoUtc(10).AddMinutes(traslado.MinutosEstimados), detalle.Actividades[1].InicioPrevisto);
+        Assert.Equal(detalle.Actividades[1].InicioPrevisto!.Value.AddMinutes(90), detalle.Actividades[1].FinPrevisto);
+        Assert.DoesNotContain(detalle.Advertencias, a => a.Tipo == AnalizadorItinerario.TrasladoInsuficiente);
+        Assert.DoesNotContain(detalle.Advertencias, a => a.Tipo == AnalizadorItinerario.ConflictoHorario);
+    }
+
+    [Fact]
+    public async Task CrearDesdeRecorrido_sin_hora_inicial_omite_etapas_no_publicadas_y_respeta_eventos()
+    {
+        var recorrido = SembrarRecorrido(
+            id: 51,
+            titulo: "Tarde cultural",
+            estado: EstadoPublicacion.Publicado,
+            (_d.NegocioPendiente, 1, 45),
+            (_d.CocinaHomun, 2, 60),
+            (_d.Vaqueria, 3, 120));
+
+        var detalle = await _servicio.CrearDesdeRecorridoAsync(
+            Viajera,
+            recorrido.IdRecorrido,
+            new CrearItinerarioDesdeRecorridoRequest(
+                Inicio: new DateOnly(2026, 12, 12),
+                Fin: new DateOnly(2026, 12, 13),
+                Nombre: "Mi tarde cultural"));
+
+        Assert.Equal("Mi tarde cultural", detalle.Nombre);
+        Assert.Equal([_d.CocinaHomun.IdRecurso, _d.Vaqueria.IdRecurso], detalle.Actividades.Select(a => a.IdRecurso));
+        Assert.Equal([1, 2], detalle.Actividades.Select(a => a.Orden));
+        Assert.Null(detalle.Actividades[0].InicioPrevisto);
+        Assert.Equal(_d.Vaqueria.Evento!.Inicio, detalle.Actividades[1].InicioPrevisto);
+    }
+
+    [Fact]
+    public async Task CrearDesdeRecorrido_rechaza_pendiente_inexistente_o_fechas_invalidas()
+    {
+        var pendiente = SembrarRecorrido(
+            id: 52,
+            titulo: "Borrador sin publicar",
+            estado: EstadoPublicacion.Pendiente,
+            (_d.CocinaHomun, 1, 60));
+
+        await Assert.ThrowsAsync<NoEncontradoException>(() => _servicio.CrearDesdeRecorridoAsync(
+            Viajera, pendiente.IdRecorrido, new CrearItinerarioDesdeRecorridoRequest(new DateOnly(2026, 12, 12))));
+
+        await Assert.ThrowsAsync<NoEncontradoException>(() => _servicio.CrearDesdeRecorridoAsync(
+            Viajera, 9999, new CrearItinerarioDesdeRecorridoRequest(new DateOnly(2026, 12, 12))));
+
+        await Assert.ThrowsAsync<ReglaNegocioException>(() => _servicio.CrearDesdeRecorridoAsync(
+            Viajera, 0, new CrearItinerarioDesdeRecorridoRequest(new DateOnly(2026, 12, 12))));
+
+        await Assert.ThrowsAsync<ReglaNegocioException>(() => _servicio.CrearDesdeRecorridoAsync(
+            Viajera, 50, new CrearItinerarioDesdeRecorridoRequest(
+                new DateOnly(2026, 12, 15), new DateOnly(2026, 12, 12))));
+    }
+
+    private RecorridoSugerido SembrarRecorrido(
+        int id,
+        string titulo,
+        EstadoPublicacion estado,
+        params (Recurso Recurso, int Orden, int? DuracionMin)[] etapas)
+    {
+        var recorrido = new RecorridoSugerido
+        {
+            IdRecorrido = id,
+            Titulo = titulo,
+            Descripcion = $"Descripción de {titulo}",
+            IdLocalidadBase = _d.LocHomun.IdLocalidad,
+            LocalidadBase = _d.LocHomun,
+            EstadoPublicacion = estado,
+            ActualizadoEn = new DateTime(2026, 12, 1, 12, 0, 0, DateTimeKind.Utc)
+        };
+        foreach (var (recurso, orden, duracion) in etapas)
+        {
+            var etapa = new EtapaRecorrido
+            {
+                IdRecorrido = id,
+                Recorrido = recorrido,
+                Orden = orden,
+                IdRecurso = recurso.IdRecurso,
+                Recurso = recurso,
+                DuracionSugeridaMin = duracion
+            };
+            recorrido.Etapas.Add(etapa);
+            _db.Set<EtapaRecorrido>().Items.Add(etapa);
+        }
+        _db.Set<RecorridoSugerido>().Items.Add(recorrido);
+        return recorrido;
     }
 }

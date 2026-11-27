@@ -176,7 +176,7 @@ BIIN/
 | `GET /api/rutas/{idRuta}`, `GET /api/rutas/{idRuta}/salidas` | Público | RF03 / CU-03 / RNF07: detalle completo (paradas, trazo, horarios, tarifas, opciones de regreso) y salidas con estado de cupo |
 | `GET /api/rutas/{idRuta}/tarifas` | Público | RF03 / RNF07: tarifas aproximadas vigentes por ruta o tramo (fecha local Yucatán) |
 | `GET /api/rutas/{idRuta}/mapa` | Público | RF03 / CU-03: paradas ordenadas con coordenadas y trazo `puntos_recorrido` para Leaflet |
-| `/api/itinerarios[/{id}[/actividades…]]` | Viajero | RF09: CRUD, actividades, reordenar, traslados estimados y advertencias |
+| `/api/itinerarios[/{id}[/actividades…]]`, `POST /api/itinerarios/desde-recorrido/{idRecorrido}` | Viajero | RF09 / CU-09 / CU-13: CRUD en 3FN, clonar recorrido sugerido con horarios y traslados, actividades, reordenar y advertencias |
 | `/api/admin/contenidos…` | Administrador | RF12: crear/editar negocios, lugares y eventos, publicar, archivar, cancelar evento, horarios, fotos |
 | `/api/admin/rutas/{idRuta}/tarifas…` | Administrador | RF12 / CU-12: listar histórico, crear, editar y cerrar vigencia de tarifas sin solapamiento + bitácora |
 | `/api/admin/recorridos…` | Administrador | RF12 / CU-12 / CU-13: crear/editar recorridos sugeridos, reemplazar etapas, publicar y archivar + bitácora |
@@ -194,6 +194,8 @@ BIIN/
 - En el frontend, `RegistroPage` muestra `features/auth/components/VerificacionCorreo.tsx` después del formulario, con «Reenviar código» (cuenta regresiva) y «Volver y corregir mis datos», que conserva lo escrito.
 
 **Advertencias de un itinerario** (no bloquean, se devuelven en el detalle): `conflicto_horario`, `traslado_insuficiente`, `fuera_de_fechas`, `fuera_de_horario`, `evento_cancelado`, `contenido_no_disponible`. El traslado es una estimación (haversine × 1.3 a 40 km/h) y no sustituye horarios ni recorridos reales.
+
+**Contrato unificado de itinerarios (3FN):** el backend persiste los itinerarios exclusivamente en las tablas normalizadas `itinerarios` y `actividades_itinerario` a través de `ItinerariosController` (incluyendo `POST /api/itinerarios/desde-recorrido/{idRecorrido}` para clonar recorridos sugeridos de `CU-13`). El cliente HTTP tipado del frontend vive en `frontend/src/features/mi-viaje/api.ts` para alinear progresivamente la vista de Mi Viaje con el backend sin agregar tablas JSONB fuera de 3FN.
 
 Dentro de cada `features/<modulo>/` se usan las subcarpetas que hagan falta: `components/`, `pages/`, `hooks/` y `api/`. Se crean conforme se programe el módulo.
 

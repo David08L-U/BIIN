@@ -21,6 +21,10 @@ public static class ZonaYucatan
     public static DateTime InicioDelDiaUtc(DateOnly fecha) =>
         TimeZoneInfo.ConvertTimeToUtc(fecha.ToDateTime(TimeOnly.MinValue, DateTimeKind.Unspecified), Zona);
 
+    /// <summary>Convierte una fecha y hora local de Yucatán a UTC (para columnas timestamptz).</summary>
+    public static DateTime AUtc(DateOnly fecha, TimeOnly hora) =>
+        TimeZoneInfo.ConvertTimeToUtc(fecha.ToDateTime(hora, DateTimeKind.Unspecified), Zona);
+
     private static TimeZoneInfo Buscar()
     {
         foreach (var id in new[] { "America/Merida", "Central Standard Time (Mexico)" })
