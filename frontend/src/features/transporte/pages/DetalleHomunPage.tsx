@@ -19,7 +19,7 @@ export default function DetalleHomunPage({ ruta }: { ruta: RutaPrototipo }) {
       opciones: detalle.estancias,
       corredor: detalle.corredor,
       tiempo: `~${ruta.tiempo}`,
-      altCultural: 'Paisaje de cenotes y naturaleza de Homún',
+      altCultural: 'Fotografía representativa de Homún pendiente de verificar',
       leyenda: 'Tiempo disponible estimado',
       tituloPrecio: 'Pasaje',
       etiquetaLugares: 'Lugares destacados de Homún',

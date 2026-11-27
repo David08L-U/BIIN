@@ -6,6 +6,7 @@ import { useAuth } from '../../auth/useAuth'
 import ConfiguracionTicul from '../components/ConfiguracionTicul'
 import ModosTicul from '../components/ModosTicul'
 import ImagenItinerario from '../components/ImagenItinerario'
+import { fotografiaLugar } from '../../explorar/data/lugaresExplorar'
 import Icono from '../components/IconoItinerario'
 import { avisoTrasladoComidaTicul, lugaresTicul, mapaTicul, nombreTrasladoTicul } from '../data/lugaresTicul'
 import { useBorradorTicul } from '../hooks/useBorradorTicul'
@@ -97,12 +98,13 @@ export default function ItinerarioTiculPage() {
           <ol className="iz-plan-linea" aria-label="Recorrido de Ticul">
             {plan.bloques.filter(b => b.tipo === 'visita').map((bloque, i) => {
               const l = lugaresTicul.find(l => l.id === bloque.lugarId)!
+              const imagen = fotografiaLugar('ticul', l.id)
               if (filtro !== 'todas' && l.categoria !== filtro) return null
               const traslado = plan.bloques.find(b => b.tipo === 'traslado' && b.lugarId === l.id)!
               return <li key={l.id} value={i + 1}><span className="iz-plan-orden" aria-hidden="true">{i + 1}</span><article className="iz-plan-paso iz-plan-tarjeta">
                 <div className="iz-plan-paso-hora"><span><time dateTime={instanteLocal(c, bloque.inicio).toISOString()}>{horaLocal(c, bloque.inicio)}</time> – <time dateTime={instanteLocal(c, bloque.fin).toISOString()}>{horaLocal(c, bloque.fin)}</time></span><span className="iz-plan-insignia">{l.etiqueta}</span></div>
                 <p className="iz-plan-caminata"><Icono nombre={l.traslado.icono} tamano={15} />{nombreTrasladoTicul(l)} · {horaLocal(c, traslado.inicio)} – {horaLocal(c, traslado.fin)}</p>
-                <h3>{l.nombre}</h3><p>{l.descripcion}</p><ImagenItinerario {...l.imagen} className="iz-plan-imagen" /><p className="iz-plan-duracion">Visita estimada: {duracionPlan(l.visitaMinutos)}</p>
+                <h3>{l.nombre}</h3><p>{l.descripcion}</p><ImagenItinerario src={imagen?.src} alt={imagen?.alt ?? `Fotografía de ${l.nombre} pendiente de verificar`} credito={imagen?.credito} fuente={imagen?.fuente} className="iz-plan-imagen" /><p className="iz-plan-duracion">Visita estimada: {duracionPlan(l.visitaMinutos)}</p>
               </article></li>
             })}
             <li><span className="iz-plan-orden iz-plan-orden-cierre" aria-hidden="true"><Icono nombre="check" tamano={10} /></span><div className="iz-plan-cierre iz-plan-tarjeta"><h3>Cierre del recorrido</h3>{plan.bloques.slice(-2).map(b => <p key={b.titulo}>{horaLocal(c, b.inicio)} – {horaLocal(c, b.fin)} · {b.titulo}: {duracionPlan(b.fin - b.inicio)}.</p>)}<p>Tiempo libre: {duracionPlan(plan.libresMinutos)} · {horaLocal(c, plan.totalMinutos)} – {horaLocal(c, Number(c.minutosDisponibles))}. El regreso mostrado es tu objetivo, no una salida confirmada.</p></div></li>

@@ -1,4 +1,4 @@
-import ticulAlfareria from '../../../assets/destinos/ticul-alfareria.jpg'
+import ticulAlfareria from '../../../assets/explorar/ticul-iglesia-san-antonio.jpg'
 
 /** CU-03 / RF03: referencias demostrativas del HTML de Ticul de Melanie.
  * Sin fecha de validación. Tarifa y duración se reutilizan desde el catálogo.

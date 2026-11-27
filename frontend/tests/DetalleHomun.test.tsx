@@ -94,7 +94,7 @@ describe('Detalle propio de Homún CU-03 / RF03', () => {
     expect(within(lugares).getAllByRole('listitem')).toHaveLength(2)
     expect(within(lugares).getByText('Cenote Santa Rosa')).toBeInTheDocument()
     expect(within(lugares).getByText('Cenote Tza Ujun Kat')).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'Paisaje de cenotes y naturaleza de Homún' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Fotografía representativa de Homún pendiente de verificar' })).toHaveTextContent('Fotografía pendiente de verificación')
     expect(screen.getByRole('article', { name: 'Homún' })).not.toHaveTextContent(/Convento San Bernardino|Mercado Municipal Bazar/)
   })
 
@@ -189,9 +189,9 @@ describe('Detalle propio de Homún CU-03 / RF03', () => {
   it('mantiene información y selección si fallan las imágenes originales', () => {
     montar()
     fireEvent.error(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Homún' }))
-    fireEvent.error(screen.getByRole('img', { name: 'Paisaje de cenotes y naturaleza de Homún' }))
-    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(2)
-    expect(screen.getByRole('img', { name: 'Paisaje de cenotes y naturaleza de Homún' })).toBeInTheDocument()
+    fireEvent.error(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Homún' }))
+    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(1)
+    expect(screen.getByRole('img', { name: 'Fotografía representativa de Homún pendiente de verificar' })).toHaveTextContent('Fotografía pendiente de verificación')
     expect(screen.getByRole('list', { name: 'Recorrido ilustrativo a Homún' })).toBeInTheDocument()
     expect(screen.getByRole('radio', { name: /Fin de semana/ })).toBeInTheDocument()
   })

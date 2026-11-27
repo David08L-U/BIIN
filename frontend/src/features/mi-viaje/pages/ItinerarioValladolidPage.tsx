@@ -8,6 +8,7 @@ import { detalleValladolidPrototipo } from '../../transporte/data/detalleVallado
 import ConfiguracionValladolid from '../components/ConfiguracionValladolid'
 import Icono from '../components/IconoItinerario'
 import ImagenItinerario from '../components/ImagenItinerario'
+import { fotografiaLugar } from '../../explorar/data/lugaresExplorar'
 import { lugaresValladolid } from '../data/lugaresValladolid'
 import { useBorradorValladolid } from '../hooks/useBorradorValladolid'
 import { parametrosBorradorValladolid, urlBorradorValladolid } from '../plan/borradorValladolid'
@@ -118,12 +119,13 @@ export default function ItinerarioValladolidPage() {
                 {visitas.map((bloque, indice) => {
                   if (!visibles.includes(bloque)) return null
                   const lugar = lugaresValladolid.find(l => l.id === bloque.lugarId)!
+                  const imagen = fotografiaLugar('valladolid', lugar.id)
                   const traslado = dia.bloques.find(b => b.tipo === 'traslado' && b.lugarId === lugar.id)!
                   return <li key={lugar.id} value={indice + 1}><span className="iz-plan-orden" aria-hidden="true">{indice + 1}</span><article className="iz-plan-paso iz-plan-tarjeta">
                     <div className="iz-plan-paso-hora"><span><time dateTime={instanteLocal(dia, bloque.inicio).toISOString()}>{horaLocal(dia, bloque.inicio)}</time> – <time dateTime={instanteLocal(dia, bloque.fin).toISOString()}>{horaLocal(dia, bloque.fin)}</time></span><span>{lugar.etiqueta}</span></div>
                     <p className="iz-plan-caminata"><Icono nombre="directions_walk" tamano={14} />Traslado estimado: {duracionPlan(traslado.fin - traslado.inicio)} · {horaLocal(dia, traslado.inicio)} – {horaLocal(dia, traslado.fin)}</p>
                     <h4>{lugar.nombre}</h4><p>{lugar.descripcion}</p>
-                    {'imagen' in lugar && <ImagenItinerario {...lugar.imagen} className="iz-plan-imagen" />}
+                    <ImagenItinerario src={imagen?.src} alt={imagen?.alt ?? `Fotografía de ${lugar.nombre} pendiente de verificar`} credito={imagen?.credito} fuente={imagen?.fuente} className="iz-plan-imagen" />
                     <p className="iz-plan-duracion">Visita estimada: {duracionPlan(lugar.visitaMinutos)}</p>
                   </article></li>
                 })}

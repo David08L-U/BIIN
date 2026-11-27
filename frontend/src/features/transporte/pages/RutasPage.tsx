@@ -5,6 +5,8 @@ import {
 } from 'react-router'
 
 import { rutasPrototipo } from '../data/rutasPrototipo'
+import { fotografiasRepresentativasDestino } from '../../explorar/data/lugaresExplorar'
+import FotografiaDestino from '../../../components/ui/FotografiaDestino'
 import '../../../styles/rutas-melanie.css'
 
 const normalizar = (texto: string) =>
@@ -175,7 +177,9 @@ export default function RutasPage() {
       </p>
 
       <div className="rutas-catalogo">
-        {lista.map(ruta => (
+        {lista.map(ruta => {
+          const foto = fotografiasRepresentativasDestino[ruta.id]
+          return (
           <Link
             key={ruta.id}
             to={`/rutas/${ruta.id}`}
@@ -183,18 +187,7 @@ export default function RutasPage() {
             aria-label={`Ver ruta a ${ruta.nombre}`}
           >
             <div className="rutas-tarjeta-cuerpo">
-              <span
-                className={`rutas-icono-destino ${
-                  ruta.id === 'izamal' ? 'relleno' : ''
-                }`}
-              >
-                <span
-                  aria-hidden="true"
-                  className="biin-icon"
-                >
-                  {ruta.icono}
-                </span>
-              </span>
+              <FotografiaDestino foto={foto} destino={ruta.nombre} className={`rutas-icono-destino ${foto ? 'rutas-foto-destino' : ''}`} />
 
               <div className="rutas-destino-textos">
                 <div className="rutas-destino-titulo">
@@ -255,7 +248,7 @@ export default function RutasPage() {
               </span>
             </div>
           </Link>
-        ))}
+        )})}
       </div>
 
       {!lista.length && (

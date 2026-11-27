@@ -80,6 +80,16 @@ export const lugaresExplorar: LugarExplorar[] = [
   ...adaptar('ticul', lugaresTicul),
 ].map(lugar => ({ ...lugar, imagen: fotografia(lugar) }))
 
+export function fotografiaLugar(destino: string, lugarId: string): LugarExplorar['imagen'] {
+  return lugaresExplorar.find(lugar => lugar.destino === destino && lugar.id === lugarId)?.imagen
+}
+
+export const fotografiasRepresentativasDestino: Readonly<Record<string, LugarExplorar['imagen']>> = {
+  izamal: fotografiaLugar('izamal', 'convento'),
+  valladolid: fotografiaLugar('valladolid', 'san-bernardino'),
+  ticul: fotografiaLugar('ticul', 'iglesia-san-antonio'),
+}
+
 export const categoriasExplorar = [...new Set(lugaresExplorar.map(lugar => lugar.categoria))]
   .map(id => ({ id, nombre: nombresCategoria[id] ?? id }))
 

@@ -1,4 +1,4 @@
-import izamalConvento from '../../../assets/destinos/izamal-convento.jpg'
+import izamalConvento from '../../../assets/explorar/izamal-convento.jpg'
 
 /**
  * CU-03 / RF03. Transcripción demostrativa de

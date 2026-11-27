@@ -9,6 +9,7 @@ import ConfiguracionViaje from '../components/ConfiguracionViaje'
 import Icono from '../components/IconoItinerario'
 import ImagenItinerario from '../components/ImagenItinerario'
 import { imagenesItinerarioIzamal } from '../data/imagenesItinerarioIzamal'
+import { fotografiaLugar } from '../../explorar/data/lugaresExplorar'
 import { filtrosRecorridoIzamal, lugaresIzamal } from '../data/lugaresIzamal'
 import type { CategoriaIzamal } from '../data/lugaresIzamal'
 import { useBorradorIzamal } from '../hooks/useBorradorIzamal'
@@ -92,14 +93,14 @@ export default function ItinerarioIzamalPage() {
               const lugar = lugaresIzamal.find(opcion => opcion.id === bloque.lugarId)!
               if (filtro !== 'todas' && lugar.categoria !== filtro) return null
               const traslado = plan.bloques.find(opcion => opcion.tipo === 'traslado' && opcion.lugarId === lugar.id)!
-              const imagen = imagenesItinerarioIzamal[lugar.id]
+              const imagen = fotografiaLugar('izamal', lugar.id)
               return <li key={lugar.id} value={indice + 1}>
                 <span className="iz-plan-orden" aria-hidden="true">{indice + 1}</span>
                 <article className="iz-plan-paso iz-plan-tarjeta">
                   <div className="iz-plan-paso-hora"><span><time dateTime={instantePlan(borrador.configuracion, bloque.inicio).toISOString()}>{horaPlan(borrador.configuracion, bloque.inicio)}</time> – <time dateTime={instantePlan(borrador.configuracion, bloque.fin).toISOString()}>{horaPlan(borrador.configuracion, bloque.fin)}</time></span><span className="iz-plan-insignia">{lugar.etiqueta}</span></div>
                   <p className="iz-plan-caminata"><Icono nombre="directions_walk" tamano={14} />{duracionPlan(traslado.fin - traslado.inicio)} de desplazamiento estimado · {horaPlan(borrador.configuracion, traslado.inicio)} – {horaPlan(borrador.configuracion, traslado.fin)}</p>
                   <h3>{lugar.nombre}</h3><p>{lugar.descripcion}</p>
-                  {imagen && <ImagenItinerario {...imagen} />}
+                  <ImagenItinerario src={imagen?.src} alt={imagen?.alt ?? `Fotografía de ${lugar.nombre} pendiente de verificar`} credito={imagen?.credito} fuente={imagen?.fuente} />
                   <p className="iz-plan-duracion"><Icono nombre={lugar.categoria === 'gastronomia' ? 'restaurant_menu' : 'timer'} tamano={16} />Visita estimada: {duracionPlan(lugar.visitaMinutos)}</p>
                 </article>
               </li>

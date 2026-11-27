@@ -217,8 +217,8 @@ describe('Flujo de itinerarios de Izamal CU-09', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(/bloqueado o dañado/)
     expect(screen.queryByRole('link', { name: 'Abrir itinerario de Izamal' })).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Crear un itinerario' })).toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: 'Crear itinerario' })).toHaveLength(5)
-    expect(screen.getAllByRole('link', { name: 'Crear itinerario' })[0]).toHaveAttribute('href', '/rutas/izamal')
+    expect(screen.getAllByRole('link', { name: /^Crear itinerario para / })).toHaveLength(5)
+    expect(screen.getAllByRole('link', { name: /^Crear itinerario para / })[0]).toHaveAttribute('href', '/rutas/izamal')
   })
 
   it('edita un guardado sin alterarlo hasta confirmar y conserva el original al cancelar', async () => {

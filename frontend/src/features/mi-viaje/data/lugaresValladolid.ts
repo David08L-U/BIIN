@@ -1,9 +1,3 @@
-import valladolidCalzadaFrailes from '../../../assets/destinos/valladolid-calzada-frailes.jpg'
-
-import valladolidMercadoDonato from '../../../assets/destinos/valladolid-mercado-donato.jpg'
-
-import valladolidZaci from '../../../assets/destinos/valladolid-zaci.jpg'
-
 /** CU-09 / RF09: visitas, textos y caminatas del HTML de Valladolid.
  * Demostrativos, sin fecha de validación; no acreditan aperturas, precios o distancias.
  * Las visitas se deducen de los bloques originales: 60, 75, 65 y 40 min.
@@ -16,9 +10,9 @@ export const categoriasValladolid = [
 export type CategoriaValladolid = typeof categoriasValladolid[number]['id']
 
 export const lugaresValladolid = [
-  { id: 'zaci', nombre: 'Cenote Zací y Parque Principal', categoria: 'cenotes', etiqueta: 'Cenote y centro histórico', visitaMinutos: 60, trasladoMinutos: 2, descripcion: 'Visita el impresionante cenote a cielo abierto en pleno centro histórico y camina junto a la Iglesia de San Servacio.', imagen: { src: valladolidZaci, alt: 'Cenote Zací, imagen de referencia' } },
-  { id: 'mercado-donato', nombre: 'Mercado Municipal Donato Bates', categoria: 'gastronomia', etiqueta: 'Almuerzo típico', visitaMinutos: 75, trasladoMinutos: 4, descripcion: 'Disfruta lomitos de Valladolid, longaniza asada tradicional y escabeche oriental con tortillas hechas a mano.', imagen: { src: valladolidMercadoDonato, alt: 'Gastronomía de Valladolid, imagen de referencia' } },
-  { id: 'calzada-frailes', nombre: 'Calzada de los Frailes y Boutiques', categoria: 'cultura', etiqueta: 'Paseo colonial', visitaMinutos: 65, trasladoMinutos: 6, descripcion: 'Camina por la calle colonial más hermosa de Yucatán con casonas de colores pastel, perfumerías y boutiques de café local.', imagen: { src: valladolidCalzadaFrailes, alt: 'Calzada de los Frailes, imagen de referencia' } },
+  { id: 'zaci', nombre: 'Cenote Zací y Parque Principal', categoria: 'cenotes', etiqueta: 'Cenote y centro histórico', visitaMinutos: 60, trasladoMinutos: 2, descripcion: 'Visita el impresionante cenote a cielo abierto en pleno centro histórico y camina junto a la Iglesia de San Servacio.' },
+  { id: 'mercado-donato', nombre: 'Mercado Municipal Donato Bates', categoria: 'gastronomia', etiqueta: 'Almuerzo típico', visitaMinutos: 75, trasladoMinutos: 4, descripcion: 'Disfruta lomitos de Valladolid, longaniza asada tradicional y escabeche oriental con tortillas hechas a mano.' },
+  { id: 'calzada-frailes', nombre: 'Calzada de los Frailes y Boutiques', categoria: 'cultura', etiqueta: 'Paseo colonial', visitaMinutos: 65, trasladoMinutos: 6, descripcion: 'Camina por la calle colonial más hermosa de Yucatán con casonas de colores pastel, perfumerías y boutiques de café local.' },
   { id: 'san-bernardino', nombre: 'Ex Convento de San Bernardino de Siena', categoria: 'cultura', etiqueta: 'Patrimonio colonial', visitaMinutos: 40, trasladoMinutos: 3, descripcion: 'Majestuoso conjunto franciscano del siglo XVI en el barrio de Sisal con su noria monumental y murales.' },
 ] as const
 

@@ -31,7 +31,7 @@ export default function DetalleTekitPage({ ruta }: { ruta: RutaPrototipo }) {
       corredor: detalle.carretera,
       tiempo: `Tiempo estimado de viaje · ~${ruta.tiempo}`,
       referenciaCultural: 'Ruta Textil · Talleres de Bordado · Gastronomía Local',
-      altCultural: 'Taller textil de guayaberas de Tekit, imagen cultural de referencia',
+      altCultural: 'Fotografía representativa de Tekit pendiente de verificar',
       leyenda: 'Estancia o modalidad de visita',
       tituloPrecio: 'Tarifa',
       notaPrecio: 'Por validar',

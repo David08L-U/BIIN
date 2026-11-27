@@ -1,4 +1,3 @@
-import tekitGuayaberas from '../../../assets/destinos/tekit-guayaberas.jpg'
 
 /** CU-03 / RF03. Referencias demostrativas del detalle HTML de Tekit de Melanie.
  * Sin fecha de validación: no son horarios, disponibilidad ni posiciones GPS.
@@ -11,7 +10,7 @@ export const detalleTekitPrototipo = {
   referenciaTerminal: 'Mérida Centro, entre 62 y 64',
   carretera: 'Carretera Costera del Golfo / Mérida - Tekit',
   imagenRecorrido: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCfxf9PrW3Ny9xfIuB9T76nyCgoGUXEojQ1Y960o1NS7jrk-60_R97q7EImzyuu6r0hX9_0NOQFRVej4John21_JVGgZtHspyCguUaq-IPrsN2UlAMHPmoEtLd5Wm6-cg14K_WcZw5PpSnK1W-9bqnxiYNSAfpCvoOA3Pq0IsunbRU_KeGhkHa5gTP3U08ruO717r_FSpfMF0pu595ex7s0A7rJMadh04mZ84IxiMd7',
-  imagenCultural: tekitGuayaberas,
+  imagenCultural: undefined,
   recorteCultural: 'inset(6% 0 0)',
   paradas: [
     { nombre: 'Mérida (Parque San Juan)', descripcion: 'Calle 69 x 64 · Referencia de salida', tipo: 'origen', etiqueta: 'Origen' },

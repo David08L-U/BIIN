@@ -6,6 +6,7 @@ import { useAuth } from '../../auth/useAuth'
 import ConfiguracionHomun from '../components/ConfiguracionHomun'
 import ModosHomun from '../components/ModosHomun'
 import ImagenItinerario from '../components/ImagenItinerario'
+import { fotografiaLugar } from '../../explorar/data/lugaresExplorar'
 import Icono from '../components/IconoItinerario'
 import { avisoRegresoHomun, lugaresHomun, mapaHomun, nombreTrasladoHomun } from '../data/lugaresHomun'
 import { useBorradorHomun } from '../hooks/useBorradorHomun'
@@ -109,11 +110,12 @@ export default function ItinerarioHomunPage() {
                 {visitas.map((bloque, i) => {
                   if (!visibles.includes(bloque)) return null
                   const l = lugaresHomun.find(l => l.id === bloque.lugarId)!
+                  const imagen = fotografiaLugar('homun', l.id)
                   const traslado = d.bloques.find(b => b.tipo === 'traslado' && b.lugarId === l.id)!
                   return <li key={l.id} value={i + 1}><span className="iz-plan-orden" aria-hidden="true">{i + 1}</span><article className="iz-plan-paso iz-plan-tarjeta">
                     <div className="iz-plan-paso-hora"><span><time dateTime={instanteLocal(d, bloque.inicio).toISOString()}>{horaLocal(d, bloque.inicio)}</time> – <time dateTime={instanteLocal(d, bloque.fin).toISOString()}>{horaLocal(d, bloque.fin)}</time></span><span className="iz-plan-insignia">{l.etiqueta}</span><Icono nombre={l.icono} tamano={18} /></div>
                     <p className="iz-plan-caminata"><Icono nombre={l.traslado.icono} tamano={16} />{nombreTrasladoHomun(l)} · {horaLocal(d, traslado.inicio)} – {horaLocal(d, traslado.fin)}</p>
-                    {'imagen' in l && <ImagenItinerario {...l.imagen} className="iz-plan-imagen" />}
+                    <ImagenItinerario src={imagen?.src} alt={imagen?.alt ?? `Fotografía de ${l.nombre} pendiente de verificar`} credito={imagen?.credito} fuente={imagen?.fuente} className="iz-plan-imagen" />
                     <h4>{l.nombre}</h4><p>{l.descripcion}</p><p className="iz-plan-duracion">Visita estimada: {duracionPlan(l.visitaMinutos)}</p>
                   </article></li>
                 })}

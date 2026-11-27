@@ -183,8 +183,9 @@ describe('Detalle propio de Tekit CU-03 / RF03', () => {
   it('mantiene recorrido y controles cuando fallan las imágenes originales', () => {
     montar()
     fireEvent.error(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Tekit' }))
-    fireEvent.error(screen.getByRole('img', { name: 'Taller textil de guayaberas de Tekit, imagen cultural de referencia' }))
-    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(2)
+    fireEvent.error(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Tekit' }))
+    expect(screen.getAllByText('Imagen no disponible')).toHaveLength(1)
+    expect(screen.getByRole('img', { name: 'Fotografía representativa de Tekit pendiente de verificar' })).toHaveTextContent('Fotografía pendiente de verificación')
     expect(screen.getByRole('img', { name: 'Mapa ilustrativo del recorrido a Tekit' })).toBeInTheDocument()
     expect(screen.getByRole('list', { name: 'Recorrido ilustrativo a Tekit' })).toBeInTheDocument()
     expect(screen.getByRole('radio', { name: /Ruta Textil.*Compras/ })).toBeInTheDocument()

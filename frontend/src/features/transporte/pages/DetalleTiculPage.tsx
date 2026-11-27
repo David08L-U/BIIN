@@ -20,7 +20,7 @@ export default function DetalleTiculPage({ ruta }: { ruta: RutaPrototipo }) {
       corredor: detalle.referenciaMapa,
       tiempo: `Duración aproximada · ~${ruta.tiempo}`,
       notaRecorrido: detalle.corredor,
-      altCultural: 'Artesanías y talleres de Ticul',
+      altCultural: 'Parroquia de San Antonio de Padua en Ticul',
       leyenda: 'Estancia o modalidad',
       tituloPrecio: 'Tarifa por pasaje',
       notaMapa: 'Mapa ilustrativo · Sin verificar',

@@ -10,7 +10,7 @@ function Icono({ nombre }: { nombre: string }) {
 }
 
 function ImagenPrototipo({ src, alt, icono, recorte }: {
-  src: string
+  src?: string
   alt: string
   icono: string
   recorte?: string
@@ -18,10 +18,10 @@ function ImagenPrototipo({ src, alt, icono, recorte }: {
   const [fallo, setFallo] = useState(false)
   const avisoId = useId()
 
-  return fallo ? (
+  return fallo || !src ? (
     <div className="izamal-imagen-alternativa" role="img" aria-label={alt} aria-describedby={avisoId}>
       <Icono nombre={icono} />
-      <span id={avisoId}>Imagen no disponible</span>
+      <span id={avisoId}>{src ? 'Imagen no disponible' : 'Fotografía pendiente de verificación'}</span>
     </div>
   ) : (
     <img className="izamal-imagen" src={src} alt={alt} loading="lazy" decoding="async"
@@ -38,7 +38,7 @@ export type DatosDetalle<Id extends string> = {
   tiempo?: string
   corredor: string
   imagenRecorrido: string
-  imagenCultural: string
+  imagenCultural?: string
   recorteCultural?: string
   referenciaCultural: string
   etiquetaCultural?: string

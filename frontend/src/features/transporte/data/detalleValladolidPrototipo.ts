@@ -1,4 +1,4 @@
-import valladolidConvento from '../../../assets/destinos/valladolid-convento.jpg'
+import valladolidConvento from '../../../assets/explorar/valladolid-san-bernardino.jpg'
 
 /** CU-03 / RF03. Datos demostrativos del detalle HTML de Valladolid de Melanie.
  * Sin fecha de validación. Recorrido, referencias y terminal no son datos operativos.

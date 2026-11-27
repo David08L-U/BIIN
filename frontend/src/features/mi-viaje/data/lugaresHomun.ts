@@ -1,9 +1,3 @@
-import homunRestauranteCenote from '../../../assets/destinos/homun-restaurante-cenote.jpg'
-
-import homunTzaUjunKat from '../../../assets/destinos/homun-tza-ujun-kat.jpg'
-
-import homunSantaRosa from '../../../assets/destinos/homun-santa-rosa.jpg'
-
 import { duracionPlan } from '../plan/duracion'
 /** Referencias demostrativas de biin_mi_itinerario_en_hom_n/code.html, sin fecha de validación.
  * Duraciones y traslados son supuestos, no mediciones geográficas ni servicios confirmados. */
@@ -27,10 +21,6 @@ export const lugaresHomun = [
       "tipo": "mototaxi",
       "nombre": "Mototaxi",
       "icono": "electric_rickshaw"
-    },
-    "imagen": {
-      "src": homunSantaRosa,
-      "alt": "Caverna y agua turquesa en Cenote Santa Rosa"
     }
   },
   {
@@ -46,10 +36,6 @@ export const lugaresHomun = [
       "tipo": "senderos",
       "nombre": "Traslado entre senderos",
       "icono": "transfer_within_a_station"
-    },
-    "imagen": {
-      "src": homunTzaUjunKat,
-      "alt": "Caverna semiabierta con luz natural en Cenote Tza Ujun Kat"
     }
   },
   {
@@ -65,10 +51,6 @@ export const lugaresHomun = [
       "tipo": "mototaxi",
       "nombre": "Mototaxi",
       "icono": "electric_rickshaw"
-    },
-    "imagen": {
-      "src": homunRestauranteCenote,
-      "alt": "Comida yucateca asociada a Homún"
     }
   },
   {

@@ -1,11 +1,3 @@
-import ticulIglesiaSanAntonio from '../../../assets/destinos/ticul-iglesia-san-antonio.jpg'
-
-import ticulComidaMercado from '../../../assets/destinos/ticul-comida-mercado.jpg'
-
-import ticulCorredorCalzado from '../../../assets/destinos/ticul-corredor-calzado.jpg'
-
-import ticulTalleresAlfareros from '../../../assets/destinos/ticul-talleres-alfareros.jpg'
-
 import { duracionPlan } from '../plan/duracion'
 /** CU-09 / RF09. Referencias de biin_mi_itinerario_en_ticul/code.html, sin fecha de validación.
  * Tiempos demostrativos, no mediciones geográficas ni servicios confirmados.
@@ -30,10 +22,6 @@ export const lugaresTicul = [
       "nombre": "Mototaxi",
       "icono": "electric_moped",
       "supuesto": false
-    },
-    "imagen": {
-      "src": ticulTalleresAlfareros,
-      "alt": "Alfarería de barro rojo, imagen de referencia para Ticul"
     }
   },
   {
@@ -49,10 +37,6 @@ export const lugaresTicul = [
       "nombre": "A pie",
       "icono": "directions_walk",
       "supuesto": false
-    },
-    "imagen": {
-      "src": ticulCorredorCalzado,
-      "alt": "Sandalias y calzado artesanal, imagen de referencia de Ticul"
     }
   },
   {
@@ -68,10 +52,6 @@ export const lugaresTicul = [
       "nombre": "A pie",
       "icono": "directions_walk",
       "supuesto": true
-    },
-    "imagen": {
-      "src": ticulComidaMercado,
-      "alt": "Poc chuc y acompañamientos, información gastronómica por confirmar de Ticul"
     }
   },
   {
@@ -87,10 +67,6 @@ export const lugaresTicul = [
       "nombre": "A pie",
       "icono": "directions_walk",
       "supuesto": false
-    },
-    "imagen": {
-      "src": ticulIglesiaSanAntonio,
-      "alt": "Iglesia y convento, imagen de patrimonio de referencia para Ticul"
     }
   }
 ] as const

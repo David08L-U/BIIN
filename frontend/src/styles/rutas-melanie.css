@@ -210,6 +210,11 @@
   font-size: 24px;
 }
 
+.rutas-foto-destino { width: 72px; height: 56px; overflow: hidden; border-radius: 8px; }
+.rutas-foto-destino img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.rutas-foto-pendiente { padding: 3px; color: var(--color-texto-suave); font-size: 9px; line-height: 11px; text-align: center; }
+.rutas-icono-destino .fotografia-destino-pendiente { padding: 3px; color: var(--color-texto-suave); font-size: 9px; line-height: 11px; text-align: center; }
+
 .rutas-icono-destino.relleno .biin-icon {
   font-variation-settings: 'FILL' 1;
 }
