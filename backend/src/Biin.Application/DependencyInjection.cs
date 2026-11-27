@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddScoped<ExplorarService>();
         services.AddScoped<TarifasService>();
         services.AddScoped<UbicacionesService>();
+        services.AddScoped<MapaRutaService>();
         services.AddScoped<ItinerariosService>();
         services.AddScoped<AdminContenidosService>();
         services.AddScoped<AdminTarifasService>();

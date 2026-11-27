@@ -195,6 +195,9 @@ GET {{api}}/api/rutas/1/tarifas
 ### Tarifa vigente de un tramo específico (parada 1 a parada 5)
 GET {{api}}/api/rutas/1/tarifas?ordenOrigen=1&ordenDestino=5
 
+### Paradas ordenadas y trazo polyline para el mapa Leaflet de una ruta (RF03, CU-03)
+GET {{api}}/api/rutas/1/mapa
+
 ### ───────── Mi Viaje: itinerarios (viajero, CU-09, RF09) ─────────
 
 ### Mis itinerarios
