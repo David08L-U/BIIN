@@ -4,11 +4,13 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../../auth/useAuth'
 import ConfiguracionTicul from '../components/ConfiguracionTicul'
+import ConsejosItinerario from '../components/ConsejosItinerario'
+import EnlaceDetalleRuta from '../components/EnlaceDetalleRuta'
 import ModosTicul from '../components/ModosTicul'
 import ImagenItinerario from '../components/ImagenItinerario'
 import { fotografiaLugar } from '../../explorar/data/lugaresExplorar'
 import Icono from '../components/IconoItinerario'
-import { avisoTrasladoComidaTicul, lugaresTicul, mapaTicul, nombreTrasladoTicul } from '../data/lugaresTicul'
+import { avisoTrasladoComidaTicul, lugaresTicul, nombreTrasladoTicul } from '../data/lugaresTicul'
 import { useBorradorTicul } from '../hooks/useBorradorTicul'
 import { parametrosBorradorTicul, urlBorradorTicul } from '../plan/borradorTicul'
 import { calcularPlanTicul, esModalidadTicul, modalidadesTicul } from '../plan/itinerarioTicul'
@@ -111,8 +113,8 @@ export default function ItinerarioTiculPage() {
           </ol>
           {filtro !== 'todas' && !plan.seleccion.some(id => lugaresTicul.some(l => l.id === id && l.categoria === filtro)) && <p role="status">No hay visitas de esta categoría. El filtro conserva el plan y sus horarios.</p>}
         </section>
-        <section className="iz-plan-mapa iz-plan-tarjeta" aria-labelledby="ti-mapa-titulo"><div className="iz-plan-categoria-titulo"><h2 id="ti-mapa-titulo"><Icono nombre="map" tamano={20} />Circuito Artesanal Ticul</h2><Link to={urlBorradorTicul('detalle', vigente)}>Ver detalle de ruta<Icono nombre="open_in_new" tamano={16} /></Link></div><ImagenItinerario {...mapaTicul} className="iz-plan-imagen" /><p className="iz-plan-nota">Mapa ilustrativo; no acredita un circuito geográfico ni una distancia verificada.</p></section>
-        <section className="iz-plan-consejos iz-plan-tarjeta" aria-labelledby="ti-consejos-titulo"><h2 id="ti-consejos-titulo"><Icono nombre="lightbulb" tamano={20} />Consejos de viaje BIIN</h2><div><h3><Icono nombre="inventory_2" tamano={16} />Empaque para cerámica</h3><p>Consulta si ofrecen empaque y cuáles son las condiciones para transportar piezas delicadas en la van.</p></div><div><h3><Icono nombre="handshake" tamano={16} />Regateo justo</h3><p>Valora el trabajo artesanal y consulta precios y condiciones directamente en cada taller.</p></div></section>
+        <EnlaceDetalleRuta to={urlBorradorTicul('detalle', vigente)} />
+        <ConsejosItinerario id="ti-consejos-titulo" consejos={[{ icono: 'inventory_2', titulo: 'Empaque para cerámica', descripcion: 'Consulta si ofrecen empaque y cuáles son las condiciones para transportar piezas delicadas en la van.' }, { icono: 'handshake', titulo: 'Regateo justo', descripcion: 'Valora el trabajo artesanal y consulta precios y condiciones directamente en cada taller.' }]} />
       </>}
       <div className="iz-plan-resumen-final">
         {!usuario && <p>Puedes preparar una vista previa sin sesión. Para guardar, inicia sesión; recuperarás este borrador.</p>}

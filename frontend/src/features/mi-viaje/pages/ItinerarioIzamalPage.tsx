@@ -8,7 +8,8 @@ import { useAuth } from '../../auth/useAuth'
 import ConfiguracionViaje from '../components/ConfiguracionViaje'
 import Icono from '../components/IconoItinerario'
 import ImagenItinerario from '../components/ImagenItinerario'
-import { imagenesItinerarioIzamal } from '../data/imagenesItinerarioIzamal'
+import ConsejosItinerario from '../components/ConsejosItinerario'
+import EnlaceDetalleRuta from '../components/EnlaceDetalleRuta'
 import { fotografiaLugar } from '../../explorar/data/lugaresExplorar'
 import { filtrosRecorridoIzamal, lugaresIzamal } from '../data/lugaresIzamal'
 import type { CategoriaIzamal } from '../data/lugaresIzamal'
@@ -109,8 +110,8 @@ export default function ItinerarioIzamalPage() {
           {filtro !== 'todas' && !plan.seleccion.some(id => lugaresIzamal.some(lugar => lugar.id === id && lugar.categoria === filtro)) && <p role="status">No hay lugares de esta categoría en el plan. El filtro no modifica el recorrido.</p>}
           <div className="iz-plan-cierre iz-plan-tarjeta"><h3>Cierre del recorrido</h3>{plan.bloques.slice(-2).map(bloque => <p key={bloque.titulo}>{horaPlan(borrador.configuracion, bloque.inicio)} – {horaPlan(borrador.configuracion, bloque.fin)} · {bloque.titulo}: {duracionPlan(bloque.fin - bloque.inicio)}.</p>)}<p>Quedan {duracionPlan(plan.libresMinutos)} libres antes de tu hora objetivo. Confirma el paradero y el transporte de regreso con la terminal.</p></div>
         </section>
-        <section className="iz-plan-mapa iz-plan-tarjeta" aria-label="Mapa ilustrativo"><ImagenItinerario {...imagenesItinerarioIzamal.mapa} /><Link to={urlBorrador('detalle', borrador)}>Ver detalle de ruta<Icono nombre="arrow_forward" tamano={14} /></Link></section>
-        <section className="iz-plan-consejos"><h2>Consejos de viaje BIIN</h2><div><article className="iz-plan-tarjeta"><Icono nombre="wb_sunny" tamano={20} /><h3>Protección solar</h3><p>Usa sombrero y mantén agua fresca en mano.</p></article><article className="iz-plan-tarjeta"><Icono nombre="payments" tamano={20} /><h3>Efectivo en mano</h3><p>Consulta los medios de pago, precios y horarios con cada lugar antes de visitarlo.</p></article></div></section>
+        <EnlaceDetalleRuta to={urlBorrador('detalle', borrador)} />
+        <ConsejosItinerario id="iz-consejos-titulo" consejos={[{ icono: 'wb_sunny', titulo: 'Protección solar', descripcion: 'Usa sombrero y mantén agua fresca en mano.' }, { icono: 'payments', titulo: 'Efectivo en mano', descripcion: 'Consulta los medios de pago, precios y horarios con cada lugar antes de visitarlo.' }]} />
       </>}
       <div className="iz-plan-resumen-final">
         {mostrarEnlace && plan && <label>Enlace del plan<input readOnly value={`${window.location.origin}${urlActual}`} onFocus={e => e.target.select()} /></label>}

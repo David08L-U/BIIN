@@ -4,7 +4,8 @@ import CabeceraPlan from '../components/CabeceraPlan'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../../auth/useAuth'
-import { detalleValladolidPrototipo } from '../../transporte/data/detalleValladolidPrototipo'
+import ConsejosItinerario from '../components/ConsejosItinerario'
+import EnlaceDetalleRuta from '../components/EnlaceDetalleRuta'
 import ConfiguracionValladolid from '../components/ConfiguracionValladolid'
 import Icono from '../components/IconoItinerario'
 import ImagenItinerario from '../components/ImagenItinerario'
@@ -135,8 +136,8 @@ export default function ItinerarioValladolidPage() {
             </section>
           })}
         </section>
-        <section className="iz-plan-mapa iz-plan-tarjeta" aria-label="Circuito Peatonal Valladolid"><div className="iz-plan-categoria-titulo"><h2><Icono nombre="map" tamano={20} />Circuito Peatonal Valladolid</h2><Link to={urlBorradorValladolid('detalle', borrador)}>Ver detalle de ruta<Icono nombre="open_in_new" tamano={16} /></Link></div><div className="iz-plan-mapa-imagen"><ImagenItinerario src={detalleValladolidPrototipo.imagenRecorrido} alt="Mapa ilustrativo de Valladolid de referencia" className="iz-plan-imagen" /><span>Referencia ilustrativa · Sin GPS</span></div></section>
-        <section className="iz-plan-consejos iz-plan-tarjeta" aria-labelledby="va-consejos-titulo"><h2 id="va-consejos-titulo"><Icono nombre="lightbulb" tamano={20} />Consejos de viaje BIIN</h2><div><span><Icono nombre="footprint" tamano={18} /></span><p><strong>Calzado cómodo</strong><span>Camina sobre adoquín colonial y aceras de piedra.</span></p></div><div><span><Icono nombre="pool" tamano={18} /></span><p><strong>Traje de baño y toalla</strong><span>Consulta las condiciones y aperturas antes de visitar el Cenote Zací.</span></p></div></section>
+        <EnlaceDetalleRuta to={urlBorradorValladolid('detalle', borrador)} />
+        <ConsejosItinerario id="va-consejos-titulo" consejos={[{ icono: 'footprint', titulo: 'Calzado cómodo', descripcion: 'Camina sobre adoquín colonial y aceras de piedra.' }, { icono: 'pool', titulo: 'Traje de baño y toalla', descripcion: 'Consulta las condiciones y aperturas antes de visitar el Cenote Zací.' }]} />
       </>}
       <div className="iz-plan-resumen-final">
         {!usuario && <p>Puedes preparar una vista previa sin sesión. Para guardar, inicia sesión; conservarás este borrador.</p>}

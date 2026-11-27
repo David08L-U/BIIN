@@ -4,6 +4,8 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../../auth/useAuth'
 import ConfiguracionTekit from '../components/ConfiguracionTekit'
+import ConsejosItinerario from '../components/ConsejosItinerario'
+import EnlaceDetalleRuta from '../components/EnlaceDetalleRuta'
 import ModosTekit from '../components/ModosTekit'
 import Icono from '../components/IconoItinerario'
 import { lugaresTekit } from '../data/lugaresTekit'
@@ -113,11 +115,8 @@ export default function ItinerarioTekitPage() {
           {filtro !== 'todas' && !plan.seleccion.some(id => lugaresTekit.some(l => l.id === id && l.categoria === filtro)) && <p role="status">No hay visitas de esta categoría. El filtro solo cambia las tarjetas visibles; conserva el plan y sus horarios.</p>}
           <div className="iz-plan-cierre iz-plan-tarjeta"><Icono nombre="directions_bus" tamano={22} /><div><h3>Cierre de Ruta</h3>{plan.bloques.slice(-2).map(b => <p key={b.titulo}>{horaLocal(c, b.inicio)} – {horaLocal(c, b.fin)} · {b.titulo}: {duracionPlan(b.fin - b.inicio)}.</p>)}<p>Tiempo libre: {duracionPlan(plan.libresMinutos)} · {horaLocal(c, plan.totalMinutos)} – {horaLocal(c, Number(c.minutosDisponibles))}. El regreso mostrado es tu objetivo, no una salida confirmada.</p></div></div>
         </section>
-        <section className="iz-plan-mapa iz-plan-tarjeta" aria-labelledby="tk-circuito-titulo">
-          <div className="iz-plan-categoria-titulo"><h2 id="tk-circuito-titulo"><Icono nombre="explore" tamano={18} />Circuito Artesanal Tekit</h2><Link to={urlBorradorTekit('detalle', vigente)}>Ver detalle de ruta<Icono nombre="open_in_new" tamano={14} /></Link></div>
-          <div className="iz-plan-esquema"><ol aria-label="Orden ilustrativo del circuito">{plan.seleccion.map((id, i) => { const l = lugaresTekit.find(l => l.id === id)!; return <li key={id}><span><Icono nombre={l.icono} tamano={20} /></span><small>{i + 1}. {l.etiqueta}</small></li> })}</ol><p>{plan.seleccion.length} paradas · Esquema ilustrativo sin escala ni ubicación GPS</p></div>
-        </section>
-        <section className="iz-plan-consejos" aria-labelledby="tk-consejos-titulo"><h2 id="tk-consejos-titulo"><Icono nombre="tips_and_updates" tamano={18} />Consejos de viaje BIIN</h2><div><Icono nombre="straighten" tamano={16} /><p><strong>Medidas para prendas</strong><span>Conoce tus tallas de hombro y pecho y consulta si ofrecen ajustes.</span></p></div><div><Icono nombre="payments" tamano={16} /><p><strong>Prepara tus compras</strong><span>Confirma precios, medios de pago y condiciones con cada taller.</span></p></div></section>
+        <EnlaceDetalleRuta to={urlBorradorTekit('detalle', vigente)} />
+        <ConsejosItinerario id="tk-consejos-titulo" consejos={[{ icono: 'straighten', titulo: 'Medidas para prendas', descripcion: 'Conoce tus tallas de hombro y pecho y consulta si ofrecen ajustes.' }, { icono: 'payments', titulo: 'Prepara tus compras', descripcion: 'Confirma precios, medios de pago y condiciones con cada taller.' }]} />
       </>}
       <div className="iz-plan-resumen-final">
         {!usuario && <p>Puedes preparar una vista previa sin sesión. Para guardar, inicia sesión; recuperarás este borrador.</p>}

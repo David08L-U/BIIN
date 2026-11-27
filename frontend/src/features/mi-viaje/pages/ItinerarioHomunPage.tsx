@@ -4,11 +4,13 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../../auth/useAuth'
 import ConfiguracionHomun from '../components/ConfiguracionHomun'
+import ConsejosItinerario from '../components/ConsejosItinerario'
+import EnlaceDetalleRuta from '../components/EnlaceDetalleRuta'
 import ModosHomun from '../components/ModosHomun'
 import ImagenItinerario from '../components/ImagenItinerario'
 import { fotografiaLugar } from '../../explorar/data/lugaresExplorar'
 import Icono from '../components/IconoItinerario'
-import { avisoRegresoHomun, lugaresHomun, mapaHomun, nombreTrasladoHomun } from '../data/lugaresHomun'
+import { avisoRegresoHomun, lugaresHomun, nombreTrasladoHomun } from '../data/lugaresHomun'
 import { useBorradorHomun } from '../hooks/useBorradorHomun'
 import { parametrosBorradorHomun, urlBorradorHomun } from '../plan/borradorHomun'
 import { calcularPlanHomun, esEstanciaHomun, estanciasHomun } from '../plan/itinerarioHomun'
@@ -125,8 +127,8 @@ export default function ItinerarioHomunPage() {
             </section>
           })}
         </section>
-        <section className="iz-plan-mapa iz-plan-tarjeta" aria-labelledby="hm-mapa-titulo"><div className="iz-plan-categoria-titulo"><h2 id="hm-mapa-titulo"><Icono nombre="map" tamano={18} />Circuito Cenotes Homún</h2><Link to={urlBorradorHomun('detalle', vigente)}>Ver detalle de ruta<Icono nombre="arrow_forward" tamano={14} /></Link></div><ImagenItinerario {...mapaHomun} className="iz-plan-imagen" /><p className="iz-plan-nota">Mapa ilustrativo de referencia; no representa tu ubicación ni un circuito geográfico verificado.</p></section>
-        <section className="iz-plan-consejos" aria-labelledby="hm-consejos-titulo"><h2 id="hm-consejos-titulo"><Icono nombre="tips_and_updates" tamano={18} />Consejos de viaje BIIN</h2><div><Icono nombre="safety_check" tamano={16} /><p><strong>Consulta requisitos y servicios:</strong> confirma condiciones de acceso, uso de chaleco y qué incluye cada establecimiento.</p></div><div><Icono nombre="eco" tamano={16} /><p><strong>Conservación del agua:</strong> consulta y respeta las normas de cada cenote sobre productos, ducha y cuidado del entorno.</p></div></section>
+        <EnlaceDetalleRuta to={urlBorradorHomun('detalle', vigente)} />
+        <ConsejosItinerario id="hm-consejos-titulo" consejos={[{ icono: 'safety_check', titulo: 'Consulta requisitos y servicios', descripcion: 'Confirma condiciones de acceso, uso de chaleco y qué incluye cada establecimiento.' }, { icono: 'eco', titulo: 'Conservación del agua', descripcion: 'Consulta y respeta las normas de cada cenote sobre productos, ducha y cuidado del entorno.' }]} />
       </>}
       <div className="iz-plan-resumen-final">
         {!usuario && <p>Puedes preparar una vista previa sin sesión. Para guardar, inicia sesión; recuperarás este borrador.</p>}
