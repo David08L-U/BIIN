@@ -165,6 +165,9 @@ GET {{api}}/api/catalogos/municipios
 ### Localidades sin acentos: "homun" encuentra "Homún"
 GET {{api}}/api/catalogos/localidades?busqueda=homun
 
+### Ubicaciones y paradas de abordaje cercanas a la posición del viajero (GPS consentido, RF02, RNF05)
+GET {{api}}/api/ubicaciones/cercanas?lat=20.9674&lng=-89.6237&radioKm=15&limite=10
+
 ### Negocios gastronómicos con filtros (CU-05, RF05)
 GET {{api}}/api/negocios?busqueda=cocina&precioMaximo=150&pagina=1&tamano=20
 

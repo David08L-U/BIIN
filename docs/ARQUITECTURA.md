@@ -166,6 +166,7 @@ BIIN/
 | `POST /api/auth/recuperar-contrasena`, `POST /api/auth/recuperar-contrasena/confirmar` | Público | CU-01 / RF01: restablecimiento de contraseña por código al correo (anti-enumeración) y cierre de sesiones previas |
 | `GET/PUT/DELETE /api/usuarios/perfil`, `GET /api/usuarios/perfil/resumen` | Sesión | CU-01: consulta/edición de perfil propio, conteos reales de itinerarios/favoritos y desactivación lógica |
 | `GET /api/catalogos/{categorias,municipios,localidades}` | Público | Filtros; localidades buscan sin acentos |
+| `GET /api/ubicaciones/cercanas` | Público | RF02 / RNF05: localidades y paradas de abordaje cercanas ordenadas por distancia (GPS opcional) |
 | `GET /api/negocios`, `/api/negocios/{id}` | Público | RF05: localidad, municipio, categoría, presupuesto, texto; horarios y «abierto ahora» |
 | `GET /api/eventos`, `/api/eventos/{id}` | Público | RF06: próximos por defecto, rango de días en hora de Yucatán, estado (incluye cancelados) |
 | `GET /api/lugares`, `/api/lugares/{id}` | Público | RF07: categoría, costo máximo, condiciones de acceso |
