@@ -1,0 +1,887 @@
+/* CU-03: biin_detalle_de_ruta_destino/code.html + biin-compatible.css.
+ * Medidas del diseño original: margen 20 px; espacio principal 16 px;
+ * imágenes de recorrido 144 px y cultural 176 px como altura mínima.
+ * Los tamaños de icono se declaran por contexto para prevalecer sobre
+ * los 24 px de .biin-icon, sin cambiar otras pantallas.
+ * El shell conserva la única navegación inferior y su área segura.
+ */
+.destino-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding: calc(4px + env(safe-area-inset-top)) 20px 40px;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-size: 14px;
+  line-height: 20px;
+  overflow-wrap: anywhere;
+}
+
+.destino-detalle h1,
+.destino-detalle h2,
+.destino-detalle h3,
+.destino-detalle p {
+  margin: 0;
+}
+
+.destino-detalle button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.destino-detalle .biin-icon {
+  flex-shrink: 0;
+  inline-size: 1em;
+  overflow: hidden;
+}
+
+.destino-detalle :is(button, a, input):focus-visible {
+  outline: 3px solid var(--color-secundario);
+  outline-offset: 3px;
+}
+
+.destino-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.destino-boton-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid #d3c3be99;
+  border-radius: 50%;
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  text-decoration: none;
+  box-shadow: 0 1px 2px #0000000d;
+}
+
+.destino-boton-icono .biin-icon {
+  font-size: 22px;
+}
+
+.destino-favorito {
+  color: var(--color-texto-suave);
+}
+
+.destino-favorito[aria-pressed='true'] {
+  color: var(--color-error);
+  font-variation-settings: 'FILL' 1;
+}
+
+.destino-estado-salida {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid #d3c3be80;
+  border-radius: 999px;
+  background: var(--color-superficie-suave);
+  color: var(--color-acento-texto);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: 0.02em;
+  box-shadow: 0 1px 2px #0000000d;
+}
+
+.destino-punto {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--color-acento);
+}
+
+.destino-presentacion {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.destino-etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.destino-ruta-directa {
+  padding: 2px 8px;
+  border: 1px solid #d3c3be66;
+  border-radius: 4px;
+  background: var(--color-borde);
+  color: var(--color-primario);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.destino-pueblo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-texto-suave);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: 0.02em;
+}
+
+.destino-pueblo .biin-icon {
+  font-size: 16px;
+  color: var(--color-acento);
+  font-variation-settings: 'FILL' 1;
+}
+
+.destino-presentacion h1 {
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.destino-presentacion p {
+  color: var(--color-texto-suave);
+}
+
+.destino-tarjeta {
+  min-width: 0;
+  border: 1px solid var(--color-borde-tarjeta);
+  border-radius: 12px;
+  background: var(--color-superficie);
+  box-shadow: var(--sombra-tarjeta);
+}
+
+.destino-metricas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.destino-metrica {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.destino-metrica-precio::after {
+  content: '';
+  position: absolute;
+  right: -12px;
+  bottom: -12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #eee7df80;
+  pointer-events: none;
+}
+
+.destino-metrica-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.destino-metrica-cabecera h2 {
+  font-family: var(--fuente-aplicacion);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-texto-suave);
+}
+
+.destino-icono-metrica {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-acento-texto);
+}
+
+.destino-icono-metrica .biin-icon {
+  font-size: 18px;
+}
+
+.destino-metrica-precio .destino-icono-metrica {
+  color: var(--color-primario);
+}
+
+.destino-metrica .destino-valor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.destino-valor strong {
+  font-family: var(--fuente-aplicacion);
+  font-size: 28px;
+  line-height: 32px;
+  font-weight: 700;
+}
+
+.destino-valor span {
+  color: var(--color-texto-suave);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.destino-valor-disponibilidad strong {
+  color: var(--color-primario);
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.destino-metrica .destino-metrica-nota {
+  position: relative;
+  margin-top: 2px;
+  color: var(--color-texto-suave);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.destino-detalle .destino-nota-datos,
+.destino-detalle .destino-nota-favorito {
+  color: var(--color-acento-texto);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.destino-terminal {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+}
+
+.destino-icono-terminal {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-primario);
+}
+
+.destino-icono-terminal .biin-icon {
+  font-size: 22px;
+}
+
+.destino-terminal > div {
+  min-width: 0;
+}
+
+.destino-sobretitulo {
+  color: var(--color-texto-suave);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.destino-terminal h2 {
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+}
+
+.destino-terminal p:last-child {
+  color: var(--color-texto-suave);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.destino-recorrido,
+.destino-cultura {
+  overflow: hidden;
+}
+
+.destino-recorrido-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #d3c3be66;
+  background: var(--color-superficie-suave);
+}
+
+.destino-recorrido-cabecera h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+}
+
+.destino-recorrido-cabecera .biin-icon {
+  font-size: 20px;
+}
+
+.destino-recorrido-cabecera > span {
+  flex-shrink: 0;
+  max-inline-size: 44%;
+  color: var(--color-acento-texto);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.destino-recorrido-cabecera small {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.destino-foto-recorrido,
+.destino-foto-cultural {
+  position: relative;
+  isolation: isolate;
+  background: var(--color-superficie-acentuada);
+}
+
+.destino-foto-recorrido {
+  display: flex;
+  align-items: flex-end;
+  min-height: 144px;
+  padding: 16px;
+}
+
+.destino-imagen,
+.destino-imagen-alternativa {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.destino-imagen {
+  display: block;
+  object-fit: cover;
+}
+
+.destino-imagen-alternativa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 16px 48px;
+  color: var(--color-texto-suave);
+  background: var(--color-borde);
+  font-size: 10px;
+  line-height: 14px;
+  text-align: center;
+}
+
+.destino-imagen-alternativa .biin-icon {
+  font-size: 24px;
+}
+
+.destino-foto-recorrido::after,
+.destino-foto-cultural::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, #2b1810d9, #2b18104d, transparent);
+  pointer-events: none;
+}
+
+.destino-pie-imagen {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-superficie);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  letter-spacing: 0.025em;
+}
+
+.destino-pie-imagen .biin-icon {
+  font-size: 18px;
+  color: var(--color-acento);
+}
+
+.destino-detalle .destino-nota-recorrido {
+  padding: 12px 16px 0;
+  color: var(--color-texto-suave);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.destino-detalle .destino-nota-regreso {
+  padding: 0 16px 16px;
+}
+
+.destino-paradas {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 16px;
+  list-style: none;
+}
+
+.destino-parada {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+  min-height: 64px;
+}
+
+.destino-parada::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  bottom: 4px;
+  left: 11px;
+  width: 2px;
+  background: #d3c3becc;
+}
+
+.destino-parada-origen {
+  min-height: 80px;
+}
+
+.destino-parada-origen::after {
+  top: 28px;
+}
+
+.destino-parada:last-child {
+  min-height: 0;
+}
+
+.destino-parada:last-child::after {
+  content: none;
+}
+
+.destino-marcador {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin: 0 auto;
+  border: 2px solid var(--color-primario);
+  border-radius: 50%;
+  background: var(--color-superficie-acentuada);
+}
+
+.destino-parada-intermedia .destino-marcador::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-primario);
+}
+
+.destino-parada-origen .destino-marcador,
+.destino-parada-destino .destino-marcador {
+  width: 24px;
+  height: 24px;
+  margin-top: 0;
+  border: 0;
+  box-shadow: 0 0 0 4px var(--color-superficie-acentuada);
+}
+
+.destino-parada-origen .destino-marcador {
+  background: var(--color-primario);
+  color: var(--color-superficie);
+}
+
+.destino-parada-destino .destino-marcador {
+  background: var(--color-acento);
+  color: var(--color-primario);
+  font-variation-settings: 'FILL' 1;
+}
+
+.destino-parada-origen .destino-marcador .biin-icon {
+  font-size: 13px;
+}
+
+.destino-parada-destino .destino-marcador .biin-icon {
+  font-size: 16px;
+}
+
+.destino-parada-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.destino-parada-titulo strong {
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 700;
+}
+
+.destino-parada-titulo > span {
+  border: 1px solid #d3c3be66;
+  border-radius: 4px;
+  padding: 2px 6px;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-primario);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.destino-parada-destino .destino-parada-titulo > span {
+  border-color: transparent;
+  background: var(--color-acento-suave);
+  color: var(--color-primario);
+  font-weight: 700;
+}
+
+.destino-parada p {
+  color: var(--color-texto-suave);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.destino-foto-cultural {
+  display: flex;
+  align-items: flex-end;
+  min-height: 176px;
+}
+
+.destino-foto-cultural::after {
+  background: linear-gradient(to top, #2b1810e6, #2b181059 51%, transparent 74%);
+}
+
+.destino-foto-cultural .destino-imagen-alternativa {
+  padding-bottom: 96px;
+}
+
+.destino-top-destino {
+  position: absolute;
+  z-index: 1;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid #d3c3be4d;
+  border-radius: 999px;
+  background: #2b1810cc;
+  color: var(--color-superficie);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.destino-top-destino .biin-icon {
+  font-size: 14px;
+  color: var(--color-acento);
+  font-variation-settings: 'FILL' 1;
+}
+
+.destino-foto-textos {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  width: 100%;
+  padding: 80px 16px 16px;
+  color: var(--color-superficie);
+}
+
+.destino-foto-textos .destino-pueblo-amarillo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+  color: var(--color-acento-suave);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.destino-pueblo-amarillo .biin-icon {
+  font-size: 16px;
+}
+
+.destino-foto-textos h2 {
+  font-size: 18px;
+  line-height: 22.5px;
+  font-weight: 700;
+}
+
+.destino-foto-textos > p:last-child {
+  color: var(--color-superficie);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.destino-planificador {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.destino-itinerario-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 8px;
+  margin-bottom: 4px;
+}
+
+.destino-itinerario-titulo h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+}
+
+.destino-itinerario-titulo .biin-icon {
+  font-size: 20px;
+}
+
+.destino-itinerario-titulo > span {
+  color: var(--color-acento-texto);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.destino-itinerario-intro > p {
+  color: var(--color-texto-suave);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.destino-estancia {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.destino-estancia legend {
+  margin-bottom: 6px;
+  padding: 0;
+  color: var(--color-texto-suave);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.destino-estancia-opciones {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.destino-estancia-opciones label {
+  position: relative;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.destino-estancia-opciones input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.destino-estancia-opcion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  height: 100%;
+  min-height: 52px;
+  padding: 8px 4px;
+  border: 1px solid #d3c3be99;
+  border-radius: 8px;
+  background: var(--color-superficie);
+  color: var(--color-texto-suave);
+  text-align: center;
+}
+
+.destino-estancia-opcion strong {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.destino-estancia-opcion small {
+  color: var(--color-acento-texto);
+  font-size: 10px;
+  line-height: 15px;
+  font-weight: 400;
+}
+
+.destino-estancia-opciones input:checked + .destino-estancia-opcion {
+  border: 2px solid var(--color-primario);
+  padding: 7px 3px;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-primario);
+}
+
+.destino-estancia-opciones input:checked + .destino-estancia-opcion strong {
+  font-weight: 700;
+}
+
+.destino-estancia-opciones input:checked + .destino-estancia-opcion small {
+  color: var(--color-texto-suave);
+}
+
+.destino-estancia-opciones input:focus-visible + .destino-estancia-opcion {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 2px;
+}
+
+.destino-lugares ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+}
+
+.destino-lugares li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #d3c3be66;
+  border-radius: 6px;
+  padding: 4px 8px;
+  background: var(--color-superficie-suave);
+  color: var(--color-texto-suave);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+}
+
+.destino-lugares li .biin-icon {
+  font-size: 14px;
+  color: var(--color-acento-texto);
+}
+
+.destino-lugares li:first-child {
+  border-color: #d3c3be80;
+  background: var(--color-superficie-acentuada);
+  color: var(--color-primario);
+  font-weight: 700;
+}
+
+.destino-lugares li:first-child .biin-icon {
+  color: var(--color-primario);
+}
+
+.destino-acciones-itinerario {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.destino-acciones-itinerario :is(button, a) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 2px #0000000d;
+}
+
+.destino-acciones-itinerario .biin-icon {
+  font-size: 20px;
+}
+
+.destino-accion-principal .biin-icon:last-child {
+  font-size: 18px;
+}
+
+.destino-accion-principal {
+  background: var(--color-primario);
+  color: var(--color-superficie);
+}
+
+.destino-accion-principal .biin-icon:first-child {
+  color: var(--color-acento);
+}
+
+.destino-acciones-itinerario .destino-accion-secundaria {
+  border-color: #d3c3be99;
+  padding-block: 12px;
+  background: var(--color-superficie-suave);
+  color: var(--color-texto);
+}
+
+.destino-accion-secundaria .biin-icon {
+  color: var(--color-acento-texto);
+}
+
+.destino-mensaje {
+  color: var(--color-texto-suave);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.destino-mensaje:empty {
+  margin-top: -16px;
+}

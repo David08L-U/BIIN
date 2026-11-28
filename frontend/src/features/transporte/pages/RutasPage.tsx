@@ -1,304 +1,35 @@
-import {
-  Link,
-  useOutletContext,
-  useSearchParams,
-} from 'react-router'
-
-import { rutasPrototipo } from '../data/rutasPrototipo'
+import { Link, useOutletContext, useSearchParams } from 'react-router'
+import EstadoConsulta from '../../../components/ui/EstadoConsulta'
+import { fechaHora, moneda } from '../../../utils/formatoDatos'
+import { useCatalogoRutasApi } from '../hooks/useCatalogoRutasApi'
 import '../../../styles/rutas-melanie.css'
 
-const normalizar = (texto: string) =>
-  texto
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim()
-
-const moneda = (valor: number) =>
-  new Intl.NumberFormat('es-MX', {
-    style: 'currency',
-    currency: 'MXN',
-    maximumFractionDigits: 0,
-  }).format(valor)
-
 export default function RutasPage() {
-  const { abrirMenu } = useOutletContext<{
-    abrirMenu: () => void
-  }>()
-
+  const contexto = useOutletContext<{ abrirMenu: () => void } | undefined>()
   const [parametros, setParametros] = useSearchParams()
-
-  const seleccionInicial = rutasPrototipo.find(
-    ruta => ruta.id === parametros.get('destino'),
-  )
-
-  const busqueda =
-    parametros.get('q') ??
-    seleccionInicial?.nombre ??
-    ''
-
-  const tipo = parametros.get('tipo')
-
-  const filtro =
-    tipo === 'directos' || tipo === 'cenotes'
-      ? tipo
-      : 'todas'
-
-  const lista = rutasPrototipo.filter(
-    ruta =>
-      normalizar(
-        `${ruta.nombre} ${ruta.descripcion} ${ruta.etiqueta ?? ''}`,
-      ).includes(normalizar(busqueda)) &&
-      (filtro !== 'directos' || ruta.directo) &&
-      (filtro !== 'cenotes' || ruta.cenotes),
-  )
-
-  function cambiarBusqueda(texto: string) {
+  const busqueda = parametros.get('q') ?? ''
+  const filtro = parametros.get('tipo') ?? 'todas'
+  const destino = parametros.get('destino') ?? ''
+  const consulta = useCatalogoRutasApi(busqueda, filtro, destino)
+  function cambiar(clave: string, valor: string) {
     const nuevos = new URLSearchParams(parametros)
-
-    nuevos.delete('destino')
-
-    if (texto) {
-      nuevos.set('q', texto)
-    } else {
-      nuevos.delete('q')
-    }
-
+    if (valor) nuevos.set(clave, valor); else nuevos.delete(clave)
+    if (clave === 'q') nuevos.delete('destino')
     setParametros(nuevos, { replace: true })
   }
-
-  function cambiarFiltro(
-    opcion: 'todas' | 'directos' | 'cenotes',
-  ) {
-    const nuevos = new URLSearchParams(parametros)
-
-    if (opcion === 'todas') {
-      nuevos.delete('tipo')
-    } else {
-      nuevos.set('tipo', opcion)
-    }
-
-    setParametros(nuevos, { replace: true })
-  }
-
-  return (
-    <section className="rutas-melanie">
-      <header className="rutas-barra">
-        <button
-          type="button"
-          className="rutas-menu"
-          onClick={abrirMenu}
-          aria-label="Abrir menú"
-        >
-          <span aria-hidden="true" className="biin-icon">
-            menu
-          </span>
-        </button>
-
-        <div className="rutas-buscador">
-          <span aria-hidden="true" className="biin-icon">
-            search
-          </span>
-
-          <input
-            type="search"
-            aria-label="Buscar rutas o destinos"
-            placeholder="Buscar rutas o destinos..."
-            value={busqueda}
-            onChange={evento =>
-              cambiarBusqueda(evento.target.value)
-            }
-          />
-
-          {busqueda && (
-            <button
-              type="button"
-              className="rutas-limpiar"
-              aria-label="Limpiar búsqueda"
-              onClick={() => cambiarBusqueda('')}
-            >
-              <span
-                aria-hidden="true"
-                className="biin-icon"
-              >
-                close
-              </span>
-            </button>
-          )}
-        </div>
-      </header>
-
-      <div className="rutas-saludo">
-        <h1>¿A dónde viajaremos hoy?</h1>
-        <p>
-          Salidas frecuentes y combis colectivas desde
-          Mérida
-        </p>
-      </div>
-
-      <div
-        className="rutas-chips"
-        aria-label="Filtrar rutas"
-      >
-        {(
-          [
-            ['todas', 'alt_route', 'Todas las rutas'],
-            ['directos', 'directions_bus', 'Directos'],
-            ['cenotes', 'pool', 'Ruta Cenotes'],
-          ] as const
-        ).map(([id, icono, titulo]) => (
-          <button
-            type="button"
-            key={id}
-            className={filtro === id ? 'activo' : ''}
-            aria-pressed={filtro === id}
-            onClick={() => cambiarFiltro(id)}
-          >
-            <span aria-hidden="true" className="biin-icon">
-              {icono}
-            </span>
-            {titulo}
-          </button>
-        ))}
-      </div>
-
-      <p className="rutas-nota">
-        Datos del prototipo: tarifas y tiempos pendientes
-        de validar.
-      </p>
-
-      <p className="rutas-conteo" aria-live="polite">
-        {lista.length}{' '}
-        {lista.length === 1
-          ? 'ruta encontrada'
-          : 'rutas encontradas'}
-      </p>
-
-      <div className="rutas-catalogo">
-        {lista.map(ruta => (
-          <Link
-            key={ruta.id}
-            to={`/rutas/${ruta.id}`}
-            className="rutas-tarjeta"
-            aria-label={`Ver ruta a ${ruta.nombre}`}
-          >
-            <div className="rutas-tarjeta-cuerpo">
-              <span
-                className={`rutas-icono-destino ${
-                  ruta.id === 'izamal' ? 'relleno' : ''
-                }`}
-              >
-                <span
-                  aria-hidden="true"
-                  className="biin-icon"
-                >
-                  {ruta.icono}
-                </span>
-              </span>
-
-              <div className="rutas-destino-textos">
-                <div className="rutas-destino-titulo">
-                  <h2>{ruta.nombre}</h2>
-
-                  {ruta.etiqueta && (
-                    <span
-                      className={`rutas-etiqueta ${
-                        ruta.id === 'izamal'
-                          ? 'popular'
-                          : ''
-                      }`}
-                    >
-                      {ruta.etiqueta}
-                    </span>
-                  )}
-                </div>
-
-                <p>{ruta.descripcion}</p>
-              </div>
-
-              <span className="rutas-ver">
-                <span
-                  aria-hidden="true"
-                  className="biin-icon"
-                >
-                  arrow_forward
-                </span>
-              </span>
-            </div>
-
-            <div className="rutas-tarjeta-pie">
-              <div className="rutas-metadata">
-                <span>
-                  <span
-                    aria-hidden="true"
-                    className="biin-icon"
-                  >
-                    schedule
-                  </span>
-                  {ruta.tiempo}
-                </span>
-
-                <span>
-                  <span
-                    aria-hidden="true"
-                    className="biin-icon"
-                  >
-                    sync
-                  </span>
-                  c/ {ruta.frecuencia} min
-                </span>
-              </div>
-
-              <span className="rutas-precio">
-                Desde
-                <strong>{moneda(ruta.precio)}</strong>
-              </span>
-            </div>
-          </Link>
-        ))}
-      </div>
-
-      {!lista.length && (
-        <div className="rutas-vacio" role="status">
-          <span aria-hidden="true" className="biin-icon">
-            search_off
-          </span>
-
-          <h2>No encontramos rutas</h2>
-
-          <p>
-            Prueba otro destino o cambia el filtro
-            seleccionado.
-          </p>
-
-          <button
-            type="button"
-            onClick={() =>
-              setParametros({}, { replace: true })
-            }
-          >
-            Restablecer búsqueda
-          </button>
-        </div>
-      )}
-
-      <aside className="rutas-terminales">
-        <span className="rutas-terminal-icono">
-          <span aria-hidden="true" className="biin-icon">
-            pin_drop
-          </span>
-        </span>
-
-        <div>
-          <strong>
-            Salidas principales: Parque San Juan y Noreste
-          </strong>
-          <p>
-            Consulta el paradero exacto al seleccionar tu
-            destino.
-          </p>
-        </div>
-      </aside>
-    </section>
-  )
+  return <section className="rutas-melanie">
+    <header className="rutas-barra"><button type="button" className="rutas-menu" onClick={contexto?.abrirMenu} aria-label="Abrir menú"><span className="biin-icon" aria-hidden="true">menu</span></button>
+      <div className="rutas-buscador"><span className="biin-icon" aria-hidden="true">search</span><input type="search" aria-label="Buscar rutas o destinos" placeholder="Buscar rutas o destinos…" value={busqueda} onChange={e => cambiar('q', e.target.value)} />{(busqueda || destino) && <button type="button" aria-label="Limpiar búsqueda" onClick={() => cambiar('q', '')}>×</button>}</div>
+    </header>
+    <div className="rutas-saludo"><h1>¿A dónde viajaremos hoy?</h1><p>Consulta las rutas de transporte publicadas en BIIN.</p>{destino && <p>Destino: {destino}</p>}</div>
+    <div className="rutas-chips" aria-label="Filtrar rutas">{[['todas', 'Todas las rutas'], ['directos', 'Sin paradas intermedias'], ['cenotes', 'Cenotes']].map(([id, nombre]) => <button type="button" key={id} aria-pressed={filtro === id} className={filtro === id ? 'activo' : ''} onClick={() => cambiar('tipo', id === 'todas' ? '' : id)}>{nombre}</button>)}</div>
+    <p className="rutas-nota">Tarifas aproximadas. Consulta fecha de actualización, horarios y opciones de regreso en cada ruta.</p>
+    <EstadoConsulta consulta={consulta} />
+    {consulta.datos && <p className="rutas-conteo" role="status">{consulta.datos.length} {consulta.datos.length === 1 ? 'ruta encontrada' : 'rutas encontradas'}</p>}
+    <div className="rutas-catalogo">{consulta.datos?.map(r => <Link key={r.idRuta} to={`/rutas/${r.idRuta}`} className="rutas-tarjeta" aria-label={`Ver ruta a ${r.destino}`}>
+      <div className="rutas-tarjeta-cuerpo"><span className="rutas-icono-destino"><span className="biin-icon" aria-hidden="true">directions_bus</span></span><div className="rutas-destino-textos"><div className="rutas-destino-titulo"><h2>{r.destino}</h2><span className="rutas-etiqueta">{r.codigo}</span></div><p>{r.titulo}</p><p>{r.descripcion}</p></div><span className="rutas-ver" aria-hidden="true">→</span></div>
+      <div className="rutas-tarjeta-pie"><div className="rutas-metadata"><span>{r.origen} → {r.destino}</span><span>{r.totalParadas} paradas</span></div><span className="rutas-precio">Tarifa aproximada<strong>{moneda(r.tarifaAproximada)}</strong></span></div><p className="rutas-nota">Actualizada: {fechaHora(r.actualizadoEn)}</p>
+    </Link>)}</div>
+    {consulta.datos?.length === 0 && <div className="rutas-vacio" role="status"><h2>No encontramos rutas</h2><p>Prueba otro destino o cambia el filtro.</p><button type="button" onClick={() => setParametros({}, { replace: true })}>Restablecer búsqueda</button></div>}
+  </section>
 }

@@ -1,29 +1,14 @@
 import { Link, useParams } from 'react-router'
-import { rutasPrototipo } from '../data/rutasPrototipo'
-import DetalleIzamalPage from './DetalleIzamalPage'
-import DetalleValladolidPage from './DetalleValladolidPage'
-import DetalleTekitPage from './DetalleTekitPage'
-import DetalleHomunPage from './DetalleHomunPage'
-import DetalleTiculPage from './DetalleTiculPage'
+import EstadoConsulta from '../../../components/ui/EstadoConsulta'
+import DetalleRutaPublicada from '../components/DetalleRutaPublicada'
+import { useDetalleRutaApi } from '../hooks/useDetalleRutaApi'
 
-/** CU-03 / RF03: los cinco destinos del catálogo tienen su propio detalle. */
+/** RF03: el identificador determina la consulta, nunca una página por pueblo. */
 export default function DetalleRutaPage() {
-  const { id } = useParams()
-  const ruta = rutasPrototipo.find(opcion => opcion.id === id)
-
-  if (ruta) {
-    if (ruta.id === 'izamal') return <DetalleIzamalPage ruta={ruta} />
-    if (ruta.id === 'valladolid') return <DetalleValladolidPage ruta={ruta} />
-    if (ruta.id === 'tekit') return <DetalleTekitPage ruta={ruta} />
-    if (ruta.id === 'homun') return <DetalleHomunPage ruta={ruta} />
-    if (ruta.id === 'ticul') return <DetalleTiculPage ruta={ruta} />
-  }
-
-  return (
-    <section className="pagina" aria-labelledby="ruta-no-encontrada">
-      <h1 id="ruta-no-encontrada">Ruta no encontrada</h1>
-      <p>No encontramos ese destino en el catálogo de BIIN.</p>
-      <Link to="/rutas">Volver al catálogo de rutas</Link>
-    </section>
-  )
+  const { id = '' } = useParams()
+  const consulta = useDetalleRutaApi(id)
+  if (!consulta.datos?.ruta) return <section className="plan"><h1>Detalle de ruta</h1><EstadoConsulta consulta={consulta} />
+    {consulta.datos?.coincidencias.length ? <><p>Elige la ruta de transporte:</p><ul>{consulta.datos.coincidencias.map(r => <li key={r.idRuta}><Link to={`/rutas/${r.idRuta}`}>{r.titulo} · {r.origen} → {r.destino}</Link></li>)}</ul></> : null}<Link to="/rutas">Volver al catálogo de rutas</Link>
+  </section>
+  return <DetalleRutaPublicada key={consulta.datos.ruta.idRuta} ruta={consulta.datos.ruta} />
 }

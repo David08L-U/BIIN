@@ -1,5 +1,7 @@
 # Itinerarios de Valladolid — CU-09 / RF09
 
+> Documento histórico del prototipo anterior. La implementación vigente en `feature/aaron-mejoras` se describe en [FRONTEND_DINAMICO_API.md](FRONTEND_DINAMICO_API.md); sus catálogos locales y páginas por pueblo ya no se utilizan.
+
 El detalle y el planificador usan la composición de Izamal con los datos de
 Valladolid. Cada jornada conserva sus propios campos de Horas y Minutos.
 

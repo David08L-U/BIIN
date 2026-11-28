@@ -1,5 +1,7 @@
 # Fotografías de destinos
 
+> Documento histórico del prototipo anterior. La implementación vigente en `feature/aaron-mejoras` se describe en [FRONTEND_DINAMICO_API.md](FRONTEND_DINAMICO_API.md); sus catálogos locales y páginas por pueblo ya no se utilizan.
+
 Las imágenes empaquetadas en `frontend/src/assets/destinos` proceden de las
 referencias originales de los prototipos que ya estaban registradas en BIIN.
 Los imports de Vite publican los archivos locales con el build.

@@ -1,5 +1,7 @@
 # Itinerarios de Izamal — CU-09 / RF09
 
+> Documento histórico del prototipo anterior. La implementación vigente en `feature/aaron-mejoras` se describe en [FRONTEND_DINAMICO_API.md](FRONTEND_DINAMICO_API.md); sus catálogos locales y páginas por pueblo ya no se utilizan.
+
 El detalle de Izamal define la plantilla común de rutas. El itinerario y la
 personalización comparten la cabecera, los controles de modo y los estilos de
 configuración, filtros, recorrido y acciones con los otros destinos.

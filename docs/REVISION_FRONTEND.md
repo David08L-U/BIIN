@@ -1,5 +1,7 @@
 # Revisión del frontend de BIIN
 
+> Documento histórico del prototipo anterior. La implementación vigente en `feature/aaron-mejoras` se describe en [FRONTEND_DINAMICO_API.md](FRONTEND_DINAMICO_API.md); sus catálogos locales y páginas por pueblo ya no se utilizan.
+
 La revisión cubre la navegación y los flujos de la rama
 `feature/melanie-frontend`. Los datos de operación de los destinos siguen
 procediendo del prototipo. El mapa de Inicio muestra la ubicación del
