@@ -885,3 +885,77 @@
 .destino-mensaje:empty {
   margin-top: -16px;
 }
+
+.destino-distribucion,
+.destino-servicios {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  align-items: start;
+}
+
+.destino-servicios > .datos-publicados {
+  margin-top: 0;
+}
+
+.destino-estado-salida {
+  min-width: 0;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .destino-detalle {
+    padding: 16px var(--espacio) 40px;
+    gap: 24px;
+    --alto-mapa-publicado: 380px;
+  }
+
+  .destino-servicios {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .destino-metricas {
+    gap: 20px;
+  }
+
+  .destino-cultura {
+    display: block;
+  }
+
+  .destino-cultura > .foto-publicada {
+    height: 280px;
+    border-radius: 0;
+  }
+
+  .destino-planificador {
+    min-width: 0;
+  }
+
+  .destino-planificador > .datos-publicados {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    margin-top: 0;
+    padding: 0;
+  }
+
+  .destino-planificador .estado-consulta,
+  .destino-planificador > .datos-publicados > p {
+    grid-column: 1 / -1;
+  }
+
+  .destino-planificador .destino-acciones-itinerario {
+    margin-top: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .destino-distribucion {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .destino-servicios {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

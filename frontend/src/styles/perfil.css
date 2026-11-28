@@ -582,3 +582,268 @@
   line-height: 16px;
   color: var(--color-texto-suave);
 }
+
+@media (min-width: 768px) {
+  .perfil-cabecera {
+    padding-inline: var(--espacio);
+  }
+
+  .perfil-cuerpo {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 24px;
+    padding: 16px var(--espacio) 40px;
+  }
+
+  .perfil-cuerpo > :is(.perfil-demostracion, .perfil-acciones-superiores, .perfil-mensaje, .perfil-acciones-cuenta, .perfil-pie) {
+    grid-column: 1 / -1;
+  }
+
+  .perfil-cuerpo > section,
+  .perfil-metrica {
+    min-width: 0;
+  }
+
+  .perfil-itinerarios {
+    gap: 12px;
+  }
+
+  .perfil-acciones-cuenta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .perfil-cerrar-sesion {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .perfil-cabecera {
+    top: var(--alto-navegacion);
+  }
+}
+
+/* Solo escritorio: las columnas fluyen de forma independiente. El contenedor
+   principal no genera una caja en móvil o tableta y conserva su orden de lectura. */
+@media (min-width: 1024px) {
+  .perfil {
+    --perfil-disposicion-principal: grid;
+    width: 100%;
+    max-width: 1280px;
+    margin-inline: auto;
+    padding: 24px var(--espacio) 40px;
+  }
+
+  .perfil .perfil-cabecera {
+    position: static;
+    min-height: 44px;
+    margin-bottom: 24px;
+    padding: 0 144px 0 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .perfil .perfil-cabecera h1 {
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .perfil .perfil-cuerpo {
+    --perfil-filas-fijas: 3;
+    --perfil-inicio-principal: 1;
+    --perfil-filas-principal: 4;
+    position: relative;
+    grid-template-columns: 320px minmax(0, 1fr);
+    grid-template-rows: repeat(var(--perfil-filas-fijas), max-content) minmax(0, 1fr);
+    gap: 16px 24px;
+    padding: 0;
+  }
+
+  .perfil .perfil-cuerpo > :is(.perfil-acciones-superiores, .perfil-mensaje, .perfil-identidad, .perfil-acciones-cuenta, .perfil-pie) {
+    grid-column: 1;
+  }
+
+  .perfil .perfil-acciones-superiores {
+    justify-content: flex-start;
+  }
+
+  .perfil .perfil-editar {
+    position: absolute;
+    top: -68px;
+    right: 0;
+  }
+
+  .perfil .perfil-identidad {
+    gap: 12px;
+    padding: 20px;
+  }
+
+  .perfil .perfil-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .perfil .perfil-tarjeta {
+    border-color: #cdbda9;
+  }
+
+  .perfil .perfil-acciones-cuenta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 0;
+  }
+
+  .perfil .perfil-accion {
+    padding: 12px;
+  }
+
+  .perfil .perfil-cerrar-sesion {
+    justify-content: flex-start;
+    margin-top: 0;
+    padding: 10px 12px;
+    text-align: left;
+  }
+
+  .perfil .perfil-pie {
+    text-align: left;
+  }
+
+  .perfil .perfil-principal {
+    grid-column: 2;
+    grid-row: var(--perfil-inicio-principal) / span var(--perfil-filas-principal);
+    min-width: 0;
+    gap: 20px;
+    align-content: start;
+  }
+
+  .perfil .perfil-principal > section {
+    min-width: 0;
+  }
+
+  .perfil .perfil-seccion-cabecera {
+    margin-bottom: 8px;
+    padding: 0;
+  }
+
+  .perfil .perfil-seccion-cabecera h2 {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .perfil .perfil-metricas {
+    gap: 12px;
+  }
+
+  .perfil .perfil-metrica {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 4px 12px;
+    padding: 16px;
+  }
+
+  .perfil .perfil-metrica .perfil-icono-cuadro {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    align-self: center;
+  }
+
+  .perfil .perfil-metrica strong {
+    grid-column: 2;
+    margin: 0;
+    font-size: 22px;
+    line-height: 28px;
+  }
+
+  .perfil .perfil-metrica > span:last-child {
+    grid-column: 2;
+    margin: 0;
+    line-height: 18px;
+  }
+
+  .perfil .perfil-trayecto {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+  }
+
+  .perfil .perfil-trayecto > p {
+    flex: 1;
+  }
+
+  .perfil .perfil-trayecto:has(.perfil-recorrido) {
+    display: block;
+  }
+
+  .perfil .perfil-itinerarios {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .perfil .perfil-itinerarios:has(> li:only-child) {
+    grid-template-columns: minmax(0, min(100%, 380px));
+  }
+
+  .perfil .perfil-itinerario {
+    gap: 6px;
+    padding: 16px;
+  }
+
+  .perfil .perfil-itinerario h3 {
+    margin-top: 8px;
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .perfil .perfil-itinerario .perfil-fecha {
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  .perfil .perfil-itinerario .perfil-ver-ruta {
+    margin-top: auto;
+    background: var(--color-primario);
+    color: var(--color-superficie);
+    font-size: 14px;
+  }
+
+  .perfil .perfil-ver-ruta:hover {
+    background: var(--color-primario-oscuro);
+  }
+
+  .perfil .perfil-cuerpo:has(> .perfil-mensaje:not(:empty)) {
+    --perfil-filas-fijas: 4;
+    --perfil-filas-principal: 5;
+  }
+
+  .perfil .perfil-cuerpo:has(> .perfil-demostracion) {
+    --perfil-filas-fijas: 4;
+    --perfil-inicio-principal: 2;
+  }
+
+  .perfil .perfil-cuerpo:has(> .perfil-demostracion):has(> .perfil-mensaje:not(:empty)) {
+    --perfil-filas-fijas: 5;
+  }
+
+  /* El reintento de la consulta pertenece a Perfil y se renderiza a continuación. */
+  .perfil + button {
+    display: block;
+    max-width: calc(100% - 344px - 2 * var(--espacio));
+    min-height: 44px;
+    margin: -16px var(--espacio) 24px calc(344px + var(--espacio));
+    padding: 10px 16px;
+    border: 1px solid var(--color-borde);
+    border-radius: 8px;
+    background: var(--color-superficie-suave);
+    color: var(--color-texto);
+    font: inherit;
+    cursor: pointer;
+  }
+}
