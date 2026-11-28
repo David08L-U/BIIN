@@ -831,13 +831,13 @@
   margin-top: 4px;
 }
 
-.destino-acciones-itinerario button {
+.destino-acciones-itinerario :is(button, a) {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   width: 100%;
-  min-height: 44px;
+  min-height: 48px;
   border: 1px solid transparent;
   border-radius: 12px;
   padding: 14px 16px;

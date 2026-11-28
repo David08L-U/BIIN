@@ -13,13 +13,13 @@
 .datos-publicados li { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
 .datos-publicados small { display: block; color: var(--color-texto-suave); }
 .recorrido-opcion { display: grid; gap: 12px; padding: 12px 0; border-top: 1px solid var(--color-borde); }
-.destino-acciones-itinerario a { display: flex; justify-content: center; text-align: center; text-decoration: none; }
+.destino-acciones-itinerario a { text-align: center; text-decoration: none; }
 .destino-valor { overflow-wrap: anywhere; }
 .formulario-api { display: grid; gap: 12px; margin: 16px 0; min-width: 0; }
 .formulario-api fieldset { min-inline-size: 0; border: 1px solid var(--color-borde); border-radius: 12px; padding: 12px; }
 .formulario-api legend { font-weight: 700; padding: 0 4px; }
-.formulario-api label, .selector-recorrido { display: grid; gap: 6px; min-width: 0; font-weight: 700; }
-.formulario-api :is(input, textarea, select), .selector-recorrido select {
+.formulario-api label, .selector-recorrido, .horarios-selector { display: grid; gap: 6px; min-width: 0; font-weight: 700; }
+.formulario-api :is(input, textarea, select), .selector-recorrido select, .horarios-selector select {
   min-inline-size: 0; max-width: 100%; width: 100%; min-height: 44px; padding: 8px; color: var(--color-texto);
   background: var(--color-superficie-suave); border: 1px solid var(--color-borde); border-radius: 8px; font: inherit;
 }
