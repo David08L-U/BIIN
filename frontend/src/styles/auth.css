@@ -7,6 +7,24 @@
   justify-content: center;
 }
 
+.biin-acceso {
+  display: grid;
+  align-items: center;
+  padding-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
+}
+
+.biin-acceso > .pagina {
+  width: 100%;
+  max-width: 520px;
+  padding: 32px 24px;
+  overflow-wrap: anywhere;
+}
+
+.biin-acceso .campo input {
+  width: 100%;
+  min-height: 48px;
+}
+
 .auth-cabecera {
   margin-bottom: 28px;
   text-align: center;
@@ -119,4 +137,23 @@
 
 @media (max-width: 360px) {
   .auth-page { padding-inline: 18px; }
+}
+
+@media (min-width: 768px) {
+  .biin-acceso {
+    padding: 40px 24px;
+  }
+
+  .biin-acceso > .pagina {
+    min-height: 0;
+    padding: 40px;
+    border: 1px solid var(--color-borde);
+    border-radius: 16px;
+    background: var(--color-superficie);
+    box-shadow: var(--sombra-tarjeta);
+  }
+
+  .biin-acceso .boton {
+    width: 100%;
+  }
 }

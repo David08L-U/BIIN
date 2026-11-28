@@ -65,8 +65,10 @@ function PlanificadorContenido({ recorrido, base, modo }: { recorrido: Recorrido
     <ModosPlan modo={modo} recomendado={`${base}/itinerario${query}`} personalizado={`${base}/personalizar${query}`} />
     <h2>{recorrido.titulo}</h2><p>{recorrido.descripcion}</p><p className="plan-nota">Información publicada · Actualizada: {fechaHora(recorrido.actualizadoEn)}</p>
     <form onSubmit={e => void guardar(e)} noValidate>
+      <div className="plan-distribucion">
       <FormularioPlanApi config={config} personalizado={personalizado} disabled={bloqueado} cambiar={c => { setConfig(c); setErrores([]); sincronizar(c) }} />
       <EtapasRecorridoApi etapas={recorrido.etapas} seleccion={seleccion} personalizado={personalizado} disabled={bloqueado} cambiar={ids => { setSeleccion(ids); setErrores([]); sincronizar(config, ids) }} />
+      </div>
       <section className="plan-tarjeta"><h2>Resumen de tu visita</h2><p>{elegidas.length} actividades seleccionadas</p><p>{duracionPlan(etapas.reduce((total, etapa) => total + (etapa.duracionSugeridaMin ?? 0), 0))} de visitas con duración publicada; no incluye traslados.</p>{etapas.some(etapa => etapa.duracionSugeridaMin === null) && <p>Hay actividades con duración sin confirmar.</p>}<p>{personalizado ? 'Podrás editar los horarios después de guardar.' : 'Al guardar, el servidor asignará horarios y traslados estimados. Una actividad sin duración publicada usará la estimación de 60 minutos del planificador.'} Confirma aperturas, transporte y costos antes de viajar.</p></section>
       {!!errores.length && <div role="alert" className="plan-error">{errores.map(error => <p key={error}>{error}</p>)}</div>}
       {guardado.error && <p role="alert" className="plan-error">{guardado.error}</p>}

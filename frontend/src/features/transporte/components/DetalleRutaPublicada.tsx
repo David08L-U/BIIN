@@ -30,12 +30,14 @@ export default function DetalleRutaPublicada({ ruta }: { ruta: RutaDetalle }) {
     </div>
     <p className="destino-nota-datos">Información publicada · Actualizada: <time dateTime={ruta.actualizadoEn}>{fechaHora(ruta.actualizadoEn)}</time></p>
     <section className="destino-tarjeta destino-terminal"><span className="destino-icono-terminal biin-icon" aria-hidden="true">directions_bus</span><div><p className="destino-sobretitulo">Punto de abordaje</p><h2>{origen?.localidad ?? 'Sin confirmar'}</h2><p>{origen?.direccionReferencia ?? 'Sin dirección de abordaje publicada.'}</p></div></section>
+    <div className="destino-distribucion">
     <section className="destino-tarjeta destino-recorrido"><header className="destino-recorrido-cabecera"><h2>Mapeo de ruta y paradas</h2></header>
       <MapaRecorrido paradas={paradas.map(p => ({ ...p, nombre: p.localidad }))} trazo={[...ruta.puntosRecorrido].sort((a, b) => a.orden - b.orden)} />
       {!ruta.puntosRecorrido.length && <p className="destino-nota-recorrido">No hay trazo publicado. El mapa muestra las ubicaciones registradas.</p>}
       {paradas.length ? <ol className="destino-paradas">{paradas.map((p, indice) => <li key={p.orden} className={`destino-parada destino-parada-${indice === 0 ? 'origen' : indice === paradas.length - 1 ? 'destino' : 'intermedia'}`}><span className="destino-marcador" aria-hidden="true" /><div><strong>{p.localidad}</strong><p>{p.direccionReferencia ?? 'Sin referencia publicada.'}</p><small>{[p.permiteAbordar && 'Permite abordar', p.permiteDescender && 'Permite descender'].filter(Boolean).join(' · ') || 'Parada de referencia'}</small></div></li>)}</ol> : <p>Sin paradas publicadas.</p>}
     </section>
-    <HorariosRuta horarios={ruta.horarios} /><TarifasRuta ruta={ruta} /><SalidasRuta salidas={ruta.proximasSalidas} />
+    <div className="destino-servicios"><HorariosRuta horarios={ruta.horarios} /><TarifasRuta ruta={ruta} /><SalidasRuta salidas={ruta.proximasSalidas} /></div>
+    </div>
     <section className="destino-tarjeta destino-cultura"><FotografiaPublicada src={foto?.urlArchivo} alt={foto?.textoAlternativo || ruta.titulo} /><div className="destino-planificador"><h2>Descubre {destino?.localidad ?? ruta.titulo} a tu ritmo</h2><RecorridosDestino idLocalidad={destino?.idLocalidad} idRuta={ruta.idRuta} /></div></section>
     <p className="destino-nota-favorito" role="status">{aviso}</p>
   </article>

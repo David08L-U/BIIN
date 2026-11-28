@@ -7,6 +7,11 @@ import { itinerariosApi, type ItinerarioResumenDto } from '../api'
 import { fechaHora, moneda } from '../../../utils/formatoDatos'
 import '../../../styles/planificador.css'
 
+/** Presentación de fechas de calendario sin desplazarlas por la zona horaria. */
+function fechaViaje(valor: string) {
+  return new Date(`${valor}T12:00:00Z`).toLocaleDateString('es-MX', { dateStyle: 'long', timeZone: 'UTC' })
+}
+
 export default function MiViajePage() {
   const { usuario } = useAuth()
   if (!usuario) return null
@@ -16,7 +21,13 @@ function MisViajes({ idUsuario, nombre }: { idUsuario: number; nombre: string })
   const consulta = useConsultaApi(`mis-viajes:${idUsuario}`, signal => itinerariosApi.listar(signal))
   return <section className="plan plan-mis-viajes"><h1>Mis itinerarios</h1><p>Guardados en la cuenta de {nombre}.</p><EstadoConsulta consulta={consulta} />
     {consulta.datos?.length === 0 && <p role="status">Todavía no tienes itinerarios guardados en tu cuenta.</p>}
-    <ul className="lista-viajes-api">{consulta.datos?.map(item => <li key={item.idItinerario} className="plan-tarjeta"><h2>{item.nombre}</h2><p>{item.inicio} → {item.fin} · {item.totalActividades} actividades</p><p>Presupuesto: {moneda(item.presupuestoEstimado)}</p><p>Creado: {fechaHora(item.fechaCreacion)}</p><Link to={`/mi-viaje/${item.idItinerario}`}>Abrir y editar itinerario</Link><EliminarItinerario item={item} actualizar={consulta.reintentar} /></li>)}</ul>
+    <ul className="lista-viajes-api">{consulta.datos?.map(item => <li key={item.idItinerario} className="plan-tarjeta">
+      <h2>{item.nombre}</h2>
+      <p className="viaje-fechas"><span className="viaje-fechas-originales">{item.inicio} → {item.fin} · {item.totalActividades} actividades</span><span className="viaje-fechas-escritorio"><time dateTime={item.inicio}>{fechaViaje(item.inicio)}</time> → <time dateTime={item.fin}>{fechaViaje(item.fin)}</time><span className="viaje-actividades">{item.totalActividades} actividades</span></span></p>
+      <p className="viaje-presupuesto">Presupuesto: {moneda(item.presupuestoEstimado)}</p>
+      <p className="viaje-creado">Creado: <time dateTime={item.fechaCreacion}>{fechaHora(item.fechaCreacion)}</time></p>
+      <div className="viaje-acciones"><Link className="viaje-abrir" to={`/mi-viaje/${item.idItinerario}`}>Abrir y editar itinerario</Link><EliminarItinerario item={item} actualizar={consulta.reintentar} /></div>
+    </li>)}</ul>
     <Link className="plan-primario" to="/recorridos">Preparar otro itinerario</Link><p className="plan-nota">Los planes antiguos guardados únicamente en este navegador no se han eliminado. Esta lista muestra los itinerarios del servidor.</p>
   </section>
 }
@@ -33,5 +44,5 @@ function EliminarItinerario({ item, actualizar }: { item: ItinerarioResumenDto; 
     catch (e) { setError(e instanceof Error ? e.message : 'No se pudo eliminar.'); setIncierto(true) }
     finally { bloqueo.current = false; setOcupado(false) }
   }
-  return <div><button type="button" onClick={() => setConfirmar(true)}>Eliminar itinerario</button>{confirmar && <div role="group" aria-label={`Eliminar ${item.nombre}`}><p>¿Eliminar el itinerario «{item.nombre}» de tu cuenta?</p><button type="button" disabled={ocupado} onClick={() => setConfirmar(false)}>Cancelar</button><button type="button" disabled={ocupado || incierto} onClick={() => void eliminar()}>{ocupado ? 'Eliminando…' : 'Confirmar eliminación'}</button></div>}{error && <p role="alert">{error} <button type="button" onClick={actualizar}>Recargar lista</button></p>}</div>
+  return <div className="viaje-eliminar"><button type="button" onClick={() => setConfirmar(true)}>Eliminar itinerario</button>{confirmar && <div role="group" aria-label={`Eliminar ${item.nombre}`}><p>¿Eliminar el itinerario «{item.nombre}» de tu cuenta?</p><button type="button" disabled={ocupado} onClick={() => setConfirmar(false)}>Cancelar</button><button type="button" disabled={ocupado || incierto} onClick={() => void eliminar()}>{ocupado ? 'Eliminando…' : 'Confirmar eliminación'}</button></div>}{error && <p role="alert">{error} <button type="button" onClick={actualizar}>Recargar lista</button></p>}</div>
 }

@@ -36,6 +36,17 @@
   height: 44px;
 }
 
+.rutas-buscador > button {
+  position: absolute;
+  inset: 0 3px 0 auto;
+  width: 36px;
+  border: 0;
+  background: transparent;
+  color: var(--color-texto);
+  font: inherit;
+  cursor: pointer;
+}
+
 .rutas-buscador > .biin-icon {
   position: absolute;
   top: 12px;
@@ -170,7 +181,9 @@
 }
 
 .rutas-tarjeta {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
   overflow: hidden;
   background: var(--color-superficie);
   border: 1px solid var(--color-borde-tarjeta);
@@ -284,6 +297,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  flex-wrap: wrap;
+  margin-top: auto;
   border-top: 1px solid #eae6dfb3;
   background: #faf3eb80;
   padding: 10px 16px;
@@ -291,6 +306,8 @@
 
 .rutas-metadata {
   display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
   align-items: center;
   gap: 16px;
   color: var(--color-texto-suave);
@@ -302,7 +319,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  white-space: nowrap;
+  min-width: 0;
 }
 
 .rutas-metadata .biin-icon {
@@ -314,11 +331,32 @@
   display: flex;
   align-items: baseline;
   gap: 4px;
-  white-space: nowrap;
+  flex-wrap: wrap;
   color: var(--color-texto-suave);
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
+}
+
+@media (min-width: 768px) {
+  .rutas-melanie {
+    padding: 16px calc(var(--espacio) - 16px) 40px;
+  }
+
+  .rutas-barra {
+    max-width: 720px;
+  }
+
+  .rutas-catalogo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .rutas-catalogo {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .rutas-precio strong {
@@ -422,5 +460,155 @@
 
   .rutas-tarjeta-pie {
     padding-inline: 12px;
+  }
+}
+
+/* Refinamiento exclusivo de escritorio; se conserva el catálogo móvil aprobado. */
+@media (max-width: 1023px) {
+  .rutas-origen-escritorio {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .rutas-melanie {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(320px, 1fr);
+    column-gap: 32px;
+    row-gap: 16px;
+    padding: 28px var(--espacio) 48px;
+  }
+
+  .rutas-saludo {
+    grid-area: 1 / 1;
+    padding: 0;
+  }
+
+  .rutas-saludo p {
+    margin-top: 8px;
+  }
+
+  .rutas-barra {
+    grid-area: 1 / 2;
+    align-self: center;
+    max-width: none;
+    padding: 0;
+  }
+
+  .rutas-chips,
+  .rutas-melanie > :is(.rutas-nota, .rutas-conteo, .estado-consulta, .rutas-catalogo, .rutas-vacio) {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 0;
+  }
+
+  .rutas-melanie > .rutas-nota {
+    margin-top: 4px;
+    color: var(--color-texto-suave);
+  }
+
+  .rutas-catalogo {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-auto-rows: 1fr;
+    gap: 24px;
+  }
+
+  .rutas-tarjeta {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 40px;
+    grid-template-rows: auto auto 1fr auto auto auto;
+    align-items: start;
+    gap: 12px;
+    padding: 20px;
+    border-color: #cdbda9;
+    box-shadow: 0 2px 8px #3522190a;
+  }
+
+  .rutas-tarjeta:hover {
+    border-color: var(--color-texto-suave);
+  }
+
+  .rutas-tarjeta :is(.rutas-tarjeta-cuerpo, .rutas-destino-textos, .rutas-tarjeta-pie, .rutas-metadata) {
+    display: contents;
+  }
+
+  .rutas-icono-destino {
+    grid-area: 1 / 1;
+    align-self: start;
+  }
+
+  .rutas-destino-titulo {
+    grid-area: 1 / 2 / auto / -1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .rutas-destino-titulo h2 {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .rutas-etiqueta {
+    max-width: 100%;
+    padding: 2px 8px;
+    font-size: 11px;
+    line-height: 18px;
+  }
+
+  .rutas-destino-textos > p:first-of-type {
+    grid-area: 2 / 1 / auto / -1;
+    margin: 0;
+  }
+
+  .rutas-destino-textos > p:last-of-type {
+    grid-area: 3 / 1 / auto / -1;
+    margin: 0;
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  /* El trayecto completo ya encabeza la tarjeta; se evita repetirlo en el pie. */
+  .rutas-metadata > span:first-child {
+    display: none;
+  }
+
+  .rutas-metadata > span:last-child {
+    grid-area: 4 / 1 / auto / -1;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-borde);
+    color: var(--color-texto-suave);
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .rutas-precio {
+    grid-area: 5 / 1 / auto / 3;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .rutas-precio strong {
+    font-size: 22px;
+    line-height: 28px;
+  }
+
+  .rutas-ver {
+    grid-area: 5 / 3;
+    align-self: end;
+    justify-self: end;
+    width: 40px;
+    height: 40px;
+  }
+
+  .rutas-tarjeta > .rutas-nota {
+    grid-area: 6 / 1 / auto / -1;
+    margin: 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-borde);
+    color: var(--color-texto-suave);
   }
 }

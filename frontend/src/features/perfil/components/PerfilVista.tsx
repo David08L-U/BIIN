@@ -99,6 +99,7 @@ export default function PerfilVista({ datos, demostracion = false, onCerrarSesio
         </div>
       </div>
 
+      <div className="perfil-principal" style={{ display: 'var(--perfil-disposicion-principal, contents)' }}>
       <section aria-labelledby="perfil-movilidad-titulo">
         <div className="perfil-seccion-cabecera">
           <h2 id="perfil-movilidad-titulo">Movilidad del mes · {datos.periodo}</h2>
@@ -155,6 +156,8 @@ export default function PerfilVista({ datos, demostracion = false, onCerrarSesio
         </ul> : <div className="perfil-tarjeta perfil-vacio"><p>{datos.errorItinerarios ? 'No se pueden mostrar los itinerarios en este momento.' : datos.cargandoItinerarios ? 'Consultando tus itinerarios.' : 'No hay itinerarios guardados en esta cuenta.'}</p><Link className="perfil-enlace" to="/rutas">Explorar destinos</Link></div>}
         <p className="perfil-nota">{demostracion ? 'Las tarjetas son ejemplos del prototipo.' : 'Guardados en tu cuenta de BIIN y consultados desde el servidor.'}</p>
       </section>
+
+      </div>
 
       <div className="perfil-acciones-cuenta">
         <button type="button" className="perfil-accion" onClick={() => setAviso('Las preferencias de viaje y accesibilidad estarán disponibles en una próxima etapa. No se han cambiado tus ajustes.')}>

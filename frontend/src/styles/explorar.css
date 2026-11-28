@@ -4,14 +4,15 @@
 .explorar-destinos button { flex: 0 0 auto; min-height: 42px; padding: 8px 14px; border: 1px solid var(--color-borde-tarjeta); border-radius: 999px; background: var(--color-superficie); color: var(--color-texto); font: inherit; font-weight: 700; }
 .explorar-destinos button.activo { border: 2px solid var(--color-primario); background: var(--color-primario); color: var(--color-superficie); box-shadow: 0 0 0 2px var(--color-acento); }
 .explorar-cabecera p, .explorar-card > p { margin-top: 8px; }
-.explorar-filtros { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.explorar-filtros { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin-bottom: 16px; }
 .explorar-filtros label { min-width: 0; }
 .explorar-filtros input, .explorar-filtros select { width: 100%; }
-.explorar-filtros .explorar-limpiar { min-height: 44px; border: 1px solid var(--color-borde-tarjeta); border-radius: 8px; background: var(--color-superficie); color: var(--color-texto); font: inherit; font-weight: 700; }
+.explorar-filtros > button { min-height: 44px; border: 1px solid var(--color-borde-tarjeta); border-radius: 8px; background: var(--color-superficie); color: var(--color-texto); font: inherit; font-weight: 700; padding: 8px 12px; }
 .explorar :is(button, a, input, select):focus-visible { outline: 3px solid var(--color-secundario); outline-offset: 3px; }
 .explorar-conteo, .explorar-meta { color: var(--color-texto-suave); font-size: 12px; font-weight: 700; }
 .explorar-grid { display: grid; gap: 12px; }
-.explorar-card { display: grid; align-content: start; gap: 8px; }
+.explorar-card { display: flex; flex-direction: column; gap: 8px; }
+.explorar-card > a:last-child, .explorar-card > .explorar-acciones { margin-top: auto; }
 .explorar-card h2 { font-size: 16px; line-height: 22px; }
 .explorar-card a, .explorar-detalle a:not(.plan-primario) { font-weight: 700; }
 .explorar-figura { min-width: 0; margin: 0; }
@@ -29,3 +30,23 @@
 .explorar-candidato { display: grid; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--borde-tarjeta); }
 .explorar-candidato label { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .explorar-candidato button { min-height: 44px; }
+
+@media (min-width: 768px) {
+  .explorar-filtros {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
+    align-items: end;
+    margin-block: 24px;
+  }
+
+  .explorar-detalle {
+    max-width: 800px;
+    margin: 20px auto 0;
+  }
+}
+
+@media (min-width: 1280px) {
+  .explorar-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+}

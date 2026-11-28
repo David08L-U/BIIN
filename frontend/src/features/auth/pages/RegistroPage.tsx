@@ -5,6 +5,7 @@ import Campo from '../../../components/ui/Campo'
 import type { RegistroPendiente } from '../../../types/auth'
 import VerificacionCorreo from '../components/VerificacionCorreo'
 import { useAuth } from '../useAuth'
+import '../../../styles/auth.css'
 
 type CampoRegistro = 'nombre' | 'correo' | 'contrasena'
 
